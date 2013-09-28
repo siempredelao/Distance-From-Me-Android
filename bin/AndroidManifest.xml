@@ -49,7 +49,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name="gc.david.dfm.ShowInfoActivity"
             android:configChanges="orientation"
@@ -61,7 +60,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="gc.david.dfm.MainActivity" />
         </activity>
-        
+
         <!-- Debug key -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
