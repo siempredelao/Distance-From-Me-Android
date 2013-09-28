@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- ACTIVITY MAIN -->
+    <string name="app_name">Distance From Me</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="action_search">Rechercher</string>
+    <string name="action_social_share">Partager</string>
+    <string name="menu_legalnotices">Avis juridique</string>
+    <string name="search_hint">Rechercher Distance From Me</string>
+    <string name="searching">Recherche</string>
+    <string name="wait">Attendez, s\'il vous plaît!</string>
+    <string name="nofindaddress">Le service est inactif ou votre signal de réseau est très pauvre. Veuillez réessayer ultérieurement.</string>
+    <string name="noresults">Aucun résultat trouvé avec ces mots. Essayez à nouveau avec des autres mots</string>
+    <string name="menu_layers">Calques</string>
+    <string name="loading">En recherchant de votre position. Attendez, s\'il vous plaît!</string>
+    <string name="menu_guardar">Sauvegarder</string>
+    <string name="action_load">Chargez distance</string>
+    <string name="gps_off">GPS arreté, voulez-vous l\'activer?</string>
+    <string name="gps_enable">Activer GPS</string>
+    <string name="do_nothing">Non</string>
+    <string name="wireless_off">Connexion réseau stoppée, voulez-vous l\'activer?</string>
+    <string name="wireless_enable">Activer Wireless</string>
+    <string name="select_address">Choisissez une direction</string>
+
+    <string-array name="layer_list">
+        <item>Normal</item>
+        <item>Hybride</item>
+        <item>Satellite</item>
+        <item>Relief</item>
+    </string-array>
+
+	<!-- ACTIVITY SHOINFO -->
+    <string name="current">Position actuelle estimée</string>
+    <string name="destination">Destination approchée</string>
+    <string name="noaddress">Aucun résultat trouvé</string>
+    <string name="distance">Distance</string>
+    <string name="menuitem_refresh">Actualiser data</string>
+    <string name="from">De</string>
+    <string name="to">À</string>
+    <string name="space">Il y a</string>
+    <string name="nolocation">Pas possible obtenir la direction. Appuyez sur le bouton Actualiser pour rafraichir l\'information</string>
+    <string name="nonetwork">Aucune connexion réseau n\'est disponible actuellement. Vérifiez l\'etat de votre connexion réseau</string>
+</resources>

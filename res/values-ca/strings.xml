@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ACTIVITY MAIN -->
+    <string name="app_name">Distance From Me</string>
+    <string name="action_settings">Preferències</string>
+    <string name="action_search">Cercar</string>
+    <string name="action_social_share">Compartir</string>
+    <string name="menu_legalnotices">Avís legal</string>
+    <string name="search_hint">Cercar Distance From Me</string>
+    <string name="searching">Cercant</string>
+    <string name="wait">Per favor, espere un moment</string>
+    <string name="nofindaddress">Servei inactiu o senyal de xarxa molt pobre</string>
+    <string name="noresults">No s\'han trobat resultats.</string>
+    <string name="menu_layers">Capes</string>
+    <string name="loading">Cercant la seua posició. Per favor, espere uns instants</string>
+    <string name="menu_guardar">Guardar</string>
+    <string name="action_load">Carregar distància</string>
+    <string name="gps_off">GPS desactivat, ¿desitja habilitar-lo?</string>
+    <string name="gps_enable">Habilitar GPS</string>
+    <string name="do_nothing">Ara no</string>
+    <string name="wireless_off">Connexió de xarxa desactivada, ¿desitja habilitar-la?</string>
+    <string name="wireless_enable">Habilitar Wireless</string>
+    <string name="select_address">Trie una adreça</string>
+
+    <string-array name="layer_list">
+        <item>Normal</item>
+        <item>Híbrid</item>
+        <item>Satèl·lit</item>
+        <item>Relleu</item>
+    </string-array>
+
+	<!-- ACTIVITY SHOINFO -->
+    <string name="current">Posició actual aproximada</string>
+    <string name="destination">Destinació aproximada</string>
+    <string name="noaddress">No s\'ha trobat adreça</string>
+    <string name="distance">Distància</string>
+    <string name="menuitem_refresh">Refrescar dades</string>
+    <string name="from">Des de</string>
+    <string name="to">Fins a</string>
+    <string name="space">Hi ha</string>
+    <string name="nolocation">Error en obtenir adreça. Prema el botó Actualitzar per refrescar la informació</string>
+    <string name="nonetwork">Connexió a Internet no activada. Active la seua connexió i torne a intentar-ho</string>
+</resources>

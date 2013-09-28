@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ACTIVITY MAIN -->
+    <string name="app_name">Distance From Me</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_social_share">Share</string>
+    <string name="menu_legalnotices">Legal notices</string>
+    <string name="search_hint">Search Distance From Me</string>
+    <string name="searching">Searching</string>
+    <string name="wait">Please wait</string>
+    <string name="nofindaddress">No backend service available or network signal very poor. Try again in a while</string>
+    <string name="noresults">No matches were found</string>
+    <string name="menu_layers">Layers</string>
+    <string name="loading">Searching your position. Please, wait</string>
+    <string name="menu_guardar">Save</string>
+    <string name="action_load">Load distance</string>
+    <string name="gps_off">GPS disabled, would you like to enable it?</string>
+    <string name="gps_enable">Enable GPS</string>
+    <string name="do_nothing">Do nothing</string>
+    <string name="wireless_off">Wireless disabled, would you like to enable it?</string>
+    <string name="wireless_enable">Enable wireless</string>
+    <string name="select_address">Select an address</string>
+
+    <string-array name="layer_list">
+        <item>Normal</item>
+        <item>Hybrid</item>
+        <item>Satellite</item>
+        <item>Terrain</item>
+    </string-array>
+
+	<!-- ACTIVITY SHOINFO -->
+    <string name="current">Estimated current position</string>
+    <string name="destination">Estimated destination</string>
+    <string name="noaddress">No address found for location</string>
+    <string name="distance">Distance</string>
+    <string name="menuitem_refresh">Refresh data</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="space">There are</string>
+    <string name="nolocation">Error trying to get address. Use refresh button</string>
+	<string name="nonetwork">Wireless connection failed. Turn on your wireless connection and try again refreshing</string>
+</resources>
