@@ -27,16 +27,16 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class ShowInfoActivity extends ActionBarActivity {
 
-	private LatLng origen = null;
-	private LatLng destino = null;
+	private LatLng origen		= null;
+	private LatLng destino		= null;
 
-	private TextView datos1 = null;
-	private TextView datos2 = null;
+	private TextView datos1		= null;
+	private TextView datos2		= null;
 
-	private MenuItem menuItem;
-	private String direccion1 = null;
-	private String direccion2 = null;
-	private String dist = null;
+	private MenuItem menuItem	= null;
+	private String direccion1	= null;
+	private String direccion2	= null;
+	private String dist			= null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -158,17 +158,13 @@ public class ShowInfoActivity extends ActionBarActivity {
 			super.onPreExecute();
 			this.mContext = getApplicationContext();
 
-
-			MenuItemCompat.setActionView(menuItem,
-					R.layout.actionbar_indeterminate_progress);
-			MenuItemCompat.expandActionView(menuItem);
+			empezarActualizacion();
 			
 			if (!isOnline()) {
 				Toast.makeText(getApplicationContext(),
 						getText(R.string.nonetwork), Toast.LENGTH_LONG).show();
-
-				MenuItemCompat.collapseActionView(menuItem);
-				MenuItemCompat.setActionView(menuItem, null);
+				
+				terminarActualizacion();
 				cancel(false);
 			}
 		}
@@ -224,8 +220,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			MenuItemCompat.collapseActionView(menuItem);
-			MenuItemCompat.setActionView(menuItem, null);
+			terminarActualizacion();
 
 			super.onPostExecute(result);
 		}
@@ -236,6 +231,23 @@ public class ShowInfoActivity extends ActionBarActivity {
 			if (netInfo != null && netInfo.isConnected())
 				return true;
 			return false;
+		}
+
+		// Establece el botón de Actualizar como un ProgressBar
+		private void empezarActualizacion() {
+			if (menuItem != null){
+				MenuItemCompat.setActionView(menuItem,
+						R.layout.actionbar_indeterminate_progress);
+				MenuItemCompat.expandActionView(menuItem);
+			}
+		}
+		
+		// Restablece el botón Actualizar
+		private void terminarActualizacion() {
+			if (menuItem != null){
+				MenuItemCompat.collapseActionView(menuItem);
+				MenuItemCompat.setActionView(menuItem, null);
+			}
 		}
 	}
 }

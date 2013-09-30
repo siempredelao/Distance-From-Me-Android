@@ -766,8 +766,8 @@ private LocationRequest mLocationRequest	= null;
 				.setPositiveButton(positiveButton,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								Intent gpsOptionsIntent = new Intent(action);
-								startActivity(gpsOptionsIntent);
+								Intent optionsIntent = new Intent(action);
+								startActivity(optionsIntent);
 							}
 						});
 		builder.setNegativeButton(negativeButton,
