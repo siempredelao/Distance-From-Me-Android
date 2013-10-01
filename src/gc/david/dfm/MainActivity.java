@@ -59,7 +59,7 @@ public class MainActivity extends ActionBarActivity implements
 	private GoogleMap mapa						= null;
 
 	// A request to connect to Location Services
-private LocationRequest mLocationRequest	= null;
+	private LocationRequest mLocationRequest	= null;
 
 	// Stores the current instantiation of the location client in this object
 	private LocationClient mLocationClient		= null;
