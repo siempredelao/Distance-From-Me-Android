@@ -9,6 +9,8 @@ public class Haversine {
 	// Radio de la Tierra
 	private static double RADIUS = 6371000;
 	
+	public static native double getDistanceJNI(double lat_a, double lon_a, double lat_b, double lon_b);
+	
 	// Calcula la distancia entre dos puntos, en metros
 	public static double getDistance(double lat_a, double lon_a, double lat_b, double lon_b){
 		double lat1 = Math.toRadians(lat_a);
@@ -25,15 +27,17 @@ public class Haversine {
 		double a = (sinlat * sinlat) + Math.cos(lat1)*Math.cos(lat2)*(sinlon*sinlon);
 		double c = 2 * Math.asin (Math.min(1.0, Math.sqrt(a)));
 		
-		double distanceInMeters = RADIUS * c ;
-		
+		return RADIUS * c ;
+	}
+	
+	private static double daleFormato(double d){
 		// Estudiar la posibilidad de diferenciar la cantidad atendiendo al Locale
 		DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
 		simbolos.setDecimalSeparator('.');
 		DecimalFormat formatter = new DecimalFormat("#####0.00000", simbolos);
-		String miNumero = formatter.format(distanceInMeters);
+		String miNumero = formatter.format(d);
 		
-		return Double.valueOf(miNumero);  
+		return Double.valueOf(miNumero); 
 	}
 	
 	// Normaliza la distancia a su correspondiente magnitud y con dos dígitos
@@ -73,5 +77,9 @@ public class Haversine {
 		}
 		resultado = formatter.format(measure);
 		return resultado + " " + unidadMedida/* + (measure>1 ? "s" : "")*/;
+	}
+	
+	static {
+		System.loadLibrary("gc_david_dfm_Haversine");
 	}
 }

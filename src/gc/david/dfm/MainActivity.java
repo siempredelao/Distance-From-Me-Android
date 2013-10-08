@@ -26,6 +26,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -134,6 +135,7 @@ public class MainActivity extends ActionBarActivity implements
 
 			@Override
 			public void onMarkerDrag(Marker marker) {
+				// No funciona el hacerlo sobre la marcha...
 			}
 		});
 
@@ -657,6 +659,7 @@ public class MainActivity extends ActionBarActivity implements
 				point);
 	}
 
+
 	private void anadeMarcador(LatLng point, String distancia, String mensaje) {
 		Marker marcador = mapa.addMarker(new MarkerOptions().position(point)
 				.title(mensaje + distancia));
@@ -677,8 +680,18 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	private String calculaDistancia(LatLng point) {
+		long t1 = System.currentTimeMillis();
 		double metros = Haversine.getDistance(point.latitude, point.longitude,
 				current.getLatitude(), current.getLongitude());
+		t1 = System.currentTimeMillis() - t1;
+		Log.i("getDistance", "Time: " + t1 + " ms");
+		
+		long t2 = System.currentTimeMillis();
+		Haversine.getDistanceJNI(point.latitude, point.longitude,
+				current.getLatitude(), current.getLongitude());
+		t2 = System.currentTimeMillis() - t2;
+		Log.i("getDistanceJNI", "Time: " + t2 + " ms");
+		
 		return Haversine.normalize(metros,
 				getResources().getConfiguration().locale);
 	}
