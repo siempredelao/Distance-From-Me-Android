@@ -26,12 +26,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -42,7 +39,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
@@ -53,6 +49,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+/**
+ * Implements the app main Activity.
+ * 
+ * @author David
+ *
+ */
 public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
@@ -104,9 +106,9 @@ public class MainActivity extends ActionBarActivity implements
 		// callbacks
 		mLocationClient = new LocationClient(this, this, this);
 
+		// Iniciando la app
 		if (current == null)
-			Toast.makeText(getApplicationContext(), getText(R.string.loading),
-					Toast.LENGTH_LONG).show();
+			toastIt(getText(R.string.loading).toString());
 
 		mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
 			@Override
@@ -155,13 +157,24 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		});
 
-		mapa.setInfoWindowAdapter(new MyInfoWindowAdapter());
+		mapa.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
 		// Para controlar instancias únicas, no queremos que cada vez que
 		// busquemos nos inicie una nueva instancia de la aplicación
 		handleIntent(getIntent());
 	}
-
+	
+	/**
+	 * Makes easy to toast!
+	 * 
+	 * @param text
+	 *            The string to show.
+	 */
+	private void toastIt(String text){
+		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG)
+				.show();
+	}
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent);
@@ -177,6 +190,9 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
+	/**
+	 * A subclass of AsyncTask that calls getFromLocationName() in the background.
+	 */
 	private class BuscaPosicion extends AsyncTask<String, Void, Integer> {
 
 		private ProgressDialog pd;
@@ -264,16 +280,11 @@ public class MainActivity extends ActionBarActivity implements
 					}
 				}
 			} else if (result == -1) {
-				Toast.makeText(getApplicationContext(),
-						getText(R.string.nofindaddress), Toast.LENGTH_LONG)
-						.show();
+				toastIt(getText(R.string.nofindaddress).toString());
 			} else if (result == -2) {
-				Toast.makeText(getApplicationContext(),
-						getText(R.string.noresults), Toast.LENGTH_LONG).show();
+				toastIt(getText(R.string.noresults).toString());
 			} else if (result == -3) {
-				Toast.makeText(getApplicationContext(),
-						getText(R.string.nofindaddress), Toast.LENGTH_LONG)
-						.show();
+				toastIt(getText(R.string.nofindaddress).toString());
 			}
 
 			if (pd != null)
@@ -287,6 +298,12 @@ public class MainActivity extends ActionBarActivity implements
 			super.onPostExecute(result);
 		}
 
+		/**
+		 * Gives the current network status.
+		 * 
+		 * @return Returns true if the device is connected to a network;
+		 *         otherwise, returns false.
+		 */
 		private boolean isOnline() {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -295,6 +312,13 @@ public class MainActivity extends ActionBarActivity implements
 			return false;
 		}
 
+		/**
+		 * Process the address selected by the user and set the new destination
+		 * position.
+		 * 
+		 * @param item
+		 *            The index item in the AlertDialog.
+		 */
 		private void procesaElegido(int item) {
 			// esto para el marcador!
 			// +1 porque si buscamos por país nos devuelve 0 y ni
@@ -307,6 +331,13 @@ public class MainActivity extends ActionBarActivity implements
 					addresses.get(item).getLongitude());
 		}
 
+		/**
+		 * Extract a list of address from a list of Address objects.
+		 * 
+		 * @param lista
+		 *            An Address's list.
+		 * @return A string list with only addresses in text.
+		 */
 		private List<String> agrupaDirecciones(List<Address> lista) {
 			List<String> nueva = new ArrayList<String>();
 			String aux;
@@ -361,6 +392,9 @@ public class MainActivity extends ActionBarActivity implements
 	//
 	// }
 
+	/**
+	 * Shows an AlertDialog with the Google Play Services License.
+	 */
 	private void showGooglePlayServiceLicense() {
 		String LicenseInfo = GooglePlayServicesUtil
 				.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
@@ -464,6 +498,11 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
+	/**
+	 * Checks if Google Play Services is available on the device.
+	 * 
+	 * @return Returns true if available; false otherwise.
+	 */
 	private boolean checkPlayServices() {
 		// Comprobamos que Google Play Services esté disponible en el terminal
 		int resultCode = GooglePlayServicesUtil
@@ -538,11 +577,8 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
-	/**
+	/*
 	 * Report location updates to the UI.
-	 * 
-	 * @param location
-	 *            The updated location.
 	 */
 	@Override
 	public void onLocationChanged(Location location) {
@@ -562,7 +598,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * In response to a request to start updates, send a request to Location
-	 * Services
+	 * Services.
 	 */
 	private void startPeriodicUpdates() {
 		mLocationClient.requestLocationUpdates(mLocationRequest, this);
@@ -570,7 +606,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * In response to a request to stop updates, send a request to Location
-	 * Services
+	 * Services.
 	 */
 	private void stopPeriodicUpdates() {
 		mLocationClient.removeLocationUpdates(this);
@@ -631,7 +667,7 @@ public class MainActivity extends ActionBarActivity implements
 			mDialog = dialog;
 		}
 
-		/*
+		/**
 		 * This method must return a Dialog to the DialogFragment.
 		 */
 		@Override
@@ -640,6 +676,15 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
+	/**
+	 * Calculates the distance to a specified position, adds the marker and the
+	 * line.
+	 * 
+	 * @param point
+	 *            Destination position.
+	 * @param mensaje
+	 *            Address to show in the info window (if needed).
+	 */
 	private void tareasDistancia(LatLng point, String mensaje) {
 		// Borramos los antiguos marcadores y líneas
 		mapa.clear();
@@ -659,7 +704,17 @@ public class MainActivity extends ActionBarActivity implements
 				point);
 	}
 
-
+	/**
+	 * Adds a marker to the map in a specified position and shows its info
+	 * window.
+	 * 
+	 * @param point
+	 *            Destination position.
+	 * @param distancia
+	 *            Distance to destination.
+	 * @param mensaje
+	 *            Destination address (if needed).
+	 */
 	private void anadeMarcador(LatLng point, String distancia, String mensaje) {
 		Marker marcador = mapa.addMarker(new MarkerOptions().position(point)
 				.title(mensaje + distancia));
@@ -667,6 +722,12 @@ public class MainActivity extends ActionBarActivity implements
 		marcador.showInfoWindow();
 	}
 
+	/**
+	 * Adds a line between current and destination positions.
+	 * 
+	 * @param point
+	 *            Destination position.
+	 */
 	private void anadeLinea(LatLng point) {
 		if (linea != null) {
 			linea.remove();
@@ -679,23 +740,30 @@ public class MainActivity extends ActionBarActivity implements
 		linea = mapa.addPolyline(lineOptions);
 	}
 
+	/**
+	 * Returns the distance between current and destination positions normalized
+	 * by device locale.
+	 * 
+	 * @param point
+	 *            Destination position.
+	 * @return The normalized distance.
+	 */
 	private String calculaDistancia(LatLng point) {
-		long t1 = System.currentTimeMillis();
-		double metros = Haversine.getDistance(point.latitude, point.longitude,
+		double metros = Haversine.getDistanceJNI(point.latitude, point.longitude,
 				current.getLatitude(), current.getLongitude());
-		t1 = System.currentTimeMillis() - t1;
-		Log.i("getDistance", "Time: " + t1 + " ms");
-		
-		long t2 = System.currentTimeMillis();
-		Haversine.getDistanceJNI(point.latitude, point.longitude,
-				current.getLatitude(), current.getLongitude());
-		t2 = System.currentTimeMillis() - t2;
-		Log.i("getDistanceJNI", "Time: " + t2 + " ms");
 		
 		return Haversine.normalize(metros,
 				getResources().getConfiguration().locale);
 	}
 
+	/**
+	 * Moves camera position and applies zoom if needed.
+	 * 
+	 * @param p1
+	 *            Current position.
+	 * @param p2
+	 *            Destination position.
+	 */
 	private void mueveCamaraZoom(LatLng p1, LatLng p2) {
 		double centroLat = (p1.latitude + p2.latitude) / 2;
 		double centroLon = (p1.longitude + p2.longitude) / 2;
@@ -708,6 +776,16 @@ public class MainActivity extends ActionBarActivity implements
 					p2.latitude, p2.longitude)));
 	}
 
+	/**
+	 * Calculates zoom level to make possible current and destination positions
+	 * appear in the device.
+	 * 
+	 * @param p1
+	 *            Current position.
+	 * @param p2
+	 *            Destination position.
+	 * @return Zoom level.
+	 */
 	private float calculaZoom(LatLng p1, LatLng p2) {
 		double metros = Haversine.getDistance(p1.latitude, p1.longitude,
 				p2.latitude, p2.longitude);
@@ -747,30 +825,19 @@ public class MainActivity extends ActionBarActivity implements
 		return 18;
 	}
 
-	private class MyInfoWindowAdapter implements InfoWindowAdapter {
-
-		private final View myContentsView;
-
-		public MyInfoWindowAdapter() {
-			myContentsView = getLayoutInflater().inflate(R.layout.custom_info,
-					null);
-		}
-
-		@Override
-		public View getInfoContents(Marker marker) {
-			TextView texto = (TextView) myContentsView.findViewById(R.id.datos);
-			texto.setText(marker.getTitle());
-
-			return myContentsView;
-		}
-
-		@Override
-		public View getInfoWindow(Marker marker) {
-			return null;
-		}
-
-	}
-
+	/**
+	 * Shows an AlertDialog with a message, positive and negative button, and
+	 * executes an action if needed.
+	 * 
+	 * @param action
+	 *            Action to execute.
+	 * @param message
+	 *            Message to show to the user.
+	 * @param positiveButton
+	 *            Positive button text.
+	 * @param negativeButton
+	 *            Negative button text.
+	 */
 	private void alertDialogShow(final String action, String message,
 			String positiveButton, String negativeButton) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);

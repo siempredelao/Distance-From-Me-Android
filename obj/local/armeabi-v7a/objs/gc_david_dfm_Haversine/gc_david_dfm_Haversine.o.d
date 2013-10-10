@@ -1,5 +1,5 @@
 obj/local/armeabi-v7a/objs/gc_david_dfm_Haversine/gc_david_dfm_Haversine.o: \
- jni/gc_david_dfm_Haversine.c jni/gc_david_dfm_Haversine.h \
+ jni/gc_david_dfm_Haversine.cpp \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/jni.h \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/math.h \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/sys/cdefs.h \
@@ -24,8 +24,6 @@ obj/local/armeabi-v7a/objs/gc_david_dfm_Haversine/gc_david_dfm_Haversine.o: \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/machine/limits.h \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/sys/syslimits.h \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/asm/page.h
-
-jni/gc_david_dfm_Haversine.h:
 
 C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/jni.h:
 

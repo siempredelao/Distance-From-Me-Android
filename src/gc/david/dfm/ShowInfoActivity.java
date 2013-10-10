@@ -25,13 +25,22 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+/**
+ * ShowInfoActivity shows information about the distance to the user.
+ * 
+ * @author David
+ * 
+ */
 public class ShowInfoActivity extends ActionBarActivity {
 
 	private LatLng origen		= null;
 	private LatLng destino		= null;
 
+	private TextView titulo1	= null;
+	private TextView titulo2	= null;
 	private TextView datos1		= null;
 	private TextView datos2		= null;
+	private TextView distancia	= null;
 
 	private MenuItem menuItem	= null;
 	private String direccion1	= null;
@@ -46,38 +55,46 @@ public class ShowInfoActivity extends ActionBarActivity {
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		Intent datosEntrantes = extraeDatosIntent();
+		extraeDatosIntent();
 
-		TextView titulo1 = (TextView) findViewById(R.id.titulo_datos1);
-		TextView titulo2 = (TextView) findViewById(R.id.titulo_datos2);
-		rellenaTitulos(titulo1, titulo2);
+		titulo1 = (TextView) findViewById(R.id.titulo_datos1);
+		titulo2 = (TextView) findViewById(R.id.titulo_datos2);
+		rellenaTitulos();
 
 		datos1 = (TextView) findViewById(R.id.datos1);
 		datos2 = (TextView) findViewById(R.id.datos2);
 		rellenaDirecciones();
 
-		dist = datosEntrantes.getStringExtra("distancia");
-		TextView distancia = (TextView) findViewById(R.id.distancia);
-		rellenaDistancia(distancia);
+		distancia = (TextView) findViewById(R.id.distancia);
+		rellenaDistancia();
 	}
 
-	private Intent extraeDatosIntent() {
+	/**
+	 * Get data form the Intent.
+	 */
+	private void extraeDatosIntent() {
 		Intent datosEntrantes = getIntent();
 		this.origen = (LatLng) datosEntrantes.getParcelableExtra("origen");
 		this.destino = (LatLng) datosEntrantes.getParcelableExtra("destino");
-		return datosEntrantes;
+		this.dist = datosEntrantes.getStringExtra("distancia");
 	}
 
-	private void rellenaTitulos(TextView titulo1, TextView titulo2) {
+	/**
+	 * Fill Textviews titles.
+	 */
+	private void rellenaTitulos() {
 		titulo1.setText(getText(R.string.current) + ":");
 		titulo2.setText(getText(R.string.destination) + ":");
 	}
 
+	/**
+	 * Get the addresses associated to LatLng points and fill the Textviews.
+	 */
 	private void rellenaDirecciones() {
 		try {
 			direccion1 = new GetAddresTask().execute(origen, datos1).get();
 			direccion2 = new GetAddresTask().execute(destino, datos2).get();
-			
+
 			// Esto a lo mejor hay que ponerlo en el onPostExecute!
 			this.datos1.setText(direccion1 + "\n\n(" + origen.latitude + ", "
 					+ origen.longitude + ")");
@@ -87,13 +104,27 @@ public class ShowInfoActivity extends ActionBarActivity {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
 			e.printStackTrace();
-		} catch (CancellationException e){
+		} catch (CancellationException e) {
 			// No hay conexión, se cancela la búsqueda de las direcciones
 			// No se hace nada aquí, ya lo hace el hilo
 		}
 	}
+	
+	/**
+	 * Makes easy to toast!
+	 * 
+	 * @param text
+	 *            The string to show.
+	 */
+	private void toastIt(String text){
+		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG)
+				.show();
+	}
 
-	private void rellenaDistancia(TextView distancia) {
+	/**
+	 * Fill Textview distance.
+	 */
+	private void rellenaDistancia() {
 		distancia.setText(getText(R.string.distance) + ": " + dist);
 	}
 
@@ -111,6 +142,11 @@ public class ShowInfoActivity extends ActionBarActivity {
 		return true;
 	}
 
+	/**
+	 * Creates an Intent to share data.
+	 * 
+	 * @return A new Intent to show different options to share data.
+	 */
 	private Intent getDefaultShareIntent() {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
@@ -131,23 +167,20 @@ public class ShowInfoActivity extends ActionBarActivity {
 			menuItem = item;
 			rellenaDirecciones();
 			return true;
-//		case R.id.menu_save:
-//			guardarDatosBD();
-//			return true;
+			// case R.id.menu_save:
+			// guardarDatosBD();
+			// return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-//	private void guardarDatosBD() {
-//
-//	}
+	// private void guardarDatosBD() {
+	//
+	// }
 
 	/**
 	 * A subclass of AsyncTask that calls getFromLocation() in the background.
-	 * The class definition has these generic types: Location - A Location
-	 * object containing the current location. Void - indicates that progress
-	 * units are not used String - An address passed to onPostExecute()
 	 */
 	private class GetAddresTask extends AsyncTask<Object, Void, String> {
 
@@ -159,11 +192,10 @@ public class ShowInfoActivity extends ActionBarActivity {
 			this.mContext = getApplicationContext();
 
 			empezarActualizacion();
-			
+
 			if (!isOnline()) {
-				Toast.makeText(getApplicationContext(),
-						getText(R.string.nonetwork), Toast.LENGTH_LONG).show();
-				
+				toastIt(getText(R.string.nonetwork).toString());
+
 				terminarActualizacion();
 				cancel(false);
 			}
@@ -213,8 +245,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 						address.getCountryName());
 				// Return the text
 				return addressText;
-			// If there aren't any addresses, post a message
-			} else 
+				// If there aren't any addresses, post a message
+			} else
 				return getText(R.string.noaddress).toString();
 		}
 
@@ -225,6 +257,12 @@ public class ShowInfoActivity extends ActionBarActivity {
 			super.onPostExecute(result);
 		}
 
+		/**
+		 * Function to know the current network status.
+		 * 
+		 * @return Returns true if the device is connected to a network;
+		 *         otherwise, returns false.
+		 */
 		private boolean isOnline() {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -233,18 +271,22 @@ public class ShowInfoActivity extends ActionBarActivity {
 			return false;
 		}
 
-		// Establece el botón de Actualizar como un ProgressBar
+		/**
+		 * Change the appearance of the refresh button to a ProgressBar.
+		 */
 		private void empezarActualizacion() {
-			if (menuItem != null){
+			if (menuItem != null) {
 				MenuItemCompat.setActionView(menuItem,
 						R.layout.actionbar_indeterminate_progress);
 				MenuItemCompat.expandActionView(menuItem);
 			}
 		}
-		
-		// Restablece el botón Actualizar
+
+		/**
+		 * Restore the refresh button to his normal appearance.
+		 */
 		private void terminarActualizacion() {
-			if (menuItem != null){
+			if (menuItem != null) {
 				MenuItemCompat.collapseActionView(menuItem);
 				MenuItemCompat.setActionView(menuItem, null);
 			}
