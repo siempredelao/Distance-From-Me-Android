@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -137,8 +139,10 @@ public class ShowInfoActivity extends ActionBarActivity {
 		MenuItem shareItem = menu.findItem(R.id.action_social_share);
 		ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat
 				.getActionProvider(shareItem);
-		mShareActionProvider.setShareIntent(getDefaultShareIntent());
-
+		Intent shareIntent = getDefaultShareIntent();
+		if (verifyAppReceiveIntent(shareIntent))
+			mShareActionProvider.setShareIntent(shareIntent);
+		// else mostrar un Toast
 		return true;
 	}
 
@@ -155,6 +159,21 @@ public class ShowInfoActivity extends ActionBarActivity {
 				+ direccion1 + "\n\n" + getText(R.string.to) + "\n"
 				+ direccion2 + "\n\n" + getText(R.string.space) + "\n" + dist);
 		return intent;
+	}
+	
+	/**
+	 * Verify if there are applications that can handle the intent.
+	 * 
+	 * @param intent
+	 *            The intent to verify.
+	 * @return Returns true if there are applications; false, otherwise.
+	 */
+	private boolean verifyAppReceiveIntent(Intent intent){
+		PackageManager packageManager = getPackageManager();
+		List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+		if (activities.size() > 0)
+			return true;
+		return false;
 	}
 
 	// Este procedimiento ya no sirve para nada

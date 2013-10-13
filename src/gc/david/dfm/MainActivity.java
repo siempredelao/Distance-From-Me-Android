@@ -20,6 +20,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -53,7 +54,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
  * Implements the app main Activity.
  * 
  * @author David
- *
+ * 
  */
 public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
@@ -78,8 +79,12 @@ public class MainActivity extends ActionBarActivity implements
 	private boolean aplicarZoom					= true;
 	private String distance						= "";
 	private LatLng posicionElegida				= null;
+	// Dirección que devuelve el buscar por una string
 	private String direccionBP					= "";
 	private MenuItem searchItem					= null;
+	// Si venimos por ejemplo de whatsapp para ver una dirección
+	private boolean verPosicion					= false;
+	private String posicionDestinoEnvio			= "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +98,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		// Create a new global location parameters object
 		mLocationRequest = LocationRequest.create();
-		//Set the update interval
+		// Set the update interval
 		mLocationRequest
 				.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
 		// Use high accuracy
@@ -159,39 +164,74 @@ public class MainActivity extends ActionBarActivity implements
 
 		mapa.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
-		// Para controlar instancias únicas, no queremos que cada vez que
-		// busquemos nos inicie una nueva instancia de la aplicación
-		handleIntent(getIntent());
+		handleIntents(getIntent());
 	}
-	
+
 	/**
 	 * Makes easy to toast!
 	 * 
 	 * @param text
 	 *            The string to show.
 	 */
-	private void toastIt(String text){
-		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG)
-				.show();
+	private void toastIt(String text) {
+		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent);
-		handleIntent(intent);
-	}
-
-	private void handleIntent(Intent intent) {
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			String query = intent.getStringExtra(SearchManager.QUERY);
-			new BuscaPosicion().execute(query);
-			if (posicionElegida != null)
-				tareasDistancia(posicionElegida, direccionBP);
-		}
+		handleSearchIntent(intent);
 	}
 
 	/**
-	 * A subclass of AsyncTask that calls getFromLocationName() in the background.
+	 * Handles all Intent types.
+	 * 
+	 * @param intent
+	 *            The input intent.
+	 */
+	private void handleIntents(Intent intent) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			handleSearchIntent(intent);
+		} else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+			handleSendPositionIntent(intent);
+		}
+	}
+	
+	/**
+	 * Handles a search intent.
+	 * 
+	 * @param intent
+	 *            Input intent.
+	 */
+	private void handleSearchIntent(Intent intent) {
+		// Para controlar instancias únicas, no queremos que cada vez que
+		// busquemos nos inicie una nueva instancia de la aplicación
+		String query = intent.getStringExtra(SearchManager.QUERY);
+		new BuscaPosicion().execute(query);
+		if (posicionElegida != null)
+			tareasDistancia(posicionElegida, direccionBP);
+	}
+
+	/**
+	 * Handles a send intent with position data.
+	 * 
+	 * @param intent
+	 *            Input intent with position data.
+	 * 
+	 */
+	private void handleSendPositionIntent(Intent intent) {
+		Uri u = intent.getData();
+		String queryParameter = u.getQueryParameter("q"); // loc:latitud,longitud (You)
+		
+		// Esta string será la que mandemos a BuscaPosicion
+		posicionDestinoEnvio = queryParameter.replace("loc:", "").replaceAll(" (\\D*)", ""); // latitud,longitud
+		
+		verPosicion = true;
+	}
+
+	/**
+	 * A subclass of AsyncTask that calls getFromLocationName() in the
+	 * background.
 	 */
 	private class BuscaPosicion extends AsyncTask<String, Void, Integer> {
 
@@ -359,7 +399,8 @@ public class MainActivity extends ActionBarActivity implements
 
 		// Expandir el EditText de la búsqueda a lo largo del ActionBar
 		searchItem = menu.findItem(R.id.action_search);
-		SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+		SearchView searchView = (SearchView) MenuItemCompat
+				.getActionView(searchItem);
 		// Configure the search info and add any event listeners
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		// Indicamos que la activity actual sea la buscadora
@@ -588,10 +629,17 @@ public class MainActivity extends ActionBarActivity implements
 			current = new Location(location);
 
 		if (inicioApp) {
-			LatLng latlng = new LatLng(location.getLatitude(),
-					location.getLongitude());
-			// 17 es un buen nivel de zoom para esta acción
-			mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+			if (verPosicion){
+				new BuscaPosicion().execute(posicionDestinoEnvio);
+				if (posicionElegida != null)
+					tareasDistancia(posicionElegida, direccionBP);
+				verPosicion = false;
+			} else {
+				LatLng latlng = new LatLng(location.getLatitude(),
+						location.getLongitude());
+				// 17 es un buen nivel de zoom para esta acción
+				mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+			}
 			inicioApp = false;
 		}
 	}
@@ -749,9 +797,9 @@ public class MainActivity extends ActionBarActivity implements
 	 * @return The normalized distance.
 	 */
 	private String calculaDistancia(LatLng point) {
-		double metros = Haversine.getDistanceJNI(point.latitude, point.longitude,
-				current.getLatitude(), current.getLongitude());
-		
+		double metros = Haversine.getDistanceJNI(point.latitude,
+				point.longitude, current.getLatitude(), current.getLongitude());
+
 		return Haversine.normalize(metros,
 				getResources().getConfiguration().locale);
 	}
