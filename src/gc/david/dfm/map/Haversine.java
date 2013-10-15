@@ -1,4 +1,4 @@
-package gc.david.dfm;
+package gc.david.dfm.map;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -13,7 +13,7 @@ import java.util.Locale;
  * @see <a href="http://en.wikipedia.org/wiki/Haversine_formula">Haversine</a>
  * 
  */
-public class Haversine {
+public final class Haversine {
 
 	/**
 	 * Earth radio
@@ -134,6 +134,6 @@ public class Haversine {
 
 	// Load the JNI library
 	static {
-		System.loadLibrary("gc_david_dfm_Haversine");
+		System.loadLibrary("gc_david_dfm_map_Haversine");
 	}
 }

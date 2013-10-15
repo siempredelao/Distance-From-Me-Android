@@ -13,7 +13,6 @@
     <string name="noresults">Aucun résultat trouvé avec ces mots. Essayez à nouveau avec des autres mots</string>
     <string name="menu_layers">Calques</string>
     <string name="loading">En recherchant de votre position. Attendez, s\'il vous plaît!</string>
-    <string name="menu_guardar">Sauvegarder</string>
     <string name="action_load">Chargez distance</string>
     <string name="gps_off">GPS arreté, voulez-vous l\'activer?</string>
     <string name="gps_enable">Activer GPS</string>
@@ -35,6 +34,7 @@
     <string name="noaddress">Aucun résultat trouvé</string>
     <string name="distance">Distance</string>
     <string name="menuitem_refresh">Actualiser data</string>
+    <string name="menu_guardar">Sauvegarder</string>
     <string name="from">De</string>
     <string name="to">À</string>
     <string name="space">Il y a</string>

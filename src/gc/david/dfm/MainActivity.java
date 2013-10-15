@@ -1,5 +1,11 @@
 package gc.david.dfm;
 
+import gc.david.dfm.db.Distance;
+import gc.david.dfm.db.DistancesDataSource;
+import gc.david.dfm.map.Haversine;
+import gc.david.dfm.map.LocationUtils;
+import gc.david.dfm.map.MyInfoWindowAdapter;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +36,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -180,7 +187,7 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent);
-		handleSearchIntent(intent);
+		handleIntents(intent);
 	}
 
 	/**
@@ -409,6 +416,16 @@ public class MainActivity extends ActionBarActivity implements
 		searchView.setSubmitButtonEnabled(false);
 		searchView.setQueryRefinementEnabled(true);
 		searchView.setIconifiedByDefault(true);
+		
+		// Muestra el icono de cargar si procede
+		MenuItem loadItem = menu.findItem(R.id.action_load);
+		DistancesDataSource dDS = new DistancesDataSource(getApplicationContext());
+		dDS.open();
+		if (dDS != null){
+			if (dDS.getAllDistances(Locale.getDefault()) == null)
+				loadItem.setVisible(false);
+			dDS.close();
+		}
 
 		return true;
 	}
@@ -418,9 +435,9 @@ public class MainActivity extends ActionBarActivity implements
 		switch (item.getItemId()) {
 		case R.id.action_search:
 			return true;
-			// case R.id.action_load:
-			// cargarDistanciasBD();
-			// return true;
+		case R.id.action_load:
+			cargarDistanciasBD();
+			return true;
 		case R.id.menu_legalnotices:
 			showGooglePlayServiceLicense();
 			return true;
@@ -429,9 +446,17 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
-	// private void cargarDistanciasBD() {
-	//
-	// }
+	private void cargarDistanciasBD() {
+		DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
+		dds.open();
+		// Mostrar un ListView dinámico con los resultados
+		ArrayList<Distance> distancias = dds.getAllDistances(Locale.getDefault());
+		ArrayAdapter<Distance> adapter = new ArrayAdapter<Distance>(getApplicationContext(), android.R.layout.simple_list_item_1, distancias);
+		
+		dds.close();
+		
+		// Mostrar la distancia en otro color ¿amarillo?
+	}
 
 	/**
 	 * Shows an AlertDialog with the Google Play Services License.

@@ -1,5 +1,6 @@
-package gc.david.dfm;
+package gc.david.dfm.map;
 
+import gc.david.dfm.R;
 import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;

@@ -1,5 +1,5 @@
-obj/local/armeabi/objs/gc_david_dfm_Haversine/gc_david_dfm_Haversine.o: \
- jni/gc_david_dfm_Haversine.cpp \
+obj/local/armeabi/objs/gc_david_dfm_map_Haversine/gc_david_dfm_map_Haversine.o: \
+ jni/gc_david_dfm_map_Haversine.cpp \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/jni.h \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/math.h \
  C:/Users/David/android-ndk-r9/platforms/android-14/arch-arm/usr/include/sys/cdefs.h \

@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <math.h>
 
-namespace gc_david_dfm_Haversine {
+namespace gc_david_dfm_map_Haversine {
     #define RADIUS 6371000
 
     static jdouble toRadians(jdouble angdeg){
@@ -34,7 +34,7 @@ namespace gc_david_dfm_Haversine {
     };
 }
 
-using namespace gc_david_dfm_Haversine;
+using namespace gc_david_dfm_map_Haversine;
 
 extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved){
     JNIEnv* env;
@@ -42,7 +42,7 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved){
         return -1;
     } else {
         // Get jclass with env->FindClass.
-        jclass clazz = env->FindClass("gc/david/dfm/Haversine");
+        jclass clazz = env->FindClass("gc/david/dfm/map/Haversine");
         if (clazz){
             // Register methods with env->RegisterNatives.
             env->RegisterNatives(clazz, method_table, sizeof(method_table) / sizeof(method_table[0]));

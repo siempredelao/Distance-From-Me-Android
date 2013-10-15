@@ -13,7 +13,6 @@
     <string name="noresults">No matches were found</string>
     <string name="menu_layers">Layers</string>
     <string name="loading">Searching your position. Please, wait</string>
-    <string name="menu_guardar">Save</string>
     <string name="action_load">Load distance</string>
     <string name="gps_off">Your GPS is disabled! Would you like to enable it?</string>
     <string name="gps_enable">Enable GPS</string>
@@ -35,6 +34,7 @@
     <string name="noaddress">No address found</string>
     <string name="distance">Distance</string>
     <string name="menuitem_refresh">Refresh data</string>
+    <string name="menu_guardar">Save</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="space">There are</string>

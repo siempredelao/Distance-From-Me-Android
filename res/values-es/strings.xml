@@ -13,7 +13,6 @@
     <string name="noresults">No se han encontrado resultados.</string>
     <string name="menu_layers">Capas</string>
     <string name="loading">Buscando su posición. Por favor, espere unos instantes</string>
-    <string name="menu_guardar">Guardar</string>
     <string name="action_load">Cargar distancia</string>
     <string name="gps_off">GPS desactivado, ¿desea habilitarlo?</string>
     <string name="gps_enable">Habilitar GPS</string>
@@ -35,9 +34,16 @@
     <string name="noaddress">No se ha encontrado dirección</string>
     <string name="distance">Distancia</string>
     <string name="menuitem_refresh">Refrescar datos</string>
+    <string name="menu_guardar">Guardar</string>
     <string name="from">Desde</string>
     <string name="to">Hasta</string>
     <string name="space">Hay</string>
     <string name="nolocation">Error al obtener dirección. Pulse el botón Actualizar para refrescar la información</string>
     <string name="nonetwork">Conexión a internet no activada. Active su conexión y vuelva a intentarlo</string>
+    <string name="alias_dialog_title">Alias</string>
+    <string name="alias_dialog_message">Asocie un alias a la distancia:</string>
+    <string name="alias_dialog_accept">Aceptar</string>
+    <string name="alias_dialog_toast_1">Distancia "</string>
+    <string name="alias_dialog_toast_2">" almacenada correctamente</string>
+    <string name="alias_dialog_toast_3">Distancia almacenada correctamente</string>
 </resources>

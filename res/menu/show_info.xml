@@ -15,11 +15,11 @@
         android:icon="@drawable/ic_action_navigation_refresh"
         android:orderInCategory="2"
         android:title="@string/menuitem_refresh"/>
-<!--     <item
+    <item
         android:id="@+id/menu_save"
         actual:showAsAction="ifRoom|withText"
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="3"
-        android:title="@string/menu_guardar"/> -->
+        android:title="@string/menu_guardar"/>
 
 </menu>

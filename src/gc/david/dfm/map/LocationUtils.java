@@ -1,18 +1,10 @@
-package gc.david.dfm;
+package gc.david.dfm.map;
 
 public final class LocationUtils {
 	// Debugging tag for the application
     public static final String APPTAG = "LocationSample";
 
-    // Name of shared preferences repository that stores persistent state
-    public static final String SHARED_PREFERENCES =
-            "todas.mis.pruebas.SHARED_PREFERENCES";
-
-    // Key for storing the "updates requested" flag in shared preferences
-    public static final String KEY_UPDATES_REQUESTED =
-            "todas.mis.pruebas.KEY_UPDATES_REQUESTED";
-
-    /*
+    /**
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
      */
@@ -37,7 +29,4 @@ public final class LocationUtils {
     // A fast ceiling of update intervals, used when the app is visible
     public static final long FAST_INTERVAL_CEILING_IN_MILLISECONDS =
             MILLISECONDS_PER_SECOND * FAST_CEILING_IN_SECONDS;
-
-    // Create an empty string for initializing strings
-    public static final String EMPTY_STRING = new String();
 }

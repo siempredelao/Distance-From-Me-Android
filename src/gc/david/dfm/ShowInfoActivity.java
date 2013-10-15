@@ -1,15 +1,21 @@
 package gc.david.dfm;
 
+import gc.david.dfm.db.DistancesDataSource;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -20,8 +26,10 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider; // Esta clase da algún tipo de error
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -186,17 +194,48 @@ public class ShowInfoActivity extends ActionBarActivity {
 			menuItem = item;
 			rellenaDirecciones();
 			return true;
-			// case R.id.menu_save:
-			// guardarDatosBD();
-			// return true;
+		case R.id.menu_save:
+			guardarDatosBD();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	// private void guardarDatosBD() {
-	//
-	// }
+	
+	private void guardarDatosBD() {
+		// Pedir al usuario que introduzca un texto descriptivo
+		AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
+		final EditText textoAlias = new EditText(getApplicationContext());
+		textoAlias.setTextColor(Color.BLACK);
+		textoAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+		
+		builder.setMessage(getText(R.string.alias_dialog_message))
+				.setTitle(getText(R.string.alias_dialog_title))
+				.setView(textoAlias)
+				.setInverseBackgroundForced(false)
+				.setPositiveButton(getText(R.string.alias_dialog_accept), new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String alias = "";
+						String aux = textoAlias.getText().toString();
+						if (aux.compareTo("") != 0)
+							alias = aux;
+						
+						DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
+						dds.open();
+						// Si no introduce nada, poner "No title" o algo así
+						dds.insert(alias, origen, destino);
+						// Mostrar un mensaje de que se ha guardado correctamente
+						if (alias != "")
+							toastIt(getText(R.string.alias_dialog_toast_1) + alias + getText(R.string.alias_dialog_toast_2));
+						else
+							toastIt(getText(R.string.alias_dialog_toast_3).toString());
+						dds.close();
+					}
+				});
+		builder.create().show();
+	}
 
 	/**
 	 * A subclass of AsyncTask that calls getFromLocation() in the background.
