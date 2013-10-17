@@ -11,7 +11,6 @@
     <string name="wait">Por favor, espere un momento</string>
     <string name="nofindaddress">Servicio inactivo o señal de red muy pobre. Pruebe de nuevo pasados unos instantes</string>
     <string name="noresults">No se han encontrado resultados.</string>
-    <string name="menu_layers">Capas</string>
     <string name="loading">Buscando su posición. Por favor, espere unos instantes</string>
     <string name="action_load">Cargar distancia</string>
     <string name="gps_off">GPS desactivado, ¿desea habilitarlo?</string>
@@ -20,14 +19,10 @@
     <string name="wireless_off">Conexión de red desactivada, ¿desea habilitarla?</string>
     <string name="wireless_enable">Habilitar Wireless</string>
     <string name="select_address">Elija una dirección</string>
+    <string name="list_dialog_title">Elija una distancia</string>
 
-    <string-array name="layer_list">
-        <item>Normal</item>
-        <item>Híbrido</item>
-        <item>Satélite</item>
-        <item>Relieve</item>
-    </string-array>
 
+    
 	<!-- ACTIVITY SHOINFO -->
     <string name="current">Posición actual aproximada</string>
     <string name="destination">Destino aproximado</string>
@@ -43,7 +38,7 @@
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Asocie un alias a la distancia:</string>
     <string name="alias_dialog_accept">Aceptar</string>
-    <string name="alias_dialog_toast_1">Distancia "</string>
-    <string name="alias_dialog_toast_2">" almacenada correctamente</string>
+    <string name="alias_dialog_toast_1">Distancia \"</string>
+    <string name="alias_dialog_toast_2">\" almacenada correctamente</string>
     <string name="alias_dialog_toast_3">Distancia almacenada correctamente</string>
 </resources>

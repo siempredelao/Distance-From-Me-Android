@@ -12,7 +12,7 @@
         android:id="@+id/action_load"
         android:orderInCategory="3"
         android:icon="@drawable/ic_action_collections_collection"
-        actual:showAsAction="ifRoom"
+        actual:showAsAction="ifRoom|withText"
         android:title="@string/action_load"/>
     <item
         android:id="@+id/menu_legalnotices"

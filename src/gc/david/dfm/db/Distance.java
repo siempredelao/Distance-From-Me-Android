@@ -14,17 +14,19 @@ public class Distance {
 	private double lon_a;
 	private double lat_b;
 	private double lon_b;
+	private String distancia;
 	private String fecha;
 	
 
 	public Distance(long id, String nombre, double lat_a, double lon_a,
-			double lat_b, double lon_b, String fecha) {
+			double lat_b, double lon_b, String distancia,String fecha) {
 		this.id = id;
 		this.nombre = nombre;
 		this.lat_a = lat_a;
 		this.lon_a = lon_a;
 		this.lat_b = lat_b;
 		this.lon_b = lon_b;
+		this.distancia = distancia;
 		this.fecha = fecha;
 	}
 
@@ -53,10 +55,13 @@ public class Distance {
 		return lon_b;
 	}
 
+	public String getDistancia() {
+		return distancia;
+	}
+
 	public String getFecha() {
 		return fecha;
 	}
-
 
 	public void setFecha(String fecha) {
 		this.fecha = fecha;

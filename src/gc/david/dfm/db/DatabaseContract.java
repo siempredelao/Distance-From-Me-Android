@@ -21,6 +21,7 @@ public final class DatabaseContract {
 		public static final String COLUMNA_LON_ORIGEN	= "lon_origen";
 		public static final String COLUMNA_LAT_DESTINO	= "lat_destino";
 		public static final String COLUMNA_LON_DESTINO	= "lon_destino";
+		public static final String COLUMNA_DISTANCIA	= "distancia";
 		public static final String COLUMNA_FECHA		= "fecha";
 	}
 	
@@ -32,7 +33,8 @@ public final class DatabaseContract {
 								DatabaseEntry.COLUMNA_LON_ORIGEN + " REAL NOT NULL, " +
 									DatabaseEntry.COLUMNA_LAT_DESTINO + " REAL NOT NULL, " +
 										DatabaseEntry.COLUMNA_LON_DESTINO + " REAL NOT NULL, " +
-											DatabaseEntry.COLUMNA_FECHA + " TEXT DEFAULT CURRENT_DATE" +
+											DatabaseEntry.COLUMNA_DISTANCIA + " TEXT NOT NULL, " +
+												DatabaseEntry.COLUMNA_FECHA + " TEXT DEFAULT CURRENT_DATE" +
 			")";
 	
 	public static final String SQL_DROP =
@@ -45,13 +47,15 @@ public final class DatabaseContract {
 						DatabaseEntry.COLUMNA_LAT_ORIGEN + ", " +
 							DatabaseEntry.COLUMNA_LON_ORIGEN + ", " +
 								DatabaseEntry.COLUMNA_LAT_DESTINO + ", " +
-									DatabaseEntry.COLUMNA_LON_DESTINO +
+									DatabaseEntry.COLUMNA_LON_DESTINO + ", " +
+										DatabaseEntry.COLUMNA_DISTANCIA +
 			") VALUES(" +
 					"?, " +
 						"?, " +
 							"?, " +
 								"?, " +
-									"?" +
+									"?, " +
+										"?" +
 			")";
 	
 	public static final String SQL_DELETE_ROW =

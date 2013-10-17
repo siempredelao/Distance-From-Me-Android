@@ -16,9 +16,6 @@ public final class R {
         public static final int abc_slide_out_bottom=0x7f040004;
         public static final int abc_slide_out_top=0x7f040005;
     }
-    public static final class array {
-        public static final int layer_list=0x7f0d0000;
-    }
     public static final class attr {
         /**  Custom divider drawable to use for elements in the action bar. 
          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
@@ -1156,16 +1153,17 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f060024;
         public static final int action_bar_title=0x7f060023;
         public static final int action_context_bar=0x7f06001e;
-        public static final int action_load=0x7f060050;
+        public static final int action_load=0x7f060052;
         public static final int action_menu_divider=0x7f060016;
         public static final int action_menu_presenter=0x7f060017;
         public static final int action_mode_bar=0x7f060032;
         public static final int action_mode_bar_stub=0x7f060031;
         public static final int action_mode_close_button=0x7f060025;
-        public static final int action_search=0x7f06004f;
-        public static final int action_social_share=0x7f060052;
+        public static final int action_search=0x7f060051;
+        public static final int action_social_share=0x7f060054;
         public static final int activity_chooser_view_content=0x7f060026;
-        public static final int adprogress_progressBar=0x7f06004d;
+        public static final int adprogress_progressBar=0x7f06004f;
+        public static final int alias=0x7f06004d;
         public static final int always=0x7f06000b;
         public static final int beginning=0x7f060011;
         public static final int checkbox=0x7f06002e;
@@ -1182,6 +1180,7 @@ containing a value of this type.
         public static final int end=0x7f060013;
         public static final int expand_activities_button=0x7f060027;
         public static final int expanded_menu=0x7f06002d;
+        public static final int fecha=0x7f06004e;
         public static final int home=0x7f060014;
         public static final int homeAsUp=0x7f060005;
         public static final int hybrid=0x7f06001a;
@@ -1192,8 +1191,8 @@ containing a value of this type.
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f06002a;
         public static final int map=0x7f060045;
-        public static final int menu_legalnotices=0x7f060051;
-        public static final int menu_save=0x7f060054;
+        public static final int menu_legalnotices=0x7f060053;
+        public static final int menu_save=0x7f060056;
         public static final int middle=0x7f060012;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
@@ -1201,7 +1200,7 @@ containing a value of this type.
         public static final int progress_circular=0x7f060037;
         public static final int progress_horizontal=0x7f060038;
         public static final int radio=0x7f060030;
-        public static final int refresh=0x7f060053;
+        public static final int refresh=0x7f060055;
         public static final int right_container=0x7f060035;
         public static final int right_icon=0x7f060036;
         public static final int satellite=0x7f060018;
@@ -1229,7 +1228,7 @@ containing a value of this type.
         public static final int titulo_datos1=0x7f060047;
         public static final int titulo_datos2=0x7f060049;
         public static final int top_action_bar=0x7f060021;
-        public static final int txt_search=0x7f06004e;
+        public static final int txt_search=0x7f060050;
         public static final int up=0x7f060022;
         public static final int useLogo=0x7f060003;
         public static final int withText=0x7f06000c;
@@ -1288,13 +1287,14 @@ containing a value of this type.
         public static final int activity_main=0x7f030019;
         public static final int activity_show_info=0x7f03001a;
         public static final int custom_info=0x7f03001b;
-        public static final int progressbar=0x7f03001c;
-        public static final int search_layout=0x7f03001d;
-        public static final int support_simple_spinner_dropdown_item=0x7f03001e;
+        public static final int list_item=0x7f03001c;
+        public static final int progressbar=0x7f03001d;
+        public static final int search_layout=0x7f03001e;
+        public static final int support_simple_spinner_dropdown_item=0x7f03001f;
     }
     public static final class menu {
-        public static final int main=0x7f0e0000;
-        public static final int show_info=0x7f0e0001;
+        public static final int main=0x7f0d0000;
+        public static final int show_info=0x7f0d0001;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1337,7 +1337,7 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
-        public static final int action_load=0x7f0b0032;
+        public static final int action_load=0x7f0b0031;
         public static final int action_search=0x7f0b0028;
         public static final int action_settings=0x7f0b0027;
         public static final int action_social_share=0x7f0b0029;
@@ -1453,13 +1453,13 @@ containing a value of this type.
         public static final int current=0x7f0b0039;
         public static final int destination=0x7f0b003a;
         public static final int distance=0x7f0b003c;
-        public static final int do_nothing=0x7f0b0035;
+        public static final int do_nothing=0x7f0b0034;
         public static final int from=0x7f0b003f;
-        public static final int gps_enable=0x7f0b0034;
-        public static final int gps_off=0x7f0b0033;
-        public static final int loading=0x7f0b0031;
+        public static final int gps_enable=0x7f0b0033;
+        public static final int gps_off=0x7f0b0032;
+        public static final int list_dialog_title=0x7f0b0038;
+        public static final int loading=0x7f0b0030;
         public static final int menu_guardar=0x7f0b003e;
-        public static final int menu_layers=0x7f0b0030;
         public static final int menu_legalnotices=0x7f0b002a;
         public static final int menuitem_refresh=0x7f0b003d;
         public static final int noaddress=0x7f0b003b;
@@ -1469,12 +1469,12 @@ containing a value of this type.
         public static final int noresults=0x7f0b002f;
         public static final int search_hint=0x7f0b002b;
         public static final int searching=0x7f0b002c;
-        public static final int select_address=0x7f0b0038;
+        public static final int select_address=0x7f0b0037;
         public static final int space=0x7f0b0041;
         public static final int to=0x7f0b0040;
         public static final int wait=0x7f0b002d;
-        public static final int wireless_enable=0x7f0b0037;
-        public static final int wireless_off=0x7f0b0036;
+        public static final int wireless_enable=0x7f0b0036;
+        public static final int wireless_off=0x7f0b0035;
     }
     public static final class style {
         /** 

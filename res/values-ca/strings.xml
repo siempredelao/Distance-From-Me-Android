@@ -11,7 +11,6 @@
     <string name="wait">Per favor, espere un moment</string>
     <string name="nofindaddress">Servei inactiu o senyal de xarxa molt pobre</string>
     <string name="noresults">No s\'han trobat resultats.</string>
-    <string name="menu_layers">Capes</string>
     <string name="loading">Cercant la seua posició. Per favor, espere uns instants</string>
     <string name="action_load">Carregar distància</string>
     <string name="gps_off">GPS desactivat, ¿desitja habilitar-lo?</string>
@@ -20,13 +19,9 @@
     <string name="wireless_off">Connexió de xarxa desactivada, ¿desitja habilitar-la?</string>
     <string name="wireless_enable">Habilitar Wireless</string>
     <string name="select_address">Trie una adreça</string>
+    <string name="list_dialog_title">Trie una distància</string>
 
-    <string-array name="layer_list">
-        <item>Normal</item>
-        <item>Híbrid</item>
-        <item>Satèl·lit</item>
-        <item>Relleu</item>
-    </string-array>
+
 
 	<!-- ACTIVITY SHOINFO -->
     <string name="current">Posició actual aproximada</string>
@@ -40,4 +35,10 @@
     <string name="space">Hi ha</string>
     <string name="nolocation">Error en obtenir adreça. Prema el botó Actualitzar per refrescar la informació</string>
     <string name="nonetwork">Connexió a Internet no activada. Active la seua connexió i torne a intentar-ho</string>
+    <string name="alias_dialog_title">Àlies</string>
+    <string name="alias_dialog_message">Associe un àlies a la distància:</string>
+    <string name="alias_dialog_accept">Acceptar</string>
+    <string name="alias_dialog_toast_1">Distància \"</string>
+    <string name="alias_dialog_toast_2">\" emmagatzemada correctament</string>
+    <string name="alias_dialog_toast_3">Distància emmagatzemada correctament</string>
 </resources>

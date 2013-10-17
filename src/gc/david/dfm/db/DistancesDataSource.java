@@ -1,7 +1,6 @@
 package gc.david.dfm.db;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
@@ -44,31 +43,38 @@ public class DistancesDataSource {
 		database.close();
 	}
 	
-	public void insert(String nombre, LatLng current, LatLng destination){
+	public void insert(String nombre, LatLng current, LatLng destination, String distancia){
 		Object[] args = {	nombre,
 							current.latitude, current.longitude,
 							destination.latitude, destination.longitude,
+							distancia
 						};
 		
 		// La fecha, como el _ID, se crea automáticamente
 		database.execSQL(DatabaseContract.SQL_INSERT_ROW, args);
 	}
 	
-	public void delete(int id){
+	public void delete(long id){
 		Object[] args = { id };
 		
 		database.execSQL(DatabaseContract.SQL_DELETE_ROW, args);
 	}
 	
-	// Devuelve null si el cursor está vacío
-	public ArrayList<Distance> getAllDistances(Locale locale){
+	/**
+	 * Get all distances in the database in an arraylist. We can do this, or in
+	 * other way, we also can return the cursor and use a CursorAdapter to show
+	 * the information. 
+	 * 
+	 * @return An ArrayList with distances; null, if there is no distances.
+	 */
+	public ArrayList<Distance> getAllDistances(){
 		ArrayList<Distance> distancias = null;
 		
 		Cursor c = database.rawQuery(DatabaseContract.SQL_SELECT_ALL, null);
 		if (c.moveToFirst()){
 			distancias = new ArrayList<Distance>();
 			while (!c.isAfterLast()){
-				Distance d = cursorToDistance(c, locale);
+				Distance d = cursorToDistance(c);
 				distancias.add(d);
 				c.moveToNext();
 			}
@@ -79,7 +85,14 @@ public class DistancesDataSource {
 		return distancias;
 	}
 	
-	private Distance cursorToDistance(Cursor cursor, Locale locale){
+	/**
+	 * Converts the data cursor to a Distance object.
+	 * 
+	 * @param cursor
+	 *            The cursor with the data.
+	 * @return A new Distance object.
+	 */
+	private Distance cursorToDistance(Cursor cursor){
 		Distance distance =
 				new Distance(cursor.getLong(0),
 						cursor.getString(1),
@@ -87,7 +100,8 @@ public class DistancesDataSource {
 						cursor.getDouble(3),
 						cursor.getDouble(4),
 						cursor.getDouble(5),
-						cursor.getString(6));
+						cursor.getString(6),
+						cursor.getString(7));
 		
 		// Convertimos el formato de la fecha
 //		DateFormat dF = SimpleDateFormat.getDateInstance(SimpleDateFormat.DEFAULT, locale);

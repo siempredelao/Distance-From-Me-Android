@@ -11,7 +11,6 @@
     <string name="wait">Please wait</string>
     <string name="nofindaddress">No backend service available or network signal very poor. Try again in a while</string>
     <string name="noresults">No matches were found</string>
-    <string name="menu_layers">Layers</string>
     <string name="loading">Searching your position. Please, wait</string>
     <string name="action_load">Load distance</string>
     <string name="gps_off">GPS disabled, would you like to enable it?</string>
@@ -20,13 +19,9 @@
     <string name="wireless_off">Wireless disabled, would you like to enable it?</string>
     <string name="wireless_enable">Enable wireless</string>
     <string name="select_address">Select an address</string>
+    <string name="list_dialog_title">Choose a distance</string>
 
-    <string-array name="layer_list">
-        <item>Normal</item>
-        <item>Hybrid</item>
-        <item>Satellite</item>
-        <item>Terrain</item>
-    </string-array>
+    
 
 	<!-- ACTIVITY SHOINFO -->
     <string name="current">Estimated current position</string>
@@ -41,9 +36,9 @@
     <string name="nolocation">Error trying to get address. Use refresh button</string>
 	<string name="nonetwork">Wireless connection failed. Turn on your wireless connection and try again refreshing</string>
     <string name="alias_dialog_title">Alias</string>
-    <string name="alias_dialog_message">Asocie un alias a la distancia:</string>
-    <string name="alias_dialog_accept">Aceptar</string>
-    <string name="alias_dialog_toast_1">Distancia \"</string>
-    <string name="alias_dialog_toast_2">\" almacenada correctamente</string>
-    <string name="alias_dialog_toast_3">Distancia almacenada correctamente</string>
+    <string name="alias_dialog_message">Assign an alias to this distance:</string>
+    <string name="alias_dialog_accept">Accept</string>
+    <string name="alias_dialog_toast_1">Distance \"</string>
+    <string name="alias_dialog_toast_2">\" correctly saved</string>
+    <string name="alias_dialog_toast_3">Distance correctly saved</string>
 </resources>

@@ -184,7 +184,6 @@ public class ShowInfoActivity extends ActionBarActivity {
 		return false;
 	}
 
-	// Este procedimiento ya no sirve para nada
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -203,6 +202,9 @@ public class ShowInfoActivity extends ActionBarActivity {
 	}
 
 	
+	/**
+	 * Saves the current data into the database.
+	 */
 	private void guardarDatosBD() {
 		// Pedir al usuario que introduzca un texto descriptivo
 		AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
@@ -217,6 +219,19 @@ public class ShowInfoActivity extends ActionBarActivity {
 				.setPositiveButton(getText(R.string.alias_dialog_accept), new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						insertDataIntoDatabase(textoAlias);
+					}
+
+					/**
+					 * Adds a new entry to the database with the current
+					 * data and shows the user a message.
+					 * 
+					 * @param textoAlias
+					 *            EditText which receives the alias of
+					 *            the database entry.
+					 */
+					private void insertDataIntoDatabase(
+							final EditText textoAlias) {
 						String alias = "";
 						String aux = textoAlias.getText().toString();
 						if (aux.compareTo("") != 0)
@@ -225,7 +240,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 						DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
 						dds.open();
 						// Si no introduce nada, poner "No title" o algo así
-						dds.insert(alias, origen, destino);
+						dds.insert(alias, origen, destino, dist);
 						// Mostrar un mensaje de que se ha guardado correctamente
 						if (alias != "")
 							toastIt(getText(R.string.alias_dialog_toast_1) + alias + getText(R.string.alias_dialog_toast_2));
