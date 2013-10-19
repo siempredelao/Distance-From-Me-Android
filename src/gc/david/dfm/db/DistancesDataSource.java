@@ -93,22 +93,14 @@ public class DistancesDataSource {
 	 * @return A new Distance object.
 	 */
 	private Distance cursorToDistance(Cursor cursor){
-		Distance distance =
-				new Distance(cursor.getLong(0),
-						cursor.getString(1),
-						cursor.getDouble(2),
-						cursor.getDouble(3),
-						cursor.getDouble(4),
-						cursor.getDouble(5),
-						cursor.getString(6),
-						cursor.getString(7));
-		
-		// Convertimos el formato de la fecha
-//		DateFormat dF = SimpleDateFormat.getDateInstance(SimpleDateFormat.DEFAULT, locale);
-//		String aux = dF.format(distance.getFecha());
-//		distance.setFecha(aux);
-		
-		return distance;
+		return new Distance(cursor.getLong(0),
+				cursor.getString(1),
+				cursor.getDouble(2),
+				cursor.getDouble(3),
+				cursor.getDouble(4),
+				cursor.getDouble(5),
+				cursor.getString(6),
+				cursor.getString(7));
 	}
 	
 	private class OpenDatabase extends AsyncTask<Void, Void, SQLiteDatabase>{

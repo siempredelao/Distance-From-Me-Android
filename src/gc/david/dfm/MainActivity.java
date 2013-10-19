@@ -365,8 +365,8 @@ public class MainActivity extends ActionBarActivity implements
 		/**
 		 * Gives the current network status.
 		 * 
-		 * @return Returns true if the device is connected to a network;
-		 *         otherwise, returns false.
+		 * @return Returns <code>true</code> if the device is connected to a network;
+		 *         otherwise, returns <code>false</code>.
 		 */
 		private boolean isOnline() {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -598,7 +598,7 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Checks if Google Play Services is available on the device.
 	 * 
-	 * @return Returns true if available; false otherwise.
+	 * @return Returns <code>true</code> if available; <code>false</code> otherwise.
 	 */
 	private boolean checkPlayServices() {
 		// Comprobamos que Google Play Services esté disponible en el terminal
@@ -788,7 +788,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * line.
 	 * 
 	 * @param start
-	 *            Initial position.
+	 *            Start position.
 	 * @param end
 	 *            Destination position.
 	 * @param mensaje
@@ -799,18 +799,16 @@ public class MainActivity extends ActionBarActivity implements
 		mapa.clear();
 
 		// Calculamos la distancia
-		distance = calculaDistancia(end);
+		distance = calculaDistancia(start, end);
 
 		// Añadimos el nuevo marcador
 		anadeMarcador(end, distance, mensaje);
 
 		// Añadimos la línea
-		anadeLinea(end);
+		anadeLinea(start, end);
 
 		// Aquí hacer la animación de la cámara
-		mueveCamaraZoom(
-				new LatLng(start.latitude, start.longitude),
-				end);
+		mueveCamaraZoom(start, end);
 	}
 
 	/**
@@ -832,18 +830,20 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Adds a line between current and destination positions.
+	 * Adds a line between start and end positions.
 	 * 
-	 * @param point
+	 * @param start
+	 *            Start position.
+	 * @param end
 	 *            Destination position.
 	 */
-	private void anadeLinea(LatLng point) {
+	private void anadeLinea(LatLng start, LatLng end) {
 		if (linea != null) {
 			linea.remove();
 			linea = null;
 		}
-		PolylineOptions lineOptions = new PolylineOptions().add(point).add(
-				new LatLng(current.getLatitude(), current.getLongitude()));
+		PolylineOptions lineOptions = new PolylineOptions().add(start).add(
+				end);
 		lineOptions.width(6);
 		if (cargandoDistancia){
 			cargandoDistancia = false;
@@ -854,16 +854,18 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Returns the distance between current and destination positions normalized
-	 * by device locale.
+	 * Returns the distance between start and end positions normalized by device
+	 * locale.
 	 * 
-	 * @param point
+	 * @param start
+	 *            Start position.
+	 * @param end
 	 *            Destination position.
 	 * @return The normalized distance.
 	 */
-	private String calculaDistancia(LatLng point) {
-		double metros = Haversine.getDistanceJNI(point.latitude,
-				point.longitude, current.getLatitude(), current.getLongitude());
+	private String calculaDistancia(LatLng start, LatLng end) {
+		double metros = Haversine.getDistanceJNI(start.latitude,
+				start.longitude, end.latitude, end.longitude);
 
 		return Haversine.normalize(metros,
 				getResources().getConfiguration().locale);
@@ -873,7 +875,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Moves camera position and applies zoom if needed.
 	 * 
 	 * @param p1
-	 *            Current position.
+	 *            Start position.
 	 * @param p2
 	 *            Destination position.
 	 */

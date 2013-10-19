@@ -29,7 +29,7 @@
     <string name="noaddress">Aucun résultat trouvé</string>
     <string name="distance">Distance</string>
     <string name="menuitem_refresh">Actualiser data</string>
-    <string name="menu_guardar">Enregistrer</string>
+    <string name="menu_guardar">Sauvegarder</string>
     <string name="from">De</string>
     <string name="to">À</string>
     <string name="space">Il y a</string>

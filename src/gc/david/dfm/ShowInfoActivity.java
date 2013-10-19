@@ -162,7 +162,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 	private Intent getDefaultShareIntent() {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
-		intent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me");
+		intent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (https://play.google.com/store/apps/details?id=gc.david.dfm)");
 		intent.putExtra(Intent.EXTRA_TEXT, "\n" + getText(R.string.from) + "\n"
 				+ direccion1 + "\n\n" + getText(R.string.to) + "\n"
 				+ direccion2 + "\n\n" + getText(R.string.space) + "\n" + dist);
@@ -174,7 +174,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 	 * 
 	 * @param intent
 	 *            The intent to verify.
-	 * @return Returns true if there are applications; false, otherwise.
+	 * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
 	 */
 	private boolean verifyAppReceiveIntent(Intent intent){
 		PackageManager packageManager = getPackageManager();
@@ -333,8 +333,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 		/**
 		 * Function to know the current network status.
 		 * 
-		 * @return Returns true if the device is connected to a network;
-		 *         otherwise, returns false.
+		 * @return Returns <code>true</code> if the device is connected to a network;
+		 *         otherwise, returns <code>false</code>.
 		 */
 		private boolean isOnline() {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
