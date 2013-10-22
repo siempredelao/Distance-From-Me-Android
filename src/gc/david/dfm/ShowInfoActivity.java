@@ -162,7 +162,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 	private Intent getDefaultShareIntent() {
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
-		intent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (https://play.google.com/store/apps/details?id=gc.david.dfm)");
+		intent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
 		intent.putExtra(Intent.EXTRA_TEXT, "\n" + getText(R.string.from) + "\n"
 				+ direccion1 + "\n\n" + getText(R.string.to) + "\n"
 				+ direccion2 + "\n\n" + getText(R.string.space) + "\n" + dist);

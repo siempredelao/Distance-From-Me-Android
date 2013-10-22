@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
+        ads:adSize="IAB_BANNER"
         ads:adUnitId="ca-app-pub-4539851837185110/7465553380"
         ads:loadAdOnCreate="true" />
 

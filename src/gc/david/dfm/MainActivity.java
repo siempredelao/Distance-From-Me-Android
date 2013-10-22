@@ -38,6 +38,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -66,6 +68,8 @@ public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
+	private AdView adView						= null;
+	
 	private GoogleMap mapa						= null;
 	private SupportMapFragment smf				= null;
 
@@ -100,6 +104,11 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		adView = (AdView) findViewById(R.id.adView);
+		AdRequest request = new AdRequest();
+		request.setLocation(current);
+		adView.loadAd(request);
+		
 		smf = ((SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map));
 		mapa = smf.getMap();
