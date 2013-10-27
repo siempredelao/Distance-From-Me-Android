@@ -9,7 +9,10 @@
 .project
 .metadata
 bin/
+libs/
+obj/
 tmp/
+gen/
 *.tmp
 *.bak
 *.swp

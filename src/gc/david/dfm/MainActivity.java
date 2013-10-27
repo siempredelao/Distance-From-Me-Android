@@ -109,9 +109,28 @@ public class MainActivity extends ActionBarActivity implements
 		request.setLocation(current);
 		adView.loadAd(request);
 		
+		// En algunos dispositivos peta si no está esto
+		checkPlayServices();
+		
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+		if (! isConnected)
+			alertDialogShow(
+					android.provider.Settings.ACTION_WIRELESS_SETTINGS,
+					getText(R.string.wireless_off).toString(),
+					getText(R.string.wireless_enable).toString(),
+					getText(R.string.do_nothing).toString());
+		
+		
 		smf = ((SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map));
 		mapa = smf.getMap();
+		
+		if (mapa == null){
+			checkPlayServices();
+		}
+		
 		mapa.setMyLocationEnabled(true);
 		mapa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
@@ -201,6 +220,8 @@ public class MainActivity extends ActionBarActivity implements
 		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
 	}
 
+	
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent);
@@ -231,11 +252,8 @@ public class MainActivity extends ActionBarActivity implements
 		// Para controlar instancias únicas, no queremos que cada vez que
 		// busquemos nos inicie una nueva instancia de la aplicación
 		String query = intent.getStringExtra(SearchManager.QUERY);
-		new BuscaPosicion().execute(query);
-		if (posicionElegida != null)
-			tareasDistancia(
-					new LatLng(current.getLatitude(), current.getLongitude()),
-					posicionElegida, direccionBP);
+		if (current != null)
+			new BuscaPosicion().execute(query);
 	}
 
 	/**
@@ -695,12 +713,9 @@ public class MainActivity extends ActionBarActivity implements
 
 		if (inicioApp) {
 			if (verPosicion){
-				new BuscaPosicion().execute(posicionDestinoEnvio);
-				if (posicionElegida != null)
-					tareasDistancia(
-							new LatLng(current.getLatitude(),
-									current.getLongitude()), posicionElegida,
-							direccionBP);
+				if (current != null){
+					new BuscaPosicion().execute(posicionDestinoEnvio);
+				}
 				verPosicion = false;
 			} else {
 				LatLng latlng = new LatLng(location.getLatitude(),
