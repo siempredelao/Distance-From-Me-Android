@@ -52,7 +52,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="http" android:host="maps.google.com" />
-                <!-- <data android:scheme="geo" /> -->
             </intent-filter>
             
             <meta-data

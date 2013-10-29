@@ -71,7 +71,6 @@ public class MainActivity extends ActionBarActivity implements
 	private AdView adView						= null;
 	
 	private GoogleMap mapa						= null;
-	private SupportMapFragment smf				= null;
 
 	// A request to connect to Location Services
 	private LocationRequest mLocationRequest	= null;
@@ -103,37 +102,90 @@ public class MainActivity extends ActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		mapa = ((SupportMapFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.map)).getMap();
+		
+		if (mapa != null){
+			mapa.setMyLocationEnabled(true);
+			mapa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+			
+			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+			boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+			if (! isConnected)
+				alertDialogShow(
+						android.provider.Settings.ACTION_WIRELESS_SETTINGS,
+						getText(R.string.wireless_off).toString(),
+						getText(R.string.wireless_enable).toString(),
+						getText(R.string.do_nothing).toString());
+			
+			adView = (AdView) findViewById(R.id.adView);
+			AdRequest request = new AdRequest();
+			request.setLocation(current);
+			adView.loadAd(request);
+			
+			mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
+				@Override
+				public void onMapLongClick(LatLng point) {
+					// Si no hemos encontrado la posición actual, no podremos
+					// calcular la distancia
+					if (current != null)
+						tareasDistancia(
+								new LatLng(current.getLatitude(), current
+										.getLongitude()), point, "");
+				}
+			});
+	
+			mapa.setOnMarkerDragListener(new OnMarkerDragListener() {
+				@Override
+				public void onMarkerDragStart(Marker marker) {
+				}
+	
+				@Override
+				public void onMarkerDragEnd(Marker marker) {
+					// NO movemos el zoom porque estamos simplemente afinando la
+					// posición
+					aplicarZoom = false;
+					tareasDistancia(
+							new LatLng(current.getLatitude(), current
+									.getLongitude()),
+							new LatLng(marker.getPosition().latitude, marker
+									.getPosition().longitude), "");
+					aplicarZoom = true;
+				}
+	
+				@Override
+				public void onMarkerDrag(Marker marker) {
+					// No funciona el hacerlo sobre la marcha...
+				}
+			});
+	
+			mapa.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+				@Override
+				public void onInfoWindowClick(Marker marker) {
+					// Abrir una activity
+					Intent intent = new Intent(MainActivity.this,
+							ShowInfoActivity.class);
+					intent.putExtra("origen", new LatLng(current.getLatitude(),
+							current.getLongitude()));
+					intent.putExtra("destino", new LatLng(
+							marker.getPosition().latitude,
+							marker.getPosition().longitude));
+					intent.putExtra("distancia", distance);
+					startActivity(intent);
+				}
+			});
+	
+			mapa.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
-		adView = (AdView) findViewById(R.id.adView);
-		AdRequest request = new AdRequest();
-		request.setLocation(current);
-		adView.loadAd(request);
-		
-		// En algunos dispositivos peta si no está esto
-		checkPlayServices();
-		
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-		boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-		if (! isConnected)
-			alertDialogShow(
-					android.provider.Settings.ACTION_WIRELESS_SETTINGS,
-					getText(R.string.wireless_off).toString(),
-					getText(R.string.wireless_enable).toString(),
-					getText(R.string.do_nothing).toString());
-		
-		
-		smf = ((SupportMapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.map));
-		mapa = smf.getMap();
-		
-		if (mapa == null){
-			checkPlayServices();
+			// Iniciando la app
+			if (current == null)
+				toastIt(getText(R.string.loading).toString());
+
+			handleIntents(getIntent());
 		}
 		
-		mapa.setMyLocationEnabled(true);
-		mapa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
 		// Create a new global location parameters object
 		mLocationRequest = LocationRequest.create();
 		// Set the update interval
@@ -148,66 +200,6 @@ public class MainActivity extends ActionBarActivity implements
 		// Create a new location client, using the enclosing class to handle
 		// callbacks
 		mLocationClient = new LocationClient(this, this, this);
-
-		// Iniciando la app
-		if (current == null)
-			toastIt(getText(R.string.loading).toString());
-
-		mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
-			@Override
-			public void onMapLongClick(LatLng point) {
-				// Si no hemos encontrado la posición actual, no podremos
-				// calcular la distancia
-				if (current != null)
-					tareasDistancia(
-							new LatLng(current.getLatitude(), current
-									.getLongitude()), point, "");
-			}
-		});
-
-		mapa.setOnMarkerDragListener(new OnMarkerDragListener() {
-			@Override
-			public void onMarkerDragStart(Marker marker) {
-			}
-
-			@Override
-			public void onMarkerDragEnd(Marker marker) {
-				// NO movemos el zoom porque estamos simplemente afinando la
-				// posición
-				aplicarZoom = false;
-				tareasDistancia(
-						new LatLng(current.getLatitude(), current
-								.getLongitude()),
-						new LatLng(marker.getPosition().latitude, marker
-								.getPosition().longitude), "");
-				aplicarZoom = true;
-			}
-
-			@Override
-			public void onMarkerDrag(Marker marker) {
-				// No funciona el hacerlo sobre la marcha...
-			}
-		});
-
-		mapa.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-			@Override
-			public void onInfoWindowClick(Marker marker) {
-				// Abrir una activity
-				Intent intent = new Intent(MainActivity.this,
-						ShowInfoActivity.class);
-				intent.putExtra("origen", new LatLng(current.getLatitude(),
-						current.getLongitude()));
-				intent.putExtra("destino", new LatLng(
-						marker.getPosition().latitude,
-						marker.getPosition().longitude));
-				intent.putExtra("distancia", distance);
-				startActivity(intent);
-			}
-		});
-
-		mapa.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
-
-		handleIntents(getIntent());
 	}
 
 	/**
@@ -676,7 +668,7 @@ public class MainActivity extends ActionBarActivity implements
 		 * has a resolution, try sending an Intent to start a Google Play
 		 * services activity that can resolve error.
 		 */
-		if (connectionResult.hasResolution()) {
+ 		if (connectionResult.hasResolution()) {
 			try {
 
 				// Start an Activity that tries to resolve the error
