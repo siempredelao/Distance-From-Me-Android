@@ -7,38 +7,38 @@
     <string name="action_social_share">Ort teilen</string>
     <string name="menu_legalnotices">Impressum</string>
     <string name="search_hint">Distance From Me suchen</string>
-    <string name="searching">Jetzt suchen</string>
+    <string name="searching">Suche im Vorgang</string>
     <string name="wait">Bitte warten</string>
-    <string name="nofindaddress">Dienst inaktiv oder sehr schlechte Netzwerk-Signal. Versuchen Sie es in wenigen Augenblicken.</string>
-    <string name="noresults">Es wurden keine Übereinstimmungen gefunden</string>
-    <string name="loading">Suchen Sie Ihre Position. Bitte warten Sie ein Moment</string>
+    <string name="nofindaddress">Dienst inaktiv oder sehr schlechte Netzwerk-Signal. Bitte versuchen Sie es später noch einmal</string>
+    <string name="noresults">Keine Daten gefunden.</string>
+    <string name="loading">Suche Ihrer Position im Vorgang. Bitte warten</string>
     <string name="action_load">Entfernung laden</string>
-    <string name="gps_off">GPS aus, wollen Sie es aktivieren?</string>
-    <string name="gps_enable">Navi aktivieren</string>
-    <string name="do_nothing">Jetzt nicht</string>
-    <string name="wireless_off">Wireless aus, wollen Sie es zu aktivieren?</string>
+    <string name="gps_off">GPS aus. Möchten Sie es aktivieren?</string>
+    <string name="gps_enable">GPS aktivieren</string>
+    <string name="do_nothing">Nicht jetzt</string>
+    <string name="wireless_off">Wireless aus. Möchten Sie es aktivieren?</string>
     <string name="wireless_enable">Wireless aktivieren</string>
-    <string name="select_address">Wählen Sie eine Adresse</string>
-    <string name="list_dialog_title">Wählen Sie einen Abstand</string>
+    <string name="select_address">Wählen Sie eine Adresse aus</string>
+    <string name="list_dialog_title">Wählen Sie einen Entfernung aux</string>
     
     
 
 	<!-- ACTIVITY SHOINFO -->
     <string name="current">Ungefährer aktuelle Position</string>
-    <string name="destination">Ungefährer Ort</string>
+    <string name="destination">Ungefährer Ziel</string>
     <string name="noaddress">Adresse nicht gefunden</string>
     <string name="distance">Entfernung</string>
-    <string name="menuitem_refresh">Aktualisieren</string>
+    <string name="menuitem_refresh">Daten aktualisieren</string>
     <string name="menu_guardar">Speichern</string>
     <string name="from">Von</string>
     <string name="to">Bis</string>
     <string name="space">Es gibt</string>
-    <string name="nolocation">Fehler beim Adresse zu erhalten. Verwenden Aktualisierungsschaltfläche</string>
-	<string name="nonetwork">Wireless-Verbindung fehlgeschlagen. Schalten Sie Ihre drahtlose Verbindung und versuchen Sie es erneut erfrischend.</string>
-    <string name="alias_dialog_title">Spitzname</string>
-    <string name="alias_dialog_message">Ordnen Sie einen Spitzname ​​auf den Entfernung:</string>
-    <string name="alias_dialog_accept">Annehmen</string>
+    <string name="nolocation">Fehler in der Suche der Adresse. Klicken Sie auf AKTUALISIEREN, um die Information zu bearbeiten</string>
+	<string name="nonetwork">Internet-Verbindung nicht aktiviert. Aktivieren Sie Ihre Verbindung und versuchen Sie es erneut</string>
+    <string name="alias_dialog_title">Alias</string>
+    <string name="alias_dialog_message">Bestimmen Sie einen Alias für die Entfernung:</string>
+    <string name="alias_dialog_accept">Akzeptieren</string>
     <string name="alias_dialog_toast_1">Entfernung \"</string>
-    <string name="alias_dialog_toast_2">\" ordnungsgemäß verstaut</string>
-    <string name="alias_dialog_toast_3">Entfernung ordnungsgemäß verstaut</string>
+    <string name="alias_dialog_toast_2">\" Daten gespeichert</string>
+    <string name="alias_dialog_toast_3">Entfernung gespeichert</string>
 </resources>

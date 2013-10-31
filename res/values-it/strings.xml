@@ -33,7 +33,7 @@
     <string name="from">Da</string>
     <string name="to">A</string>
     <string name="space">Ci sono</string>
-    <string name="nolocation">Impossibile ottenere l'indirizzo. Fare clic sul pulsante Aggiorna per aggiornare le informazioni</string>
+    <string name="nolocation">Impossibile ottenere l\'indirizzo. Fare clic sul pulsante Aggiorna per aggiornare l\'informazioni</string>
     <string name="nonetwork">Connessione a Internet non è attiva. Attivare la connessione e riprovare</string>
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Associare un alias alla distanza:</string>
