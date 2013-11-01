@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- ACTIVITY MAIN -->
+    <string name="app_name">Distance From Me</string>
+    <string name="action_settings">Preferências</string>
+    <string name="action_search">Pesquisar</string>
+    <string name="action_social_share">Compartilhar</string>
+    <string name="menu_legalnotices">Aviso legal</string>
+    <string name="search_hint">Pesquisar no Distance From Me</string>
+    <string name="searching">Procurando</string>
+    <string name="wait">Por favor, aguarde um momento</string>
+    <string name="nofindaddress">Serviço inativo o sinal da rede muito pobre. Tente novamente em alguns instantes</string>
+    <string name="noresults">Não foram encontrados resultados.</string>
+    <string name="loading">Procurando a sua posiçao. Por favor, aguarde</string>
+    <string name="action_load">Carregar distância</string>
+    <string name="gps_off">GPS desativado, ¿deseja ativá-lo?</string>
+    <string name="gps_enable">Ativar GPS</string>
+    <string name="do_nothing">Agora no</string>
+    <string name="wireless_off">Conexão de rede desativada, ¿deseja ativá-la?</string>
+    <string name="wireless_enable">Ativar wireless</string>
+    <string name="select_address">Escolha una direçao</string>
+    <string name="list_dialog_title">Escolha una distância</string>
+
+
+    
+	<!-- ACTIVITY SHOINFO -->
+    <string name="current">Posiçao atual aproximada</string>
+    <string name="destination">Destino aproximado</string>
+    <string name="noaddress">Não foi encontrado direçao</string>
+    <string name="distance">Distância</string>
+    <string name="menuitem_refresh">Refrescar dados</string>
+    <string name="menu_guardar">Guardar</string>
+    <string name="from">Desde</string>
+    <string name="to">Até</string>
+    <string name="space">Há</string>
+    <string name="nolocation">Erro ao obter direçao. Pressione o botão Atualizar para refrescar a informação</string>
+    <string name="nonetwork">Conexão com a Internet não ativado. Ative sua conexão e tente novamente.</string>
+    <string name="alias_dialog_title">Alias</string>
+    <string name="alias_dialog_message">Associe um alias para a distância:</string>
+    <string name="alias_dialog_accept">Aceitar</string>
+    <string name="alias_dialog_toast_1">Distância \"</string>
+    <string name="alias_dialog_toast_2">\" armazenada corretamente</string>
+    <string name="alias_dialog_toast_3">Distância armazenada corretamente</string>
+</resources>

@@ -1354,6 +1354,7 @@ containing a value of this type.
  ACTIVITY MAIN 
  ACTIVITY MAIN 
  ACTIVITY MAIN 
+ ACTIVITY MAIN 
          */
         public static final int app_name=0x7f0b0026;
         /**   Title for notification shown when GooglePlayServices needs to be
@@ -1447,6 +1448,7 @@ containing a value of this type.
          */
         public static final int common_signin_button_text_long=0x7f0b001f;
         /**  ACTIVITY SHOINFO 
+ ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
