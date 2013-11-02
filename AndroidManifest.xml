@@ -7,7 +7,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="19" />
 
     <permission
         android:name="gc.david.dfm.permission.MAPS_RECEIVE"
@@ -71,7 +71,10 @@
         </activity>
         
         <!-- Google AdMob -->
-        <activity android:name="com.google.ads.AdActivity"
+        <meta-data android:name="com.google.android.gms.version"
+               android:value="@integer/google_play_services_version"/>
+        
+        <activity android:name="com.google.android.gms.ads.AdActivity"
               android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
         <!-- Debug key -->

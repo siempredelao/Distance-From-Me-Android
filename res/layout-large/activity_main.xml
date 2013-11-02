@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -13,13 +12,13 @@
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
-    <com.google.ads.AdView
+    <com.google.android.gms.ads.AdView
+    	xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         ads:adSize="IAB_BANNER"
-        ads:adUnitId="ca-app-pub-4539851837185110/7465553380"
-        ads:loadAdOnCreate="true" />
+        ads:adUnitId="ca-app-pub-4539851837185110/7465553380" />
 
 </RelativeLayout>
