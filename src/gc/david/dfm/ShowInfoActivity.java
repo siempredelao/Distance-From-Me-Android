@@ -66,17 +66,40 @@ public class ShowInfoActivity extends ActionBarActivity {
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		extraeDatosIntent();
-
+		
 		titulo1 = (TextView) findViewById(R.id.titulo_datos1);
 		titulo2 = (TextView) findViewById(R.id.titulo_datos2);
 		rellenaTitulos();
-
+		
 		datos1 = (TextView) findViewById(R.id.datos1);
 		datos2 = (TextView) findViewById(R.id.datos2);
-		rellenaDirecciones();
+		
+		if (savedInstanceState == null){
+			rellenaDirecciones();
+		} else {
+			this.direccion1 = savedInstanceState.getString("address1");
+			this.direccion2 = savedInstanceState.getString("address2");
+			
+			this.datos1.setText(direccion1 + "\n\n(" + origen.latitude + ", "
+					+ origen.longitude + ")");
+			this.datos2.setText(direccion2 + "\n\n(" + destino.latitude + ", "
+					+ destino.longitude + ")");
+			
+			// Este se modifica dos veces...
+			this.dist = savedInstanceState.getString("distance");
+		}
 
 		distancia = (TextView) findViewById(R.id.distancia);
 		rellenaDistancia();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		outState.putString("address1", this.direccion1);
+		outState.putString("address2", this.direccion2);
+		outState.putString("distance", this.dist);
 	}
 
 	/**
