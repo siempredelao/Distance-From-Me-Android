@@ -22,8 +22,8 @@ public class DistancesDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// En principio esto, ya se verá si se necesita modificar para próximas versiones
-		db.execSQL(DatabaseContract.SQL_DROP);
-		onCreate(db);
+//		db.execSQL(DatabaseContract.SQL_DROP);
+//		onCreate(db);
 	}
 
 }

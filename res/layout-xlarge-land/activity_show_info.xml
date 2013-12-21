@@ -3,7 +3,7 @@
     android:id="@+id/scrollView1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_gradient"  >
+    android:background="@drawable/newtheme_background_gradient"  >
 
     <LinearLayout
         android:layout_width="wrap_content"
