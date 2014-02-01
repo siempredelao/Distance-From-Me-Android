@@ -1196,10 +1196,10 @@ containing a value of this type.
         public static final int action_search=0x7f060052;
         public static final int action_social_share=0x7f060055;
         public static final int activity_chooser_view_content=0x7f060026;
-        public static final int adView=0x7f060046;
         public static final int adprogress_progressBar=0x7f060050;
         public static final int alias=0x7f06004e;
         public static final int always=0x7f06000b;
+        public static final int banner=0x7f060046;
         public static final int beginning=0x7f060011;
         public static final int checkbox=0x7f06002e;
         public static final int collapseActionView=0x7f06000d;

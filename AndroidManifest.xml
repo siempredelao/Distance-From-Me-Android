@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="gc.david.dfm"
     android:installLocation="preferExternal"
-    android:versionCode="10"
-    android:versionName="1.0.9" >
+    android:versionCode="11"
+    android:versionName="1.1" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="10"
         android:targetSdkVersion="19" />
 
     <permission
@@ -40,6 +40,7 @@
             android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <!-- Captura las búsquedas -->
@@ -49,15 +50,20 @@
             <!-- Capturar la visualización con el whatsapp por ejemplo -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="http" android:host="maps.google.com" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="maps.google.com"
+                    android:scheme="http" />
             </intent-filter>
-            
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        
         <activity
             android:name="gc.david.dfm.ShowInfoActivity"
             android:configChanges="screenSize"
@@ -69,22 +75,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="gc.david.dfm.MainActivity" />
         </activity>
-        
-        <!-- Google AdMob -->
+
         <meta-data android:name="com.google.android.gms.version"
                android:value="@integer/google_play_services_version"/>
         
-        <activity android:name="com.google.android.gms.ads.AdActivity"
-              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+        <!-- Flurry Activity -->
+        <activity
+            android:name="com.flurry.android.FlurryFullscreenTakeoverActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" >
+        </activity>
 
         <!-- Debug key -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyCjo4HxVTL5RYKXsmZ76Sj9lXyRXcWRDEI" />
         <!-- Release key -->
-        <meta-data
+        <!-- <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBNgeKm600hGUcFTDan6d2m5OHsKUeQm4Q" />
+            android:value="AIzaSyBNgeKm600hGUcFTDan6d2m5OHsKUeQm4Q" /> -->
     </application>
 
 </manifest>

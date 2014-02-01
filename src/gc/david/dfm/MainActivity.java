@@ -36,10 +36,14 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
+import com.flurry.android.FlurryAdListener;
+import com.flurry.android.FlurryAdSize;
+import com.flurry.android.FlurryAdType;
+import com.flurry.android.FlurryAds;
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -66,9 +70,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
  */
 public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener {
-
-	private AdView adView						= null;
+		GooglePlayServicesClient.OnConnectionFailedListener, FlurryAdListener {
 	
 	private GoogleMap mapa						= null;
 
@@ -97,6 +99,9 @@ public class MainActivity extends ActionBarActivity implements
 	private String posicionDestinoEnvio			= "";
 	// Cuando obtenemos una distancia de la base de datos
 	private boolean cargandoDistancia			= false;
+	
+	private FrameLayout mBanner = null;
+	private String adName = "Prueba";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +115,8 @@ public class MainActivity extends ActionBarActivity implements
 			mapa.setMyLocationEnabled(true);
 			mapa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 			
+			mBanner = (FrameLayout) findViewById(R.id.banner);
+			
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 			boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
@@ -119,9 +126,6 @@ public class MainActivity extends ActionBarActivity implements
 						getText(R.string.wireless_off).toString(),
 						getText(R.string.wireless_enable).toString(),
 						getText(R.string.do_nothing).toString());
-			
-			adView = (AdView) findViewById(R.id.adView);
-			adView.loadAd(new AdRequest.Builder().build());
 			
 			mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
@@ -255,12 +259,15 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private void handleSendPositionIntent(Intent intent) {
 		Uri u = intent.getData();
+		
+		// Buscamos el envío por Whatsapp
 		String queryParameter = u.getQueryParameter("q"); // loc:latitud,longitud (You)
-		
-		// Esta string será la que mandemos a BuscaPosicion
-		posicionDestinoEnvio = queryParameter.replace("loc:", "").replaceAll(" (\\D*)", ""); // latitud,longitud
-		
-		verPosicion = true;
+		if (queryParameter != null){
+			// Esta string será la que mandemos a BuscaPosicion
+			posicionDestinoEnvio = queryParameter.replace("loc:", "").replaceAll(" (\\D*)", ""); // latitud,longitud
+			
+			verPosicion = true;
+		}
 	}
 
 	/**
@@ -533,6 +540,9 @@ public class MainActivity extends ActionBarActivity implements
 		mLocationClient.disconnect();
 
 		super.onStop();
+        FlurryAds.removeAd(this, adName, mBanner);
+        FlurryAds.setAdListener(null);
+		FlurryAgent.onEndSession(this);
 	}
 
 	/*
@@ -542,6 +552,12 @@ public class MainActivity extends ActionBarActivity implements
 	public void onStart() {
 		super.onStart();
 
+		FlurryAgent.onStartSession(this, "FHH59NSTJNYMMNRNW7KN");
+        // get callbacks for ad events
+        FlurryAds.setAdListener(this);
+		// fetch and prepare ad for this ad space. won’t render one yet
+		FlurryAds.fetchAd(this, adName, mBanner, FlurryAdSize.BANNER_BOTTOM);
+		
 		/*
 		 * Connect the client. Don't re-start any requests here; instead, wait
 		 * for onResume()
@@ -551,8 +567,6 @@ public class MainActivity extends ActionBarActivity implements
 	
 	@Override
     protected void onPause() {
-		if (adView != null)
-			adView.pause();
         super.onPause();
     }
 
@@ -562,16 +576,12 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (adView != null)
-			adView.resume();
 
 		checkPlayServices();
 	}
 	
 	@Override
 	public void onDestroy() {
-		if (adView != null)
-			adView.destroy();
 	  super.onDestroy();
 	}
 
@@ -1003,5 +1013,65 @@ public class MainActivity extends ActionBarActivity implements
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	@Override
+	public void onAdClicked(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClosed(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdOpened(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onApplicationExit(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRenderFailed(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onRendered(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onVideoCompleted(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean shouldDisplayAd(String arg0, FlurryAdType arg1) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void spaceDidFailToReceiveAd(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void spaceDidReceiveAd(String arg0) {
+		// called when the ad has been prepared, ad can be displayed:
+		FlurryAds.displayAd(this, adName, mBanner);
 	}
 }
