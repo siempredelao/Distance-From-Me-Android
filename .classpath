@@ -5,7 +5,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/David/Downloads/Flurry Android SDK vAndroid 3.3.3/Android 3.3.3/FlurryAds/FlurryAds_3.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/David/Downloads/Flurry Android SDK vAndroid 3.3.3/Android 3.3.3/FlurryAnalytics/FlurryAnalytics_3.3.3.jar"/>
+	<classpathentry kind="lib" path="libs/InMobi-4.1.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

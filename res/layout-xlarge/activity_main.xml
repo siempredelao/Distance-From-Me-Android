@@ -12,12 +12,13 @@
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
-    <FrameLayout
+    <com.inmobi.monetization.IMBanner
         android:id="@+id/banner"
         android:layout_width="728dp"
         android:layout_height="90dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
-    </FrameLayout>
-    
+        android:layout_alignParentLeft="true"
+        adSize="11"
+        appId="9b61f509a1454023b5295d8aea4482c2" />
+
 </RelativeLayout>

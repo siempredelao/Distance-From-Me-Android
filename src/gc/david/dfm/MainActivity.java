@@ -36,14 +36,8 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.flurry.android.FlurryAdListener;
-import com.flurry.android.FlurryAdSize;
-import com.flurry.android.FlurryAdType;
-import com.flurry.android.FlurryAds;
-import com.flurry.android.FlurryAgent;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -61,6 +55,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.inmobi.commons.InMobi;
+import com.inmobi.monetization.IMBanner;
 
 /**
  * Implements the app main Activity.
@@ -70,8 +66,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
  */
 public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener, FlurryAdListener {
-	
+		GooglePlayServicesClient.OnConnectionFailedListener {
+
 	private GoogleMap mapa						= null;
 
 	// A request to connect to Location Services
@@ -99,33 +95,37 @@ public class MainActivity extends ActionBarActivity implements
 	private String posicionDestinoEnvio			= "";
 	// Cuando obtenemos una distancia de la base de datos
 	private boolean cargandoDistancia			= false;
-	
-	private FrameLayout mBanner = null;
-	private String adName = "Prueba";
+	private IMBanner banner						= null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		mapa = ((SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map)).getMap();
-		
-		if (mapa != null){
+
+		if (mapa != null) {
 			mapa.setMyLocationEnabled(true);
 			mapa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-			
-			mBanner = (FrameLayout) findViewById(R.id.banner);
-			
+//			mapa.getUiSettings().setZoomControlsEnabled(false);
+
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-			boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-			if (! isConnected)
+			boolean isConnected = activeNetwork != null
+					&& activeNetwork.isConnectedOrConnecting();
+			if (!isConnected)
 				alertDialogShow(
 						android.provider.Settings.ACTION_WIRELESS_SETTINGS,
 						getText(R.string.wireless_off).toString(),
 						getText(R.string.wireless_enable).toString(),
 						getText(R.string.do_nothing).toString());
+
+			// InMobi Ads
+			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
+			banner = (IMBanner) findViewById(R.id.banner);
+			banner.setRefreshInterval(30);
+			banner.loadBanner();
 			
 			mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
@@ -133,17 +133,16 @@ public class MainActivity extends ActionBarActivity implements
 					// Si no hemos encontrado la posición actual, no podremos
 					// calcular la distancia
 					if (current != null)
-						tareasDistancia(
-								new LatLng(current.getLatitude(), current
-										.getLongitude()), point, "");
+						tareasDistancia(new LatLng(current.getLatitude(),
+								current.getLongitude()), point, "");
 				}
 			});
-	
+
 			mapa.setOnMarkerDragListener(new OnMarkerDragListener() {
 				@Override
 				public void onMarkerDragStart(Marker marker) {
 				}
-	
+
 				@Override
 				public void onMarkerDragEnd(Marker marker) {
 					// NO movemos el zoom porque estamos simplemente afinando la
@@ -156,13 +155,13 @@ public class MainActivity extends ActionBarActivity implements
 									.getPosition().longitude), "");
 					aplicarZoom = true;
 				}
-	
+
 				@Override
 				public void onMarkerDrag(Marker marker) {
 					// No funciona el hacerlo sobre la marcha...
 				}
 			});
-	
+
 			mapa.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
@@ -178,7 +177,7 @@ public class MainActivity extends ActionBarActivity implements
 					startActivity(intent);
 				}
 			});
-	
+
 			mapa.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
 			// Iniciando la app
@@ -187,7 +186,7 @@ public class MainActivity extends ActionBarActivity implements
 
 			handleIntents(getIntent());
 		}
-		
+
 		// Create a new global location parameters object
 		mLocationRequest = LocationRequest.create();
 		// Set the update interval
@@ -214,8 +213,6 @@ public class MainActivity extends ActionBarActivity implements
 		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
 	}
 
-	
-	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		setIntent(intent);
@@ -235,7 +232,7 @@ public class MainActivity extends ActionBarActivity implements
 			handleSendPositionIntent(intent);
 		}
 	}
-	
+
 	/**
 	 * Handles a search intent.
 	 * 
@@ -259,13 +256,15 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private void handleSendPositionIntent(Intent intent) {
 		Uri u = intent.getData();
-		
+
 		// Buscamos el envío por Whatsapp
-		String queryParameter = u.getQueryParameter("q"); // loc:latitud,longitud (You)
-		if (queryParameter != null){
+		String queryParameter = u.getQueryParameter("q"); // loc:latitud,longitud
+															// (You)
+		if (queryParameter != null) {
 			// Esta string será la que mandemos a BuscaPosicion
-			posicionDestinoEnvio = queryParameter.replace("loc:", "").replaceAll(" (\\D*)", ""); // latitud,longitud
-			
+			posicionDestinoEnvio = queryParameter.replace("loc:", "")
+					.replaceAll(" (\\D*)", ""); // latitud,longitud
+
 			verPosicion = true;
 		}
 	}
@@ -389,8 +388,8 @@ public class MainActivity extends ActionBarActivity implements
 		/**
 		 * Gives the current network status.
 		 * 
-		 * @return Returns <code>true</code> if the device is connected to a network;
-		 *         otherwise, returns <code>false</code>.
+		 * @return Returns <code>true</code> if the device is connected to a
+		 *         network; otherwise, returns <code>false</code>.
 		 */
 		private boolean isOnline() {
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -457,12 +456,13 @@ public class MainActivity extends ActionBarActivity implements
 		searchView.setSubmitButtonEnabled(false);
 		searchView.setQueryRefinementEnabled(true);
 		searchView.setIconifiedByDefault(true);
-		
+
 		// Muestra el icono de cargar si procede
 		MenuItem loadItem = menu.findItem(R.id.action_load);
-		DistancesDataSource dDS = new DistancesDataSource(getApplicationContext());
+		DistancesDataSource dDS = new DistancesDataSource(
+				getApplicationContext());
 		dDS.open();
-		if (dDS != null){
+		if (dDS != null) {
 			if (dDS.getAllDistances() == null)
 				loadItem.setVisible(false);
 			dDS.close();
@@ -492,12 +492,14 @@ public class MainActivity extends ActionBarActivity implements
 	 * dialog.
 	 */
 	private void cargarDistanciasBD() {
-		DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
+		DistancesDataSource dds = new DistancesDataSource(
+				getApplicationContext());
 		dds.open();
 		ArrayList<Distance> distancias = dds.getAllDistances();
 		dds.close();
 
-		final AdaptadorDistancias adaptador = new AdaptadorDistancias(this, distancias);
+		final AdaptadorDistancias adaptador = new AdaptadorDistancias(this,
+				distancias);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(getText(R.string.list_dialog_title).toString())
 				.setAdapter(adaptador, new DialogInterface.OnClickListener() {
@@ -505,14 +507,17 @@ public class MainActivity extends ActionBarActivity implements
 					public void onClick(DialogInterface dialog, int which) {
 						cargandoDistancia = true;
 						Distance distancia = adaptador.getDatos().get(which);
-						LatLng inicio = new LatLng(distancia.getLat_a(), distancia.getLon_a());
-						LatLng fin = new LatLng(distancia.getLat_b(), distancia.getLon_b());
-						
-						tareasDistancia(inicio, fin, distancia.getNombre() + "\n");
+						LatLng inicio = new LatLng(distancia.getLat_a(),
+								distancia.getLon_a());
+						LatLng fin = new LatLng(distancia.getLat_b(), distancia
+								.getLon_b());
+
+						tareasDistancia(inicio, fin, distancia.getNombre()
+								+ "\n");
 					}
 				}).create().show();
 	}
-	
+
 	/**
 	 * Shows an AlertDialog with the Google Play Services License.
 	 */
@@ -540,9 +545,6 @@ public class MainActivity extends ActionBarActivity implements
 		mLocationClient.disconnect();
 
 		super.onStop();
-        FlurryAds.removeAd(this, adName, mBanner);
-        FlurryAds.setAdListener(null);
-		FlurryAgent.onEndSession(this);
 	}
 
 	/*
@@ -551,12 +553,6 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onStart() {
 		super.onStart();
-
-		FlurryAgent.onStartSession(this, "FHH59NSTJNYMMNRNW7KN");
-        // get callbacks for ad events
-        FlurryAds.setAdListener(this);
-		// fetch and prepare ad for this ad space. won’t render one yet
-		FlurryAds.fetchAd(this, adName, mBanner, FlurryAdSize.BANNER_BOTTOM);
 		
 		/*
 		 * Connect the client. Don't re-start any requests here; instead, wait
@@ -564,11 +560,11 @@ public class MainActivity extends ActionBarActivity implements
 		 */
 		mLocationClient.connect();
 	}
-	
+
 	@Override
-    protected void onPause() {
-        super.onPause();
-    }
+	protected void onPause() {
+		super.onPause();
+	}
 
 	/*
 	 * Called when the system detects that this Activity is now visible.
@@ -579,10 +575,10 @@ public class MainActivity extends ActionBarActivity implements
 
 		checkPlayServices();
 	}
-	
+
 	@Override
 	public void onDestroy() {
-	  super.onDestroy();
+		super.onDestroy();
 	}
 
 	/*
@@ -641,7 +637,8 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Checks if Google Play Services is available on the device.
 	 * 
-	 * @return Returns <code>true</code> if available; <code>false</code> otherwise.
+	 * @return Returns <code>true</code> if available; <code>false</code>
+	 *         otherwise.
 	 */
 	private boolean checkPlayServices() {
 		// Comprobamos que Google Play Services esté disponible en el terminal
@@ -692,7 +689,7 @@ public class MainActivity extends ActionBarActivity implements
 		 * has a resolution, try sending an Intent to start a Google Play
 		 * services activity that can resolve error.
 		 */
- 		if (connectionResult.hasResolution()) {
+		if (connectionResult.hasResolution()) {
 			try {
 
 				// Start an Activity that tries to resolve the error
@@ -728,8 +725,8 @@ public class MainActivity extends ActionBarActivity implements
 			current = new Location(location);
 
 		if (inicioApp) {
-			if (verPosicion){
-				if (current != null){
+			if (verPosicion) {
+				if (current != null) {
 					new BuscaPosicion().execute(posicionDestinoEnvio);
 				}
 				verPosicion = false;
@@ -737,7 +734,8 @@ public class MainActivity extends ActionBarActivity implements
 				LatLng latlng = new LatLng(location.getLatitude(),
 						location.getLongitude());
 				// 17 es un buen nivel de zoom para esta acción
-				mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+				mapa.animateCamera(CameraUpdateFactory
+						.newLatLngZoom(latlng, 17));
 			}
 			inicioApp = false;
 		}
@@ -882,10 +880,9 @@ public class MainActivity extends ActionBarActivity implements
 			linea.remove();
 			linea = null;
 		}
-		PolylineOptions lineOptions = new PolylineOptions().add(start).add(
-				end);
+		PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
 		lineOptions.width(6);
-		if (cargandoDistancia){
+		if (cargandoDistancia) {
 			cargandoDistancia = false;
 			lineOptions.color(Color.YELLOW);
 		} else
@@ -1013,65 +1010,5 @@ public class MainActivity extends ActionBarActivity implements
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
-	}
-
-	@Override
-	public void onAdClicked(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onAdClosed(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onAdOpened(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onApplicationExit(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onRenderFailed(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onRendered(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onVideoCompleted(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean shouldDisplayAd(String arg0, FlurryAdType arg1) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void spaceDidFailToReceiveAd(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void spaceDidReceiveAd(String arg0) {
-		// called when the ad has been prepared, ad can be displayed:
-		FlurryAds.displayAd(this, adName, mBanner);
 	}
 }
