@@ -80,15 +80,6 @@
             android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize"
             android:hardwareAccelerated="true" />
 
-        <receiver
-            android:name="com.inmobi.commons.analytics.androidsdk.IMAdTrackerReceiver"
-            android:enabled="true"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
-
         <service
             android:name="com.inmobi.commons.internal.ActivityRecognitionManager"
             android:enabled="true" />
