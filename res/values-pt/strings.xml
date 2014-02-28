@@ -9,17 +9,25 @@
     <string name="search_hint">Pesquisar no Distance From Me</string>
     <string name="searching">Procurando</string>
     <string name="wait">Por favor, aguarde um momento</string>
-    <string name="nofindaddress">Serviço inativo o sinal da rede muito pobre. Tente novamente em alguns instantes</string>
+    <string name="nofindaddress">Serviço inativo o sinal da rede muito pobre. Tente novamente em alguns instantes.</string>
     <string name="noresults">Não foram encontrados resultados.</string>
     <string name="loading">Procurando a sua posiçao. Por favor, aguarde</string>
     <string name="action_load">Carregar distância</string>
-    <string name="gps_off">GPS desativado, ¿deseja ativá-lo?</string>
+    <string name="gps_off">GPS desativado, deseja ativá-lo?</string>
     <string name="gps_enable">Ativar GPS</string>
     <string name="do_nothing">Agora no</string>
-    <string name="wireless_off">Conexão de rede desativada, ¿deseja ativá-la?</string>
+    <string name="wireless_off">Conexão de rede desativada, deseja ativá-la?</string>
     <string name="wireless_enable">Ativar wireless</string>
     <string name="select_address">Escolha una direçao</string>
     <string name="list_dialog_title">Escolha una distância</string>
+    <string name="menu_rateapp">Avaliar aplicativo</string>
+    <string name="rate_title">Avaliar este aplicativo</string>
+    <string name="rate_message">Si você pensa que Distance From Me é uma boa aplicação, por favor coloque 5 estrelas e escreva um comentário. Se não, você também pode se comunicar com a equipe de desenvolvimento para reclamar sobre um erro ou fazer uma sugestão.</string>
+    <string name="rate_positive_button">Dar 5 estrelas</string>
+    <string name="rate_negative_button">Conte-nos!</string>
+    <string name="complain_message">Queixa/Sugestao de Distance From Me</string>
+    <string name="complain_hint">Eu quero dizer a sua equipe de desenvolvimento que </string>
+    <string name="complain_problem">Nenhum cliente de e-mail disponível</string>
 
 
     

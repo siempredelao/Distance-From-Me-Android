@@ -16,10 +16,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -479,6 +481,9 @@ public class MainActivity extends ActionBarActivity implements
 		case R.id.action_load:
 			cargarDistanciasBD();
 			return true;
+		case R.id.menu_rateapp:
+			rateApp();
+			return true;
 		case R.id.menu_legalnotices:
 			showGooglePlayServiceLicense();
 			return true;
@@ -518,6 +523,61 @@ public class MainActivity extends ActionBarActivity implements
 				}).create().show();
 	}
 
+	private void rateApp(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.rate_title)
+		.setMessage(R.string.rate_message)
+		.setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				openPlayStore();
+			}
+		})
+		.setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				goComplain();
+			}
+		})
+		.create()
+		.show();
+	}
+	
+	private void openPlayStore(){
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
+	}
+	
+	private void goComplain(){
+		Intent sendTo = new Intent(Intent.ACTION_SENDTO);
+	    String uriText = "mailto:" + Uri.encode("davidaguiargonzalez@gmail.com") +
+	            "?subject=" + Uri.encode(getText(R.string.complain_message).toString()) +
+	            "&body=" + Uri.encode(getText(R.string.complain_hint).toString());
+	    Uri uri = Uri.parse(uriText);
+	    sendTo.setData(uri);
+
+	    List<ResolveInfo> resolveInfos = 
+	            getPackageManager().queryIntentActivities(sendTo, 0);
+
+        // Emulators may not like this check...
+        if (!resolveInfos.isEmpty()){
+        	startActivity(sendTo);
+        } else {
+		    // Nothing resolves send to, so fallback to send...
+			Intent intent = new Intent(Intent.ACTION_SENDTO);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"davidaguiargonzalez@gmail.com"});
+			intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.complain_message).toString());
+			intent.putExtra(Intent.EXTRA_TEXT, getText(R.string.complain_hint).toString());
+			try {
+				startActivity(intent);
+			} catch (ActivityNotFoundException e){
+				toastIt(getText(R.string.complain_problem).toString());
+			}
+        }
+	}
+		
 	/**
 	 * Shows an AlertDialog with the Google Play Services License.
 	 */

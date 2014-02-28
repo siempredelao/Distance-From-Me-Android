@@ -15,8 +15,13 @@
         actual:showAsAction="ifRoom|withText"
         android:title="@string/action_load"/>
     <item
-        android:id="@+id/menu_legalnotices"
+        android:id="@+id/menu_rateapp"
         android:orderInCategory="4"
+        android:showAsAction="never"
+        android:title="@string/menu_rateapp"/>
+    <item
+        android:id="@+id/menu_legalnotices"
+        android:orderInCategory="5"
         android:showAsAction="never"
         android:title="@string/menu_legalnotices"/>
 </menu>

@@ -20,6 +20,14 @@
     <string name="wireless_enable">Habilitar Wireless</string>
     <string name="select_address">Trie una adreça</string>
     <string name="list_dialog_title">Trie una distància</string>
+    <string name="menu_rateapp">Puntua aplicació</string>
+    <string name="rate_title">Puntua aquesta aplicació</string>
+    <string name="rate_message">Si Distance From Me le parece una buena aplicación, por favor valórela con 5 estrellas y escriba un comentario adecuado. Si no es así, también puede comunicarse con el equipo de desarrollo para quejarse de algún error o hacer alguna sugerencia.</string>
+    <string name="rate_positive_button">Dar 5 estrellas</string>
+    <string name="rate_negative_button">¡Cuéntanos!</string>
+    <string name="complain_message">Queja/Sugerencia sobre Distance From Me</string>
+    <string name="complain_hint">Quiero comentarle al equipo de desarrollo que </string>
+    <string name="complain_problem">No hay clientes de email disponibles</string>
 
 
 

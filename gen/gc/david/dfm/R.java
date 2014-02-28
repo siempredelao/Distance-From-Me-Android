@@ -1194,7 +1194,7 @@ containing a value of this type.
         public static final int action_mode_bar_stub=0x7f060031;
         public static final int action_mode_close_button=0x7f060025;
         public static final int action_search=0x7f060052;
-        public static final int action_social_share=0x7f060055;
+        public static final int action_social_share=0x7f060056;
         public static final int activity_chooser_view_content=0x7f060026;
         public static final int adprogress_progressBar=0x7f060050;
         public static final int alias=0x7f06004e;
@@ -1226,8 +1226,9 @@ containing a value of this type.
         public static final int listMode=0x7f060001;
         public static final int list_item=0x7f06002a;
         public static final int map=0x7f060045;
-        public static final int menu_legalnotices=0x7f060054;
-        public static final int menu_save=0x7f060057;
+        public static final int menu_legalnotices=0x7f060055;
+        public static final int menu_rateapp=0x7f060054;
+        public static final int menu_save=0x7f060058;
         public static final int middle=0x7f060012;
         public static final int never=0x7f060009;
         public static final int none=0x7f060010;
@@ -1235,7 +1236,7 @@ containing a value of this type.
         public static final int progress_circular=0x7f060037;
         public static final int progress_horizontal=0x7f060038;
         public static final int radio=0x7f060030;
-        public static final int refresh=0x7f060056;
+        public static final int refresh=0x7f060057;
         public static final int right_container=0x7f060035;
         public static final int right_icon=0x7f060036;
         public static final int satellite=0x7f060018;
@@ -1377,12 +1378,12 @@ containing a value of this type.
         public static final int action_search=0x7f0b0029;
         public static final int action_settings=0x7f0b0028;
         public static final int action_social_share=0x7f0b002a;
-        public static final int alias_dialog_accept=0x7f0b0047;
-        public static final int alias_dialog_message=0x7f0b0046;
-        public static final int alias_dialog_title=0x7f0b0045;
-        public static final int alias_dialog_toast_1=0x7f0b0048;
-        public static final int alias_dialog_toast_2=0x7f0b0049;
-        public static final int alias_dialog_toast_3=0x7f0b004a;
+        public static final int alias_dialog_accept=0x7f0b004f;
+        public static final int alias_dialog_message=0x7f0b004e;
+        public static final int alias_dialog_title=0x7f0b004d;
+        public static final int alias_dialog_toast_1=0x7f0b0050;
+        public static final int alias_dialog_toast_2=0x7f0b0051;
+        public static final int alias_dialog_toast_3=0x7f0b0052;
         /**  ACTIVITY MAIN 
  ACTIVITY MAIN 
  ACTIVITY MAIN 
@@ -1486,6 +1487,9 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f0b0020;
+        public static final int complain_hint=0x7f0b0040;
+        public static final int complain_message=0x7f0b003f;
+        public static final int complain_problem=0x7f0b0041;
         /**  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
@@ -1494,28 +1498,33 @@ containing a value of this type.
  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
          */
-        public static final int current=0x7f0b003a;
-        public static final int destination=0x7f0b003b;
-        public static final int distance=0x7f0b003d;
+        public static final int current=0x7f0b0042;
+        public static final int destination=0x7f0b0043;
+        public static final int distance=0x7f0b0045;
         public static final int do_nothing=0x7f0b0035;
-        public static final int from=0x7f0b0040;
+        public static final int from=0x7f0b0048;
         public static final int gps_enable=0x7f0b0034;
         public static final int gps_off=0x7f0b0033;
         public static final int list_dialog_title=0x7f0b0039;
         public static final int loading=0x7f0b0031;
-        public static final int menu_guardar=0x7f0b003f;
+        public static final int menu_guardar=0x7f0b0047;
         public static final int menu_legalnotices=0x7f0b002b;
-        public static final int menuitem_refresh=0x7f0b003e;
-        public static final int noaddress=0x7f0b003c;
+        public static final int menu_rateapp=0x7f0b003a;
+        public static final int menuitem_refresh=0x7f0b0046;
+        public static final int noaddress=0x7f0b0044;
         public static final int nofindaddress=0x7f0b002f;
-        public static final int nolocation=0x7f0b0043;
-        public static final int nonetwork=0x7f0b0044;
+        public static final int nolocation=0x7f0b004b;
+        public static final int nonetwork=0x7f0b004c;
         public static final int noresults=0x7f0b0030;
+        public static final int rate_message=0x7f0b003c;
+        public static final int rate_negative_button=0x7f0b003e;
+        public static final int rate_positive_button=0x7f0b003d;
+        public static final int rate_title=0x7f0b003b;
         public static final int search_hint=0x7f0b002c;
         public static final int searching=0x7f0b002d;
         public static final int select_address=0x7f0b0038;
-        public static final int space=0x7f0b0042;
-        public static final int to=0x7f0b0041;
+        public static final int space=0x7f0b004a;
+        public static final int to=0x7f0b0049;
         public static final int wait=0x7f0b002e;
         public static final int wireless_enable=0x7f0b0037;
         public static final int wireless_off=0x7f0b0036;

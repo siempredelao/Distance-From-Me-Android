@@ -9,7 +9,7 @@
     <string name="search_hint">Search Distance From Me</string>
     <string name="searching">Searching</string>
     <string name="wait">Please wait</string>
-    <string name="nofindaddress">No backend service available or network signal very poor. Try again in a while</string>
+    <string name="nofindaddress">No backend service available or very poor network signal. Try again in a while</string>
     <string name="noresults">No matches were found</string>
     <string name="loading">Searching your position. Please, wait</string>
     <string name="action_load">Load distance</string>
@@ -20,9 +20,19 @@
     <string name="wireless_enable">Enable wireless</string>
     <string name="select_address">Select an address</string>
     <string name="list_dialog_title">Choose a distance</string>
+    <string name="menu_rateapp">Rate app</string>
+    <string name="rate_title">Rate this app</string>
+    <string name="rate_message">If you enjoy using Distance From Me, please give 5 stars and write a nice comment. Otherwise, you can also complain about any error or make a suggestion by sending an email to the dev team.</string>
+    <string name="rate_positive_button">Give 5 stars!</string>
+    <string name="rate_negative_button">Complain!</string>
+    <string name="complain_message">Complain/Suggestion about Distance From Me</string>
+    <string name="complain_hint">I want to tell the dev team </string>
+    <string name="complain_problem">There are no email clients installed</string>
 
+    
+    
     <!-- ACTIVITY SHOINFO -->
-    <string name="current">Estimated current position</string>
+    <string name="current">Current estimated position</string>
     <string name="destination">Estimated destination</string>
     <string name="noaddress">No address found for location</string>
     <string name="distance">Distance</string>

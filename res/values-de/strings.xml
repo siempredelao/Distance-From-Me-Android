@@ -20,6 +20,14 @@
     <string name="wireless_enable">Wireless aktivieren</string>
     <string name="select_address">Wählen Sie eine Adresse aus</string>
     <string name="list_dialog_title">Wählen Sie einen Entfernung aux</string>
+    <string name="menu_rateapp">App bewerten</string>
+    <string name="rate_title">App bewerten</string>
+    <string name="rate_message">Wenn Sie gerne mit Distance From Me, geben Sie bitte 5 Sterne und einen netten Kommentar. Sie können aber auch über jeden Fehler beschweren oder einen Vorschlag per E-Mail an die Entwickler-Team.</string>
+    <string name="rate_positive_button">Geben 5 Sterne!</string>
+    <string name="rate_negative_button">Beschweren!</string>
+    <string name="complain_message">Beschweren/Vorschlag über Distance From Me</string>
+    <string name="complain_hint">Ich möchte sagen </string>
+    <string name="complain_problem">Es gibt keine E-Mail-Clients installiert</string>
     
     
 
