@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Cálculo de distancia" >
+        <ListPreference
+            android:defaultValue="MED"
+            android:dialogTitle="Centrar mapa"
+            android:entries="@array/mode"
+            android:entryValues="@array/modecode"
+            android:key="key"
+            android:summary="Dónde centrar el mapa al calcular la distancia"
+            android:title="Centrar mapa" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Registro de distancias" >
+        <Preference
+            android:key="bbdd"
+            android:summary="Toque para borrar todas las distancias almacenadas"
+            android:title="Borrar distancias" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

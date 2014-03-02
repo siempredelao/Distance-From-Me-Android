@@ -22,7 +22,7 @@
     <string name="list_dialog_title">Choisissez une distance</string>
     <string name="menu_rateapp">Noter application</string>
     <string name="rate_title">Noter cette application</string>
-    <string name="rate_message">Si Distance From Me vous plaît, donnez-lui 5 étoiles et laissez un joli commentaire s\'il vous plaît. Autrement vous pouvez aussi vous plaindre à propos de quelque erreur ou écrire une suggestion par email à l'équipe de développement.</string>
+    <string name="rate_message">Si Distance From Me vous plaît, donnez-lui 5 étoiles et laissez un joli commentaire s\'il vous plaît. Autrement vous pouvez aussi vous plaindre à propos de quelque erreur ou écrire une suggestion par email à l\'équipe de développement.</string>
     <string name="rate_positive_button">Donner 5 étoiles</string>
     <string name="rate_negative_button">Dites-nous!</string>
     <string name="complain_message">Plainte/Suggestion de Distance From Me</string>

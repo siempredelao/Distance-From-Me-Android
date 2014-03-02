@@ -144,7 +144,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 	}
 	
 	/**
-	 * Makes easy to toast!
+	 * Makes toasting easy!
 	 * 
 	 * @param text
 	 *            The string to show.

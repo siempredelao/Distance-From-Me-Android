@@ -70,7 +70,7 @@ public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
-	private GoogleMap mapa						= null;
+	private GoogleMap googleMap					= null;
 
 	// A request to connect to Location Services
 	private LocationRequest mLocationRequest	= null;
@@ -78,9 +78,9 @@ public class MainActivity extends ActionBarActivity implements
 	// Stores the current instantiation of the location client in this object
 	private LocationClient mLocationClient		= null;
 
-	// La posición actual
+	// Current position
 	private Location current					= null;
-	private Polyline linea						= null;
+	private Polyline line						= null;
 	private final int RQS_GooglePlayServices	= 1;
 	// Al iniciar la app, movemos la cámara hacia la posición actual
 	private boolean inicioApp					= true;
@@ -104,12 +104,12 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		mapa = ((SupportMapFragment) getSupportFragmentManager()
+		googleMap = ((SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map)).getMap();
 
-		if (mapa != null) {
-			mapa.setMyLocationEnabled(true);
-			mapa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+		if (googleMap != null) {
+			googleMap.setMyLocationEnabled(true);
+			googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 //			mapa.getUiSettings().setZoomControlsEnabled(false);
 
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -129,7 +129,7 @@ public class MainActivity extends ActionBarActivity implements
 			banner.setRefreshInterval(30);
 			banner.loadBanner();
 			
-			mapa.setOnMapLongClickListener(new OnMapLongClickListener() {
+			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
 				public void onMapLongClick(LatLng point) {
 					// Si no hemos encontrado la posición actual, no podremos
@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity implements
 				}
 			});
 
-			mapa.setOnMarkerDragListener(new OnMarkerDragListener() {
+			googleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
 				@Override
 				public void onMarkerDragStart(Marker marker) {
 				}
@@ -164,7 +164,7 @@ public class MainActivity extends ActionBarActivity implements
 				}
 			});
 
-			mapa.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
 					// Abrir una activity
@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements
 				}
 			});
 
-			mapa.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
+			googleMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
 
 			// Iniciando la app
 			if (current == null)
@@ -206,7 +206,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Makes easy to toast!
+	 * Makes toasting easy!
 	 * 
 	 * @param text
 	 *            The string to show.
@@ -487,13 +487,16 @@ public class MainActivity extends ActionBarActivity implements
 		case R.id.menu_legalnotices:
 			showGooglePlayServiceLicense();
 			return true;
+		case R.id.menu_settings:
+			showSettings();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
 	/**
-	 * Load all entries stored in the database and show them to the user in a
+	 * Loads all entries stored in the database and show them to the user in a
 	 * dialog.
 	 */
 	private void cargarDistanciasBD() {
@@ -523,6 +526,14 @@ public class MainActivity extends ActionBarActivity implements
 				}).create().show();
 	}
 
+	
+	private void showSettings(){
+		startActivity(new Intent(this, SettingsActivity.class));
+	}
+	
+	/**
+	 * Shows rate dialog.
+	 */
 	private void rateApp(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.rate_title)
@@ -545,10 +556,16 @@ public class MainActivity extends ActionBarActivity implements
 		.show();
 	}
 	
+	/**
+	 * Opens Google Play Store, in Distance From Me page
+	 */
 	private void openPlayStore(){
 		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
 	}
 	
+	/**
+	 * Drives the user to a email client to make a complain/suggestion.
+	 */
 	private void goComplain(){
 		Intent sendTo = new Intent(Intent.ACTION_SENDTO);
 	    String uriText = "mailto:" + Uri.encode("davidaguiargonzalez@gmail.com") +
@@ -794,7 +811,7 @@ public class MainActivity extends ActionBarActivity implements
 				LatLng latlng = new LatLng(location.getLatitude(),
 						location.getLongitude());
 				// 17 es un buen nivel de zoom para esta acción
-				mapa.animateCamera(CameraUpdateFactory
+				googleMap.animateCamera(CameraUpdateFactory
 						.newLatLngZoom(latlng, 17));
 			}
 			inicioApp = false;
@@ -818,7 +835,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Show a dialog returned by Google Play services for the connection error
+	 * Shows a dialog returned by Google Play services for the connection error
 	 * code
 	 * 
 	 * @param errorCode
@@ -846,7 +863,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Define a DialogFragment to display the error dialog generated in
+	 * Defines a DialogFragment to display the error dialog generated in
 	 * showErrorDialog.
 	 */
 	public static class ErrorDialogFragment extends DialogFragment {
@@ -894,7 +911,7 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private void tareasDistancia(LatLng start, LatLng end, String mensaje) {
 		// Borramos los antiguos marcadores y líneas
-		mapa.clear();
+		googleMap.clear();
 
 		// Calculamos la distancia
 		distance = calculaDistancia(start, end);
@@ -921,7 +938,7 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Destination address (if needed).
 	 */
 	private void anadeMarcador(LatLng point, String distancia, String mensaje) {
-		Marker marcador = mapa.addMarker(new MarkerOptions().position(point)
+		Marker marcador = googleMap.addMarker(new MarkerOptions().position(point)
 				.title(mensaje + distancia));
 		marcador.setDraggable(true);
 		marcador.showInfoWindow();
@@ -936,9 +953,9 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Destination position.
 	 */
 	private void anadeLinea(LatLng start, LatLng end) {
-		if (linea != null) {
-			linea.remove();
-			linea = null;
+		if (line != null) {
+			line.remove();
+			line = null;
 		}
 		PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
 		lineOptions.width(6);
@@ -947,7 +964,7 @@ public class MainActivity extends ActionBarActivity implements
 			lineOptions.color(Color.YELLOW);
 		} else
 			lineOptions.color(Color.GREEN);
-		linea = mapa.addPolyline(lineOptions);
+		line = googleMap.addPolyline(lineOptions);
 	}
 
 	/**
@@ -981,10 +998,10 @@ public class MainActivity extends ActionBarActivity implements
 		double centroLon = (p1.longitude + p2.longitude) / 2;
 
 		if (aplicarZoom)
-			mapa.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
 					centroLat, centroLon), calculaZoom(p1, p2)));
 		else
-			mapa.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(
+			googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(
 					p2.latitude, p2.longitude)));
 	}
 

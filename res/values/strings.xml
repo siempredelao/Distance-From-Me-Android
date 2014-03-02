@@ -28,6 +28,7 @@
     <string name="complain_message">Complain/Suggestion about Distance From Me</string>
     <string name="complain_hint">I want to tell the dev team </string>
     <string name="complain_problem">There are no email clients installed</string>
+    <string name="menu_settings">Settings</string>
 
     
     
