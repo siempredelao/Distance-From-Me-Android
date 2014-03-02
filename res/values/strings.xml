@@ -29,6 +29,17 @@
     <string name="complain_hint">I want to tell the dev team </string>
     <string name="complain_problem">There are no email clients installed</string>
     <string name="menu_settings">Settings</string>
+    <string name="distances_deleted">Distances deleted</string>
+    <string name="no_distances_registered">No distances saved</string>
+    <string name="category_centre_title">Distance measure</string>
+    <string name="dialog_title">Centre map</string>
+    <string name="preference_centre_summary">Where pointing the map at distance measuring</string>
+    <string name="mode_DES">Centre in destination</string>
+    <string name="mode_CEN">Centre in the middle</string>
+    <string name="category_db_title">Distance register</string>
+    <string name="preference_db_title">Delete distances</string>
+    <string name="preference_db_summary">Touch to delete all saved distances</string>
+    
 
     
     

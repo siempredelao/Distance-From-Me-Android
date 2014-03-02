@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="mode">
-        <item>Centro en destino</item>
-        <item>Centro en medio</item>
+        <item>@string/mode_DES</item>
+        <item>@string/mode_CEN</item>
     </string-array>
     <string-array name="modecode">
         <item>DES</item>
-        <item>MED</item>
+        <item>CEN</item>
     </string-array>
 </resources>

@@ -60,6 +60,11 @@ public class DistancesDataSource {
 		database.execSQL(DatabaseContract.SQL_DELETE_ROW, args);
 	}
 	
+	public void deleteAll(){
+		database.execSQL(DatabaseContract.SQL_DROP);
+		database.execSQL(DatabaseContract.SQL_CREATE_TABLE);
+	}
+	
 	/**
 	 * Get all distances in the database in an arraylist. We can do this, or in
 	 * other way, we also can return the cursor and use a CursorAdapter to show

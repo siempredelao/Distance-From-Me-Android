@@ -1,7 +1,6 @@
 package gc.david.dfm;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import gc.david.dfm.db.DistancesDataSource;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -21,7 +20,13 @@ public class SettingsActivity extends PreferenceActivity{
         bbdd.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				toastIt("Ningún registro ta qui cuá pim pam");
+				DistancesDataSource dDS = new DistancesDataSource(getApplicationContext());
+				dDS.open();
+				if (dDS != null){
+					dDS.deleteAll();
+					dDS.close();
+					toastIt(getText(R.string.distances_deleted).toString());
+				}
 				return false;
 			}
 		});        

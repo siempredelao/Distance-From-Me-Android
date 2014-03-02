@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
@@ -31,6 +33,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -104,13 +107,21 @@ public class MainActivity extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		googleMap = ((SupportMapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.map)).getMap();
+		SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.map));
+		googleMap = fragment.getMap();
 
 		if (googleMap != null) {
+			// InMobi Ads
+			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
+			banner = (IMBanner) findViewById(R.id.banner);
+			banner.setRefreshInterval(30);
+			banner.loadBanner();
+			
 			googleMap.setMyLocationEnabled(true);
 			googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-//			mapa.getUiSettings().setZoomControlsEnabled(false);
+			// To make Google workers happy ¬¬
+			googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
 
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -123,11 +134,7 @@ public class MainActivity extends ActionBarActivity implements
 						getText(R.string.wireless_enable).toString(),
 						getText(R.string.do_nothing).toString());
 
-			// InMobi Ads
-			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
-			banner = (IMBanner) findViewById(R.id.banner);
-			banner.setRefreshInterval(30);
-			banner.loadBanner();
+			
 			
 			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
@@ -469,7 +476,6 @@ public class MainActivity extends ActionBarActivity implements
 				loadItem.setVisible(false);
 			dDS.close();
 		}
-
 		return true;
 	}
 
@@ -506,27 +512,32 @@ public class MainActivity extends ActionBarActivity implements
 		ArrayList<Distance> distancias = dds.getAllDistances();
 		dds.close();
 
-		final AdaptadorDistancias adaptador = new AdaptadorDistancias(this,
-				distancias);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getText(R.string.list_dialog_title).toString())
-				.setAdapter(adaptador, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						cargandoDistancia = true;
-						Distance distancia = adaptador.getDatos().get(which);
-						LatLng inicio = new LatLng(distancia.getLat_a(),
-								distancia.getLon_a());
-						LatLng fin = new LatLng(distancia.getLat_b(), distancia
-								.getLon_b());
-
-						tareasDistancia(inicio, fin, distancia.getNombre()
-								+ "\n");
-					}
-				}).create().show();
+		if (distancias != null){
+			final AdaptadorDistancias adaptador = new AdaptadorDistancias(this,
+					distancias);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(getText(R.string.list_dialog_title).toString())
+					.setAdapter(adaptador, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							cargandoDistancia = true;
+							Distance distancia = adaptador.getDatos().get(which);
+							LatLng inicio = new LatLng(distancia.getLat_a(),
+									distancia.getLon_a());
+							LatLng fin = new LatLng(distancia.getLat_b(), distancia
+									.getLon_b());
+	
+							tareasDistancia(inicio, fin, distancia.getNombre()
+									+ "\n");
+						}
+					}).create().show();
+		} else
+			toastIt(getText(R.string.no_distances_registered).toString());
 	}
 
-	
+	/**
+	 * Shows settings activity.
+	 */
 	private void showSettings(){
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
@@ -646,10 +657,12 @@ public class MainActivity extends ActionBarActivity implements
 	/*
 	 * Called when the system detects that this Activity is now visible.
 	 */
+	@SuppressLint("NewApi")
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+			invalidateOptionsMenu();
 		checkPlayServices();
 	}
 
@@ -924,6 +937,8 @@ public class MainActivity extends ActionBarActivity implements
 
 		// Aquí hacer la animación de la cámara
 		mueveCamaraZoom(start, end);
+		
+			
 	}
 
 	/**
@@ -994,9 +1009,18 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Destination position.
 	 */
 	private void mueveCamaraZoom(LatLng p1, LatLng p2) {
-		double centroLat = (p1.latitude + p2.latitude) / 2;
-		double centroLon = (p1.longitude + p2.longitude) / 2;
-
+		double centroLat = 0.0, centroLon = 0.0;
+		// Diferenciamos según preferencias
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		String centre = sharedPreferences.getString("centre", "CEN");
+		if (centre.equals("CEN")){
+			centroLat = (p1.latitude + p2.latitude) / 2;
+			centroLon = (p1.longitude + p2.longitude) / 2;	
+		} else if (centre.equals("DES")){
+			centroLat = p2.latitude;
+			centroLon = p2.longitude;
+		}
+		
 		if (aplicarZoom)
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
 					centroLat, centroLon), calculaZoom(p1, p2)));
