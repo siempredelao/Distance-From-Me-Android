@@ -43,11 +43,11 @@ public class DistancesDataSource {
 		database.close();
 	}
 	
-	public void insert(String nombre, LatLng current, LatLng destination, String distancia){
-		Object[] args = {	nombre,
+	public void insert(String name, LatLng current, LatLng destination, String distance){
+		Object[] args = {	name,
 							current.latitude, current.longitude,
 							destination.latitude, destination.longitude,
-							distancia
+							distance
 						};
 		
 		// La fecha, como el _ID, se crea automáticamente
@@ -73,21 +73,20 @@ public class DistancesDataSource {
 	 * @return An ArrayList with distances; null, if there is no distances.
 	 */
 	public ArrayList<Distance> getAllDistances(){
-		ArrayList<Distance> distancias = null;
+		ArrayList<Distance> distances = null;
 		
 		Cursor c = database.rawQuery(DatabaseContract.SQL_SELECT_ALL, null);
 		if (c.moveToFirst()){
-			distancias = new ArrayList<Distance>();
+			distances = new ArrayList<Distance>();
 			while (!c.isAfterLast()){
 				Distance d = cursorToDistance(c);
-				distancias.add(d);
+				distances.add(d);
 				c.moveToNext();
 			}
 		}
-		
 		c.close();
 		
-		return distancias;
+		return distances;
 	}
 	
 	/**

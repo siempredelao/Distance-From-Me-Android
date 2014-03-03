@@ -9,25 +9,25 @@ package gc.david.dfm.db;
  */
 public class Distance {
 	private long id;
-	private String nombre;
+	private String name;
 	private double lat_a;
 	private double lon_a;
 	private double lat_b;
 	private double lon_b;
-	private String distancia;
-	private String fecha;
+	private String distance;
+	private String date;
 	
 
 	public Distance(long id, String nombre, double lat_a, double lon_a,
 			double lat_b, double lon_b, String distancia,String fecha) {
 		this.id = id;
-		this.nombre = nombre;
+		this.name = nombre;
 		this.lat_a = lat_a;
 		this.lon_a = lon_a;
 		this.lat_b = lat_b;
 		this.lon_b = lon_b;
-		this.distancia = distancia;
-		this.fecha = fecha;
+		this.distance = distancia;
+		this.date = fecha;
 	}
 
 
@@ -35,8 +35,8 @@ public class Distance {
 		return id;
 	}
 
-	public String getNombre() {
-		return nombre;
+	public String getName() {
+		return name;
 	}
 
 	public double getLat_a() {
@@ -55,15 +55,15 @@ public class Distance {
 		return lon_b;
 	}
 
-	public String getDistancia() {
-		return distancia;
+	public String getDistance() {
+		return distance;
 	}
 
-	public String getFecha() {
-		return fecha;
+	public String getDate() {
+		return date;
 	}
 
-	public void setFecha(String fecha) {
-		this.fecha = fecha;
+	public void setDate(String date) {
+		this.date = date;
 	}
 }

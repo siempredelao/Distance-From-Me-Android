@@ -7,7 +7,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
-
 public class SettingsActivity extends PreferenceActivity{
 	@SuppressWarnings("deprecation")
 	@Override
@@ -31,7 +30,6 @@ public class SettingsActivity extends PreferenceActivity{
 			}
 		});        
     }
-	
 	
 	/**
 	 * Makes toasting easy!

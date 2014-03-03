@@ -18,25 +18,25 @@ import android.widget.TextView;
  * @author David
  * 
  */
-public class AdaptadorDistancias extends ArrayAdapter<Distance> {
+public class DistanceAdapter extends ArrayAdapter<Distance> {
 	
 	private Activity context;
-	private List<Distance> datos;
+	private List<Distance> data;
 	
-	public AdaptadorDistancias(Activity context, List<Distance> datos) {
+	public DistanceAdapter(Activity context, List<Distance> datos) {
 		super(context, R.layout.list_item, datos);
 		this.context = context;
-		this.datos = datos;
+		this.data = datos;
 	}
 
-	public List<Distance> getDatos() {
-		return datos;
+	public List<Distance> getData() {
+		return data;
 	}
 	
 	static class ViewHolder {
-		TextView titulo;
-		TextView distancia;
-		TextView fecha;
+		TextView title;
+		TextView distance;
+		TextView date;
 	}
 	
 	@Override
@@ -50,18 +50,18 @@ public class AdaptadorDistancias extends ArrayAdapter<Distance> {
 			item = inflater.inflate(R.layout.list_item, null);
 			
 			holder = new ViewHolder();
-			holder.titulo = (TextView) item.findViewById(R.id.alias);
-			holder.distancia = (TextView) item.findViewById(R.id.distancia);
-			holder.fecha = (TextView) item.findViewById(R.id.fecha);
+			holder.title = (TextView) item.findViewById(R.id.alias);
+			holder.distance = (TextView) item.findViewById(R.id.distancia);
+			holder.date = (TextView) item.findViewById(R.id.fecha);
 			
 			item.setTag(holder);
 		} else {
 			holder = (ViewHolder) item.getTag();
 		}
 		
-		holder.titulo.setText(datos.get(position).getNombre().toString());
-		holder.distancia.setText(datos.get(position).getDistancia().toString());
-		holder.fecha.setText(datos.get(position).getFecha().toString());
+		holder.title.setText(data.get(position).getName().toString());
+		holder.distance.setText(data.get(position).getDistance().toString());
+		holder.date.setText(data.get(position).getDate().toString());
 		
 		return item;
 	}

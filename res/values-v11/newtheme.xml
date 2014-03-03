@@ -8,7 +8,7 @@
         <item name="android:popupMenuStyle">@style/PopupMenu.NewTheme</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.NewTheme</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.NewTheme</item>
-        
+    
         <!-- Light.DarkActionBar specific -->
         <!-- Con esto funciona el menú desplegable -->
         <item name="android:actionBarWidgetTheme">@style/NewTheme.Widget</item>

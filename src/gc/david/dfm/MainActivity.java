@@ -74,32 +74,28 @@ public class MainActivity extends ActionBarActivity implements
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private GoogleMap googleMap					= null;
-
 	// A request to connect to Location Services
 	private LocationRequest mLocationRequest	= null;
-
 	// Stores the current instantiation of the location client in this object
 	private LocationClient mLocationClient		= null;
-
 	// Current position
 	private Location current					= null;
 	private Polyline line						= null;
 	private final int RQS_GooglePlayServices	= 1;
-	// Al iniciar la app, movemos la cámara hacia la posición actual
-	private boolean inicioApp					= true;
-	// Para discernir si estamos refinando la posición o si estamos buscando
-	// otra
-	private boolean aplicarZoom					= true;
+	// Moves to current position if app has just started
+	private boolean appHasJustStarted			= true;
+	// Distinguish between position polishing and other position searching
+	private boolean applyZoom					= true;
 	private String distance						= "";
-	private LatLng posicionElegida				= null;
-	// Dirección que devuelve el buscar por una string
-	private String direccionBP					= "";
+	private LatLng selectedPosition				= null;
+	// Address returned at string searching
+	private String bpAddress					= "";
 	private MenuItem searchItem					= null;
-	// Si venimos por ejemplo de whatsapp para ver una dirección
-	private boolean verPosicion					= false;
-	private String posicionDestinoEnvio			= "";
-	// Cuando obtenemos una distancia de la base de datos
-	private boolean cargandoDistancia			= false;
+	// Show position if we come from other app (p.e. Whatsapp)
+	private boolean seePosition					= false;
+	private String sendDestinationPosition		= "";
+	// To change line color when we choose a distance from database
+	private boolean loadingDistance				= false;
 	private IMBanner banner						= null;
 
 	@Override
@@ -142,7 +138,7 @@ public class MainActivity extends ActionBarActivity implements
 					// Si no hemos encontrado la posición actual, no podremos
 					// calcular la distancia
 					if (current != null)
-						tareasDistancia(new LatLng(current.getLatitude(),
+						distanceTasks(new LatLng(current.getLatitude(),
 								current.getLongitude()), point, "");
 				}
 			});
@@ -156,13 +152,13 @@ public class MainActivity extends ActionBarActivity implements
 				public void onMarkerDragEnd(Marker marker) {
 					// NO movemos el zoom porque estamos simplemente afinando la
 					// posición
-					aplicarZoom = false;
-					tareasDistancia(
+					applyZoom = false;
+					distanceTasks(
 							new LatLng(current.getLatitude(), current
 									.getLongitude()),
 							new LatLng(marker.getPosition().latitude, marker
 									.getPosition().longitude), "");
-					aplicarZoom = true;
+					applyZoom = true;
 				}
 
 				@Override
@@ -253,7 +249,7 @@ public class MainActivity extends ActionBarActivity implements
 		// busquemos nos inicie una nueva instancia de la aplicación
 		String query = intent.getStringExtra(SearchManager.QUERY);
 		if (current != null)
-			new BuscaPosicion().execute(query);
+			new SearchPosition().execute(query);
 	}
 
 	/**
@@ -271,10 +267,10 @@ public class MainActivity extends ActionBarActivity implements
 															// (You)
 		if (queryParameter != null) {
 			// Esta string será la que mandemos a BuscaPosicion
-			posicionDestinoEnvio = queryParameter.replace("loc:", "")
+			sendDestinationPosition = queryParameter.replace("loc:", "")
 					.replaceAll(" (\\D*)", ""); // latitud,longitud
 
-			verPosicion = true;
+			seePosition = true;
 		}
 	}
 
@@ -282,7 +278,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * A subclass of AsyncTask that calls getFromLocationName() in the
 	 * background.
 	 */
-	private class BuscaPosicion extends AsyncTask<String, Void, Integer> {
+	private class SearchPosition extends AsyncTask<String, Void, Integer> {
 
 		private ProgressDialog pd;
 		private List<Address> addresses;
@@ -290,8 +286,8 @@ public class MainActivity extends ActionBarActivity implements
 		@Override
 		protected void onPreExecute() {
 			addresses = null;
-			direccionBP = "";
-			posicionElegida = null;
+			bpAddress = "";
+			selectedPosition = null;
 			pd = new ProgressDialog(MainActivity.this);
 			pd.setTitle(R.string.searching);
 			pd.setMessage(getText(R.string.wait) + "...");
@@ -350,26 +346,26 @@ public class MainActivity extends ActionBarActivity implements
 
 						builder.setTitle(getText(R.string.select_address));
 						builder.setItems(
-								(String[]) agrupaDirecciones(addresses)
+								(String[]) groupAdresses(addresses)
 										.toArray(new String[addresses.size()]),
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int item) {
-										procesaElegido(item);
+										processSelected(item);
 
-										if (posicionElegida != null)
-											tareasDistancia(
+										if (selectedPosition != null)
+											distanceTasks(
 													new LatLng(
 															current.getLatitude(),
 															current.getLongitude()),
-													posicionElegida,
-													direccionBP);
+													selectedPosition,
+													bpAddress);
 									}
 								});
 						builder.create();
 						builder.show();
 					} else {
-						procesaElegido(0);
+						processSelected(0);
 					}
 				}
 			} else if (result == -1) {
@@ -383,11 +379,11 @@ public class MainActivity extends ActionBarActivity implements
 			if (pd != null)
 				pd.dismiss();
 
-			if (posicionElegida != null)
-				tareasDistancia(
+			if (selectedPosition != null)
+				distanceTasks(
 						new LatLng(current.getLatitude(),
-								current.getLongitude()), posicionElegida,
-						direccionBP);
+								current.getLongitude()), selectedPosition,
+						bpAddress);
 
 			MenuItemCompat.collapseActionView(searchItem);
 
@@ -415,15 +411,15 @@ public class MainActivity extends ActionBarActivity implements
 		 * @param item
 		 *            The index item in the AlertDialog.
 		 */
-		private void procesaElegido(int item) {
+		private void processSelected(int item) {
 			// esto para el marcador!
 			// +1 porque si buscamos por país nos devuelve 0 y ni
 			// entra
 			// en el bucle
 			for (int i = 0; i < addresses.get(item).getMaxAddressLineIndex() + 1; i++)
-				direccionBP += addresses.get(item).getAddressLine(i) + "\n";
+				bpAddress += addresses.get(item).getAddressLine(i) + "\n";
 
-			posicionElegida = new LatLng(addresses.get(item).getLatitude(),
+			selectedPosition = new LatLng(addresses.get(item).getLatitude(),
 					addresses.get(item).getLongitude());
 		}
 
@@ -434,7 +430,7 @@ public class MainActivity extends ActionBarActivity implements
 		 *            An Address's list.
 		 * @return A string list with only addresses in text.
 		 */
-		private List<String> agrupaDirecciones(List<Address> lista) {
+		private List<String> groupAdresses(List<Address> lista) {
 			List<String> nueva = new ArrayList<String>();
 			String aux;
 			for (Address l : lista) {
@@ -446,6 +442,7 @@ public class MainActivity extends ActionBarActivity implements
 			return nueva;
 		}
 	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -485,7 +482,7 @@ public class MainActivity extends ActionBarActivity implements
 		case R.id.action_search:
 			return true;
 		case R.id.action_load:
-			cargarDistanciasBD();
+			loadDistancesFromDB();
 			return true;
 		case R.id.menu_rateapp:
 			rateApp();
@@ -505,7 +502,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Loads all entries stored in the database and show them to the user in a
 	 * dialog.
 	 */
-	private void cargarDistanciasBD() {
+	private void loadDistancesFromDB() {
 		DistancesDataSource dds = new DistancesDataSource(
 				getApplicationContext());
 		dds.open();
@@ -513,21 +510,21 @@ public class MainActivity extends ActionBarActivity implements
 		dds.close();
 
 		if (distancias != null){
-			final AdaptadorDistancias adaptador = new AdaptadorDistancias(this,
+			final DistanceAdapter adaptador = new DistanceAdapter(this,
 					distancias);
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(getText(R.string.list_dialog_title).toString())
 					.setAdapter(adaptador, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							cargandoDistancia = true;
-							Distance distancia = adaptador.getDatos().get(which);
+							loadingDistance = true;
+							Distance distancia = adaptador.getData().get(which);
 							LatLng inicio = new LatLng(distancia.getLat_a(),
 									distancia.getLon_a());
 							LatLng fin = new LatLng(distancia.getLat_b(), distancia
 									.getLon_b());
 	
-							tareasDistancia(inicio, fin, distancia.getNombre()
+							distanceTasks(inicio, fin, distancia.getName()
 									+ "\n");
 						}
 					}).create().show();
@@ -814,12 +811,12 @@ public class MainActivity extends ActionBarActivity implements
 		else
 			current = new Location(location);
 
-		if (inicioApp) {
-			if (verPosicion) {
+		if (appHasJustStarted) {
+			if (seePosition) {
 				if (current != null) {
-					new BuscaPosicion().execute(posicionDestinoEnvio);
+					new SearchPosition().execute(sendDestinationPosition);
 				}
-				verPosicion = false;
+				seePosition = false;
 			} else {
 				LatLng latlng = new LatLng(location.getLatitude(),
 						location.getLongitude());
@@ -827,7 +824,7 @@ public class MainActivity extends ActionBarActivity implements
 				googleMap.animateCamera(CameraUpdateFactory
 						.newLatLngZoom(latlng, 17));
 			}
-			inicioApp = false;
+			appHasJustStarted = false;
 		}
 	}
 
@@ -922,21 +919,21 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param mensaje
 	 *            Address to show in the info window (if needed).
 	 */
-	private void tareasDistancia(LatLng start, LatLng end, String mensaje) {
+	private void distanceTasks(LatLng start, LatLng end, String mensaje) {
 		// Borramos los antiguos marcadores y líneas
 		googleMap.clear();
 
 		// Calculamos la distancia
-		distance = calculaDistancia(start, end);
+		distance = calculateDistance(start, end);
 
 		// Añadimos el nuevo marcador
-		anadeMarcador(end, distance, mensaje);
+		addMarker(end, distance, mensaje);
 
 		// Añadimos la línea
-		anadeLinea(start, end);
+		addLine(start, end);
 
 		// Aquí hacer la animación de la cámara
-		mueveCamaraZoom(start, end);
+		moveCameraZoom(start, end);
 		
 			
 	}
@@ -952,7 +949,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param mensaje
 	 *            Destination address (if needed).
 	 */
-	private void anadeMarcador(LatLng point, String distancia, String mensaje) {
+	private void addMarker(LatLng point, String distancia, String mensaje) {
 		Marker marcador = googleMap.addMarker(new MarkerOptions().position(point)
 				.title(mensaje + distancia));
 		marcador.setDraggable(true);
@@ -967,15 +964,15 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param end
 	 *            Destination position.
 	 */
-	private void anadeLinea(LatLng start, LatLng end) {
+	private void addLine(LatLng start, LatLng end) {
 		if (line != null) {
 			line.remove();
 			line = null;
 		}
 		PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
 		lineOptions.width(6);
-		if (cargandoDistancia) {
-			cargandoDistancia = false;
+		if (loadingDistance) {
+			loadingDistance = false;
 			lineOptions.color(Color.YELLOW);
 		} else
 			lineOptions.color(Color.GREEN);
@@ -992,7 +989,7 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Destination position.
 	 * @return The normalized distance.
 	 */
-	private String calculaDistancia(LatLng start, LatLng end) {
+	private String calculateDistance(LatLng start, LatLng end) {
 		double metros = Haversine.getDistanceJNI(start.latitude,
 				start.longitude, end.latitude, end.longitude);
 
@@ -1008,7 +1005,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param p2
 	 *            Destination position.
 	 */
-	private void mueveCamaraZoom(LatLng p1, LatLng p2) {
+	private void moveCameraZoom(LatLng p1, LatLng p2) {
 		double centroLat = 0.0, centroLon = 0.0;
 		// Diferenciamos según preferencias
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -1021,9 +1018,9 @@ public class MainActivity extends ActionBarActivity implements
 			centroLon = p2.longitude;
 		}
 		
-		if (aplicarZoom)
+		if (applyZoom)
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-					centroLat, centroLon), calculaZoom(p1, p2)));
+					centroLat, centroLon), calculateZoom(p1, p2)));
 		else
 			googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(
 					p2.latitude, p2.longitude)));
@@ -1039,7 +1036,7 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Destination position.
 	 * @return Zoom level.
 	 */
-	private float calculaZoom(LatLng p1, LatLng p2) {
+	private float calculateZoom(LatLng p1, LatLng p2) {
 		double metros = Haversine.getDistance(p1.latitude, p1.longitude,
 				p2.latitude, p2.longitude);
 		double kms = metros / 1000;

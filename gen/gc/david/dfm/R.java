@@ -1379,16 +1379,15 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abc_shareactionprovider_share_with_application=0x7f0b000b;
-        public static final int action_load=0x7f0b0032;
-        public static final int action_search=0x7f0b0029;
-        public static final int action_settings=0x7f0b0028;
-        public static final int action_social_share=0x7f0b002a;
-        public static final int alias_dialog_accept=0x7f0b005a;
-        public static final int alias_dialog_message=0x7f0b0059;
-        public static final int alias_dialog_title=0x7f0b0058;
-        public static final int alias_dialog_toast_1=0x7f0b005b;
-        public static final int alias_dialog_toast_2=0x7f0b005c;
-        public static final int alias_dialog_toast_3=0x7f0b005d;
+        public static final int action_load=0x7f0b0031;
+        public static final int action_search=0x7f0b0028;
+        public static final int action_social_share=0x7f0b0029;
+        public static final int alias_dialog_accept=0x7f0b0059;
+        public static final int alias_dialog_message=0x7f0b0058;
+        public static final int alias_dialog_title=0x7f0b0057;
+        public static final int alias_dialog_toast_1=0x7f0b005a;
+        public static final int alias_dialog_toast_2=0x7f0b005b;
+        public static final int alias_dialog_toast_3=0x7f0b005c;
         /**  ACTIVITY MAIN 
  ACTIVITY MAIN 
  ACTIVITY MAIN 
@@ -1421,8 +1420,8 @@ containing a value of this type.
         [CHAR LIMIT=70] 
          */
         public static final int auth_client_using_bad_version_title=0x7f0b0021;
-        public static final int category_centre_title=0x7f0b0045;
-        public static final int category_db_title=0x7f0b004a;
+        public static final int category_centre_title=0x7f0b0044;
+        public static final int category_db_title=0x7f0b0049;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=40] 
@@ -1494,9 +1493,9 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f0b0020;
-        public static final int complain_hint=0x7f0b0040;
-        public static final int complain_message=0x7f0b003f;
-        public static final int complain_problem=0x7f0b0041;
+        public static final int complain_hint=0x7f0b003f;
+        public static final int complain_message=0x7f0b003e;
+        public static final int complain_problem=0x7f0b0040;
         /**  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
@@ -1505,45 +1504,45 @@ containing a value of this type.
  ACTIVITY SHOINFO 
  ACTIVITY SHOINFO 
          */
-        public static final int current=0x7f0b004d;
-        public static final int destination=0x7f0b004e;
-        public static final int dialog_title=0x7f0b0046;
-        public static final int distance=0x7f0b0050;
-        public static final int distances_deleted=0x7f0b0043;
-        public static final int do_nothing=0x7f0b0035;
-        public static final int from=0x7f0b0053;
-        public static final int gps_enable=0x7f0b0034;
-        public static final int gps_off=0x7f0b0033;
-        public static final int list_dialog_title=0x7f0b0039;
-        public static final int loading=0x7f0b0031;
-        public static final int menu_guardar=0x7f0b0052;
-        public static final int menu_legalnotices=0x7f0b002b;
-        public static final int menu_rateapp=0x7f0b003a;
-        public static final int menu_settings=0x7f0b0042;
-        public static final int menuitem_refresh=0x7f0b0051;
-        public static final int mode_CEN=0x7f0b0049;
-        public static final int mode_DES=0x7f0b0048;
-        public static final int no_distances_registered=0x7f0b0044;
-        public static final int noaddress=0x7f0b004f;
-        public static final int nofindaddress=0x7f0b002f;
-        public static final int nolocation=0x7f0b0056;
-        public static final int nonetwork=0x7f0b0057;
-        public static final int noresults=0x7f0b0030;
-        public static final int preference_centre_summary=0x7f0b0047;
-        public static final int preference_db_summary=0x7f0b004c;
-        public static final int preference_db_title=0x7f0b004b;
-        public static final int rate_message=0x7f0b003c;
-        public static final int rate_negative_button=0x7f0b003e;
-        public static final int rate_positive_button=0x7f0b003d;
-        public static final int rate_title=0x7f0b003b;
-        public static final int search_hint=0x7f0b002c;
-        public static final int searching=0x7f0b002d;
-        public static final int select_address=0x7f0b0038;
-        public static final int space=0x7f0b0055;
-        public static final int to=0x7f0b0054;
-        public static final int wait=0x7f0b002e;
-        public static final int wireless_enable=0x7f0b0037;
-        public static final int wireless_off=0x7f0b0036;
+        public static final int current=0x7f0b004c;
+        public static final int destination=0x7f0b004d;
+        public static final int dialog_title=0x7f0b0045;
+        public static final int distance=0x7f0b004f;
+        public static final int distances_deleted=0x7f0b0042;
+        public static final int do_nothing=0x7f0b0034;
+        public static final int from=0x7f0b0052;
+        public static final int gps_enable=0x7f0b0033;
+        public static final int gps_off=0x7f0b0032;
+        public static final int list_dialog_title=0x7f0b0038;
+        public static final int loading=0x7f0b0030;
+        public static final int menu_guardar=0x7f0b0051;
+        public static final int menu_legalnotices=0x7f0b002a;
+        public static final int menu_rateapp=0x7f0b0039;
+        public static final int menu_settings=0x7f0b0041;
+        public static final int menuitem_refresh=0x7f0b0050;
+        public static final int mode_CEN=0x7f0b0048;
+        public static final int mode_DES=0x7f0b0047;
+        public static final int no_distances_registered=0x7f0b0043;
+        public static final int noaddress=0x7f0b004e;
+        public static final int nofindaddress=0x7f0b002e;
+        public static final int nolocation=0x7f0b0055;
+        public static final int nonetwork=0x7f0b0056;
+        public static final int noresults=0x7f0b002f;
+        public static final int preference_centre_summary=0x7f0b0046;
+        public static final int preference_db_summary=0x7f0b004b;
+        public static final int preference_db_title=0x7f0b004a;
+        public static final int rate_message=0x7f0b003b;
+        public static final int rate_negative_button=0x7f0b003d;
+        public static final int rate_positive_button=0x7f0b003c;
+        public static final int rate_title=0x7f0b003a;
+        public static final int search_hint=0x7f0b002b;
+        public static final int searching=0x7f0b002c;
+        public static final int select_address=0x7f0b0037;
+        public static final int space=0x7f0b0054;
+        public static final int to=0x7f0b0053;
+        public static final int wait=0x7f0b002d;
+        public static final int wireless_enable=0x7f0b0036;
+        public static final int wireless_off=0x7f0b0035;
     }
     public static final class style {
         /**  ActionBar style 

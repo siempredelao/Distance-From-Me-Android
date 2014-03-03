@@ -2,7 +2,6 @@
 <resources>
     <!-- ACTIVITY MAIN -->
     <string name="app_name">Distance From Me</string>
-    <string name="action_settings">Preferències</string>
     <string name="action_search">Cercar</string>
     <string name="action_social_share">Compartir</string>
     <string name="menu_legalnotices">Avís legal</string>
@@ -28,6 +27,17 @@
     <string name="complain_message">Queixa/Suggeriment sobre Distance From Me</string>
     <string name="complain_hint">Vull comentar-li a l\'equip de desenvolupament que </string>
     <string name="complain_problem">No hi ha clients d\'email disponibles</string>
+    <string name="menu_settings">Preferències</string>
+    <string name="distances_deleted">Distàncies eliminades</string>
+    <string name="no_distances_registered">No hi ha distàncies emmagatzemades</string>
+    <string name="category_centre_title">Càlcul de distàncies</string>
+    <string name="dialog_title">Centrar mapa</string>
+    <string name="preference_centre_summary">On centrar el mapa en calcular la distància</string>
+    <string name="mode_DES">Veure només destinació</string>
+    <string name="mode_CEN">Veure ambdós llocs</string>
+    <string name="category_db_title">Registre de distàncies</string>
+    <string name="preference_db_title">Esborrar distàncies</string>
+    <string name="preference_db_summary">Toc per a esborrar totes les distàncies emmagatzemades</string>
 
 
 

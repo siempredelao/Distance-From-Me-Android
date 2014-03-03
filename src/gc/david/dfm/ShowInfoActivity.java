@@ -43,18 +43,18 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
-	private LatLng origen		= null;
-	private LatLng destino		= null;
+	private LatLng source		= null;
+	private LatLng destination	= null;
 
-	private TextView titulo1	= null;
-	private TextView titulo2	= null;
-	private TextView datos1		= null;
-	private TextView datos2		= null;
-	private TextView distancia	= null;
+	private TextView title1		= null;
+	private TextView title2		= null;
+	private TextView data1		= null;
+	private TextView data2		= null;
+	private TextView distance	= null;
 
 	private MenuItem menuItem	= null;
-	private String direccion1	= null;
-	private String direccion2	= null;
+	private String address1		= null;
+	private String address2		= null;
 	private String dist			= null;
 
 	@Override
@@ -65,74 +65,74 @@ public class ShowInfoActivity extends ActionBarActivity {
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
-		extraeDatosIntent();
+		getIntentData();
 		
-		titulo1 = (TextView) findViewById(R.id.titulo_datos1);
-		titulo2 = (TextView) findViewById(R.id.titulo_datos2);
-		rellenaTitulos();
+		title1 = (TextView) findViewById(R.id.titulo_datos1);
+		title2 = (TextView) findViewById(R.id.titulo_datos2);
+		fillTitles();
 		
-		datos1 = (TextView) findViewById(R.id.datos1);
-		datos2 = (TextView) findViewById(R.id.datos2);
+		data1 = (TextView) findViewById(R.id.datos1);
+		data2 = (TextView) findViewById(R.id.datos2);
 		
 		if (savedInstanceState == null){
-			rellenaDirecciones();
+			fillAddresses();
 		} else {
-			this.direccion1 = savedInstanceState.getString("address1");
-			this.direccion2 = savedInstanceState.getString("address2");
+			this.address1 = savedInstanceState.getString("address1");
+			this.address2 = savedInstanceState.getString("address2");
 			
-			this.datos1.setText(direccion1 + "\n\n(" + origen.latitude + ", "
-					+ origen.longitude + ")");
-			this.datos2.setText(direccion2 + "\n\n(" + destino.latitude + ", "
-					+ destino.longitude + ")");
+			this.data1.setText(address1 + "\n\n(" + source.latitude + ", "
+					+ source.longitude + ")");
+			this.data2.setText(address2 + "\n\n(" + destination.latitude + ", "
+					+ destination.longitude + ")");
 			
 			// Este se modifica dos veces...
 			this.dist = savedInstanceState.getString("distance");
 		}
 
-		distancia = (TextView) findViewById(R.id.distancia);
-		rellenaDistancia();
+		distance = (TextView) findViewById(R.id.distancia);
+		fillDistance();
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putString("address1", this.direccion1);
-		outState.putString("address2", this.direccion2);
+		outState.putString("address1", this.address1);
+		outState.putString("address2", this.address2);
 		outState.putString("distance", this.dist);
 	}
 
 	/**
 	 * Get data form the Intent.
 	 */
-	private void extraeDatosIntent() {
+	private void getIntentData() {
 		Intent datosEntrantes = getIntent();
-		this.origen = (LatLng) datosEntrantes.getParcelableExtra("origen");
-		this.destino = (LatLng) datosEntrantes.getParcelableExtra("destino");
+		this.source = (LatLng) datosEntrantes.getParcelableExtra("origen");
+		this.destination = (LatLng) datosEntrantes.getParcelableExtra("destino");
 		this.dist = datosEntrantes.getStringExtra("distancia");
 	}
 
 	/**
 	 * Fill Textviews titles.
 	 */
-	private void rellenaTitulos() {
-		titulo1.setText(getText(R.string.current) + ":");
-		titulo2.setText(getText(R.string.destination) + ":");
+	private void fillTitles() {
+		title1.setText(getText(R.string.current) + ":");
+		title2.setText(getText(R.string.destination) + ":");
 	}
 
 	/**
 	 * Get the addresses associated to LatLng points and fill the Textviews.
 	 */
-	private void rellenaDirecciones() {
+	private void fillAddresses() {
 		try {
-			direccion1 = new GetAddresTask().execute(origen, datos1).get();
-			direccion2 = new GetAddresTask().execute(destino, datos2).get();
+			address1 = new GetAddresTask().execute(source, data1).get();
+			address2 = new GetAddresTask().execute(destination, data2).get();
 
 			// Esto a lo mejor hay que ponerlo en el onPostExecute!
-			this.datos1.setText(direccion1 + "\n\n(" + origen.latitude + ", "
-					+ origen.longitude + ")");
-			this.datos2.setText(direccion2 + "\n\n(" + destino.latitude + ", "
-					+ destino.longitude + ")");
+			this.data1.setText(address1 + "\n\n(" + source.latitude + ", "
+					+ source.longitude + ")");
+			this.data2.setText(address2 + "\n\n(" + destination.latitude + ", "
+					+ destination.longitude + ")");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
@@ -157,8 +157,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 	/**
 	 * Fill Textview distance.
 	 */
-	private void rellenaDistancia() {
-		distancia.setText(getText(R.string.distance) + ": " + dist);
+	private void fillDistance() {
+		distance.setText(getText(R.string.distance) + ": " + dist);
 	}
 
 	@Override
@@ -188,8 +188,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 		intent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
 		intent.putExtra(Intent.EXTRA_TEXT, "\nDistance From Me (http://goo.gl/0IBHFN)\n"
 				+ getText(R.string.from) + "\n"
-				+ direccion1 + "\n\n" + getText(R.string.to) + "\n"
-				+ direccion2 + "\n\n" + getText(R.string.space) + "\n" + dist);
+				+ address1 + "\n\n" + getText(R.string.to) + "\n"
+				+ address2 + "\n\n" + getText(R.string.space) + "\n" + dist);
 		return intent;
 	}
 	
@@ -215,21 +215,20 @@ public class ShowInfoActivity extends ActionBarActivity {
 			return true;
 		case R.id.refresh:
 			menuItem = item;
-			rellenaDirecciones();
+			fillAddresses();
 			return true;
 		case R.id.menu_save:
-			guardarDatosBD();
+			saveDataToDB();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	
 	/**
 	 * Saves the current data into the database.
 	 */
-	private void guardarDatosBD() {
+	private void saveDataToDB() {
 		// Pedir al usuario que introduzca un texto descriptivo
 		AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
 		final EditText textoAlias = new EditText(getApplicationContext());
@@ -264,7 +263,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 						DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
 						dds.open();
 						// Si no introduce nada, poner "No title" o algo así
-						dds.insert(alias, origen, destino, dist);
+						dds.insert(alias, source, destination, dist);
 						// Mostrar un mensaje de que se ha guardado correctamente
 						if (alias != "")
 							toastIt(getText(R.string.alias_dialog_toast_1) + alias + getText(R.string.alias_dialog_toast_2));
@@ -288,12 +287,12 @@ public class ShowInfoActivity extends ActionBarActivity {
 			super.onPreExecute();
 			this.mContext = getApplicationContext();
 
-			empezarActualizacion();
+			startUpdate();
 
 			if (!isOnline()) {
 				toastIt(getText(R.string.nonetwork).toString());
 
-				terminarActualizacion();
+				endUpdate();
 				cancel(false);
 			}
 		}
@@ -349,7 +348,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			terminarActualizacion();
+			endUpdate();
 
 			super.onPostExecute(result);
 		}
@@ -371,7 +370,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 		/**
 		 * Change the appearance of the refresh button to a ProgressBar.
 		 */
-		private void empezarActualizacion() {
+		private void startUpdate() {
 			if (menuItem != null) {
 				MenuItemCompat.setActionView(menuItem,
 						R.layout.actionbar_indeterminate_progress);
@@ -382,7 +381,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 		/**
 		 * Restore the refresh button to his normal appearance.
 		 */
-		private void terminarActualizacion() {
+		private void endUpdate() {
 			if (menuItem != null) {
 				MenuItemCompat.collapseActionView(menuItem);
 				MenuItemCompat.setActionView(menuItem, null);

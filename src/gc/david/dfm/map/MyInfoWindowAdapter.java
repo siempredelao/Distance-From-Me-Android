@@ -35,5 +35,4 @@ public class MyInfoWindowAdapter implements InfoWindowAdapter {
 	public View getInfoWindow(Marker marker) {
 		return null;
 	}
-
 }

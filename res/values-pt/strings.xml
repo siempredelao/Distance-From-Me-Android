@@ -2,7 +2,6 @@
 <resources>
 	<!-- ACTIVITY MAIN -->
     <string name="app_name">Distance From Me</string>
-    <string name="action_settings">Preferências</string>
     <string name="action_search">Pesquisar</string>
     <string name="action_social_share">Compartilhar</string>
     <string name="menu_legalnotices">Aviso legal</string>
@@ -28,6 +27,17 @@
     <string name="complain_message">Queixa/Sugestao de Distance From Me</string>
     <string name="complain_hint">Eu quero dizer a sua equipe de desenvolvimento que </string>
     <string name="complain_problem">Nenhum cliente de e-mail disponível</string>
+    <string name="menu_settings">Preferências</string>
+    <string name="distances_deleted">Distâncias eliminadas</string>
+    <string name="no_distances_registered">Não há distâncias armazenadas</string>
+    <string name="category_centre_title">Cálculo de distâncias</string>
+    <string name="dialog_title">Centrar mapa</string>
+    <string name="preference_centre_summary">Onde centrar o mapa para calcular a distância</string>
+    <string name="mode_DES">Mostrar só destino</string>
+    <string name="mode_CEN">Mostrar ambos lugares</string>
+    <string name="category_db_title">Registro de distâncias</string>
+    <string name="preference_db_title">Sair distâncias</string>
+    <string name="preference_db_summary">Toque para eliminar todas as distâncias armazenadas</string>
 
 
     
