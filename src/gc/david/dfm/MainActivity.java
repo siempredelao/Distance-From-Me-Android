@@ -124,13 +124,15 @@ public class MainActivity extends ActionBarActivity implements
 			boolean isConnected = activeNetwork != null
 					&& activeNetwork.isConnectedOrConnecting();
 			if (!isConnected)
+				// Show the wireless centralized settings in API<11
+				// or shows general settings in API >=11
 				alertDialogShow(
-						android.provider.Settings.ACTION_WIRELESS_SETTINGS,
+						(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
+								android.provider.Settings.ACTION_WIRELESS_SETTINGS :
+									android.provider.Settings.ACTION_SETTINGS),
 						getText(R.string.wireless_off).toString(),
 						getText(R.string.wireless_enable).toString(),
 						getText(R.string.do_nothing).toString());
-
-			
 			
 			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
@@ -299,11 +301,15 @@ public class MainActivity extends ActionBarActivity implements
 			if (!isOnline()) {
 				if (pd != null)
 					pd.dismiss();
-				alertDialogShow(
-						android.provider.Settings.ACTION_WIRELESS_SETTINGS,
-						getText(R.string.wireless_off).toString(),
-						getText(R.string.wireless_enable).toString(),
-						getText(R.string.do_nothing).toString());
+				
+					alertDialogShow(
+							(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
+									android.provider.Settings.ACTION_WIRELESS_SETTINGS :
+										android.provider.Settings.ACTION_SETTINGS),
+							getText(R.string.wireless_off).toString(),
+							getText(R.string.wireless_enable).toString(),
+							getText(R.string.do_nothing).toString());
+					
 				// Restauramos el menú y que vuelva a empezar de nuevo
 				MenuItemCompat.collapseActionView(searchItem);
 				cancel(false);

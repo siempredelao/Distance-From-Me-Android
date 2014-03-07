@@ -15,8 +15,8 @@
     <string name="gps_off">GPS non funzionante, attivare?</string>
     <string name="gps_enable">Attivare GPS</string>
     <string name="do_nothing">Non in questo momento</string>
-    <string name="wireless_off">Connessione di rete spenta, attivare?</string>
-    <string name="wireless_enable">Attivare Wireless</string>
+    <string name="wireless_off">Nessuna connessione Wireless attivata, vi piacerebbe attivarla?</string>
+    <string name="wireless_enable">Attivare</string>
     <string name="select_address">Scegliere un indirizzo</string>
     <string name="list_dialog_title">Scegliere una distanza</string>
     <string name="menu_rateapp">Valuta app</string>

@@ -14,9 +14,9 @@
     <string name="action_load">Chargez distance</string>
     <string name="gps_off">GPS arreté, voulez-vous l\'activer?</string>
     <string name="gps_enable">Activer GPS</string>
-    <string name="do_nothing">Non</string>
-    <string name="wireless_off">Connexion réseau stoppée, voulez-vous l\'activer?</string>
-    <string name="wireless_enable">Activer Wireless</string>
+    <string name="do_nothing">Pas maintenant</string>
+    <string name="wireless_off">Pas de connexion réseau activée, voulez-vous l\'activer?</string>
+    <string name="wireless_enable">Activer</string>
     <string name="select_address">Choisissez une direction</string>
     <string name="list_dialog_title">Choisissez une distance</string>
     <string name="menu_rateapp">Noter application</string>

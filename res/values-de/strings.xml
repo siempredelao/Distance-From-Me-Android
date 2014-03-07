@@ -15,8 +15,8 @@
     <string name="gps_off">GPS aus. Möchten Sie es aktivieren?</string>
     <string name="gps_enable">GPS aktivieren</string>
     <string name="do_nothing">Nicht jetzt</string>
-    <string name="wireless_off">Wireless aus. Möchten Sie es aktivieren?</string>
-    <string name="wireless_enable">Wireless aktivieren</string>
+    <string name="wireless_off">Kein Wireless oder Netzwerkverbindung verfügbar ist, möchten Sie aktivieren?</string>
+    <string name="wireless_enable">Aktivieren</string>
     <string name="select_address">Wählen Sie eine Adresse aus</string>
     <string name="list_dialog_title">Wählen Sie einen Entfernung aux</string>
     <string name="menu_rateapp">App bewerten</string>
@@ -30,13 +30,13 @@
     <string name="menu_settings">Einstellungen</string>
     <string name="distances_deleted">Entfernungen gelöschten</string>
     <string name="no_distances_registered">Keine Entfernungen gespeicherten</string>
-    <string name="category_centre_title">Distance measure</string>
-    <string name="dialog_title">Centre map</string>
+    <string name="category_centre_title">Entfernung Maßnahme</string>
+    <string name="dialog_title">Karte zentrieren</string>
     <string name="preference_centre_summary">Wo zeigt die Karte im Abstand Mess</string>
-    <string name="mode_DES">Centre in destination</string>
-    <string name="mode_CEN">Centre in the middle</string>
-    <string name="category_db_title">Distance register</string>
-    <string name="preference_db_title">Delete distances</string>
+    <string name="mode_DES">In Ziel zu zentrieren</string>
+    <string name="mode_CEN">In der Mitte zu zentrieren</string>
+    <string name="category_db_title">Entfernung Register</string>
+    <string name="preference_db_title">Entfernungen Löschen</string>
     <string name="preference_db_summary">Berühren, um alle gespeicherten Entfernungen löschen</string>
     
     

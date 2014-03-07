@@ -15,8 +15,8 @@
     <string name="gps_off">GPS desactivat, desitja habilitar-lo?</string>
     <string name="gps_enable">Habilitar GPS</string>
     <string name="do_nothing">Ara no</string>
-    <string name="wireless_off">Connexió de xarxa desactivada, desitja habilitar-la?</string>
-    <string name="wireless_enable">Habilitar Wireless</string>
+    <string name="wireless_off">Cap connexió inalàmbrica activada, desitja activar-la?</string>
+    <string name="wireless_enable">Activar</string>
     <string name="select_address">Trie una adreça</string>
     <string name="list_dialog_title">Trie una distància</string>
     <string name="menu_rateapp">Puntua aplicació</string>
