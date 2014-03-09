@@ -6,10 +6,24 @@ import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.map.MyInfoWindowAdapter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,6 +52,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -62,6 +77,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.inmobi.commons.InMobi;
 import com.inmobi.monetization.IMBanner;
+import com.inmobi.monetization.IMBannerListener;
+import com.inmobi.monetization.IMErrorCode;
 
 /**
  * Implements the app main Activity.
@@ -108,17 +125,37 @@ public class MainActivity extends ActionBarActivity implements
 		googleMap = fragment.getMap();
 
 		if (googleMap != null) {
+			googleMap.setMyLocationEnabled(true);
+			googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+			
 			// InMobi Ads
 			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
 			banner = (IMBanner) findViewById(R.id.banner);
 			banner.setRefreshInterval(30);
+			banner.setIMBannerListener(new IMBannerListener() {
+				@Override
+				public void onShowBannerScreen(IMBanner arg0) {
+				}
+				@Override
+				public void onLeaveApplication(IMBanner arg0) {
+				}
+				@Override
+				public void onDismissBannerScreen(IMBanner arg0) {
+				}
+				@Override
+				public void onBannerRequestSucceeded(IMBanner arg0) {
+					// To make Google workers happy ¬¬
+					googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
+				}
+				@Override
+				public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
+				}
+				@Override
+				public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
+				}
+			});
 			banner.loadBanner();
 			
-			googleMap.setMyLocationEnabled(true);
-			googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-			// To make Google workers happy ¬¬
-			googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
-
 			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 			boolean isConnected = activeNetwork != null
@@ -449,7 +486,6 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 	
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the options menu from XML
@@ -941,9 +977,14 @@ public class MainActivity extends ActionBarActivity implements
 		// Aquí hacer la animación de la cámara
 		moveCameraZoom(start, end);
 		
+		// Obtiene la elevación de los puntos
+		// ¿También el perfil de elevación?
+		// Esto calcularlo si isOnline() y si está en las preferencias
+		getElevation(start, end);
+		
 			
 	}
-
+	
 	/**
 	 * Adds a marker to the map in a specified position and shows its info
 	 * window.
@@ -999,7 +1040,7 @@ public class MainActivity extends ActionBarActivity implements
 		double metros = Haversine.getDistanceJNI(start.latitude,
 				start.longitude, end.latitude, end.longitude);
 
-		return Haversine.normalize(metros,
+		return Haversine.normalizeDistance(metros,
 				getResources().getConfiguration().locale);
 	}
 
@@ -1081,6 +1122,95 @@ public class MainActivity extends ActionBarActivity implements
 		return 18;
 	}
 
+	private void getElevation(LatLng start, LatLng end) {
+		String startPos = 	String.valueOf(start.latitude) +
+							"," +
+							String.valueOf(start.longitude);
+		String endPos = String.valueOf(end.latitude) +
+						"," +
+						String.valueOf(end.longitude);
+
+		new GetAltitude().execute(startPos, endPos);
+	}
+	
+	private class GetAltitude extends AsyncTask<String, Void, Double>{
+
+		private HttpClient httpClient = null;
+		private HttpGet get = null;
+		private HttpResponse response;
+		private String altura = "";
+		String url = "http://maps.googleapis.com/maps/api/elevation/json";
+		String sensor = "sensor=true";
+		JSONObject respJSON;
+		
+		@Override
+		protected void onPreExecute() {
+			httpClient = new DefaultHttpClient();
+		}
+
+		@SuppressWarnings("deprecation")
+		@Override
+		protected Double doInBackground(String... params) {
+			get = new HttpGet(url + "?" + sensor
+					+ "&path=" + params[0] + URLEncoder.encode("|") + params[1]
+					+ "&samples=10");
+			get.setHeader("content-type", "application/json");
+			
+			try {
+				response = httpClient.execute(get);
+			} catch (Exception e) {
+				Log.d("GetAltitude", "Excepción 1 al obtener altitud!");
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Double result) {
+			InputStream inputStream = null;
+			
+			if (response != null){
+				try {
+//					String respStr = EntityUtils.toString(response.getEntity());
+					inputStream = response.getEntity().getContent();
+					String respStr = null;
+					if(inputStream != null)
+						respStr = convertInputStreamToString(inputStream);
+		            else
+		            	toastIt("InputStream null!");
+					
+					respJSON = new JSONObject(respStr);
+					if (respJSON.get("status").equals("OK")){
+						for (int i=0; i<10; i++){
+							altura = respJSON.getJSONArray("results").getJSONObject(i).get("elevation").toString();
+							toastIt(i + ". Altura = " + Haversine.normalizeAltitude(Double.valueOf(altura), getResources().getConfiguration().locale));
+						}
+					} else {
+						toastIt("Error en el JSON!");
+					}
+				} catch (Exception e) {
+					toastIt("Excepción 2 al obtener altitud!");
+					e.printStackTrace();
+				}
+			}
+			// When HttpClient instance is no longer needed
+			// shut down the connection manager to ensure
+			// immediate deallocation of all system resources
+			httpClient.getConnectionManager().shutdown();
+		}
+
+		private String convertInputStreamToString(InputStream inputStream) throws IOException{
+	        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+	        String line = "";
+	        String result = "";
+	        while((line = bufferedReader.readLine()) != null)
+	            result += line;
+	 
+	        inputStream.close();
+	        return result;
+	 
+	    }
+	}
+	
 	/**
 	 * Shows an AlertDialog with a message, positive and negative button, and
 	 * executes an action if needed.

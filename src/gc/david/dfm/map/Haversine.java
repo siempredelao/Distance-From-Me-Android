@@ -1,7 +1,6 @@
 package gc.david.dfm.map;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
@@ -21,7 +20,7 @@ public final class Haversine {
 	private static final double RADIUS = 6371000;
 
 	/**
-	 * Calculate distance between two positions in meters using JNI.
+	 * Calculates distance between two positions in meters using JNI.
 	 * 
 	 * @param lat_a
 	 *            Current position latitude in degrees.
@@ -37,7 +36,7 @@ public final class Haversine {
 			double lat_b, double lon_b);
 
 	/**
-	 * Calculate distance between two positions in meters.
+	 * Calculates distance between two positions in meters.
 	 * 
 	 * @param lat_a
 	 *            Current position latitude in degrees.
@@ -70,49 +69,45 @@ public final class Haversine {
 	}
 
 	/**
-	 * Give the same format to all distances.
+	 * Gives the same format to all distances.
 	 * 
 	 * @param d
 	 *            Distance in meters without format.
 	 * @return Formatted distance.
 	 */
-	private static double daleFormato(double d) {
-		// Estudiar la posibilidad de diferenciar la cantidad atendiendo al
-		// Locale
-		DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
-		simbolos.setDecimalSeparator('.');
-		DecimalFormat formatter = new DecimalFormat("#####0.00000", simbolos);
-		String miNumero = formatter.format(d);
-
-		return Double.valueOf(miNumero);
-	}
+//	private static double daleFormato(double d) {
+//		// Estudiar la posibilidad de diferenciar la cantidad atendiendo al
+//		// Locale
+//		DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
+//		simbolos.setDecimalSeparator('.');
+//		DecimalFormat formatter = new DecimalFormat("#####0.00000", simbolos);
+//		String miNumero = formatter.format(d);
+//
+//		return Double.valueOf(miNumero);
+//	}
 
 	/**
-	 * Normalize distance corresponding to its unit and the device locale and
+	 * Normalizes distance corresponding to its unit and the device locale and
 	 * with only two decimal digits. This static function distinguish between
 	 * metric and imperial and US customary units.
 	 * 
 	 * @param distance
-	 *            Formatted distance.
+	 *            Unformatted distance.
 	 * @param locale
 	 *            The current locale of the device.
 	 * @return A String with the amount and the unit.
 	 */
-	public static String normalize(double distance, Locale locale) {
+	public static String normalizeDistance(double distance, Locale locale) {
 
-		String resultado;
-
+		String resultado, unidadMedida = "km";
 		double measure;
+		DecimalFormat formatter = new DecimalFormat("##,##0.00");
 
-		DecimalFormat formatter = new DecimalFormat("###,##0.00");
-
-		String unidadMedida = "km";
 		if (locale.equals(Locale.CANADA) || locale.equals(Locale.CHINA)
 				|| locale.equals(Locale.JAPAN) || locale.equals(Locale.KOREA)
 				|| locale.equals(Locale.TAIWAN) || locale.equals(Locale.UK)
 				|| locale.equals(Locale.US)) {
 			unidadMedida = "mi";
-			formatter = new DecimalFormat("###,##0.00");
 
 			if (distance >= 1609.344) // Hay al menos una milla
 				measure = distance / 1609.344;
@@ -131,6 +126,36 @@ public final class Haversine {
 		resultado = formatter.format(measure);
 		return resultado + " " + unidadMedida/* + (measure>1 ? "s" : "") */;
 	}
+	
+	/**
+	 * Normalizes altitude corresponding to its unit and the device locale and
+	 * with only two decimal digits. This static function distinguish between
+	 * metric and imperial and US customary units.
+	 * 
+	 * @param altitude
+	 *            Unformatted altitude.
+	 * @param locale
+	 *            The current locale of the device.
+	 * @return A String with the amount and the unit.
+	 */
+    public static String normalizeAltitude(double altitude, Locale locale){
+    	
+    	String resultado, unidadMedida;
+		double measure;
+		DecimalFormat formatter = new DecimalFormat("##,##0.00");
+		
+		if (locale.equals(Locale.CANADA)
+				|| locale.equals(Locale.UK)
+				|| locale.equals(Locale.US)) {
+			unidadMedida = "ft";
+			measure = altitude/0.3048;
+		} else {
+			unidadMedida = "m";
+			measure = altitude;
+		}
+		resultado = formatter.format(measure);
+		return resultado + " " + unidadMedida;
+    }
 
 	// Load the JNI library
 	static {
