@@ -20,4 +20,23 @@
         adSize="15"
         appId="9b61f509a1454023b5295d8aea4482c2" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:layout_margin="2dp"
+        android:id="@+id/elevationchart">
+
+        <ImageView
+            android:id="@+id/closeChart"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="right|top"
+            android:visibility="invisible"
+            android:contentDescription="Close elevation chart"
+            android:src="@drawable/close_pop" />
+
+    </LinearLayout>
+
 </FrameLayout>

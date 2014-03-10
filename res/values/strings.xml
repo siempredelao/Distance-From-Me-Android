@@ -38,6 +38,7 @@
     <string name="category_db_title">Distance register</string>
     <string name="preference_db_title">Delete distances</string>
     <string name="preference_db_summary">Touch to delete all saved distances</string>
+    <string name="elevation_profile">Elevation profile</string>
     
 
     

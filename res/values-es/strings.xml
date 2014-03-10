@@ -38,6 +38,7 @@
     <string name="category_db_title">Registro de distancias</string>
     <string name="preference_db_title">Borrar distancias</string>
     <string name="preference_db_summary">Toque para borrar todas las distancias almacenadas</string>
+    <string name="elevation_profile">Perfil de elevación</string>
 
 
     

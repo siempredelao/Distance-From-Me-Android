@@ -38,6 +38,7 @@
     <string name="category_db_title">Entfernung Register</string>
     <string name="preference_db_title">Entfernungen Löschen</string>
     <string name="preference_db_summary">Berühren, um alle gespeicherten Entfernungen löschen</string>
+    <string name="elevation_profile">Höhenprofil</string>
     
     
 

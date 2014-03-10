@@ -38,6 +38,7 @@
     <string name="category_db_title">Registre de distàncies</string>
     <string name="preference_db_title">Esborrar distàncies</string>
     <string name="preference_db_summary">Toc per a esborrar totes les distàncies emmagatzemades</string>
+    <string name="elevation_profile">Perfil d\'elevació</string>
 
 
 

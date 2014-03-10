@@ -69,30 +69,12 @@ public final class Haversine {
 	}
 
 	/**
-	 * Gives the same format to all distances.
-	 * 
-	 * @param d
-	 *            Distance in meters without format.
-	 * @return Formatted distance.
-	 */
-//	private static double daleFormato(double d) {
-//		// Estudiar la posibilidad de diferenciar la cantidad atendiendo al
-//		// Locale
-//		DecimalFormatSymbols simbolos = new DecimalFormatSymbols();
-//		simbolos.setDecimalSeparator('.');
-//		DecimalFormat formatter = new DecimalFormat("#####0.00000", simbolos);
-//		String miNumero = formatter.format(d);
-//
-//		return Double.valueOf(miNumero);
-//	}
-
-	/**
 	 * Normalizes distance corresponding to its unit and the device locale and
 	 * with only two decimal digits. This static function distinguish between
 	 * metric and imperial and US customary units.
 	 * 
 	 * @param distance
-	 *            Unformatted distance.
+	 *            Unformatted distance in metres.
 	 * @param locale
 	 *            The current locale of the device.
 	 * @return A String with the amount and the unit.
@@ -133,7 +115,7 @@ public final class Haversine {
 	 * metric and imperial and US customary units.
 	 * 
 	 * @param altitude
-	 *            Unformatted altitude.
+	 *            Unformatted altitude in metres.
 	 * @param locale
 	 *            The current locale of the device.
 	 * @return A String with the amount and the unit.

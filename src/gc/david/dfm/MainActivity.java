@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -20,9 +19,9 @@ import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
@@ -56,6 +55,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -79,6 +81,10 @@ import com.inmobi.commons.InMobi;
 import com.inmobi.monetization.IMBanner;
 import com.inmobi.monetization.IMBannerListener;
 import com.inmobi.monetization.IMErrorCode;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GraphViewSeries;
+import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.LineGraphView;
 
 /**
  * Implements the app main Activity.
@@ -114,6 +120,9 @@ public class MainActivity extends ActionBarActivity implements
 	// To change line color when we choose a distance from database
 	private boolean loadingDistance				= false;
 	private IMBanner banner						= null;
+	// Google Map items padding
+	private boolean bannerPadding				= false;
+	private boolean elevationPadding			= false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +154,8 @@ public class MainActivity extends ActionBarActivity implements
 				@Override
 				public void onBannerRequestSucceeded(IMBanner arg0) {
 					// To make Google workers happy ¬¬
-					googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
+					bannerPadding = true;
+					mapPadding();
 				}
 				@Override
 				public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
@@ -202,7 +212,6 @@ public class MainActivity extends ActionBarActivity implements
 
 				@Override
 				public void onMarkerDrag(Marker marker) {
-					// No funciona el hacerlo sobre la marcha...
 				}
 			});
 
@@ -862,7 +871,7 @@ public class MainActivity extends ActionBarActivity implements
 			} else {
 				LatLng latlng = new LatLng(location.getLatitude(),
 						location.getLongitude());
-				// 17 es un buen nivel de zoom para esta acción
+				// 17 is a good zoom level for this action
 				googleMap.animateCamera(CameraUpdateFactory
 						.newLatLngZoom(latlng, 17));
 			}
@@ -1135,60 +1144,65 @@ public class MainActivity extends ActionBarActivity implements
 	
 	private class GetAltitude extends AsyncTask<String, Void, Double>{
 
-		private HttpClient httpClient = null;
-		private HttpGet get = null;
+		private HttpClient httpClient					= null;
+		private HttpGet httpGet							= null;
 		private HttpResponse response;
-		private String altura = "";
-		String url = "http://maps.googleapis.com/maps/api/elevation/json";
-		String sensor = "sensor=true";
-		JSONObject respJSON;
+		private String respStr, sensor, url;
+		private InputStream inputStream					= null;
+		private JSONObject respJSON;
+		private GraphView graphView;
+		private LinearLayout layout;
 		
 		@Override
 		protected void onPreExecute() {
 			httpClient = new DefaultHttpClient();
+			url = "http://maps.googleapis.com/maps/api/elevation/json";
+			sensor = "sensor=true";
+			respStr = null;
+			graphView = null;
+			layout = (LinearLayout) findViewById(R.id.elevationchart);
+			layout.removeAllViews();
+			layout.setVisibility(LinearLayout.INVISIBLE);
+			elevationPadding = false;
+			mapPadding();
 		}
 
 		@SuppressWarnings("deprecation")
 		@Override
 		protected Double doInBackground(String... params) {
-			get = new HttpGet(url + "?" + sensor
-					+ "&path=" + params[0] + URLEncoder.encode("|") + params[1]
-					+ "&samples=10");
-			get.setHeader("content-type", "application/json");
+			httpGet = new HttpGet(url + "?" + sensor
+									+ "&path=" + params[0]
+									+ URLEncoder.encode("|") + params[1]
+									+ "&samples=512");
+			httpGet.setHeader("content-type", "application/json");
 			
 			try {
-				response = httpClient.execute(get);
+				response = httpClient.execute(httpGet);
+				inputStream = response.getEntity().getContent();
+				if (inputStream != null){
+					respStr = convertInputStreamToString(inputStream);
+					respJSON = new JSONObject(respStr);
+				} else
+					Log.d("doInBackground", "InputStream null!");
 			} catch (Exception e) {
-				Log.d("GetAltitude", "Excepción 1 al obtener altitud!");
+				Log.d("doInBackground", "Excepción 1 al obtener altitud!");
 			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Double result) {
-			InputStream inputStream = null;
-			
-			if (response != null){
+			if (respJSON != null){
 				try {
-//					String respStr = EntityUtils.toString(response.getEntity());
-					inputStream = response.getEntity().getContent();
-					String respStr = null;
-					if(inputStream != null)
-						respStr = convertInputStreamToString(inputStream);
-		            else
-		            	toastIt("InputStream null!");
-					
-					respJSON = new JSONObject(respStr);
 					if (respJSON.get("status").equals("OK")){
-						for (int i=0; i<10; i++){
-							altura = respJSON.getJSONArray("results").getJSONObject(i).get("elevation").toString();
-							toastIt(i + ". Altura = " + Haversine.normalizeAltitude(Double.valueOf(altura), getResources().getConfiguration().locale));
-						}
-					} else {
-						toastIt("Error en el JSON!");
-					}
-				} catch (Exception e) {
-					toastIt("Excepción 2 al obtener altitud!");
+						showElevationProfile(respJSON.getJSONArray("results"));
+					} else
+						Log.d("onPostExecute", "Error en el JSON!");
+				} catch (NumberFormatException e) {
+					Log.d("onPostExecute", "NumberFormatException");
+					e.printStackTrace();
+				} catch (JSONException e) {
+					Log.d("onPostExecute", "JSONException");
 					e.printStackTrace();
 				}
 			}
@@ -1198,17 +1212,70 @@ public class MainActivity extends ActionBarActivity implements
 			httpClient.getConnectionManager().shutdown();
 		}
 
+		/**
+		 * Converts the InputStream with the retrieved data to String.
+		 * @param inputStream The input stream.
+		 * @return The InputStream converted to String.
+		 * @throws IOException
+		 */
 		private String convertInputStreamToString(InputStream inputStream) throws IOException{
 	        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-	        String line = "";
-	        String result = "";
-	        while((line = bufferedReader.readLine()) != null)
+	        String line = "", result = "";
+	        while ((line = bufferedReader.readLine()) != null)
 	            result += line;
 	 
 	        inputStream.close();
 	        return result;
-	 
 	    }
+		
+		/**
+		 * Shows the elevation profile chart.
+		 * 
+		 * @param array
+		 *            JSON array with the response data.
+		 * @throws JSONException
+		 */
+		private void showElevationProfile(JSONArray array) throws JSONException{
+			GraphViewSeries series = new GraphViewSeries(null,
+														new GraphViewSeriesStyle(Color.parseColor("#00FA9A"),  5),
+														new GraphView.GraphViewData[] {});
+			
+			for (int w=0; w<array.length(); w++)
+				series.appendData(
+						new GraphView.GraphViewData(
+								w,
+								Double.valueOf(
+										array.getJSONObject(w).get("elevation").toString())),
+										false,
+										array.length());
+			
+			graphView =
+					new LineGraphView(
+							getApplicationContext(),
+							getText(R.string.elevation_profile).toString());
+			graphView.addSeries(series);
+			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
+			graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
+			layout.setVisibility(LinearLayout.VISIBLE);
+			layout.setBackgroundColor(Color.parseColor("#66191919"));
+			layout.addView(graphView);
+			elevationPadding = true;
+			mapPadding();
+			
+			final ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
+			closeChart.setVisibility(LinearLayout.VISIBLE);
+			closeChart.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					closeChart.setVisibility(LinearLayout.INVISIBLE);
+					closeChart.setOnClickListener(null);
+					layout.removeAllViews();
+					layout.setVisibility(LinearLayout.INVISIBLE);
+					elevationPadding = false;
+					mapPadding();
+				}
+			});
+		}
 	}
 	
 	/**
@@ -1244,5 +1311,23 @@ public class MainActivity extends ActionBarActivity implements
 				});
 		AlertDialog alert = builder.create();
 		alert.show();
+	}
+
+	
+	/**
+	 * Sets map attending to the action which is performed.
+	 */
+	private void mapPadding() {
+		LinearLayout layout = (LinearLayout) findViewById(R.id.elevationchart);
+		if (bannerPadding)
+			if (elevationPadding)
+				googleMap.setPadding(0, layout.getHeight(), 0, banner.getLayoutParams().height);
+			else
+				googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
+		else
+			if (elevationPadding)
+				googleMap.setPadding(0, layout.getHeight(), 0, 0);
+			else
+				googleMap.setPadding(0, 0, 0, 0);
 	}
 }

@@ -38,6 +38,7 @@
     <string name="category_db_title">Registrazione degli distanze</string>
     <string name="preference_db_title">Eliminare distanze</string>
     <string name="preference_db_summary">Toccare per eliminare tutte le distanze memorizzati</string>
+    <string name="elevation_profile">Profilo elevazione</string>
 
 
     
