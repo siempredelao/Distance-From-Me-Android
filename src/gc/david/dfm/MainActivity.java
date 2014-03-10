@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -58,6 +59,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -123,6 +125,9 @@ public class MainActivity extends ActionBarActivity implements
 	// Google Map items padding
 	private boolean bannerPadding				= false;
 	private boolean elevationPadding			= false;
+	private static int ELEVATION_SAMPLES		= 100;
+	private AsyncTask showingElevation			= null;
+	private GraphView graphView					= null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -716,6 +721,8 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void onDestroy() {
+		if (showingElevation != null)
+			showingElevation.cancel(true);
 		super.onDestroy();
 	}
 
@@ -986,12 +993,16 @@ public class MainActivity extends ActionBarActivity implements
 		// Aquí hacer la animación de la cámara
 		moveCameraZoom(start, end);
 		
-		// Obtiene la elevación de los puntos
-		// ¿También el perfil de elevación?
-		// Esto calcularlo si isOnline() y si está en las preferencias
-		getElevation(start, end);
-		
-			
+		// Muestra el perfil de elevación si está en las preferencias
+		// y si está conectado a internet
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		if (sharedPreferences.getBoolean("elevation_chart", false)){
+			// Está conectado a internet?
+			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo netInfo = cm.getActiveNetworkInfo();
+			if (netInfo != null && netInfo.isConnected())
+					getElevation(start, end);
+		}
 	}
 	
 	/**
@@ -1026,7 +1037,7 @@ public class MainActivity extends ActionBarActivity implements
 			line = null;
 		}
 		PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
-		lineOptions.width(6);
+		lineOptions.width(3*getResources().getDisplayMetrics().density);
 		if (loadingDistance) {
 			loadingDistance = false;
 			lineOptions.color(Color.YELLOW);
@@ -1139,9 +1150,11 @@ public class MainActivity extends ActionBarActivity implements
 						"," +
 						String.valueOf(end.longitude);
 
-		new GetAltitude().execute(startPos, endPos);
+		if (showingElevation != null)
+			showingElevation.cancel(true);
+		showingElevation = new GetAltitude().execute(startPos, endPos);
 	}
-	
+
 	private class GetAltitude extends AsyncTask<String, Void, Double>{
 
 		private HttpClient httpClient					= null;
@@ -1150,8 +1163,7 @@ public class MainActivity extends ActionBarActivity implements
 		private String respStr, sensor, url;
 		private InputStream inputStream					= null;
 		private JSONObject respJSON;
-		private GraphView graphView;
-		private LinearLayout layout;
+		private RelativeLayout layout;
 		
 		@Override
 		protected void onPreExecute() {
@@ -1159,10 +1171,11 @@ public class MainActivity extends ActionBarActivity implements
 			url = "http://maps.googleapis.com/maps/api/elevation/json";
 			sensor = "sensor=true";
 			respStr = null;
-			graphView = null;
-			layout = (LinearLayout) findViewById(R.id.elevationchart);
-			layout.removeAllViews();
+			layout = (RelativeLayout) findViewById(R.id.elevationchart);
+			if (graphView != null)
+				layout.removeView(graphView);
 			layout.setVisibility(LinearLayout.INVISIBLE);
+			graphView = null;
 			elevationPadding = false;
 			mapPadding();
 		}
@@ -1173,39 +1186,37 @@ public class MainActivity extends ActionBarActivity implements
 			httpGet = new HttpGet(url + "?" + sensor
 									+ "&path=" + params[0]
 									+ URLEncoder.encode("|") + params[1]
-									+ "&samples=512");
+									+ "&samples=" + ELEVATION_SAMPLES);
 			httpGet.setHeader("content-type", "application/json");
-			
 			try {
 				response = httpClient.execute(httpGet);
 				inputStream = response.getEntity().getContent();
 				if (inputStream != null){
 					respStr = convertInputStreamToString(inputStream);
 					respJSON = new JSONObject(respStr);
+					if (respJSON != null){
+						if (respJSON.get("status").equals("OK")){
+							buildElevationChart(respJSON.getJSONArray("results"));
+						} else
+							Log.d("doInBackground", "Error en el JSON! " + respJSON.getString("status"));
+					}
 				} else
 					Log.d("doInBackground", "InputStream null!");
-			} catch (Exception e) {
-				Log.d("doInBackground", "Excepción 1 al obtener altitud!");
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Double result) {
-			if (respJSON != null){
-				try {
-					if (respJSON.get("status").equals("OK")){
-						showElevationProfile(respJSON.getJSONArray("results"));
-					} else
-						Log.d("onPostExecute", "Error en el JSON!");
-				} catch (NumberFormatException e) {
-					Log.d("onPostExecute", "NumberFormatException");
-					e.printStackTrace();
-				} catch (JSONException e) {
-					Log.d("onPostExecute", "JSONException");
-					e.printStackTrace();
-				}
-			}
+			showElevationProfile();
 			// When HttpClient instance is no longer needed
 			// shut down the connection manager to ensure
 			// immediate deallocation of all system resources
@@ -1230,51 +1241,58 @@ public class MainActivity extends ActionBarActivity implements
 		
 		/**
 		 * Shows the elevation profile chart.
+		 */
+		private void showElevationProfile(){
+			if (graphView != null){
+				layout.setVisibility(LinearLayout.VISIBLE);
+				layout.setBackgroundColor(Color.parseColor("#66191919"));
+				layout.addView(graphView);
+				elevationPadding = true;
+				mapPadding();
+				
+				ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
+				if (closeChart != null){
+					closeChart.setVisibility(LinearLayout.VISIBLE);
+					closeChart.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							layout.removeView(graphView);
+							layout.setVisibility(LinearLayout.INVISIBLE);
+							elevationPadding = false;
+							mapPadding();
+						}
+					});
+				}
+			}
+		}
+
+		/**
+		 * Builds the information about the elevation profile chart. Use this in
+		 * a background task.
 		 * 
 		 * @param array
 		 *            JSON array with the response data.
 		 * @throws JSONException
 		 */
-		private void showElevationProfile(JSONArray array) throws JSONException{
+		private void buildElevationChart(JSONArray array) throws JSONException {
+			float density = getResources().getDisplayMetrics().density;
 			GraphViewSeries series = new GraphViewSeries(null,
-														new GraphViewSeriesStyle(Color.parseColor("#00FA9A"),  5),
-														new GraphView.GraphViewData[] {});
-			
-			for (int w=0; w<array.length(); w++)
+					new GraphViewSeriesStyle(Color.parseColor("#00FA9A"), (int) (3*density)),
+					new GraphView.GraphViewData[] {});
+
+			for (int w = 0; w < array.length(); w++)
 				series.appendData(
-						new GraphView.GraphViewData(
-								w,
-								Double.valueOf(
-										array.getJSONObject(w).get("elevation").toString())),
-										false,
-										array.length());
-			
-			graphView =
-					new LineGraphView(
-							getApplicationContext(),
-							getText(R.string.elevation_profile).toString());
+						new GraphView.GraphViewData(w, Double.valueOf(array
+								.getJSONObject(w).get("elevation").toString())),
+						false, array.length());
+
+			graphView = new LineGraphView(getApplicationContext(), getText(
+					R.string.elevation_profile).toString());
 			graphView.addSeries(series);
 			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
 			graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
-			layout.setVisibility(LinearLayout.VISIBLE);
-			layout.setBackgroundColor(Color.parseColor("#66191919"));
-			layout.addView(graphView);
-			elevationPadding = true;
-			mapPadding();
-			
-			final ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
-			closeChart.setVisibility(LinearLayout.VISIBLE);
-			closeChart.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					closeChart.setVisibility(LinearLayout.INVISIBLE);
-					closeChart.setOnClickListener(null);
-					layout.removeAllViews();
-					layout.setVisibility(LinearLayout.INVISIBLE);
-					elevationPadding = false;
-					mapPadding();
-				}
-			});
+			graphView.getGraphViewStyle().setTextSize(15*density);
+			graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50*density));
 		}
 	}
 	
@@ -1313,12 +1331,11 @@ public class MainActivity extends ActionBarActivity implements
 		alert.show();
 	}
 
-	
 	/**
 	 * Sets map attending to the action which is performed.
 	 */
 	private void mapPadding() {
-		LinearLayout layout = (LinearLayout) findViewById(R.id.elevationchart);
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.elevationchart);
 		if (bannerPadding)
 			if (elevationPadding)
 				googleMap.setPadding(0, layout.getHeight(), 0, banner.getLayoutParams().height);

@@ -39,6 +39,8 @@
     <string name="preference_db_title">Effacer distances</string>
     <string name="preference_db_summary">Touchez pour effacer toutes les distances sauvegardées</string>
     <string name="elevation_profile">Profil d\'élévation</string>
+    <string name="preference_elevation_title">Montrer profil d\'élévation</string>
+    <string name="preference_elevation_summary">Calcule le profil d\'élévation. Cette tâche peut prendre un certain temps selon votre connexion.</string>
 
     
 

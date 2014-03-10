@@ -6,6 +6,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="libs/InMobi-4.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/David/Downloads/GraphView-3.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/GraphView-3.1.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

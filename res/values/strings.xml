@@ -39,9 +39,10 @@
     <string name="preference_db_title">Delete distances</string>
     <string name="preference_db_summary">Touch to delete all saved distances</string>
     <string name="elevation_profile">Elevation profile</string>
+    <string name="preference_elevation_title">Show elevation profile</string>
+    <string name="preference_elevation_summary">Calculates elevation profile. This task may take some time depending on your network.</string>
     
 
-    
     
     <!-- ACTIVITY SHOINFO -->
     <string name="current">Current estimated position</string>

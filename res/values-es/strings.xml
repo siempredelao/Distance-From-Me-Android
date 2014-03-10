@@ -39,6 +39,8 @@
     <string name="preference_db_title">Borrar distancias</string>
     <string name="preference_db_summary">Toque para borrar todas las distancias almacenadas</string>
     <string name="elevation_profile">Perfil de elevación</string>
+    <string name="preference_elevation_title">Mostrar perfil de elevación</string>
+    <string name="preference_elevation_summary">Calcula el perfil de elevación. Esta tarea puede tardar algún tiempo dependiendo de su conexión.</string>
 
 
     

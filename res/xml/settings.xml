@@ -10,6 +10,11 @@
             android:key="centre"
             android:summary="@string/preference_centre_summary"
             android:title="@string/dialog_title" />
+        <CheckBoxPreference
+            android:key="elevation_chart"
+            android:title="@string/preference_elevation_title"
+            android:summary="@string/preference_elevation_summary"
+            android:defaultValue="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_db_title" >
         <Preference

@@ -20,7 +20,7 @@
         adSize="15"
         appId="9b61f509a1454023b5295d8aea4482c2" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:orientation="vertical"
@@ -32,11 +32,11 @@
             android:id="@+id/closeChart"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_gravity="right|top"
-            android:visibility="invisible"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
             android:contentDescription="Close elevation chart"
-            android:src="@drawable/close_pop" />
+            android:src="@drawable/close_pop"
+            android:visibility="invisible" />
 
-    </LinearLayout>
-
+    </RelativeLayout>
 </FrameLayout>

@@ -2,6 +2,7 @@ package gc.david.dfm;
 
 import gc.david.dfm.db.DistancesDataSource;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
@@ -28,7 +29,7 @@ public class SettingsActivity extends PreferenceActivity{
 				}
 				return false;
 			}
-		});        
+		});
     }
 	
 	/**

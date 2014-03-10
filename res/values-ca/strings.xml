@@ -39,6 +39,8 @@
     <string name="preference_db_title">Esborrar distàncies</string>
     <string name="preference_db_summary">Toc per a esborrar totes les distàncies emmagatzemades</string>
     <string name="elevation_profile">Perfil d\'elevació</string>
+    <string name="preference_elevation_title">Mostrar perfil d\'elevació</string>
+    <string name="preference_elevation_summary">Calcula el perfil d\'elevació. Aquesta tasca pot tardar algun temps depenent de la seua connexión.</string>
 
 
 
