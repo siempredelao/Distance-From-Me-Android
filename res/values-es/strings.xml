@@ -21,7 +21,7 @@
     <string name="list_dialog_title">Elija una distancia</string>
     <string name="menu_rateapp">Valorar aplicación</string>
     <string name="rate_title">Valorar esta aplicación</string>
-    <string name="rate_message">Si Distance From Me le parece una buena aplicación, por favor valórela con 5 estrellas y escriba un comentario adecuado. Si no es así, también puede comunicarse con el equipo de desarrollo para quejarse de algún error o hacer alguna sugerencia.</string>
+    <string name="rate_message">Si Distance From Me le parece una buena aplicación, por favor, valórela con 5 estrellas y escriba un comentario adecuado. Si no es así, también puede comunicarse con el equipo de desarrollo para quejarse de algún error o hacer alguna sugerencia.</string>
     <string name="rate_positive_button">Dar 5 estrellas</string>
     <string name="rate_negative_button">¡Cuéntanos!</string>
     <string name="complain_message">Queja/Sugerencia sobre Distance From Me</string>

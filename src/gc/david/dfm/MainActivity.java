@@ -52,7 +52,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -126,6 +125,7 @@ public class MainActivity extends ActionBarActivity implements
 	private boolean bannerPadding				= false;
 	private boolean elevationPadding			= false;
 	private static int ELEVATION_SAMPLES		= 100;
+	@SuppressWarnings("rawtypes")
 	private AsyncTask showingElevation			= null;
 	private GraphView graphView					= null;
 
@@ -1142,6 +1142,14 @@ public class MainActivity extends ActionBarActivity implements
 		return 18;
 	}
 
+	/**
+	 * Calculates elevation points in background and shows elevation chart.
+	 * 
+	 * @param start
+	 *            Start position.
+	 * @param end
+	 *            Destination position.
+	 */
 	private void getElevation(LatLng start, LatLng end) {
 		String startPos = 	String.valueOf(start.latitude) +
 							"," +
@@ -1155,13 +1163,20 @@ public class MainActivity extends ActionBarActivity implements
 		showingElevation = new GetAltitude().execute(startPos, endPos);
 	}
 
+	/**
+	 * A subclass of AsyncTask that gets elevation points from coordinates in
+	 * background and shows an elevation chart.
+	 * 
+	 * @author David
+	 * 
+	 */
 	private class GetAltitude extends AsyncTask<String, Void, Double>{
 
-		private HttpClient httpClient					= null;
-		private HttpGet httpGet							= null;
+		private HttpClient httpClient		= null;
+		private HttpGet httpGet				= null;
 		private HttpResponse response;
 		private String respStr, sensor, url;
-		private InputStream inputStream					= null;
+		private InputStream inputStream		= null;
 		private JSONObject respJSON;
 		private RelativeLayout layout;
 		
@@ -1171,6 +1186,7 @@ public class MainActivity extends ActionBarActivity implements
 			url = "http://maps.googleapis.com/maps/api/elevation/json";
 			sensor = "sensor=true";
 			respStr = null;
+			// Delete elevation chart if exists
 			layout = (RelativeLayout) findViewById(R.id.elevationchart);
 			if (graphView != null)
 				layout.removeView(graphView);
@@ -1194,14 +1210,10 @@ public class MainActivity extends ActionBarActivity implements
 				if (inputStream != null){
 					respStr = convertInputStreamToString(inputStream);
 					respJSON = new JSONObject(respStr);
-					if (respJSON != null){
-						if (respJSON.get("status").equals("OK")){
+					if (respJSON != null)
+						if (respJSON.get("status").equals("OK"))
 							buildElevationChart(respJSON.getJSONArray("results"));
-						} else
-							Log.d("doInBackground", "Error en el JSON! " + respJSON.getString("status"));
-					}
-				} else
-					Log.d("doInBackground", "InputStream null!");
+				}
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IllegalStateException e) {
@@ -1229,16 +1241,62 @@ public class MainActivity extends ActionBarActivity implements
 		 * @return The InputStream converted to String.
 		 * @throws IOException
 		 */
-		private String convertInputStreamToString(InputStream inputStream) throws IOException{
-	        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+		private String convertInputStreamToString(InputStream inputStream)
+				throws IOException{
+	        BufferedReader bufferedReader =
+	        		new BufferedReader(new InputStreamReader(inputStream));
 	        String line = "", result = "";
 	        while ((line = bufferedReader.readLine()) != null)
 	            result += line;
 	 
 	        inputStream.close();
+	        bufferedReader.close();
 	        return result;
 	    }
 		
+		/**
+		 * Builds the information about the elevation profile chart. Use this in
+		 * a background task.
+		 * 
+		 * @param array
+		 *            JSON array with the response data.
+		 * @throws JSONException
+		 */
+		private void buildElevationChart(JSONArray array) throws JSONException {
+			float density = getResources().getDisplayMetrics().density;
+			// Creates the serie and adds data to it
+			GraphViewSeries series =
+					new GraphViewSeries(
+							null,
+							new GraphViewSeriesStyle(
+									Color.parseColor("#00FA9A"),
+									(int) (3*density)),
+							new GraphView.GraphViewData[] {});
+
+			for (int w = 0; w < array.length(); w++)
+				series.appendData(
+						new GraphView.GraphViewData(
+								w,
+								Haversine.normalizeAltitude(
+										Double.valueOf(array.getJSONObject(w)
+												.get("elevation").toString()),
+										Locale.getDefault())),
+						false,
+						array.length());
+
+			// Creates the line and add it to the chart
+			graphView = new LineGraphView(
+					getApplicationContext(),
+					getText(R.string.elevation_profile).toString() + " ("
+							+ Haversine.getAltitudeUnit(Locale.getDefault())
+							+ ")");
+			graphView.addSeries(series);
+			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
+			graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
+			graphView.getGraphViewStyle().setTextSize(15*density);
+			graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50*density));
+		}
+
 		/**
 		 * Shows the elevation profile chart.
 		 */
@@ -1264,35 +1322,6 @@ public class MainActivity extends ActionBarActivity implements
 					});
 				}
 			}
-		}
-
-		/**
-		 * Builds the information about the elevation profile chart. Use this in
-		 * a background task.
-		 * 
-		 * @param array
-		 *            JSON array with the response data.
-		 * @throws JSONException
-		 */
-		private void buildElevationChart(JSONArray array) throws JSONException {
-			float density = getResources().getDisplayMetrics().density;
-			GraphViewSeries series = new GraphViewSeries(null,
-					new GraphViewSeriesStyle(Color.parseColor("#00FA9A"), (int) (3*density)),
-					new GraphView.GraphViewData[] {});
-
-			for (int w = 0; w < array.length(); w++)
-				series.appendData(
-						new GraphView.GraphViewData(w, Double.valueOf(array
-								.getJSONObject(w).get("elevation").toString())),
-						false, array.length());
-
-			graphView = new LineGraphView(getApplicationContext(), getText(
-					R.string.elevation_profile).toString());
-			graphView.addSeries(series);
-			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
-			graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
-			graphView.getGraphViewStyle().setTextSize(15*density);
-			graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50*density));
 		}
 	}
 	

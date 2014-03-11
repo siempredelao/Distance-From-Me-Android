@@ -6,7 +6,7 @@ import java.util.Locale;
 /**
  * Haversine class defines static methods to calculate distances between two
  * points on a sphere, in this case, the Earth, from their longitudes and
- * latitudes.
+ * latitudes. It also defines static methods to calculate elevation points.
  * 
  * @author David
  * @see <a href="http://en.wikipedia.org/wiki/Haversine_formula">Haversine</a>
@@ -83,6 +83,8 @@ public final class Haversine {
 
 		String resultado, unidadMedida = "km";
 		double measure;
+		// Uso del formatter para dar con mayor precisión que Math.round
+		// aunque gaste más, pero es una única medida la que se normalizará
 		DecimalFormat formatter = new DecimalFormat("##,##0.00");
 
 		if (locale.equals(Locale.CANADA) || locale.equals(Locale.CHINA)
@@ -118,25 +120,36 @@ public final class Haversine {
 	 *            Unformatted altitude in metres.
 	 * @param locale
 	 *            The current locale of the device.
-	 * @return A String with the amount and the unit.
+	 * @return A double with only the normalized amount.
 	 */
-    public static String normalizeAltitude(double altitude, Locale locale){
-    	
-    	String resultado, unidadMedida;
+    public static double normalizeAltitude(double altitude, Locale locale){
 		double measure;
-		DecimalFormat formatter = new DecimalFormat("##,##0.00");
 		
 		if (locale.equals(Locale.CANADA)
 				|| locale.equals(Locale.UK)
-				|| locale.equals(Locale.US)) {
-			unidadMedida = "ft";
+				|| locale.equals(Locale.US))
 			measure = altitude/0.3048;
-		} else {
-			unidadMedida = "m";
+		else
 			measure = altitude;
-		}
-		resultado = formatter.format(measure);
-		return resultado + " " + unidadMedida;
+		
+		measure = Math.round(measure*1e2)/1e2;
+		return measure;
+    }
+    
+	/**
+	 * Returns a string with the altitude unit, m or ft, looking to the current locale.
+	 * 
+	 * @param locale
+	 *            Current locale.
+	 * @return String with altitude unit.
+	 */
+    public static String getAltitudeUnit(Locale locale){
+    	if (locale.equals(Locale.CANADA)
+				|| locale.equals(Locale.UK)
+				|| locale.equals(Locale.US))
+    		return "ft";
+    	else
+    		return "m";
     }
 
 	// Load the JNI library
