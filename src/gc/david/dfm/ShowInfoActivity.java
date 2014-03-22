@@ -313,12 +313,14 @@ public class ShowInfoActivity extends ActionBarActivity {
 				return (getText(R.string.nolocation).toString());
 			} catch (IllegalArgumentException e2) {
 				// Error message to post in the log
-				String errorString = "Illegal arguments "
-						+ Double.toString(loc.latitude) + " , "
-						+ Double.toString(loc.longitude)
-						+ " passed to address service";
+				StringBuilder errorString = new StringBuilder();
+				errorString.append("Illegal arguments ")
+						.append(Double.toString(loc.latitude))
+						.append(" , ")
+						.append(Double.toString(loc.longitude))
+						.append(" passed to address service");
 				e2.printStackTrace();
-				return errorString;
+				return errorString.toString();
 			}
 			// If the reverse geocode returned an address
 			if (addresses != null && addresses.size() > 0) {

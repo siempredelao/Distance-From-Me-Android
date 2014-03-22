@@ -113,7 +113,7 @@ public class MainActivity extends ActionBarActivity implements
 	private String distance						= "";
 	private LatLng selectedPosition				= null;
 	// Address returned at string searching
-	private String bpAddress					= "";
+	private StringBuilder bpAddress				= null;
 	private MenuItem searchItem					= null;
 	// Show position if we come from other app (p.e. Whatsapp)
 	private boolean seePosition					= false;
@@ -171,11 +171,7 @@ public class MainActivity extends ActionBarActivity implements
 			});
 			banner.loadBanner();
 			
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-			boolean isConnected = activeNetwork != null
-					&& activeNetwork.isConnectedOrConnecting();
-			if (!isConnected)
+			if (!this.isOnline())
 				// Show the wireless centralized settings in API<11
 				// or shows general settings in API >=11
 				alertDialogShow(
@@ -328,6 +324,20 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
+	 * Gives the current network status.
+	 * 
+	 * @return Returns <code>true</code> if the device is connected to a
+	 *         network; otherwise, returns <code>false</code>.
+	 */
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnected())
+			return true;
+		return false;
+	}
+	
+	/**
 	 * A subclass of AsyncTask that calls getFromLocationName() in the
 	 * background.
 	 */
@@ -339,7 +349,7 @@ public class MainActivity extends ActionBarActivity implements
 		@Override
 		protected void onPreExecute() {
 			addresses = null;
-			bpAddress = "";
+			bpAddress = new StringBuilder();
 			selectedPosition = null;
 			pd = new ProgressDialog(MainActivity.this);
 			pd.setTitle(R.string.searching);
@@ -416,7 +426,7 @@ public class MainActivity extends ActionBarActivity implements
 															current.getLatitude(),
 															current.getLongitude()),
 													selectedPosition,
-													bpAddress);
+													bpAddress.toString());
 									}
 								});
 						builder.create();
@@ -440,7 +450,7 @@ public class MainActivity extends ActionBarActivity implements
 				distanceTasks(
 						new LatLng(current.getLatitude(),
 								current.getLongitude()), selectedPosition,
-						bpAddress);
+						bpAddress.toString());
 
 			MenuItemCompat.collapseActionView(searchItem);
 
@@ -448,21 +458,7 @@ public class MainActivity extends ActionBarActivity implements
 		}
 
 		/**
-		 * Gives the current network status.
-		 * 
-		 * @return Returns <code>true</code> if the device is connected to a
-		 *         network; otherwise, returns <code>false</code>.
-		 */
-		private boolean isOnline() {
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo netInfo = cm.getActiveNetworkInfo();
-			if (netInfo != null && netInfo.isConnected())
-				return true;
-			return false;
-		}
-
-		/**
-		 * Process the address selected by the user and set the new destination
+		 * Processes the address selected by the user and sets the new destination
 		 * position.
 		 * 
 		 * @param item
@@ -470,11 +466,10 @@ public class MainActivity extends ActionBarActivity implements
 		 */
 		private void processSelected(int item) {
 			// esto para el marcador!
-			// +1 porque si buscamos por país nos devuelve 0 y ni
-			// entra
+			// +1 porque si buscamos por país nos devuelve 0 y ni entra
 			// en el bucle
 			for (int i = 0; i < addresses.get(item).getMaxAddressLineIndex() + 1; i++)
-				bpAddress += addresses.get(item).getAddressLine(i) + "\n";
+				bpAddress.append(addresses.get(item).getAddressLine(i)).append("\n");
 
 			selectedPosition = new LatLng(addresses.get(item).getLatitude(),
 					addresses.get(item).getLongitude());
@@ -489,12 +484,12 @@ public class MainActivity extends ActionBarActivity implements
 		 */
 		private List<String> groupAdresses(List<Address> lista) {
 			List<String> nueva = new ArrayList<String>();
-			String aux;
+			StringBuilder aux;
 			for (Address l : lista) {
-				aux = "";
+				aux = new StringBuilder();
 				for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++)
-					aux += l.getAddressLine(j) + "\n";
-				nueva.add(aux);
+					aux.append(l.getAddressLine(j)).append("\n");
+				nueva.add(aux.toString());
 			}
 			return nueva;
 		}
@@ -632,10 +627,14 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private void goComplain(){
 		Intent sendTo = new Intent(Intent.ACTION_SENDTO);
-	    String uriText = "mailto:" + Uri.encode("davidaguiargonzalez@gmail.com") +
-	            "?subject=" + Uri.encode(getText(R.string.complain_message).toString()) +
-	            "&body=" + Uri.encode(getText(R.string.complain_hint).toString());
-	    Uri uri = Uri.parse(uriText);
+		StringBuilder uriText = new StringBuilder();
+		uriText.append("mailto:")
+				.append(Uri.encode("davidaguiargonzalez@gmail.com"))
+				.append("?subject=")
+				.append(Uri.encode(getText(R.string.complain_message).toString()))
+				.append("&body=")
+				.append(Uri.encode(getText(R.string.complain_hint).toString()));
+	    Uri uri = Uri.parse(uriText.toString());
 	    sendTo.setData(uri);
 
 	    List<ResolveInfo> resolveInfos = 
@@ -995,14 +994,10 @@ public class MainActivity extends ActionBarActivity implements
 		
 		// Muestra el perfil de elevación si está en las preferencias
 		// y si está conectado a internet
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		if (sharedPreferences.getBoolean("elevation_chart", false)){
-			// Está conectado a internet?
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo netInfo = cm.getActiveNetworkInfo();
-			if (netInfo != null && netInfo.isConnected())
-					getElevation(start, end);
-		}
+		if (getSharedPreferences(getBaseContext())
+					.getBoolean("elevation_chart", false)
+				&& this.isOnline())
+			getElevation(start, end);
 	}
 	
 	/**
@@ -1075,8 +1070,8 @@ public class MainActivity extends ActionBarActivity implements
 	private void moveCameraZoom(LatLng p1, LatLng p2) {
 		double centroLat = 0.0, centroLon = 0.0;
 		// Diferenciamos según preferencias
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		String centre = sharedPreferences.getString("centre", "CEN");
+		String centre = getSharedPreferences(getBaseContext())
+								.getString("centre", "CEN");
 		if (centre.equals("CEN")){
 			centroLat = (p1.latitude + p2.latitude) / 2;
 			centroLon = (p1.longitude + p2.longitude) / 2;	
@@ -1091,6 +1086,10 @@ public class MainActivity extends ActionBarActivity implements
 		else
 			googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(
 					p2.latitude, p2.longitude)));
+	}
+	
+	private SharedPreferences getSharedPreferences(Context context){
+		return PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
 	/**
@@ -1245,13 +1244,14 @@ public class MainActivity extends ActionBarActivity implements
 				throws IOException{
 	        BufferedReader bufferedReader =
 	        		new BufferedReader(new InputStreamReader(inputStream));
-	        String line = "", result = "";
+	        String line = "";
+	        StringBuilder result = new StringBuilder();
 	        while ((line = bufferedReader.readLine()) != null)
-	            result += line;
+	            result.append(line);
 	 
 	        inputStream.close();
 	        bufferedReader.close();
-	        return result;
+	        return result.toString();
 	    }
 		
 		/**
