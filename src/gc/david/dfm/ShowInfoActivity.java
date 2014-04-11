@@ -9,8 +9,10 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -43,20 +45,25 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
-	private LatLng source		= null;
-	private LatLng destination	= null;
+	private LatLng source			= null;
+	private LatLng destination		= null;
 
-	private TextView title1		= null;
-	private TextView title2		= null;
-	private TextView data1		= null;
-	private TextView data2		= null;
-	private TextView distance	= null;
+	private TextView title1			= null;
+	private TextView title2			= null;
+	private TextView data1			= null;
+	private TextView data2			= null;
+	private TextView distance		= null;
 
-	private MenuItem menuItem	= null;
-	private String address1		= null;
-	private String address2		= null;
-	private String dist			= null;
+	private MenuItem menuItem		= null;
+	private String address1			= "";
+	private String address2			= "";
+	private String dist				= null;
 
+	private boolean savingDistance	= false;
+	private String aliasHint		= "";
+	private Dialog savingDialog		= null;
+	private EditText textoAlias		= null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,6 +94,12 @@ public class ShowInfoActivity extends ActionBarActivity {
 			
 			// Este se modifica dos veces...
 			this.dist = savedInstanceState.getString("distance");
+			
+			this.savingDistance = savedInstanceState.getBoolean("savingDistance");
+			if (this.savingDistance){
+				this.aliasHint = savedInstanceState.getString("aliasHint");
+				saveDataToDB(aliasHint);
+			}
 		}
 
 		distance = (TextView) findViewById(R.id.distancia);
@@ -100,6 +113,14 @@ public class ShowInfoActivity extends ActionBarActivity {
 		outState.putString("address1", this.address1);
 		outState.putString("address2", this.address2);
 		outState.putString("distance", this.dist);
+		outState.putBoolean("savingDistance", savingDistance);
+		if (this.savingDistance){
+			outState.putString("aliasHint", textoAlias.getText().toString());
+			if (savingDialog !=  null){
+				savingDialog.dismiss();
+				savingDialog = null;
+			}
+		}
 	}
 
 	/**
@@ -218,33 +239,44 @@ public class ShowInfoActivity extends ActionBarActivity {
 			fillAddresses();
 			return true;
 		case R.id.menu_save:
-			saveDataToDB();
+			saveDataToDB("");
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
+	
 	/**
 	 * Saves the current data into the database.
+	 * 
+	 * @param text String text when orientation changes.
 	 */
-	private void saveDataToDB() {
+	private void saveDataToDB(String text) {
+		this.savingDistance = true;
 		// Pedir al usuario que introduzca un texto descriptivo
 		AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
-		final EditText textoAlias = new EditText(getApplicationContext());
-		textoAlias.setTextColor(Color.BLACK);
-		textoAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+		this.textoAlias = new EditText(getApplicationContext());
+		this.textoAlias.setTextColor(Color.BLACK);
+		this.textoAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+		this.textoAlias.setText(text);
 		
 		builder.setMessage(getText(R.string.alias_dialog_message))
 				.setTitle(getText(R.string.alias_dialog_title))
-				.setView(textoAlias)
+				.setView(this.textoAlias)
 				.setInverseBackgroundForced(false)
+				.setOnCancelListener(new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						savingDistance = false;
+					}
+				})
 				.setPositiveButton(getText(R.string.alias_dialog_accept), new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						insertDataIntoDatabase(textoAlias);
+						insertDataIntoDatabase(textoAlias.getText().toString());
+						savingDistance = false;
 					}
-
+					
 					/**
 					 * Adds a new entry to the database with the current
 					 * data and shows the user a message.
@@ -254,11 +286,10 @@ public class ShowInfoActivity extends ActionBarActivity {
 					 *            the database entry.
 					 */
 					private void insertDataIntoDatabase(
-							final EditText textoAlias) {
+							String textoAlias) {
 						String alias = "";
-						String aux = textoAlias.getText().toString();
-						if (aux.compareTo("") != 0)
-							alias = aux;
+						if (textoAlias.compareTo("") != 0)
+							alias = textoAlias;
 						
 						DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
 						dds.open();
@@ -272,9 +303,9 @@ public class ShowInfoActivity extends ActionBarActivity {
 						dds.close();
 					}
 				});
-		builder.create().show();
+		(savingDialog = builder.create()).show();
 	}
-
+	
 	/**
 	 * A subclass of AsyncTask that calls getFromLocation() in the background.
 	 */
@@ -309,7 +340,6 @@ public class ShowInfoActivity extends ActionBarActivity {
 						loc.longitude, 1);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				// return ("IO Exception trying to get address");
 				return (getText(R.string.nolocation).toString());
 			} catch (IllegalArgumentException e2) {
 				// Error message to post in the log

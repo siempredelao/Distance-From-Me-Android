@@ -21,8 +21,8 @@
     <string name="list_dialog_title">Choose a distance</string>
     <string name="menu_rateapp">Rate app</string>
     <string name="rate_title">Rate this app</string>
-    <string name="rate_message">If you enjoy using Distance From Me, please give 5 stars and write a nice comment. Otherwise, you can also complain about any error or make a suggestion by sending an email to the dev team.</string>
-    <string name="rate_positive_button">Give 5 stars!</string>
+    <string name="rate_message">If you enjoy using Distance From Me, please give 5 stars and write a nice comment. Anyway, you can also complain about any error or make a suggestion by sending an email to the dev team.</string>
+    <string name="rate_positive_button">Go to Google Play Store</string>
     <string name="rate_negative_button">Complain!</string>
     <string name="complain_message">Complain/Suggestion about Distance From Me</string>
     <string name="complain_hint">I want to tell the dev team </string>

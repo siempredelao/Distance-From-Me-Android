@@ -22,7 +22,7 @@
     <string name="menu_rateapp">Avaliar aplicativo</string>
     <string name="rate_title">Avaliar este aplicativo</string>
     <string name="rate_message">Si você pensa que Distance From Me é uma boa aplicação, por favor, coloque 5 estrelas e escreva um comentário. Se não, você também pode se comunicar com a equipe de desenvolvimento para reclamar sobre um erro ou fazer uma sugestão.</string>
-    <string name="rate_positive_button">Dar 5 estrelas</string>
+    <string name="rate_positive_button">Abrir Google Play Store</string>
     <string name="rate_negative_button">Conte-nos!</string>
     <string name="complain_message">Queixa/Sugestao de Distance From Me</string>
     <string name="complain_hint">Eu quero dizer a sua equipe de desenvolvimento que </string>

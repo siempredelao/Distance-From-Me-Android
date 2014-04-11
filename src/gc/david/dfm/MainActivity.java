@@ -31,13 +31,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -145,31 +143,34 @@ public class MainActivity extends ActionBarActivity implements
 			// InMobi Ads
 			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
 			banner = (IMBanner) findViewById(R.id.banner);
-			banner.setRefreshInterval(30);
-			banner.setIMBannerListener(new IMBannerListener() {
-				@Override
-				public void onShowBannerScreen(IMBanner arg0) {
-				}
-				@Override
-				public void onLeaveApplication(IMBanner arg0) {
-				}
-				@Override
-				public void onDismissBannerScreen(IMBanner arg0) {
-				}
-				@Override
-				public void onBannerRequestSucceeded(IMBanner arg0) {
-					// To make Google workers happy ¬¬
-					bannerPadding = true;
-					mapPadding();
-				}
-				@Override
-				public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
-				}
-				@Override
-				public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
-				}
-			});
-			banner.loadBanner();
+			if (banner != null){
+				// Si no hay red el banner no carga ni aunque esté vacío
+				banner.setRefreshInterval(30);
+				banner.setIMBannerListener(new IMBannerListener() {
+					@Override
+					public void onShowBannerScreen(IMBanner arg0) {
+					}
+					@Override
+					public void onLeaveApplication(IMBanner arg0) {
+					}
+					@Override
+					public void onDismissBannerScreen(IMBanner arg0) {
+					}
+					@Override
+					public void onBannerRequestSucceeded(IMBanner arg0) {
+						// To make Google workers happy ¬¬
+						bannerPadding = true;
+						mapPadding();
+					}
+					@Override
+					public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
+					}
+					@Override
+					public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
+					}
+				});
+				banner.loadBanner();
+			}
 			
 			if (!this.isOnline())
 				// Show the wireless centralized settings in API<11
@@ -219,16 +220,19 @@ public class MainActivity extends ActionBarActivity implements
 			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
-					// Abrir una activity
-					Intent intent = new Intent(MainActivity.this,
-							ShowInfoActivity.class);
-					intent.putExtra("origen", new LatLng(current.getLatitude(),
-							current.getLongitude()));
-					intent.putExtra("destino", new LatLng(
-							marker.getPosition().latitude,
-							marker.getPosition().longitude));
-					intent.putExtra("distancia", distance);
-					startActivity(intent);
+					if (current != null){
+						// Abrir una activity
+						Intent intent = new Intent(MainActivity.this,
+								ShowInfoActivity.class);
+						intent.putExtra("origen", new LatLng(current.getLatitude(),
+								current.getLongitude()));
+						intent.putExtra("destino", new LatLng(
+								marker.getPosition().latitude,
+								marker.getPosition().longitude));
+						intent.putExtra("distancia", distance);
+						startActivity(intent);
+					} else
+						toastIt(getText(R.string.loading).toString());
 				}
 			});
 
@@ -299,6 +303,7 @@ public class MainActivity extends ActionBarActivity implements
 		String query = intent.getStringExtra(SearchManager.QUERY);
 		if (current != null)
 			new SearchPosition().execute(query);
+		MenuItemCompat.collapseActionView(searchItem);
 	}
 
 	/**
@@ -514,7 +519,7 @@ public class MainActivity extends ActionBarActivity implements
 		searchView.setQueryRefinementEnabled(true);
 		searchView.setIconifiedByDefault(true);
 
-		// Muestra el icono de cargar si procede
+		// Muestra el item de menú de cargar si hay elementos en la BD
 		MenuItem loadItem = menu.findItem(R.id.action_load);
 		DistancesDataSource dDS = new DistancesDataSource(
 				getApplicationContext());
@@ -535,9 +540,9 @@ public class MainActivity extends ActionBarActivity implements
 		case R.id.action_load:
 			loadDistancesFromDB();
 			return true;
-		case R.id.menu_rateapp:
-			rateApp();
-			return true;
+//		case R.id.menu_rateapp:
+//			rateApp();
+//			return true;
 		case R.id.menu_legalnotices:
 			showGooglePlayServiceLicense();
 			return true;
@@ -590,73 +595,73 @@ public class MainActivity extends ActionBarActivity implements
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
 	
-	/**
-	 * Shows rate dialog.
-	 */
-	private void rateApp(){
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.rate_title)
-		.setMessage(R.string.rate_message)
-		.setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				openPlayStore();
-			}
-		})
-		.setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				goComplain();
-			}
-		})
-		.create()
-		.show();
-	}
-	
-	/**
-	 * Opens Google Play Store, in Distance From Me page
-	 */
-	private void openPlayStore(){
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
-	}
-	
-	/**
-	 * Drives the user to a email client to make a complain/suggestion.
-	 */
-	private void goComplain(){
-		Intent sendTo = new Intent(Intent.ACTION_SENDTO);
-		StringBuilder uriText = new StringBuilder();
-		uriText.append("mailto:")
-				.append(Uri.encode("davidaguiargonzalez@gmail.com"))
-				.append("?subject=")
-				.append(Uri.encode(getText(R.string.complain_message).toString()))
-				.append("&body=")
-				.append(Uri.encode(getText(R.string.complain_hint).toString()));
-	    Uri uri = Uri.parse(uriText.toString());
-	    sendTo.setData(uri);
-
-	    List<ResolveInfo> resolveInfos = 
-	            getPackageManager().queryIntentActivities(sendTo, 0);
-
-        // Emulators may not like this check...
-        if (!resolveInfos.isEmpty()){
-        	startActivity(sendTo);
-        } else {
-		    // Nothing resolves send to, so fallback to send...
-			Intent intent = new Intent(Intent.ACTION_SENDTO);
-			intent.setType("text/plain");
-			intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"davidaguiargonzalez@gmail.com"});
-			intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.complain_message).toString());
-			intent.putExtra(Intent.EXTRA_TEXT, getText(R.string.complain_hint).toString());
-			try {
-				startActivity(intent);
-			} catch (ActivityNotFoundException e){
-				toastIt(getText(R.string.complain_problem).toString());
-			}
-        }
-	}
+//	/**
+//	 * Shows rate dialog.
+//	 */
+//	private void rateApp(){
+//		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//		builder.setTitle(R.string.rate_title)
+//		.setMessage(R.string.rate_message)
+//		.setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				dialog.dismiss();
+//				openPlayStore();
+//			}
+//		})
+//		.setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				dialog.dismiss();
+//				goComplain();
+//			}
+//		})
+//		.create()
+//		.show();
+//	}
+//	
+//	/**
+//	 * Opens Google Play Store, in Distance From Me page
+//	 */
+//	private void openPlayStore(){
+//		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
+//	}
+//	
+//	/**
+//	 * Drives the user to a email client to make a complain/suggestion.
+//	 */
+//	private void goComplain(){
+//		Intent sendTo = new Intent(Intent.ACTION_SENDTO);
+//		StringBuilder uriText = new StringBuilder();
+//		uriText.append("mailto:")
+//				.append(Uri.encode("davidaguiargonzalez@gmail.com"))
+//				.append("?subject=")
+//				.append(Uri.encode(getText(R.string.complain_message).toString()))
+//				.append("&body=")
+//				.append(Uri.encode(getText(R.string.complain_hint).toString()));
+//	    Uri uri = Uri.parse(uriText.toString());
+//	    sendTo.setData(uri);
+//
+//	    List<ResolveInfo> resolveInfos = 
+//	            getPackageManager().queryIntentActivities(sendTo, 0);
+//
+//        // Emulators may not like this check...
+//        if (!resolveInfos.isEmpty()){
+//        	startActivity(sendTo);
+//        } else {
+//		    // Nothing resolves send to, so fallback to send...
+//			Intent intent = new Intent(Intent.ACTION_SENDTO);
+//			intent.setType("text/plain");
+//			intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"davidaguiargonzalez@gmail.com"});
+//			intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.complain_message).toString());
+//			intent.putExtra(Intent.EXTRA_TEXT, getText(R.string.complain_hint).toString());
+//			try {
+//				startActivity(intent);
+//			} catch (ActivityNotFoundException e){
+//				toastIt(getText(R.string.complain_problem).toString());
+//			}
+//        }
+//	}
 		
 	/**
 	 * Shows an AlertDialog with the Google Play Services License.
@@ -692,7 +697,11 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onStart() {
-		super.onStart();
+		try { // Para evitar NullPointerException y que pete
+			super.onStart();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 		
 		/*
 		 * Connect the client. Don't re-start any requests here; instead, wait
@@ -870,9 +879,8 @@ public class MainActivity extends ActionBarActivity implements
 
 		if (appHasJustStarted) {
 			if (seePosition) {
-				if (current != null) {
+				if (current != null)
 					new SearchPosition().execute(sendDestinationPosition);
-				}
 				seePosition = false;
 			} else {
 				LatLng latlng = new LatLng(location.getLatitude(),
