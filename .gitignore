@@ -2,34 +2,35 @@
 ## Eclipse
 #################
 
-# Y el apk también lo ignoramos
+# Built application files
 *.apk
+*.ap_
 
-*.pydevproject
-.project
-.metadata
+# Files for the Dalvik VM
+*.dex
+
+# Generated files
 bin/
+gen/
+
+# Other folders
 libs/
 obj/
 tmp/
-gen/
+.settings/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+*.pydevproject
+*.project
+*.metadata
 *.tmp
 *.bak
 *.swp
 *~.nib
-local.properties
 .classpath
-.settings/
-.loadpath
-
-# External tool builders
-.externalToolBuilders/
-
-# Locally stored "Eclipse launch configurations"
-*.launch
-
-# CDT-specific
-.cproject
+*.loadpath
 
 # PDT-specific
 .buildpath
