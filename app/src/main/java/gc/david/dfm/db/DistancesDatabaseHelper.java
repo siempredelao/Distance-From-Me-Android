@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DistancesDatabaseHelper extends SQLiteOpenHelper {
 	
-	// Con esta variable controlamos el número de versión, no desde fuera
+	// Con esta variable controlamos el nÃºmero de versiÃ³n, no desde fuera
 	public static final int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "DistanciasDB.db";
 
@@ -21,7 +21,7 @@ public class DistancesDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// En principio esto, ya se verá si se necesita modificar para próximas versiones
+		// En principio esto, ya se verÃ¡ si se necesita modificar para prÃ³ximas versiones
 //		db.execSQL(DatabaseContract.SQL_DROP);
 //		onCreate(db);
 	}

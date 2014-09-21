@@ -1,8 +1,5 @@
 package gc.david.dfm.db;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -10,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * DistancesDataSource is a data access object (DAO) to manage the database 
@@ -50,7 +50,7 @@ public class DistancesDataSource {
 							distance
 						};
 		
-		// La fecha, como el _ID, se crea autom·ticamente
+		// La fecha, como el _ID, se crea autom√°ticamente
 		database.execSQL(DatabaseContract.SQL_INSERT_ROW, args);
 	}
 	

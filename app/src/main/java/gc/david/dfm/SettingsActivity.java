@@ -1,11 +1,12 @@
 package gc.david.dfm;
 
-import gc.david.dfm.db.DistancesDataSource;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
+
+import gc.david.dfm.db.DistancesDataSource;
 
 public class SettingsActivity extends PreferenceActivity{
 	@SuppressWarnings("deprecation")
@@ -15,7 +16,7 @@ public class SettingsActivity extends PreferenceActivity{
         
         addPreferencesFromResource(R.xml.settings);
         
-        Preference bbdd = (Preference) findPreference("bbdd");
+        Preference bbdd = findPreference("bbdd");
         bbdd.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
