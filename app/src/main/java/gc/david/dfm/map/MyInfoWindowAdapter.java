@@ -1,12 +1,13 @@
 package gc.david.dfm.map;
 
-import gc.david.dfm.R;
 import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
+
+import gc.david.dfm.R;
 
 /**
  * MyInfoWindowAdapter controls the info window showed above the marker.
@@ -19,8 +20,7 @@ public class MyInfoWindowAdapter implements InfoWindowAdapter {
 	private final View myContentsView;
 
 	public MyInfoWindowAdapter(Activity activity) {
-		myContentsView = activity.getLayoutInflater().inflate(R.layout.custom_info,
-				null);
+		myContentsView = activity.getLayoutInflater().inflate(R.layout.custom_info, null);
 	}
 	
 	@Override

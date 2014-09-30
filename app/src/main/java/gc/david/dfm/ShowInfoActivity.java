@@ -1,13 +1,5 @@
 package gc.david.dfm;
 
-import gc.david.dfm.db.DistancesDataSource;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -27,7 +19,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.ShareActionProvider; // Esta clase da algún tipo de error
+import android.support.v7.widget.ShareActionProvider;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +28,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+
+import gc.david.dfm.db.DistancesDataSource;
 
 /**
  * ShowInfoActivity shows information about the distance to the user.
@@ -159,8 +159,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		} catch (CancellationException e) {
-			// No hay conexión, se cancela la búsqueda de las direcciones
-			// No se hace nada aquí, ya lo hace el hilo
+			// No hay conexiÃ³n, se cancela la bÃºsqueda de las direcciones
+			// No se hace nada aquÃ­, ya lo hace el hilo
 		}
 	}
 	
@@ -222,11 +222,9 @@ public class ShowInfoActivity extends ActionBarActivity {
 	 * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
 	 */
 	private boolean verifyAppReceiveIntent(Intent intent){
-		PackageManager packageManager = getPackageManager();
-		List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-		if (activities.size() > 0)
-			return true;
-		return false;
+		final PackageManager packageManager = getPackageManager();
+		final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+		return activities.size() > 0;
 	}
 
 	@Override
@@ -293,10 +291,10 @@ public class ShowInfoActivity extends ActionBarActivity {
 						
 						DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
 						dds.open();
-						// Si no introduce nada, poner "No title" o algo así
+						// Si no introduce nada, poner "No title" o algo asÃ­
 						dds.insert(alias, source, destination, dist);
 						// Mostrar un mensaje de que se ha guardado correctamente
-						if (alias != "")
+						if (!alias.equals(""))
 							toastIt(getText(R.string.alias_dialog_toast_1) + alias + getText(R.string.alias_dialog_toast_2));
 						else
 							toastIt(getText(R.string.alias_dialog_toast_3).toString());
@@ -363,7 +361,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 						// If there's a street address, add it
 						address.getMaxAddressLineIndex() > 0 ? address
 								.getAddressLine(0) + "\n" : "",
-						// Añadimos también el código postal
+						// AÃ±adimos tambiÃ©n el cÃ³digo postal
 						address.getPostalCode() != null ? address
 								.getPostalCode() + " " : "",
 						// Locality is usually a city
@@ -392,11 +390,9 @@ public class ShowInfoActivity extends ActionBarActivity {
 		 *         otherwise, returns <code>false</code>.
 		 */
 		private boolean isOnline() {
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo netInfo = cm.getActiveNetworkInfo();
-			if (netInfo != null && netInfo.isConnected())
-				return true;
-			return false;
+			final ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+			return netInfo != null && netInfo.isConnected();
 		}
 
 		/**

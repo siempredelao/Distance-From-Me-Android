@@ -1,15 +1,15 @@
 package gc.david.dfm;
 
-import gc.david.dfm.db.Distance;
-
-import java.util.List;
-
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import java.util.List;
+
+import gc.david.dfm.db.Distance;
 
 /**
  * Sets an adapter for distance entries from the database to show to the user to
@@ -59,9 +59,9 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 			holder = (ViewHolder) item.getTag();
 		}
 		
-		holder.title.setText(data.get(position).getName().toString());
-		holder.distance.setText(data.get(position).getDistance().toString());
-		holder.date.setText(data.get(position).getDate().toString());
+		holder.title.setText(data.get(position).getName());
+		holder.distance.setText(data.get(position).getDistance());
+		holder.date.setText(data.get(position).getDate());
 		
 		return item;
 	}

@@ -1,5 +1,5 @@
 #################
-## Eclipse
+## Android Studio
 #################
 
 # Built application files
@@ -9,30 +9,17 @@
 # Files for the Dalvik VM
 *.dex
 
-# Generated files
-bin/
-gen/
+# Android Studio
+build
+.idea
+.gradle
 
 # Other folders
-libs/
-obj/
-tmp/
-.settings/
+libs
+gradle
 
 # Local configuration file (sdk path, etc)
 local.properties
-
-*.pydevproject
-*.project
-*.metadata
-*.tmp
-*.bak
-*.swp
-*~.nib
 .classpath
-*.loadpath
-
-# PDT-specific
-.buildpath
-
-
+import-summary.txt
+*.iml

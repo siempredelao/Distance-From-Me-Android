@@ -83,8 +83,8 @@ public final class Haversine {
 
 		String resultado, unidadMedida = "km";
 		double measure;
-		// Uso del formatter para dar con mayor precisiÛn que Math.round
-		// aunque gaste m·s, pero es una ˙nica medida la que se normalizar·
+		// Uso del formatter para dar con mayor precisi√≥n que Math.round
+		// aunque gaste m√°s, pero es una √∫nica medida la que se normalizar√°
 		DecimalFormat formatter = new DecimalFormat("##,##0.00");
 
 		if (locale.equals(Locale.CANADA) || locale.equals(Locale.CHINA)
@@ -100,9 +100,9 @@ public final class Haversine {
 				measure = distance * 1.093613298337708;
 			}
 		} else {
-			if (distance >= 1000.0) // Hay al menos un kilÛmetro
+			if (distance >= 1000.0) // Hay al menos un kil√≥metro
 				measure = distance / 1000;
-			else { // No llega a un kilÛmetro, medimos en metros
+			else { // No llega a un kil√≥metro, medimos en metros
 				unidadMedida = "m";
 				measure = distance;
 			}

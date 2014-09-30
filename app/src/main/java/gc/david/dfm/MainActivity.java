@@ -1,30 +1,5 @@
 package gc.david.dfm;
 
-import gc.david.dfm.db.Distance;
-import gc.david.dfm.db.DistancesDataSource;
-import gc.david.dfm.map.Haversine;
-import gc.david.dfm.map.LocationUtils;
-import gc.david.dfm.map.MyInfoWindowAdapter;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -85,11 +60,36 @@ import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import gc.david.dfm.db.Distance;
+import gc.david.dfm.db.DistancesDataSource;
+import gc.david.dfm.map.Haversine;
+import gc.david.dfm.map.LocationUtils;
+import gc.david.dfm.map.MyInfoWindowAdapter;
+
 /**
  * Implements the app main Activity.
- * 
+ *
  * @author David
- * 
+ *
  */
 public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
@@ -122,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements
 	// Google Map items padding
 	private boolean bannerPadding				= false;
 	private boolean elevationPadding			= false;
-	private static int ELEVATION_SAMPLES		= 100;
+	private static final int ELEVATION_SAMPLES	= 100;
 	@SuppressWarnings("rawtypes")
 	private AsyncTask showingElevation			= null;
 	private GraphView graphView					= null;
@@ -139,12 +139,12 @@ public class MainActivity extends ActionBarActivity implements
 		if (googleMap != null) {
 			googleMap.setMyLocationEnabled(true);
 			googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-			
+
 			// InMobi Ads
 			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
 			banner = (IMBanner) findViewById(R.id.banner);
 			if (banner != null){
-				// Si no hay red el banner no carga ni aunque esté vacío
+				// Si no hay red el banner no carga ni aunque estï¿½ vacï¿½o
 				banner.setRefreshInterval(30);
 				banner.setIMBannerListener(new IMBannerListener() {
 					@Override
@@ -158,7 +158,7 @@ public class MainActivity extends ActionBarActivity implements
 					}
 					@Override
 					public void onBannerRequestSucceeded(IMBanner arg0) {
-						// To make Google workers happy ¬¬
+						// To make Google workers happy ï¿½ï¿½
 						bannerPadding = true;
 						mapPadding();
 					}
@@ -171,7 +171,7 @@ public class MainActivity extends ActionBarActivity implements
 				});
 				banner.loadBanner();
 			}
-			
+
 			if (!this.isOnline())
 				// Show the wireless centralized settings in API<11
 				// or shows general settings in API >=11
@@ -182,11 +182,11 @@ public class MainActivity extends ActionBarActivity implements
 						getText(R.string.wireless_off).toString(),
 						getText(R.string.wireless_enable).toString(),
 						getText(R.string.do_nothing).toString());
-			
+
 			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
 				public void onMapLongClick(LatLng point) {
-					// Si no hemos encontrado la posición actual, no podremos
+					// Si no hemos encontrado la posiciï¿½n actual, no podremos
 					// calcular la distancia
 					if (current != null)
 						distanceTasks(new LatLng(current.getLatitude(),
@@ -202,7 +202,7 @@ public class MainActivity extends ActionBarActivity implements
 				@Override
 				public void onMarkerDragEnd(Marker marker) {
 					// NO movemos el zoom porque estamos simplemente afinando la
-					// posición
+					// posiciÃ³n
 					applyZoom = false;
 					distanceTasks(
 							new LatLng(current.getLatitude(), current
@@ -263,7 +263,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Makes toasting easy!
-	 * 
+	 *
 	 * @param text
 	 *            The string to show.
 	 */
@@ -279,7 +279,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Handles all Intent types.
-	 * 
+	 *
 	 * @param intent
 	 *            The input intent.
 	 */
@@ -293,13 +293,13 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Handles a search intent.
-	 * 
+	 *
 	 * @param intent
 	 *            Input intent.
 	 */
 	private void handleSearchIntent(Intent intent) {
-		// Para controlar instancias únicas, no queremos que cada vez que
-		// busquemos nos inicie una nueva instancia de la aplicación
+		// Para controlar instancias Ãºnicas, no queremos que cada vez que
+		// busquemos nos inicie una nueva instancia de la aplicaciÃ³n
 		String query = intent.getStringExtra(SearchManager.QUERY);
 		if (current != null)
 			new SearchPosition().execute(query);
@@ -308,19 +308,19 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Handles a send intent with position data.
-	 * 
+	 *
 	 * @param intent
 	 *            Input intent with position data.
-	 * 
+	 *
 	 */
 	private void handleSendPositionIntent(Intent intent) {
 		Uri u = intent.getData();
 
-		// Buscamos el envío por Whatsapp
+		// Buscamos el envÃ­o por Whatsapp
 		String queryParameter = u.getQueryParameter("q"); // loc:latitud,longitud
 															// (You)
 		if (queryParameter != null) {
-			// Esta string será la que mandemos a BuscaPosicion
+			// Esta string serÃ¡ la que mandemos a BuscaPosicion
 			sendDestinationPosition = queryParameter.replace("loc:", "")
 					.replaceAll(" (\\D*)", ""); // latitud,longitud
 
@@ -330,18 +330,16 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Gives the current network status.
-	 * 
+	 *
 	 * @return Returns <code>true</code> if the device is connected to a
 	 *         network; otherwise, returns <code>false</code>.
 	 */
 	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnected())
-			return true;
-		return false;
+		final ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		final NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnected();
 	}
-	
+
 	/**
 	 * A subclass of AsyncTask that calls getFromLocationName() in the
 	 * background.
@@ -363,11 +361,11 @@ public class MainActivity extends ActionBarActivity implements
 			pd.setIndeterminate(true);
 			pd.show();
 
-			// Comprobamos que haya conexión con internet (WiFi o Datos)
+			// Comprobamos que haya conexiï¿½n con internet (WiFi o Datos)
 			if (!isOnline()) {
 				if (pd != null)
 					pd.dismiss();
-				
+
 					alertDialogShow(
 							(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
 									android.provider.Settings.ACTION_WIRELESS_SETTINGS :
@@ -375,8 +373,8 @@ public class MainActivity extends ActionBarActivity implements
 							getText(R.string.wireless_off).toString(),
 							getText(R.string.wireless_enable).toString(),
 							getText(R.string.do_nothing).toString());
-					
-				// Restauramos el menú y que vuelva a empezar de nuevo
+
+				// Restauramos el menÃº y que vuelva a empezar de nuevo
 				MenuItemCompat.collapseActionView(searchItem);
 				cancel(false);
 			}
@@ -393,7 +391,7 @@ public class MainActivity extends ActionBarActivity implements
 				addresses = geoCoder.getFromLocationName(params[0], 5);
 			} catch (IOException e) {
 				e.printStackTrace();
-				return -1; // No encuentra una direccion, no puede conectar con
+				return -1; // No encuentra una direcciÃ³n, no puede conectar con
 							// el servidor
 			}
 			if (addresses == null)
@@ -403,7 +401,7 @@ public class MainActivity extends ActionBarActivity implements
 				return 0;
 			else
 				return -2; // null if no matches were found // Cuando no hay
-							// conexión que sirva
+							// conexiÃ³n que sirva
 		}
 
 		@Override
@@ -418,7 +416,7 @@ public class MainActivity extends ActionBarActivity implements
 
 						builder.setTitle(getText(R.string.select_address));
 						builder.setItems(
-								(String[]) groupAdresses(addresses)
+								groupAdresses(addresses)
 										.toArray(new String[addresses.size()]),
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
@@ -465,13 +463,13 @@ public class MainActivity extends ActionBarActivity implements
 		/**
 		 * Processes the address selected by the user and sets the new destination
 		 * position.
-		 * 
+		 *
 		 * @param item
 		 *            The index item in the AlertDialog.
 		 */
 		private void processSelected(int item) {
 			// esto para el marcador!
-			// +1 porque si buscamos por país nos devuelve 0 y ni entra
+			// +1 porque si buscamos por paÃ­s nos devuelve 0 y ni entra
 			// en el bucle
 			for (int i = 0; i < addresses.get(item).getMaxAddressLineIndex() + 1; i++)
 				bpAddress.append(addresses.get(item).getAddressLine(i)).append("\n");
@@ -482,7 +480,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		/**
 		 * Extract a list of address from a list of Address objects.
-		 * 
+		 *
 		 * @param lista
 		 *            An Address's list.
 		 * @return A string list with only addresses in text.
@@ -499,14 +497,14 @@ public class MainActivity extends ActionBarActivity implements
 			return nueva;
 		}
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the options menu from XML
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 
-		// Expandir el EditText de la búsqueda a lo largo del ActionBar
+		// Expandir el EditText de la bÃºsqueda a lo largo del ActionBar
 		searchItem = menu.findItem(R.id.action_search);
 		SearchView searchView = (SearchView) MenuItemCompat
 				.getActionView(searchItem);
@@ -519,7 +517,7 @@ public class MainActivity extends ActionBarActivity implements
 		searchView.setQueryRefinementEnabled(true);
 		searchView.setIconifiedByDefault(true);
 
-		// Muestra el item de menú de cargar si hay elementos en la BD
+		// Muestra el item de menÃº de cargar si hay elementos en la BD
 		MenuItem loadItem = menu.findItem(R.id.action_load);
 		DistancesDataSource dDS = new DistancesDataSource(
 				getApplicationContext());
@@ -579,7 +577,7 @@ public class MainActivity extends ActionBarActivity implements
 									distancia.getLon_a());
 							LatLng fin = new LatLng(distancia.getLat_b(), distancia
 									.getLon_b());
-	
+
 							distanceTasks(inicio, fin, distancia.getName()
 									+ "\n");
 						}
@@ -594,7 +592,7 @@ public class MainActivity extends ActionBarActivity implements
 	private void showSettings(){
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
-	
+
 //	/**
 //	 * Shows rate dialog.
 //	 */
@@ -662,7 +660,7 @@ public class MainActivity extends ActionBarActivity implements
 //			}
 //        }
 //	}
-		
+
 	/**
 	 * Shows an AlertDialog with the Google Play Services License.
 	 */
@@ -789,16 +787,16 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Checks if Google Play Services is available on the device.
-	 * 
+	 *
 	 * @return Returns <code>true</code> if available; <code>false</code>
 	 *         otherwise.
 	 */
 	private boolean checkPlayServices() {
-		// Comprobamos que Google Play Services esté disponible en el terminal
+		// Comprobamos que Google Play Services estÃ¡ disponible en el terminal
 		int resultCode = GooglePlayServicesUtil
 				.isGooglePlayServicesAvailable(getApplicationContext());
 
-		// Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
+		// Si estÃ¡ disponible, devolvemos verdadero. Si no, mostramos un mensaje
 		// de error y devolvemos falso
 		if (resultCode == ConnectionResult.SUCCESS)
 			return true;
@@ -912,7 +910,7 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Shows a dialog returned by Google Play services for the connection error
 	 * code
-	 * 
+	 *
 	 * @param errorCode
 	 *            An error code returned from onConnectionFailed
 	 */
@@ -956,7 +954,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		/**
 		 * Set the dialog to display
-		 * 
+		 *
 		 * @param dialog
 		 *            An error dialog
 		 */
@@ -976,7 +974,7 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Calculates the distance to a specified position, adds the marker and the
 	 * line.
-	 * 
+	 *
 	 * @param start
 	 *            Start position.
 	 * @param end
@@ -985,33 +983,33 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Address to show in the info window (if needed).
 	 */
 	private void distanceTasks(LatLng start, LatLng end, String mensaje) {
-		// Borramos los antiguos marcadores y líneas
+		// Borramos los antiguos marcadores y lï¿½neas
 		googleMap.clear();
 
 		// Calculamos la distancia
 		distance = calculateDistance(start, end);
 
-		// Añadimos el nuevo marcador
+		// AÃ±adimos el nuevo marcador
 		addMarker(end, distance, mensaje);
 
-		// Añadimos la línea
+		// AÃ±adimos la lÃ­nea
 		addLine(start, end);
 
-		// Aquí hacer la animación de la cámara
+		// AquÃ­ hacer la animaciÃ³n de la cÃ¡mara
 		moveCameraZoom(start, end);
-		
-		// Muestra el perfil de elevación si está en las preferencias
-		// y si está conectado a internet
+
+		// Muestra el perfil de elevaciÃ³n si estÃ¡ en las preferencias
+		// y si estÃ¡ conectado a internet
 		if (getSharedPreferences(getBaseContext())
 					.getBoolean("elevation_chart", false)
 				&& this.isOnline())
 			getElevation(start, end);
 	}
-	
+
 	/**
 	 * Adds a marker to the map in a specified position and shows its info
 	 * window.
-	 * 
+	 *
 	 * @param point
 	 *            Destination position.
 	 * @param distancia
@@ -1028,7 +1026,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Adds a line between start and end positions.
-	 * 
+	 *
 	 * @param start
 	 *            Start position.
 	 * @param end
@@ -1052,7 +1050,7 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Returns the distance between start and end positions normalized by device
 	 * locale.
-	 * 
+	 *
 	 * @param start
 	 *            Start position.
 	 * @param end
@@ -1069,7 +1067,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Moves camera position and applies zoom if needed.
-	 * 
+	 *
 	 * @param p1
 	 *            Start position.
 	 * @param p2
@@ -1077,17 +1075,17 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private void moveCameraZoom(LatLng p1, LatLng p2) {
 		double centroLat = 0.0, centroLon = 0.0;
-		// Diferenciamos según preferencias
+		// Diferenciamos segÃºn preferencias
 		String centre = getSharedPreferences(getBaseContext())
 								.getString("centre", "CEN");
 		if (centre.equals("CEN")){
 			centroLat = (p1.latitude + p2.latitude) / 2;
-			centroLon = (p1.longitude + p2.longitude) / 2;	
+			centroLon = (p1.longitude + p2.longitude) / 2;
 		} else if (centre.equals("DES")){
 			centroLat = p2.latitude;
 			centroLon = p2.longitude;
 		}
-		
+
 		if (applyZoom)
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
 					centroLat, centroLon), calculateZoom(p1, p2)));
@@ -1095,7 +1093,7 @@ public class MainActivity extends ActionBarActivity implements
 			googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(
 					p2.latitude, p2.longitude)));
 	}
-	
+
 	private SharedPreferences getSharedPreferences(Context context){
 		return PreferenceManager.getDefaultSharedPreferences(context);
 	}
@@ -1103,7 +1101,7 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Calculates zoom level to make possible current and destination positions
 	 * appear in the device.
-	 * 
+	 *
 	 * @param p1
 	 *            Current position.
 	 * @param p2
@@ -1151,7 +1149,7 @@ public class MainActivity extends ActionBarActivity implements
 
 	/**
 	 * Calculates elevation points in background and shows elevation chart.
-	 * 
+	 *
 	 * @param start
 	 *            Start position.
 	 * @param end
@@ -1173,9 +1171,9 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * A subclass of AsyncTask that gets elevation points from coordinates in
 	 * background and shows an elevation chart.
-	 * 
+	 *
 	 * @author David
-	 * 
+	 *
 	 */
 	private class GetAltitude extends AsyncTask<String, Void, Double>{
 
@@ -1186,7 +1184,7 @@ public class MainActivity extends ActionBarActivity implements
 		private InputStream inputStream		= null;
 		private JSONObject respJSON;
 		private RelativeLayout layout;
-		
+
 		@Override
 		protected void onPreExecute() {
 			httpClient = new DefaultHttpClient();
@@ -1256,16 +1254,16 @@ public class MainActivity extends ActionBarActivity implements
 	        StringBuilder result = new StringBuilder();
 	        while ((line = bufferedReader.readLine()) != null)
 	            result.append(line);
-	 
+
 	        inputStream.close();
 	        bufferedReader.close();
 	        return result.toString();
 	    }
-		
+
 		/**
 		 * Builds the information about the elevation profile chart. Use this in
 		 * a background task.
-		 * 
+		 *
 		 * @param array
 		 *            JSON array with the response data.
 		 * @throws JSONException
@@ -1315,7 +1313,7 @@ public class MainActivity extends ActionBarActivity implements
 				layout.addView(graphView);
 				elevationPadding = true;
 				mapPadding();
-				
+
 				ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
 				if (closeChart != null){
 					closeChart.setVisibility(LinearLayout.VISIBLE);
@@ -1332,11 +1330,11 @@ public class MainActivity extends ActionBarActivity implements
 			}
 		}
 	}
-	
+
 	/**
 	 * Shows an AlertDialog with a message, positive and negative button, and
 	 * executes an action if needed.
-	 * 
+	 *
 	 * @param action
 	 *            Action to execute.
 	 * @param message
