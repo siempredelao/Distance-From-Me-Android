@@ -1058,7 +1058,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * @return The normalized distance.
 	 */
 	private String calculateDistance(LatLng start, LatLng end) {
-		double metros = Haversine.getDistanceJNI(start.latitude,
+		double metros = Haversine.getDistance(start.latitude,
 				start.longitude, end.latitude, end.longitude);
 
 		return Haversine.normalizeDistance(metros,
@@ -1283,7 +1283,7 @@ public class MainActivity extends ActionBarActivity implements
 				series.appendData(
 						new GraphView.GraphViewData(
 								w,
-								Haversine.normalizeAltitude(
+								Haversine.normalizeAltitudeByLocale(
 										Double.valueOf(array.getJSONObject(w)
 												.get("elevation").toString()),
 										Locale.getDefault())),
@@ -1294,7 +1294,7 @@ public class MainActivity extends ActionBarActivity implements
 			graphView = new LineGraphView(
 					getApplicationContext(),
 					getText(R.string.elevation_profile).toString() + " ("
-							+ Haversine.getAltitudeUnit(Locale.getDefault())
+							+ Haversine.getAltitudeUnitByLocale(Locale.getDefault())
 							+ ")");
 			graphView.addSeries(series);
 			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);

@@ -7,9 +7,6 @@ android {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 10
 		targetSdkVersion 19
-		ndk {
-			moduleName "gc_david_dfm_map_Haversine"
-		}
 		versionName '1.4'
 		versionCode 14
 	}
@@ -20,10 +17,6 @@ android {
 		}
 	}
 	productFlavors {
-	}
-	sourceSets.main {
-		jni.srcDirs = []
-		jniLibs.srcDir 'libs'
 	}
 }
 
