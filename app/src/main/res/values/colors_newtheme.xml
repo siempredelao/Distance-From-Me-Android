@@ -2,4 +2,6 @@
 <resources>
     <color name="pressed_newtheme">#CC99CC00</color>
     <color name="item_background">#FF142602</color>
+    <color name="elevation_chart_background">#66191919</color>
+    <color name="elevation_chart_line">#00FA9A</color>
 </resources>

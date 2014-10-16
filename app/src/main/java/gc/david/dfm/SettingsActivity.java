@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
 
 import gc.david.dfm.db.DistancesDataSource;
 
-public class SettingsActivity extends PreferenceActivity{
+public class SettingsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -16,29 +15,20 @@ public class SettingsActivity extends PreferenceActivity{
         
         addPreferencesFromResource(R.xml.settings);
         
-        Preference bbdd = findPreference("bbdd");
-        bbdd.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        final Preference bbddPreference = findPreference("bbdd");
+        bbddPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				DistancesDataSource dDS = new DistancesDataSource(getApplicationContext());
-				dDS.open();
-				if (dDS != null){
-					dDS.deleteAll();
-					dDS.close();
-					toastIt(getText(R.string.distances_deleted).toString());
+				// TODO hacerlo en segundo plano
+				final DistancesDataSource distancesDataSource = new DistancesDataSource(getApplicationContext());
+				distancesDataSource.open();
+				if (distancesDataSource != null) {
+					distancesDataSource.deleteAll();
+					distancesDataSource.close();
+					Utils.toastIt(getText(R.string.distances_deleted), getApplicationContext());
 				}
 				return false;
 			}
 		});
     }
-	
-	/**
-	 * Makes toasting easy!
-	 * 
-	 * @param text
-	 *            The string to show.
-	 */
-	private void toastIt(String text) {
-		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
-	}
 }
