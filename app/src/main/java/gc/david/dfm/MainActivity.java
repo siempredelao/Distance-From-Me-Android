@@ -6,22 +6,21 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -32,7 +31,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -83,7 +81,11 @@ import gc.david.dfm.db.Distance;
 import gc.david.dfm.db.DistancesDataSource;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
-import gc.david.dfm.map.MyInfoWindowAdapter;
+import gc.david.dfm.map.MarkerInfoWindowAdapter;
+
+import static gc.david.dfm.Utils.isOnline;
+import static gc.david.dfm.Utils.showAlertDialog;
+import static gc.david.dfm.Utils.toastIt;
 
 /**
  * Implements the app main Activity.
@@ -95,44 +97,47 @@ public class MainActivity extends ActionBarActivity implements
 		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
-	private GoogleMap googleMap					= null;
+	private GoogleMap googleMap								= null;
 	// A request to connect to Location Services
-	private LocationRequest mLocationRequest	= null;
+	private LocationRequest locationRequest 				= null;
 	// Stores the current instantiation of the location client in this object
-	private LocationClient mLocationClient		= null;
+	private LocationClient locationClient					= null;
 	// Current position
-	private Location current					= null;
-	private Polyline line						= null;
-	private final int RQS_GooglePlayServices	= 1;
+	private Location currentLocation 						= null;
+	private Polyline polyline								= null;
+	private final int RQS_GooglePlayServices				= 1;
 	// Moves to current position if app has just started
-	private boolean appHasJustStarted			= true;
+	private boolean appHasJustStarted						= true;
 	// Distinguish between position polishing and other position searching
-	private boolean applyZoom					= true;
-	private String distance						= "";
-	private LatLng selectedPosition				= null;
+	private boolean mustApplyZoom							= true;
+	private String distanceMeasuredAsText					= "";
+	private LatLng selectedPosition							= null;
 	// Address returned at string searching
-	private StringBuilder bpAddress				= null;
-	private MenuItem searchItem					= null;
+	private StringBuilder fullAddress = null;
+	private MenuItem searchMenuItem							= null;
 	// Show position if we come from other app (p.e. Whatsapp)
-	private boolean seePosition					= false;
-	private String sendDestinationPosition		= "";
-	// To change line color when we choose a distance from database
-	private boolean loadingDistance				= false;
-	private IMBanner banner						= null;
+	private boolean mustShowPositionWhenComingFromOutside 	= false;
+	private String sendDestinationPosition					= "";
+	// To change line color when we choose a distanceMeasuredAsText from database
+	private boolean loadingDistance							= false;
+	private IMBanner banner									= null;
 	// Google Map items padding
-	private boolean bannerPadding				= false;
-	private boolean elevationPadding			= false;
-	private static final int ELEVATION_SAMPLES	= 100;
+	private boolean bannerShown								= false;
+	private boolean elevationChartShown						= false;
+	private static final int ELEVATION_SAMPLES				= 100;
 	@SuppressWarnings("rawtypes")
-	private AsyncTask showingElevation			= null;
-	private GraphView graphView					= null;
+	private AsyncTask showingElevationTask					= null;
+	private GraphView graphView								= null;
+	private float DEVICE_DENSITY;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager()
+		DEVICE_DENSITY = getResources().getDisplayMetrics().density;
+
+		final SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.map));
 		googleMap = fragment.getMap();
 
@@ -144,7 +149,7 @@ public class MainActivity extends ActionBarActivity implements
 			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
 			banner = (IMBanner) findViewById(R.id.banner);
 			if (banner != null){
-				// Si no hay red el banner no carga ni aunque est� vac�o
+				// Si no hay red el banner no carga ni aunque esté vacío
 				banner.setRefreshInterval(30);
 				banner.setIMBannerListener(new IMBannerListener() {
 					@Override
@@ -158,9 +163,8 @@ public class MainActivity extends ActionBarActivity implements
 					}
 					@Override
 					public void onBannerRequestSucceeded(IMBanner arg0) {
-						// To make Google workers happy ��
-						bannerPadding = true;
-						mapPadding();
+						bannerShown = true;
+						fixMapPadding();
 					}
 					@Override
 					public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
@@ -172,103 +176,87 @@ public class MainActivity extends ActionBarActivity implements
 				banner.loadBanner();
 			}
 
-			if (!this.isOnline())
-				// Show the wireless centralized settings in API<11
-				// or shows general settings in API >=11
-				alertDialogShow(
-						(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
-								android.provider.Settings.ACTION_WIRELESS_SETTINGS :
-									android.provider.Settings.ACTION_SETTINGS),
-						getText(R.string.wireless_off).toString(),
-						getText(R.string.wireless_enable).toString(),
-						getText(R.string.do_nothing).toString());
+			if (!isOnline(getApplicationContext())) {
+				showWifiAlertDialog();
+			}
 
 			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
 				public void onMapLongClick(LatLng point) {
-					// Si no hemos encontrado la posici�n actual, no podremos
+					// Si no hemos encontrado la posición actual, no podremos
 					// calcular la distancia
-					if (current != null)
-						distanceTasks(new LatLng(current.getLatitude(),
-								current.getLongitude()), point, "");
+					if (currentLocation != null) {
+						showDistanceOnMap(new LatLng(currentLocation.getLatitude(),
+								currentLocation.getLongitude()), point, "");
+					}
 				}
 			});
 
 			googleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
 				@Override
 				public void onMarkerDragStart(Marker marker) {
+					// nothing
 				}
 
 				@Override
 				public void onMarkerDragEnd(Marker marker) {
 					// NO movemos el zoom porque estamos simplemente afinando la
 					// posición
-					applyZoom = false;
-					distanceTasks(
-							new LatLng(current.getLatitude(), current
+					mustApplyZoom = false;
+					showDistanceOnMap(
+							new LatLng(currentLocation.getLatitude(), currentLocation
 									.getLongitude()),
 							new LatLng(marker.getPosition().latitude, marker
 									.getPosition().longitude), "");
-					applyZoom = true;
+					mustApplyZoom = true;
 				}
 
 				@Override
 				public void onMarkerDrag(Marker marker) {
+					// nothing
 				}
 			});
 
 			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
-					if (current != null){
-						// Abrir una activity
-						Intent intent = new Intent(MainActivity.this,
-								ShowInfoActivity.class);
-						intent.putExtra("origen", new LatLng(current.getLatitude(),
-								current.getLongitude()));
-						intent.putExtra("destino", new LatLng(
+					if (currentLocation != null) {
+						final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
+						showInfoActivityIntent.putExtra(ShowInfoActivity.originExtraKeyName, new LatLng(currentLocation.getLatitude(),
+								currentLocation.getLongitude()));
+						showInfoActivityIntent.putExtra(ShowInfoActivity.destinationExtraKeyName, new LatLng(
 								marker.getPosition().latitude,
 								marker.getPosition().longitude));
-						intent.putExtra("distancia", distance);
-						startActivity(intent);
-					} else
-						toastIt(getText(R.string.loading).toString());
+						showInfoActivityIntent.putExtra(ShowInfoActivity.distanceExtraKeyName, distanceMeasuredAsText);
+						startActivity(showInfoActivityIntent);
+					} else {
+						toastIt(getText(R.string.loading), getApplicationContext());
+					}
 				}
 			});
 
-			googleMap.setInfoWindowAdapter(new MyInfoWindowAdapter(this));
+			googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(this));
 
 			// Iniciando la app
-			if (current == null)
-				toastIt(getText(R.string.loading).toString());
+			if (currentLocation == null) {
+				toastIt(getText(R.string.loading), getApplicationContext());
+			}
 
 			handleIntents(getIntent());
 		}
 
 		// Create a new global location parameters object
-		mLocationRequest = LocationRequest.create();
+		locationRequest = LocationRequest.create();
 		// Set the update interval
-		mLocationRequest
-				.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
+		locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
 		// Use high accuracy
-		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+		locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 		// Set the interval ceiling to one minute
-		mLocationRequest
-				.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+		locationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
 		// Create a new location client, using the enclosing class to handle
 		// callbacks
-		mLocationClient = new LocationClient(this, this, this);
-	}
-
-	/**
-	 * Makes toasting easy!
-	 *
-	 * @param text
-	 *            The string to show.
-	 */
-	private void toastIt(String text) {
-		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
+		locationClient = new LocationClient(this, this, this);
 	}
 
 	@Override
@@ -283,10 +271,10 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param intent
 	 *            The input intent.
 	 */
-	private void handleIntents(Intent intent) {
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+	private void handleIntents(final Intent intent) {
+		if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
 			handleSearchIntent(intent);
-		} else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+		} else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
 			handleSendPositionIntent(intent);
 		}
 	}
@@ -297,13 +285,14 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param intent
 	 *            Input intent.
 	 */
-	private void handleSearchIntent(Intent intent) {
+	private void handleSearchIntent(final Intent intent) {
 		// Para controlar instancias únicas, no queremos que cada vez que
 		// busquemos nos inicie una nueva instancia de la aplicación
-		String query = intent.getStringExtra(SearchManager.QUERY);
-		if (current != null)
+		final String query = intent.getStringExtra(SearchManager.QUERY);
+		if (currentLocation != null) {
 			new SearchPosition().execute(query);
-		MenuItemCompat.collapseActionView(searchItem);
+		}
+		MenuItemCompat.collapseActionView(searchMenuItem);
 	}
 
 	/**
@@ -313,31 +302,31 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Input intent with position data.
 	 *
 	 */
-	private void handleSendPositionIntent(Intent intent) {
-		Uri u = intent.getData();
+	private void handleSendPositionIntent(final Intent intent) {
+		final Uri uri = intent.getData();
 
 		// Buscamos el envío por Whatsapp
-		String queryParameter = u.getQueryParameter("q"); // loc:latitud,longitud
-															// (You)
+		final String queryParameter = uri.getQueryParameter("q"); // loc:latitud,longitud (You)
 		if (queryParameter != null) {
+			// http://www.regexplanet.com/advanced/java/index.html
+//			final String regex = "(\\-?\\d+\\.\\d+),(\\-?\\d+\\.\\d+)";
+//			final Pattern pattern = Pattern.compile(regex);
+//			final Matcher matcher = pattern.matcher(queryParameter);
+//			if (matcher.find()) {
+//				try {
+//					sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)), Double.valueOf(matcher.group(2)));
+//				} catch (Exception e) {
+//					System.out.println("Error al obtener las coordenadas. Matcher = " + matcher.toString());
+//					e.printStackTrace();
+//				}
+//			}
+
 			// Esta string será la que mandemos a BuscaPosicion
 			sendDestinationPosition = queryParameter.replace("loc:", "")
 					.replaceAll(" (\\D*)", ""); // latitud,longitud
 
-			seePosition = true;
+			mustShowPositionWhenComingFromOutside = true;
 		}
-	}
-
-	/**
-	 * Gives the current network status.
-	 *
-	 * @return Returns <code>true</code> if the device is connected to a
-	 *         network; otherwise, returns <code>false</code>.
-	 */
-	private boolean isOnline() {
-		final ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		final NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		return netInfo != null && netInfo.isConnected();
 	}
 
 	/**
@@ -346,36 +335,31 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private class SearchPosition extends AsyncTask<String, Void, Integer> {
 
-		private ProgressDialog pd;
-		private List<Address> addresses;
+		private ProgressDialog progressDialog;
+		private List<Address> addressList;
 
 		@Override
 		protected void onPreExecute() {
-			addresses = null;
-			bpAddress = new StringBuilder();
+			addressList = null;
+			fullAddress = new StringBuilder();
 			selectedPosition = null;
-			pd = new ProgressDialog(MainActivity.this);
-			pd.setTitle(R.string.searching);
-			pd.setMessage(getText(R.string.wait) + "...");
-			pd.setCancelable(false);
-			pd.setIndeterminate(true);
-			pd.show();
+			progressDialog = new ProgressDialog(MainActivity.this);
+			progressDialog.setTitle(R.string.searching);
+			progressDialog.setMessage(getText(R.string.wait) + "...");
+			progressDialog.setCancelable(false);
+			progressDialog.setIndeterminate(true);
+			progressDialog.show();
 
-			// Comprobamos que haya conexi�n con internet (WiFi o Datos)
-			if (!isOnline()) {
-				if (pd != null)
-					pd.dismiss();
+			// Comprobamos que haya conexión con internet (WiFi o Datos)
+			if (!isOnline(getApplicationContext())) {
+				if (progressDialog != null) {
+					progressDialog.dismiss();
+				}
 
-					alertDialogShow(
-							(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
-									android.provider.Settings.ACTION_WIRELESS_SETTINGS :
-										android.provider.Settings.ACTION_SETTINGS),
-							getText(R.string.wireless_off).toString(),
-							getText(R.string.wireless_enable).toString(),
-							getText(R.string.do_nothing).toString());
+				showWifiAlertDialog();
 
 				// Restauramos el menú y que vuelva a empezar de nuevo
-				MenuItemCompat.collapseActionView(searchItem);
+				MenuItemCompat.collapseActionView(searchMenuItem);
 				cancel(false);
 			}
 
@@ -384,79 +368,74 @@ public class MainActivity extends ActionBarActivity implements
 
 		@Override
 		protected Integer doInBackground(String... params) {
-			/* get latitude and longitude from the addresses */
-			Geocoder geoCoder = new Geocoder(getApplicationContext(),
-					Locale.getDefault());
+			/* get latitude and longitude from the addressList */
+			final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 			try {
-				addresses = geoCoder.getFromLocationName(params[0], 5);
+				addressList = geoCoder.getFromLocationName(params[0], 5);
 			} catch (IOException e) {
 				e.printStackTrace();
-				return -1; // No encuentra una dirección, no puede conectar con
-							// el servidor
+				return -1; // No encuentra una dirección, no puede conectar con el servidor
 			}
-			if (addresses == null)
-				return -3; // empty list if there is no backend service
-							// available
-			else if (addresses.size() > 0)
+			if (addressList == null) {
+				return -3; // empty list if there is no backend service available
+			} else if (addressList.size() > 0) {
 				return 0;
-			else
-				return -2; // null if no matches were found // Cuando no hay
-							// conexión que sirva
+			} else {
+				return -2; // null if no matches were found // Cuando no hay conexión que sirva
+			}
 		}
 
 		@Override
 		protected void onPostExecute(Integer result) {
 			if (result == 0) {
-				if (addresses != null && addresses.size() > 0) {
-					// Si hay varios, elegimos uno. Si solo hay uno, mostramos
-					// ese
-					if (addresses.size() > 1) {
-						AlertDialog.Builder builder = new AlertDialog.Builder(
-								MainActivity.this);
-
+				if (addressList != null && addressList.size() > 0) {
+					// Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
+					if (addressList.size() > 1) {
+						final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 						builder.setTitle(getText(R.string.select_address));
 						builder.setItems(
-								groupAdresses(addresses)
-										.toArray(new String[addresses.size()]),
+								groupAdresses(addressList)
+										.toArray(new String[addressList.size()]),
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
-											int item) {
-										processSelected(item);
+														int item) {
+										processSelectedAddress(item);
 
-										if (selectedPosition != null)
-											distanceTasks(
+										if (selectedPosition != null) {
+											showDistanceOnMap(
 													new LatLng(
-															current.getLatitude(),
-															current.getLongitude()),
+															currentLocation.getLatitude(),
+															currentLocation.getLongitude()),
 													selectedPosition,
-													bpAddress.toString());
+													fullAddress.toString());
+										}
 									}
 								});
-						builder.create();
-						builder.show();
+						builder.create().show();
 					} else {
-						processSelected(0);
+						processSelectedAddress(0);
 					}
 				}
 			} else if (result == -1) {
-				toastIt(getText(R.string.nofindaddress).toString());
+				toastIt(getText(R.string.nofindaddress), getApplicationContext());
 			} else if (result == -2) {
-				toastIt(getText(R.string.noresults).toString());
+				toastIt(getText(R.string.noresults), getApplicationContext());
 			} else if (result == -3) {
-				toastIt(getText(R.string.nofindaddress).toString());
+				toastIt(getText(R.string.nofindaddress), getApplicationContext());
 			}
 
-			if (pd != null)
-				pd.dismiss();
+			if (progressDialog != null) {
+				progressDialog.dismiss();
+			}
 
-			if (selectedPosition != null)
-				distanceTasks(
-						new LatLng(current.getLatitude(),
-								current.getLongitude()), selectedPosition,
-						bpAddress.toString());
+			if (selectedPosition != null) {
+				showDistanceOnMap(new LatLng(currentLocation.getLatitude(),
+								currentLocation.getLongitude()),
+						selectedPosition,
+						fullAddress.toString());
+			}
 
-			MenuItemCompat.collapseActionView(searchItem);
-
+			MenuItemCompat.collapseActionView(searchMenuItem);
 			super.onPostExecute(result);
 		}
 
@@ -465,67 +444,80 @@ public class MainActivity extends ActionBarActivity implements
 		 * position.
 		 *
 		 * @param item
-		 *            The index item in the AlertDialog.
+		 *            The item index in the AlertDialog.
 		 */
-		private void processSelected(int item) {
+		private void processSelectedAddress(final int item) {
 			// esto para el marcador!
-			// +1 porque si buscamos por país nos devuelve 0 y ni entra
-			// en el bucle
-			for (int i = 0; i < addresses.get(item).getMaxAddressLineIndex() + 1; i++)
-				bpAddress.append(addresses.get(item).getAddressLine(i)).append("\n");
+			for (int i = 0; i <= addressList.get(item).getMaxAddressLineIndex(); i++) {
+				fullAddress.append(addressList.get(item).getAddressLine(i)).append("\n");
+			}
 
-			selectedPosition = new LatLng(addresses.get(item).getLatitude(),
-					addresses.get(item).getLongitude());
+			selectedPosition = new LatLng(addressList.get(item).getLatitude(),
+					addressList.get(item).getLongitude());
 		}
 
 		/**
 		 * Extract a list of address from a list of Address objects.
 		 *
-		 * @param lista
+		 * @param addressList
 		 *            An Address's list.
 		 * @return A string list with only addresses in text.
 		 */
-		private List<String> groupAdresses(List<Address> lista) {
-			List<String> nueva = new ArrayList<String>();
-			StringBuilder aux;
-			for (Address l : lista) {
-				aux = new StringBuilder();
-				for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++)
-					aux.append(l.getAddressLine(j)).append("\n");
-				nueva.add(aux.toString());
+		private List<String> groupAdresses(final List<Address> addressList) {
+			final List<String> result = new ArrayList<String>();
+			StringBuilder stringBuilder;
+			for (final Address l : addressList) {
+				stringBuilder = new StringBuilder();
+				for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
+					stringBuilder.append(l.getAddressLine(j)).append("\n");
+				}
+				result.add(stringBuilder.toString());
 			}
-			return nueva;
+			return result;
 		}
+	}
+
+	/**
+	 * Shows the wireless centralized settings in API<11, otherwise shows general settings
+	 */
+	private void showWifiAlertDialog() {
+		showAlertDialog(
+				(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
+						android.provider.Settings.ACTION_WIRELESS_SETTINGS :
+						android.provider.Settings.ACTION_SETTINGS),
+				getText(R.string.wireless_off),
+				getText(R.string.wireless_enable),
+				getText(R.string.do_nothing),
+				MainActivity.this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the options menu from XML
-		MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
 
 		// Expandir el EditText de la búsqueda a lo largo del ActionBar
-		searchItem = menu.findItem(R.id.action_search);
-		SearchView searchView = (SearchView) MenuItemCompat
-				.getActionView(searchItem);
+		searchMenuItem = menu.findItem(R.id.action_search);
+		final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
 		// Configure the search info and add any event listeners
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		// Indicamos que la activity actual sea la buscadora
-		searchView.setSearchableInfo(searchManager
-				.getSearchableInfo(getComponentName()));
+		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 		searchView.setSubmitButtonEnabled(false);
 		searchView.setQueryRefinementEnabled(true);
 		searchView.setIconifiedByDefault(true);
 
 		// Muestra el item de menú de cargar si hay elementos en la BD
-		MenuItem loadItem = menu.findItem(R.id.action_load);
-		DistancesDataSource dDS = new DistancesDataSource(
-				getApplicationContext());
-		dDS.open();
-		if (dDS != null) {
-			if (dDS.getAllDistances() == null)
+		final MenuItem loadItem = menu.findItem(R.id.action_load);
+		// TODO hacerlo en segundo plano
+		final DistancesDataSource distancesDataSource = new DistancesDataSource(getApplicationContext());
+		distancesDataSource.open();
+		if (distancesDataSource != null) {
+			if (distancesDataSource.getAllDistances() == null) {
 				loadItem.setVisible(false);
-			dDS.close();
+			}
+			distancesDataSource.close();
 		}
 		return true;
 	}
@@ -538,14 +530,14 @@ public class MainActivity extends ActionBarActivity implements
 		case R.id.action_load:
 			loadDistancesFromDB();
 			return true;
-//		case R.id.menu_rateapp:
-//			rateApp();
-//			return true;
+		case R.id.menu_rateapp:
+			showRateDialog();
+			return true;
 		case R.id.menu_legalnotices:
-			showGooglePlayServiceLicense();
+			showGooglePlayServiceLicenseDialog();
 			return true;
 		case R.id.menu_settings:
-			showSettings();
+			openSettingsActivity();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -557,118 +549,111 @@ public class MainActivity extends ActionBarActivity implements
 	 * dialog.
 	 */
 	private void loadDistancesFromDB() {
-		DistancesDataSource dds = new DistancesDataSource(
-				getApplicationContext());
+		// TODO hacer esto en segundo plano
+		final DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
 		dds.open();
-		ArrayList<Distance> distancias = dds.getAllDistances();
+		final ArrayList<Distance> allDistances = dds.getAllDistances();
 		dds.close();
 
-		if (distancias != null){
-			final DistanceAdapter adaptador = new DistanceAdapter(this,
-					distancias);
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		if (allDistances != null && allDistances.size() > 0) {
+			final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(getText(R.string.list_dialog_title).toString())
-					.setAdapter(adaptador, new DialogInterface.OnClickListener() {
+					.setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							loadingDistance = true;
-							Distance distancia = adaptador.getData().get(which);
-							LatLng inicio = new LatLng(distancia.getLat_a(),
-									distancia.getLon_a());
-							LatLng fin = new LatLng(distancia.getLat_b(), distancia
-									.getLon_b());
+							final Distance distance = distanceAdapter.getDistanceList().get(which);
+							final LatLng originLatLng = new LatLng(distance.getLat_a(),
+									distance.getLon_a());
+							final LatLng destinationLatLng = new LatLng(distance.getLat_b(),
+									distance.getLon_b());
 
-							distanceTasks(inicio, fin, distancia.getName()
+							showDistanceOnMap(originLatLng, destinationLatLng, distance.getName()
 									+ "\n");
 						}
 					}).create().show();
-		} else
-			toastIt(getText(R.string.no_distances_registered).toString());
+		} else {
+			toastIt(getText(R.string.no_distances_registered), getApplicationContext());
+		}
 	}
 
 	/**
 	 * Shows settings activity.
 	 */
-	private void showSettings(){
+	private void openSettingsActivity(){
 		startActivity(new Intent(this, SettingsActivity.class));
 	}
 
-//	/**
-//	 * Shows rate dialog.
-//	 */
-//	private void rateApp(){
-//		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//		builder.setTitle(R.string.rate_title)
-//		.setMessage(R.string.rate_message)
-//		.setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				dialog.dismiss();
-//				openPlayStore();
-//			}
-//		})
-//		.setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				dialog.dismiss();
-//				goComplain();
-//			}
-//		})
-//		.create()
-//		.show();
-//	}
-//	
-//	/**
-//	 * Opens Google Play Store, in Distance From Me page
-//	 */
-//	private void openPlayStore(){
-//		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
-//	}
-//	
-//	/**
-//	 * Drives the user to a email client to make a complain/suggestion.
-//	 */
-//	private void goComplain(){
-//		Intent sendTo = new Intent(Intent.ACTION_SENDTO);
-//		StringBuilder uriText = new StringBuilder();
-//		uriText.append("mailto:")
-//				.append(Uri.encode("davidaguiargonzalez@gmail.com"))
-//				.append("?subject=")
-//				.append(Uri.encode(getText(R.string.complain_message).toString()))
-//				.append("&body=")
-//				.append(Uri.encode(getText(R.string.complain_hint).toString()));
-//	    Uri uri = Uri.parse(uriText.toString());
-//	    sendTo.setData(uri);
-//
-//	    List<ResolveInfo> resolveInfos = 
-//	            getPackageManager().queryIntentActivities(sendTo, 0);
-//
-//        // Emulators may not like this check...
-//        if (!resolveInfos.isEmpty()){
-//        	startActivity(sendTo);
-//        } else {
-//		    // Nothing resolves send to, so fallback to send...
-//			Intent intent = new Intent(Intent.ACTION_SENDTO);
-//			intent.setType("text/plain");
-//			intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"davidaguiargonzalez@gmail.com"});
-//			intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.complain_message).toString());
-//			intent.putExtra(Intent.EXTRA_TEXT, getText(R.string.complain_hint).toString());
-//			try {
-//				startActivity(intent);
-//			} catch (ActivityNotFoundException e){
-//				toastIt(getText(R.string.complain_problem).toString());
-//			}
-//        }
-//	}
+	/**
+	 * Shows rate dialog.
+	 */
+	private void showRateDialog(){
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.rate_title)
+		.setMessage(R.string.rate_message)
+		.setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				openPlayStoreAppPage();
+			}
+		})
+		.setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				showEmailAppChooserAndWriteEmail();
+			}
+		}).create().show();
+	}
+
+	/**
+	 * Opens Google Play Store, in Distance From Me page
+	 */
+	private void openPlayStoreAppPage(){
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
+	}
+
+	/**
+	 * Drives the user to a email client to make a complain/suggestion.
+	 */
+	private void showEmailAppChooserAndWriteEmail(){
+		final Intent sendToIntent = new Intent(Intent.ACTION_SENDTO);
+		final Uri uri = Uri.parse("mailto:davidaguiargonzalez@gmail.com?subject=" +
+				Uri.encode(getText(R.string.complain_message).toString()) +
+				"&body=" +
+				Uri.encode(getText(R.string.complain_hint).toString()));
+	    sendToIntent.setData(uri);
+
+	    final List<ResolveInfo> appsAbleToSendEmails = getPackageManager()
+				.queryIntentActivities(sendToIntent, 0);
+
+        // Emulators may not like this check...
+        if (!appsAbleToSendEmails.isEmpty()) {
+        	startActivity(sendToIntent);
+        } else {
+            // Nothing resolves send to, so fallback to send...
+			final Intent intent = new Intent(Intent.ACTION_SENDTO);
+			intent.setType("text/plain");
+			intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"davidaguiargonzalez@gmail.com"});
+			intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.complain_message).toString());
+			intent.putExtra(Intent.EXTRA_TEXT, getText(R.string.complain_hint).toString());
+			try {
+				startActivity(intent);
+			} catch (ActivityNotFoundException e){
+				toastIt(getText(R.string.complain_problem), getApplicationContext());
+			}
+        }
+	}
 
 	/**
 	 * Shows an AlertDialog with the Google Play Services License.
 	 */
-	private void showGooglePlayServiceLicense() {
-		String LicenseInfo = GooglePlayServicesUtil
+	private void showGooglePlayServiceLicenseDialog() {
+		final String LicenseInfo = GooglePlayServicesUtil
 				.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
-		AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(
-				MainActivity.this);
+		final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
 		LicenseDialog.setTitle(R.string.menu_legalnotices);
 		LicenseDialog.setMessage(LicenseInfo);
 		LicenseDialog.show();
@@ -681,11 +666,12 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onStop() {
 		// If the client is connected
-		if (mLocationClient.isConnected())
+		if (locationClient.isConnected()) {
 			stopPeriodicUpdates();
+		}
 
 		// After disconnect() is called, the client is considered "dead".
-		mLocationClient.disconnect();
+		locationClient.disconnect();
 
 		super.onStop();
 	}
@@ -695,22 +681,12 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onStart() {
-		try { // Para evitar NullPointerException y que pete
-			super.onStart();
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-		
+		super.onStart();
 		/*
 		 * Connect the client. Don't re-start any requests here; instead, wait
 		 * for onResume()
 		 */
-		mLocationClient.connect();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
+		locationClient.connect();
 	}
 
 	/*
@@ -720,15 +696,17 @@ public class MainActivity extends ActionBarActivity implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			invalidateOptionsMenu();
+		}
 		checkPlayServices();
 	}
 
 	@Override
 	public void onDestroy() {
-		if (showingElevation != null)
-			showingElevation.cancel(true);
+		if (showingElevationTask != null) {
+			showingElevationTask.cancel(true);
+		}
 		super.onDestroy();
 	}
 
@@ -741,8 +719,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * onActivityResult.
 	 */
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-			Intent intent) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
 		// Choose what to do based on the request code
 		switch (requestCode) {
@@ -793,20 +770,21 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private boolean checkPlayServices() {
 		// Comprobamos que Google Play Services está disponible en el terminal
-		int resultCode = GooglePlayServicesUtil
+		final int resultCode = GooglePlayServicesUtil
 				.isGooglePlayServicesAvailable(getApplicationContext());
 
 		// Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
 		// de error y devolvemos falso
-		if (resultCode == ConnectionResult.SUCCESS)
+		if (resultCode == ConnectionResult.SUCCESS) {
 			return true;
-		else {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode))
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-						RQS_GooglePlayServices).show();
-			else
+		} else {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices)
+						.show();
+			} else {
 				// Log.i("checkPlayServices", "Dispositivo no soportado");
 				finish();
+			}
 			return false;
 		}
 	}
@@ -834,7 +812,6 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onConnectionFailed(ConnectionResult connectionResult) {
-
 		/*
 		 * Google Play services can resolve some errors it detects. If the error
 		 * has a resolution, try sending an Intent to start a Google Play
@@ -842,23 +819,18 @@ public class MainActivity extends ActionBarActivity implements
 		 */
 		if (connectionResult.hasResolution()) {
 			try {
-
 				// Start an Activity that tries to resolve the error
 				connectionResult.startResolutionForResult(this,
 						LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-
 				/*
 				 * Thrown if Google Play services cancelled the original
 				 * PendingIntent
 				 */
-
 			} catch (IntentSender.SendIntentException e) {
-
 				// Log the error
 				e.printStackTrace();
 			}
 		} else {
-
 			// If no resolution is available, display a dialog to the user with
 			// the error.
 			showErrorDialog(connectionResult.getErrorCode());
@@ -870,22 +842,22 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	@Override
 	public void onLocationChanged(Location location) {
-		if (current != null)
-			current.set(location);
-		else
-			current = new Location(location);
+		if (currentLocation != null) {
+			currentLocation.set(location);
+		} else {
+			currentLocation = new Location(location);
+		}
 
 		if (appHasJustStarted) {
-			if (seePosition) {
-				if (current != null)
+			if (mustShowPositionWhenComingFromOutside) {
+				if (currentLocation != null) {
 					new SearchPosition().execute(sendDestinationPosition);
-				seePosition = false;
+				}
+				mustShowPositionWhenComingFromOutside = false;
 			} else {
-				LatLng latlng = new LatLng(location.getLatitude(),
-						location.getLongitude());
+				final LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
 				// 17 is a good zoom level for this action
-				googleMap.animateCamera(CameraUpdateFactory
-						.newLatLngZoom(latlng, 17));
+				googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
 			}
 			appHasJustStarted = false;
 		}
@@ -896,7 +868,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Services.
 	 */
 	private void startPeriodicUpdates() {
-		mLocationClient.requestLocationUpdates(mLocationRequest, this);
+		locationClient.requestLocationUpdates(locationRequest, this);
 	}
 
 	/**
@@ -904,7 +876,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Services.
 	 */
 	private void stopPeriodicUpdates() {
-		mLocationClient.removeLocationUpdates(this);
+		locationClient.removeLocationUpdates(this);
 	}
 
 	/**
@@ -914,83 +886,45 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param errorCode
 	 *            An error code returned from onConnectionFailed
 	 */
-	private void showErrorDialog(int errorCode) {
+	private void showErrorDialog(final int errorCode) {
 
 		// Get the error dialog from Google Play services
-		Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
+		final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
 				this, LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
 		// If Google Play services can provide an error dialog
 		if (errorDialog != null) {
-
 			// Create a new DialogFragment in which to show the error dialog
-			ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+			final ErrorDialogFragment errorFragment = new ErrorDialogFragment();
 
 			// Set the dialog in the DialogFragment
 			errorFragment.setDialog(errorDialog);
 
 			// Show the error dialog in the DialogFragment
-			errorFragment.show(getSupportFragmentManager(),
-					LocationUtils.APPTAG);
+			errorFragment.show(getSupportFragmentManager(), LocationUtils.APPTAG);
 		}
 	}
 
 	/**
-	 * Defines a DialogFragment to display the error dialog generated in
-	 * showErrorDialog.
-	 */
-	public static class ErrorDialogFragment extends DialogFragment {
-
-		// Global field to contain the error dialog
-		private Dialog mDialog;
-
-		/**
-		 * Default constructor. Sets the dialog field to null
-		 */
-		public ErrorDialogFragment() {
-			super();
-			mDialog = null;
-		}
-
-		/**
-		 * Set the dialog to display
-		 *
-		 * @param dialog
-		 *            An error dialog
-		 */
-		public void setDialog(Dialog dialog) {
-			mDialog = dialog;
-		}
-
-		/**
-		 * This method must return a Dialog to the DialogFragment.
-		 */
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			return mDialog;
-		}
-	}
-
-	/**
-	 * Calculates the distance to a specified position, adds the marker and the
+	 * Calculates the distanceMeasuredAsText to a specified position, adds the marker and the
 	 * line.
 	 *
 	 * @param start
 	 *            Start position.
 	 * @param end
 	 *            Destination position.
-	 * @param mensaje
+	 * @param message
 	 *            Address to show in the info window (if needed).
 	 */
-	private void distanceTasks(LatLng start, LatLng end, String mensaje) {
-		// Borramos los antiguos marcadores y l�neas
+	private void showDistanceOnMap(final LatLng start, final LatLng end, final String message) {
+		// Borramos los antiguos marcadores y lineas
 		googleMap.clear();
 
 		// Calculamos la distancia
-		distance = calculateDistance(start, end);
+		distanceMeasuredAsText = calculateDistance(start, end);
 
 		// Añadimos el nuevo marcador
-		addMarker(end, distance, mensaje);
+		addMarker(end, distanceMeasuredAsText, message);
 
 		// Añadimos la línea
 		addLine(start, end);
@@ -1000,10 +934,10 @@ public class MainActivity extends ActionBarActivity implements
 
 		// Muestra el perfil de elevación si está en las preferencias
 		// y si está conectado a internet
-		if (getSharedPreferences(getBaseContext())
-					.getBoolean("elevation_chart", false)
-				&& this.isOnline())
+		if (getSharedPreferences(getBaseContext()).getBoolean("elevation_chart", false)
+				&& isOnline(getApplicationContext())) {
 			getElevation(start, end);
+		}
 	}
 
 	/**
@@ -1012,16 +946,16 @@ public class MainActivity extends ActionBarActivity implements
 	 *
 	 * @param point
 	 *            Destination position.
-	 * @param distancia
+	 * @param distance
 	 *            Distance to destination.
-	 * @param mensaje
+	 * @param message
 	 *            Destination address (if needed).
 	 */
-	private void addMarker(LatLng point, String distancia, String mensaje) {
-		Marker marcador = googleMap.addMarker(new MarkerOptions().position(point)
-				.title(mensaje + distancia));
-		marcador.setDraggable(true);
-		marcador.showInfoWindow();
+	private void addMarker(final LatLng point, final String distance, final String message) {
+		final Marker marker = googleMap.addMarker(new MarkerOptions().position(point)
+				.title(message + distance));
+		marker.setDraggable(true);
+		marker.showInfoWindow();
 	}
 
 	/**
@@ -1032,19 +966,19 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param end
 	 *            Destination position.
 	 */
-	private void addLine(LatLng start, LatLng end) {
-		if (line != null) {
-			line.remove();
-			line = null;
+	private void addLine(final LatLng start, final LatLng end) {
+		if (polyline != null) {
+			polyline.remove();
+			polyline = null;
 		}
-		PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
+		final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
 		lineOptions.width(3*getResources().getDisplayMetrics().density);
 		if (loadingDistance) {
 			loadingDistance = false;
 			lineOptions.color(Color.YELLOW);
 		} else
 			lineOptions.color(Color.GREEN);
-		line = googleMap.addPolyline(lineOptions);
+		polyline = googleMap.addPolyline(lineOptions);
 	}
 
 	/**
@@ -1057,12 +991,13 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Destination position.
 	 * @return The normalized distance.
 	 */
-	private String calculateDistance(LatLng start, LatLng end) {
-		double metros = Haversine.getDistance(start.latitude,
-				start.longitude, end.latitude, end.longitude);
+	private String calculateDistance(final LatLng start, final LatLng end) {
+		double distanceInMetres = Haversine.getDistance(start.latitude,
+				start.longitude,
+				end.latitude,
+				end.longitude);
 
-		return Haversine.normalizeDistance(metros,
-				getResources().getConfiguration().locale);
+		return Haversine.normalizeDistance(distanceInMetres, getResources().getConfiguration().locale);
 	}
 
 	/**
@@ -1073,28 +1008,30 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param p2
 	 *            Destination position.
 	 */
-	private void moveCameraZoom(LatLng p1, LatLng p2) {
-		double centroLat = 0.0, centroLon = 0.0;
+	private void moveCameraZoom(final LatLng p1, final LatLng p2) {
+		double centerLat = 0.0;
+		double centerLon = 0.0;
+
 		// Diferenciamos según preferencias
-		String centre = getSharedPreferences(getBaseContext())
-								.getString("centre", "CEN");
-		if (centre.equals("CEN")){
-			centroLat = (p1.latitude + p2.latitude) / 2;
-			centroLon = (p1.longitude + p2.longitude) / 2;
-		} else if (centre.equals("DES")){
-			centroLat = p2.latitude;
-			centroLon = p2.longitude;
+		final String centre = getSharedPreferences(getBaseContext()).getString("centre", "CEN");
+		if (centre.equals("CEN")) {
+			centerLat = (p1.latitude + p2.latitude) / 2;
+			centerLon = (p1.longitude + p2.longitude) / 2;
+		} else if (centre.equals("DES")) {
+			centerLat = p2.latitude;
+			centerLon = p2.longitude;
 		}
 
-		if (applyZoom)
+		if (mustApplyZoom) {
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-					centroLat, centroLon), calculateZoom(p1, p2)));
-		else
+					centerLat, centerLon), calculateZoom(p1, p2)));
+		} else {
 			googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(
 					p2.latitude, p2.longitude)));
+		}
 	}
 
-	private SharedPreferences getSharedPreferences(Context context){
+	private SharedPreferences getSharedPreferences(final Context context){
 		return PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
@@ -1102,48 +1039,48 @@ public class MainActivity extends ActionBarActivity implements
 	 * Calculates zoom level to make possible current and destination positions
 	 * appear in the device.
 	 *
-	 * @param p1
+	 * @param origin
 	 *            Current position.
-	 * @param p2
+	 * @param destination
 	 *            Destination position.
 	 * @return Zoom level.
 	 */
-	private float calculateZoom(LatLng p1, LatLng p2) {
-		double metros = Haversine.getDistance(p1.latitude, p1.longitude,
-				p2.latitude, p2.longitude);
-		double kms = metros / 1000;
+	private float calculateZoom(final LatLng origin, final LatLng destination) {
+		double distanceInMetres = Haversine.getDistance(origin.latitude, origin.longitude,
+				destination.latitude, destination.longitude);
+		double kms = distanceInMetres / 1000;
 
-		if (kms > 2700)
+		if (kms > 2700) {
 			return 3;
-		else if (kms > 1300)
+		} else if (kms > 1300) {
 			return 4;
-		else if (kms > 650)
+		} else if (kms > 650) {
 			return 5;
-		else if (kms > 325)
+		} else if (kms > 325) {
 			return 6;
-		else if (kms > 160)
+		} else if (kms > 160) {
 			return 7;
-		else if (kms > 80)
+		} else if (kms > 80) {
 			return 8;
-		else if (kms > 40)
+		} else if (kms > 40) {
 			return 9;
-		else if (kms > 20)
+		} else if (kms > 20) {
 			return 10;
-		else if (kms > 10)
+		} else if (kms > 10) {
 			return 11;
-		else if (kms > 5)
+		} else if (kms > 5) {
 			return 12;
-		else if (kms > 2.5)
+		} else if (kms > 2.5) {
 			return 13;
-		else if (kms > 1.25)
+		} else if (kms > 1.25) {
 			return 14;
-		else if (kms > 0.6)
+		} else if (kms > 0.6) {
 			return 15;
-		else if (kms > 0.3)
+		} else if (kms > 0.3) {
 			return 16;
-		else if (kms > 0.15)
+		} else if (kms > 0.15) {
 			return 17;
-
+		}
 		return 18;
 	}
 
@@ -1155,17 +1092,18 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param end
 	 *            Destination position.
 	 */
-	private void getElevation(LatLng start, LatLng end) {
-		String startPos = 	String.valueOf(start.latitude) +
+	private void getElevation(final LatLng start, final LatLng end) {
+		final String startPos = 	String.valueOf(start.latitude) +
 							"," +
 							String.valueOf(start.longitude);
-		String endPos = String.valueOf(end.latitude) +
+		final String endPos = String.valueOf(end.latitude) +
 						"," +
 						String.valueOf(end.longitude);
 
-		if (showingElevation != null)
-			showingElevation.cancel(true);
-		showingElevation = new GetAltitude().execute(startPos, endPos);
+		if (showingElevationTask != null) {
+			showingElevationTask.cancel(true);
+		}
+		showingElevationTask = new GetAltitude().execute(startPos, endPos);
 	}
 
 	/**
@@ -1179,45 +1117,46 @@ public class MainActivity extends ActionBarActivity implements
 
 		private HttpClient httpClient		= null;
 		private HttpGet httpGet				= null;
-		private HttpResponse response;
-		private String respStr, sensor, url;
+		private HttpResponse httpResponse;
+		private String responseAsString;
 		private InputStream inputStream		= null;
-		private JSONObject respJSON;
+		private JSONObject responseJSON;
 		private RelativeLayout layout;
 
 		@Override
 		protected void onPreExecute() {
 			httpClient = new DefaultHttpClient();
-			url = "http://maps.googleapis.com/maps/api/elevation/json";
-			sensor = "sensor=true";
-			respStr = null;
+			responseAsString = null;
 			// Delete elevation chart if exists
 			layout = (RelativeLayout) findViewById(R.id.elevationchart);
-			if (graphView != null)
+			if (graphView != null) {
 				layout.removeView(graphView);
+			}
 			layout.setVisibility(LinearLayout.INVISIBLE);
 			graphView = null;
-			elevationPadding = false;
-			mapPadding();
+			elevationChartShown = false;
+			fixMapPadding();
 		}
 
 		@SuppressWarnings("deprecation")
 		@Override
 		protected Double doInBackground(String... params) {
-			httpGet = new HttpGet(url + "?" + sensor
+			httpGet = new HttpGet("http://maps.googleapis.com/maps/api/elevation/json?sensor=true"
 									+ "&path=" + params[0]
 									+ URLEncoder.encode("|") + params[1]
 									+ "&samples=" + ELEVATION_SAMPLES);
 			httpGet.setHeader("content-type", "application/json");
 			try {
-				response = httpClient.execute(httpGet);
-				inputStream = response.getEntity().getContent();
-				if (inputStream != null){
-					respStr = convertInputStreamToString(inputStream);
-					respJSON = new JSONObject(respStr);
-					if (respJSON != null)
-						if (respJSON.get("status").equals("OK"))
-							buildElevationChart(respJSON.getJSONArray("results"));
+				httpResponse = httpClient.execute(httpGet);
+				inputStream = httpResponse.getEntity().getContent();
+				if (inputStream != null) {
+					responseAsString = convertInputStreamToString(inputStream);
+					responseJSON = new JSONObject(responseAsString);
+					if (responseJSON != null) {
+						if (responseJSON.get("status").equals("OK")) {
+							buildElevationChart(responseJSON.getJSONArray("results"));
+						}
+					}
 				}
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
@@ -1233,7 +1172,7 @@ public class MainActivity extends ActionBarActivity implements
 
 		@Override
 		protected void onPostExecute(Double result) {
-			showElevationProfile();
+			showElevationProfileChart();
 			// When HttpClient instance is no longer needed
 			// shut down the connection manager to ensure
 			// immediate deallocation of all system resources
@@ -1246,14 +1185,14 @@ public class MainActivity extends ActionBarActivity implements
 		 * @return The InputStream converted to String.
 		 * @throws IOException
 		 */
-		private String convertInputStreamToString(InputStream inputStream)
-				throws IOException{
-	        BufferedReader bufferedReader =
+		private String convertInputStreamToString(final InputStream inputStream) throws IOException {
+	        final BufferedReader bufferedReader =
 	        		new BufferedReader(new InputStreamReader(inputStream));
 	        String line = "";
 	        StringBuilder result = new StringBuilder();
-	        while ((line = bufferedReader.readLine()) != null)
-	            result.append(line);
+	        while ((line = bufferedReader.readLine()) != null) {
+				result.append(line);
+			}
 
 	        inputStream.close();
 	        bufferedReader.close();
@@ -1268,15 +1207,13 @@ public class MainActivity extends ActionBarActivity implements
 		 *            JSON array with the response data.
 		 * @throws JSONException
 		 */
-		private void buildElevationChart(JSONArray array) throws JSONException {
-			float density = getResources().getDisplayMetrics().density;
+		private void buildElevationChart(final JSONArray array) throws JSONException {
 			// Creates the serie and adds data to it
-			GraphViewSeries series =
+			final GraphViewSeries series =
 					new GraphViewSeries(
 							null,
-							new GraphViewSeriesStyle(
-									Color.parseColor("#00FA9A"),
-									(int) (3*density)),
+							new GraphViewSeriesStyle(getResources().getColor(R.color.elevation_chart_line),
+									(int) (3 * DEVICE_DENSITY)),
 							new GraphView.GraphViewData[] {});
 
 			for (int w = 0; w < array.length(); w++)
@@ -1299,22 +1236,22 @@ public class MainActivity extends ActionBarActivity implements
 			graphView.addSeries(series);
 			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
 			graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
-			graphView.getGraphViewStyle().setTextSize(15*density);
-			graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50*density));
+			graphView.getGraphViewStyle().setTextSize(15 * DEVICE_DENSITY);
+			graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
 		}
 
 		/**
 		 * Shows the elevation profile chart.
 		 */
-		private void showElevationProfile(){
+		private void showElevationProfileChart(){
 			if (graphView != null){
 				layout.setVisibility(LinearLayout.VISIBLE);
-				layout.setBackgroundColor(Color.parseColor("#66191919"));
+				layout.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
 				layout.addView(graphView);
-				elevationPadding = true;
-				mapPadding();
+				elevationChartShown = true;
+				fixMapPadding();
 
-				ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
+				final ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
 				if (closeChart != null){
 					closeChart.setVisibility(LinearLayout.VISIBLE);
 					closeChart.setOnClickListener(new View.OnClickListener() {
@@ -1322,8 +1259,8 @@ public class MainActivity extends ActionBarActivity implements
 						public void onClick(View v) {
 							layout.removeView(graphView);
 							layout.setVisibility(LinearLayout.INVISIBLE);
-							elevationPadding = false;
-							mapPadding();
+							elevationChartShown = false;
+							fixMapPadding();
 						}
 					});
 				}
@@ -1332,54 +1269,22 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Shows an AlertDialog with a message, positive and negative button, and
-	 * executes an action if needed.
-	 *
-	 * @param action
-	 *            Action to execute.
-	 * @param message
-	 *            Message to show to the user.
-	 * @param positiveButton
-	 *            Positive button text.
-	 * @param negativeButton
-	 *            Negative button text.
-	 */
-	private void alertDialogShow(final String action, String message,
-			String positiveButton, String negativeButton) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-		builder.setMessage(message)
-				.setCancelable(false)
-				.setPositiveButton(positiveButton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								Intent optionsIntent = new Intent(action);
-								startActivity(optionsIntent);
-							}
-						});
-		builder.setNegativeButton(negativeButton,
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		AlertDialog alert = builder.create();
-		alert.show();
-	}
-
-	/**
 	 * Sets map attending to the action which is performed.
 	 */
-	private void mapPadding() {
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.elevationchart);
-		if (bannerPadding)
-			if (elevationPadding)
-				googleMap.setPadding(0, layout.getHeight(), 0, banner.getLayoutParams().height);
-			else
+	private void fixMapPadding() {
+		final RelativeLayout rlElevationChart = (RelativeLayout) findViewById(R.id.elevationchart);
+		if (bannerShown) {
+			if (elevationChartShown) {
+				googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
+			} else {
 				googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
-		else
-			if (elevationPadding)
-				googleMap.setPadding(0, layout.getHeight(), 0, 0);
-			else
+			}
+		} else {
+			if (elevationChartShown) {
+				googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
+			} else {
 				googleMap.setPadding(0, 0, 0, 0);
+			}
+		}
 	}
 }
