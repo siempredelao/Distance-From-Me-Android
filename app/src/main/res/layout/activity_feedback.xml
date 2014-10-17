@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/newtheme_background_gradient"
+              android:orientation="vertical"
+              android:paddingBottom="20dp"
+              android:paddingTop="20dp">
+
+    <TextView
+        android:id="@+id/problem_type_header_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingBottom="5dp"
+        android:text="@string/problem_type_header"
+        android:textSize="@dimen/feedback_header_text_size"/>
+
+    <ExpandableListView
+        android:id="@+id/problem_type_expandablelistview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/white"/>
+
+    <TextView
+        android:id="@+id/problem_description_header_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="@string/problem_description_header"
+        android:textSize="@dimen/feedback_header_text_size"/>
+
+    <!-- TODO crear borde para que se sepan sus límites -->
+    <EditText
+        android:id="@+id/problem_description_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/white"
+        android:gravity="top|start"
+        android:hint="@string/problem_description_hint"
+        android:inputType="textMultiLine|textCapSentences"
+        android:lines="3"
+        android:maxLines="3"
+        android:minLines="3"
+        android:padding="5dp"
+        android:scrollbars="vertical"
+        android:textColor="@color/item_background"/>
+
+    <Button
+        android:id="@+id/send_feedback_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingBottom="15dp"
+        android:text="@string/abc_searchview_description_submit"/>
+</LinearLayout>

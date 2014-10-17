@@ -7,7 +7,7 @@
     <string name="menu_legalnotices">Legal notices</string>
     <string name="search_hint">Search Distance From Me</string>
     <string name="searching">Searching</string>
-    <string name="wait">Please wait</string>
+    <string name="wait">Please wait\u2026</string>
     <string name="nofindaddress">No backend service available or very poor network signal. Try again in a while</string>
     <string name="noresults">No matches were found</string>
     <string name="loading">Searching your position. Please, wait</string>
@@ -15,6 +15,7 @@
     <string name="gps_off">GPS disabled, would you like to enable it?</string>
     <string name="gps_enable">Enable GPS</string>
     <string name="do_nothing">Do nothing</string>
+    <string name="no_connection">Connection problems</string>
     <string name="wireless_off">No wireless or network connection available, would you like to enable?</string>
     <string name="wireless_enable">Enable</string>
     <string name="select_address">Select an address</string>
@@ -44,7 +45,7 @@
     
 
     
-    <!-- ACTIVITY SHOINFO -->
+    <!-- ACTIVITY SHOWINFO -->
     <string name="current">Current estimated position</string>
     <string name="destination">Estimated destination</string>
     <string name="noaddress">No address found for location</string>
@@ -62,5 +63,20 @@
     <string name="alias_dialog_toast_1">Distance \"</string>
     <string name="alias_dialog_toast_2">\" correctly saved</string>
     <string name="alias_dialog_toast_3">Distance correctly saved</string>
+
+
+
+    <!-- ACTIVITY FEEDBACK -->
+    <string name="problem_type_header">Type of question</string>
+    <string name="problem_type_listview_title">Select your question</string>
+    <string name="problem_description_header">Detail of your question</string>
+    <string name="problem_description_hint">Write here your question! :)</string>
+    <string name="feedback_type_suggestion">Suggestion</string>
+    <string name="feedback_type_complain">Complain</string>
+    <string name="feedback_type_other">Other</string>
+    <string name="no_feedback_type_dialog_title">No type of question</string>
+    <string name="no_feedback_description_dialog_title">No description</string>
+    <string name="no_feedback_type_dialog_message">Please, provide a type of question in this contact form.</string>
+    <string name="no_feedback_description_dialog_message">Please, provide a description of your question in this contact form.</string>
 
 </resources>
