@@ -6,13 +6,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -345,6 +343,7 @@ public class MainActivity extends ActionBarActivity implements
 			selectedPosition = null;
 			progressDialog = new ProgressDialog(MainActivity.this);
 			progressDialog.setTitle(R.string.searching);
+			// TODO cambiar la string ... por \u2026
 			progressDialog.setMessage(getText(R.string.wait) + "...");
 			progressDialog.setCancelable(false);
 			progressDialog.setIndeterminate(true);
@@ -485,6 +484,7 @@ public class MainActivity extends ActionBarActivity implements
 				(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
 						android.provider.Settings.ACTION_WIRELESS_SETTINGS :
 						android.provider.Settings.ACTION_SETTINGS),
+				getText(R.string.no_connection),
 				getText(R.string.wireless_off),
 				getText(R.string.wireless_enable),
 				getText(R.string.do_nothing),
@@ -603,7 +603,7 @@ public class MainActivity extends ActionBarActivity implements
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				showEmailAppChooserAndWriteEmail();
+				openFeedbackActivity();
 			}
 		}).create().show();
 	}
@@ -616,35 +616,11 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	/**
-	 * Drives the user to a email client to make a complain/suggestion.
+	 * Opens the feedback activity.
 	 */
-	private void showEmailAppChooserAndWriteEmail(){
-		final Intent sendToIntent = new Intent(Intent.ACTION_SENDTO);
-		final Uri uri = Uri.parse("mailto:davidaguiargonzalez@gmail.com?subject=" +
-				Uri.encode(getText(R.string.complain_message).toString()) +
-				"&body=" +
-				Uri.encode(getText(R.string.complain_hint).toString()));
-	    sendToIntent.setData(uri);
-
-	    final List<ResolveInfo> appsAbleToSendEmails = getPackageManager()
-				.queryIntentActivities(sendToIntent, 0);
-
-        // Emulators may not like this check...
-        if (!appsAbleToSendEmails.isEmpty()) {
-        	startActivity(sendToIntent);
-        } else {
-            // Nothing resolves send to, so fallback to send...
-			final Intent intent = new Intent(Intent.ACTION_SENDTO);
-			intent.setType("text/plain");
-			intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"davidaguiargonzalez@gmail.com"});
-			intent.putExtra(Intent.EXTRA_SUBJECT, getText(R.string.complain_message).toString());
-			intent.putExtra(Intent.EXTRA_TEXT, getText(R.string.complain_hint).toString());
-			try {
-				startActivity(intent);
-			} catch (ActivityNotFoundException e){
-				toastIt(getText(R.string.complain_problem), getApplicationContext());
-			}
-        }
+	private void openFeedbackActivity(){
+		final Intent openFeedbackActivityIntent = new Intent(MainActivity.this, FeedbackActivity.class);
+		startActivity(openFeedbackActivityIntent);
 	}
 
 	/**

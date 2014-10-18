@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="feedback_type_list">
+        <item>@string/feedback_type_suggestion</item>
+        <item>@string/feedback_type_complain</item>
+        <item>@string/feedback_type_other</item>
+    </string-array>
+</resources>

@@ -23,7 +23,7 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 	private List<Distance> distanceList;
 
 	public DistanceAdapter(final Activity context, final List<Distance> distanceList) {
-		super(context, R.layout.list_item, distanceList);
+		super(context, R.layout.database_list_item, distanceList);
 		this.context = context;
 		this.distanceList = distanceList;
 	}
@@ -46,10 +46,10 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 
 		if (item == null) {
 			LayoutInflater inflater = this.context.getLayoutInflater();
-			item = inflater.inflate(R.layout.list_item, null);
+			item = inflater.inflate(R.layout.database_list_item, null);
 
 			holder = new ViewHolder();
-			holder.title = (TextView) item.findViewById(R.id.alias);
+			holder.title = (TextView) item.findViewById(R.id.simple_textview);
 			holder.distance = (TextView) item.findViewById(R.id.distancia);
 			holder.date = (TextView) item.findViewById(R.id.fecha);
 
