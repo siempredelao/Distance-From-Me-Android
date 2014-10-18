@@ -9,7 +9,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.InjectView;
 import gc.david.dfm.db.Distance;
+
+import static butterknife.ButterKnife.inject;
 
 /**
  * Sets an adapter for distance entries from the database to show to the user to
@@ -19,8 +22,8 @@ import gc.david.dfm.db.Distance;
  */
 public class DistanceAdapter extends ArrayAdapter<Distance> {
 
-	private Activity context;
-	private List<Distance> distanceList;
+	private final Activity context;
+	private final List<Distance> distanceList;
 
 	public DistanceAdapter(final Activity context, final List<Distance> distanceList) {
 		super(context, R.layout.database_list_item, distanceList);
@@ -33,25 +36,29 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 	}
 
 	static class ViewHolder {
-		TextView title;
-		TextView distance;
-		TextView date;
+		@InjectView(R.id.alias)
+		protected TextView title;
+		@InjectView(R.id.distancia)
+		protected TextView distance;
+		@InjectView(R.id.fecha)
+		protected TextView date;
+
+		public ViewHolder(final View view) {
+			inject(this, view);
+		}
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
 		View item = convertView;
-		ViewHolder holder;
+		final ViewHolder holder;
 
 		if (item == null) {
-			LayoutInflater inflater = this.context.getLayoutInflater();
+			final LayoutInflater inflater = this.context.getLayoutInflater();
 			item = inflater.inflate(R.layout.database_list_item, null);
 
-			holder = new ViewHolder();
-			holder.title = (TextView) item.findViewById(R.id.simple_textview);
-			holder.distance = (TextView) item.findViewById(R.id.distancia);
-			holder.date = (TextView) item.findViewById(R.id.fecha);
+			holder = new ViewHolder(item);
 
 			item.setTag(holder);
 		} else {

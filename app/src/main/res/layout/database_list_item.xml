@@ -5,7 +5,7 @@
                 android:padding="5dp">
 
     <TextView
-        android:id="@+id/simple_textview"
+        android:id="@+id/alias"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/simple_textview"
+        android:layout_below="@+id/alias"
         android:orientation="horizontal">
 
         <TextView
