@@ -32,8 +32,10 @@ import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+import butterknife.InjectView;
 import gc.david.dfm.db.DistancesDataSource;
 
+import static butterknife.ButterKnife.inject;
 import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.toastIt;
 
@@ -45,23 +47,26 @@ import static gc.david.dfm.Utils.toastIt;
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
+	@InjectView(R.id.titulo_datos1)
+	protected TextView tvHeaderOriginAddress;
+	@InjectView(R.id.titulo_datos2)
+	protected TextView tvHeaderDestinationAddress;
+	@InjectView(R.id.datos1)
+	protected TextView tvOriginAddress;
+	@InjectView(R.id.datos2)
+	protected TextView tvDestinationAddress;
+	@InjectView(R.id.distancia)
+	protected TextView tvDistance;
+
+	private MenuItem menuItem                   = null;
 	private LatLng originLatLng					= null;
 	private LatLng destinationLatLng			= null;
-	private TextView tvHeaderOriginAddress		= null;
-	private TextView tvHeaderDestinationAddress	= null;
-
-	private TextView tvOriginAddress			= null;
-	private TextView tvDestinationAddress		= null;
-	private TextView tvDistance					= null;
-	private MenuItem menuItem					= null;
 	private String originAddress				= "";
-
 	private String destinationAddress			= "";
 	private String distance						= null;
 	private boolean wasSavingWhenOrientationChanged = false;
 	private Dialog savingInDBDialog				= null;
-
-	private EditText etAlias					= null;
+	private EditText etAlias;
 	private final String originAddressKey = "originAddress";
 	private final String destinationAddressKey = "destinationAddress";
 	private final String distanceKey = "distance";
@@ -75,18 +80,14 @@ public class ShowInfoActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_show_info);
+		inject(this);
 
 		final ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		getIntentData();
 
-		tvHeaderOriginAddress = (TextView) findViewById(R.id.titulo_datos1);
-		tvHeaderDestinationAddress = (TextView) findViewById(R.id.titulo_datos2);
 		fillTitlesHeaders();
-
-		tvOriginAddress = (TextView) findViewById(R.id.datos1);
-		tvDestinationAddress = (TextView) findViewById(R.id.datos2);
 
 		if (savedInstanceState == null){
 			fillAddressesInfo();
@@ -109,7 +110,6 @@ public class ShowInfoActivity extends ActionBarActivity {
 			}
 		}
 
-		tvDistance = (TextView) findViewById(R.id.distancia);
 		fillDistanceInfo();
 	}
 
