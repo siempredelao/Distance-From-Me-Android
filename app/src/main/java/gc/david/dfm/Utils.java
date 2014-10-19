@@ -47,12 +47,14 @@ public class Utils {
 	 * @param activity       Activity which runs this method.
 	 */
 	public static void showAlertDialog(final String action,
-									   final CharSequence message,
-									   final CharSequence positiveButton,
-									   final CharSequence negativeButton,
-									   final Activity activity) {
+	                                   final CharSequence title,
+	                                   final CharSequence message,
+	                                   final CharSequence positiveButton,
+	                                   final CharSequence negativeButton,
+	                                   final Activity activity) {
 		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-		builder.setMessage(message)
+		builder.setTitle(title)
+				.setMessage(message)
 				.setCancelable(false)
 				.setPositiveButton(positiveButton,
 						new DialogInterface.OnClickListener() {
