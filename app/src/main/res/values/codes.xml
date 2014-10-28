@@ -3,9 +3,11 @@
     <string-array name="mode">
         <item>@string/mode_DES</item>
         <item>@string/mode_CEN</item>
+        <item>@string/mode_NO</item>
     </string-array>
     <string-array name="modecode">
         <item>DES</item>
         <item>CEN</item>
+        <item>NO</item>
     </string-array>
 </resources>

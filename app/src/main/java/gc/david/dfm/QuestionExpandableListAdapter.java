@@ -71,7 +71,7 @@ public class QuestionExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(R.layout.simple_textview_list_item, null);
+			convertView = inflater.inflate(R.layout.simple_textview_list_item, parent, false);
 		}
 
 		final TextView tvHeader = (TextView) convertView.findViewById(R.id.simple_textview);
@@ -84,7 +84,7 @@ public class QuestionExpandableListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(R.layout.simple_textview_list_item, null);
+			convertView = inflater.inflate(R.layout.simple_textview_list_item, parent, false);
 		}
 
 		final TextView tvListElement = (TextView) convertView.findViewById(R.id.simple_textview);

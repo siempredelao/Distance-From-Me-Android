@@ -23,12 +23,12 @@ import static org.apache.http.impl.cookie.DateUtils.formatDate;
  */
 public class DistanceAdapter extends ArrayAdapter<Distance> {
 
-	private final Activity context;
+	private final Activity activity;
 	private final List<Distance> distanceList;
 
-	public DistanceAdapter(final Activity context, final List<Distance> distanceList) {
-		super(context, R.layout.database_list_item, distanceList);
-		this.context = context;
+	public DistanceAdapter(final Activity activity, final List<Distance> distanceList) {
+		super(activity, R.layout.database_list_item, distanceList);
+		this.activity = activity;
 		this.distanceList = distanceList;
 	}
 
@@ -56,8 +56,8 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 		final ViewHolder holder;
 
 		if (item == null) {
-			final LayoutInflater inflater = this.context.getLayoutInflater();
-			item = inflater.inflate(R.layout.database_list_item, null);
+			final LayoutInflater inflater = activity.getLayoutInflater();
+			item = inflater.inflate(R.layout.database_list_item, parent, false);
 
 			holder = new ViewHolder(item);
 
