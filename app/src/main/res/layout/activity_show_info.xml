@@ -19,7 +19,7 @@
             android:id="@+id/titulo_datos1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Light.Base.SearchResult.Title" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
 
         <TextView
             android:id="@+id/datos1"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Light.Base.SearchResult.Title" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
 
         <TextView
             android:id="@+id/datos2"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:gravity="right"
-            android:textAppearance="@style/TextAppearance.AppCompat.Light.Base.SearchResult.Title" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
     </LinearLayout>
 
 </ScrollView>

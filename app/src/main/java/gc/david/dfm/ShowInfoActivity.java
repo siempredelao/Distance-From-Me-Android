@@ -27,13 +27,15 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.InjectView;
-import gc.david.dfm.db.DistancesDataSource;
+import gc.david.dfm.model.Distance;
+import gc.david.dfm.model.Position;
 
 import static butterknife.ButterKnife.inject;
 import static gc.david.dfm.Utils.isOnline;
@@ -273,7 +275,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 					}
 					
 					/**
-					 * Adds a new entry to the database with the current
+					 * Adds a new distance to the database with the current
 					 * data and shows the user a message.
 					 * 
 					 * @param alias Alias written by the user.
@@ -284,17 +286,21 @@ public class ShowInfoActivity extends ActionBarActivity {
 							aliasToSave = alias;
 						}
 						// TODO hacer esto en segundo plano
-						final DistancesDataSource distancesDataSource = new DistancesDataSource(getApplicationContext());
-						distancesDataSource.open();
-						// Si no introduce nada, poner "No title" o algo así
-						distancesDataSource.insert(aliasToSave, originLatLng, destinationLatLng, distance);
+						final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
+						final long distanceId = ((DFMApplication) getApplicationContext()).getDaoSession().insert(distance1);
+						final Position originPosition = new Position(null, originLatLng.latitude,
+								originLatLng.longitude, distanceId);
+						final Position destinationPosition = new Position(null, destinationLatLng.latitude,
+								destinationLatLng.longitude, distanceId);
+						((DFMApplication) getApplicationContext()).getDaoSession().insert(originPosition);
+						((DFMApplication) getApplicationContext()).getDaoSession().insert(destinationPosition);
+
 						// Mostrar un mensaje de que se ha guardado correctamente
 						if (!aliasToSave.equals("")) {
 							toastIt(getText(R.string.alias_dialog_toast_1) + aliasToSave + getText(R.string.alias_dialog_toast_2), getApplicationContext());
 						} else {
 							toastIt(getText(R.string.alias_dialog_toast_3), getApplicationContext());
 						}
-						distancesDataSource.close();
 					}
 				});
 		(savingInDBDialog = builder.create()).show();

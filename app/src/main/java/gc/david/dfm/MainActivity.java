@@ -77,11 +77,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import gc.david.dfm.db.Distance;
-import gc.david.dfm.db.DistancesDataSource;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.map.MarkerInfoWindowAdapter;
+import gc.david.dfm.model.Distance;
+import gc.david.dfm.model.Position;
 
 import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
@@ -565,13 +565,11 @@ public class MainActivity extends ActionBarActivity implements
 		// Muestra el item de menú de cargar si hay elementos en la BD
 		final MenuItem loadItem = menu.findItem(R.id.action_load);
 		// TODO hacerlo en segundo plano
-		final DistancesDataSource distancesDataSource = new DistancesDataSource(getApplicationContext());
-		distancesDataSource.open();
-		if (distancesDataSource != null) {
-			if (distancesDataSource.getAllDistances() == null) {
-				loadItem.setVisible(false);
-			}
-			distancesDataSource.close();
+		final List<Distance> allDistances = ((DFMApplication) getApplicationContext())
+				.getDaoSession()
+				.loadAll(Distance.class);
+		if (allDistances.size() == 0) {
+			loadItem.setVisible(false);
 		}
 		return true;
 	}
@@ -604,10 +602,9 @@ public class MainActivity extends ActionBarActivity implements
 	 */
 	private void loadDistancesFromDB() {
 		// TODO hacer esto en segundo plano
-		final DistancesDataSource dds = new DistancesDataSource(getApplicationContext());
-		dds.open();
-		final ArrayList<Distance> allDistances = dds.getAllDistances();
-		dds.close();
+		final List<Distance> allDistances = ((DFMApplication) getApplicationContext())
+				.getDaoSession()
+				.loadAll(Distance.class);
 
 		if (allDistances != null && allDistances.size() > 0) {
 			final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
@@ -618,13 +615,16 @@ public class MainActivity extends ActionBarActivity implements
 						public void onClick(DialogInterface dialog, int which) {
 							loadingDistance = true;
 							final Distance distance = distanceAdapter.getDistanceList().get(which);
-							final LatLng originLatLng = new LatLng(distance.getLat_a(),
-									distance.getLon_a());
-							final LatLng destinationLatLng = new LatLng(distance.getLat_b(),
-									distance.getLon_b());
+							final List<Position> positionList = ((DFMApplication) getApplicationContext())
+									.getDaoSession().getPositionDao()._queryDistance_PositionList(distance.getId());
+							// TODO hacer que esto vaya a un método que lo dibuje atentiendo al número de posiciones
+							// que hay. Actualmente solo lo hace para una distancia [0=origen, 1=destino]
+							final LatLng originLatLng = new LatLng(positionList.get(0).getLatitude(),
+									positionList.get(0).getLongitude());
+							final LatLng destinationLatLng = new LatLng(positionList.get(1).getLatitude(),
+									positionList.get(1).getLongitude());
 
-							showDistanceOnMap(originLatLng, destinationLatLng, distance.getName()
-									+ "\n");
+							showDistanceOnMap(originLatLng, destinationLatLng, distance.getName() + "\n");
 						}
 					}).create().show();
 		} else {

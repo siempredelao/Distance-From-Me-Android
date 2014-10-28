@@ -1,0 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'gc.david.dfm.daogenerator.DFMDaoGenerator'
+
+dependencies {
+	compile 'de.greenrobot:greendao-generator:1.3.1'
+}
