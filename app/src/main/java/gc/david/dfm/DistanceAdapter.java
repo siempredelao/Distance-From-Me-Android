@@ -10,9 +10,10 @@ import android.widget.TextView;
 import java.util.List;
 
 import butterknife.InjectView;
-import gc.david.dfm.db.Distance;
+import gc.david.dfm.model.Distance;
 
 import static butterknife.ButterKnife.inject;
+import static org.apache.http.impl.cookie.DateUtils.formatDate;
 
 /**
  * Sets an adapter for distance entries from the database to show to the user to
@@ -67,7 +68,7 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 
 		holder.title.setText(distanceList.get(position).getName());
 		holder.distance.setText(distanceList.get(position).getDistance());
-		holder.date.setText(distanceList.get(position).getDate());
+		holder.date.setText(formatDate(distanceList.get(position).getDate(), "yyyy-MM-dd"));
 
 		return item;
 	}
