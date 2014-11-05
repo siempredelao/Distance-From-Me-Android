@@ -1,10 +1,22 @@
-Distance-From-Me
-================
+# Distance From Me
 
-"Distance From Me" is an Android application whose objective is calculate straight-line distances to places from current position, in yards or miles.
+## What is it?
+*Distance From Me* is an Android application whose objective is to calculate straight-line distances to places from
+current position.
 
-The way to specify the destination location is done either by a long click on a place searched manually or by using the search box, using the search engine provided in this application (voice search is also available). This position can be further refined by long pressing and moving the marker. In addition, you can share the results.
+## Features
+* Searches places by keyboard and by voice.
+* Allows to refine position by marker long press.
+* Allows to show elevation profile.
+* Loads and saves distances.
+* Captures positions from other apps and calculates its distance.
+* Shares distances with friends.
+* Easy access to the dev team by email.
+* Languages: English, Spanish, French, German, Italian, Portuguese and Catalonian.
 
-As of today, this tool is translated, in addition to English, into Spanish, French and Catalonian. The language is automatically set when installed in the device.
+## Libraries used
+* GraphView
+* InMobi Ads
 
-At this moment, "Distance From Me" is being constantly updated, adding new features and languages.
+## Current status
+At this moment, *Distance From Me* is being constantly updated, adding new features and languages.

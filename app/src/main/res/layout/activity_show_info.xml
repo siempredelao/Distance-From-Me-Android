@@ -1,8 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/newtheme_background_gradient" >
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/newtheme_background_gradient">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -13,32 +13,32 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context=".ShowInfoActivity" >
+        tools:context=".ShowInfoActivity">
 
         <TextView
             android:id="@+id/titulo_datos1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
 
         <TextView
             android:id="@+id/datos1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="2dp"/>
 
         <TextView
             android:id="@+id/titulo_datos2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
 
         <TextView
             android:id="@+id/datos2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp" />
+            android:layout_marginTop="2dp"/>
 
         <TextView
             android:id="@+id/distancia"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
             android:gravity="right"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
     </LinearLayout>
 
 </ScrollView>

@@ -82,7 +82,7 @@
             android:parentActivityName="gc.david.dfm.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="gc.david.dfm.MainActivity" />
+                android:value="gc.david.dfm.MainActivity"/>
         </activity>
 
         <activity
@@ -92,7 +92,7 @@
             android:parentActivityName="gc.david.dfm.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="gc.david.dfm.MainActivity" />
+                android:value="gc.david.dfm.MainActivity"/>
         </activity>
 
         <activity

@@ -14,30 +14,29 @@ import static butterknife.ButterKnife.inject;
 
 /**
  * MarkerInfoWindowAdapter controls the info window showed above the marker.
- * 
+ *
  * @author David
- * 
  */
 public class MarkerInfoWindowAdapter implements InfoWindowAdapter {
 
-	@InjectView(R.id.infowindow_address_textview)
-	protected TextView tvAddress;
+    @InjectView(R.id.infowindow_address_textview)
+    protected TextView tvAddress;
 
-	private final View view;
+    private final View view;
 
-	public MarkerInfoWindowAdapter(final Activity activity) {
-		view = activity.getLayoutInflater().inflate(R.layout.custom_info, null);
-		inject(this, view);
-	}
-	
-	@Override
-	public View getInfoContents(Marker marker) {
-		tvAddress.setText(marker.getTitle());
-		return view;
-	}
+    public MarkerInfoWindowAdapter(final Activity activity) {
+        view = activity.getLayoutInflater().inflate(R.layout.custom_info, null);
+        inject(this, view);
+    }
 
-	@Override
-	public View getInfoWindow(Marker marker) {
-		return null;
-	}
+    @Override
+    public View getInfoContents(Marker marker) {
+        tvAddress.setText(marker.getTitle());
+        return view;
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
 }

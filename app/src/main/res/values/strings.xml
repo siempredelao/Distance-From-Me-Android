@@ -49,7 +49,6 @@
     <string name="navigation_drawer_starting_point_any_position_item">Any position</string>
 
 
-
     <!-- ACTIVITY SHOWINFO -->
     <string name="current">Current estimated position</string>
     <string name="destination">Estimated destination</string>
@@ -68,7 +67,6 @@
     <string name="alias_dialog_toast_1">Distance \"</string>
     <string name="alias_dialog_toast_2">\" correctly saved</string>
     <string name="alias_dialog_toast_3">Distance correctly saved</string>
-
 
 
     <!-- ACTIVITY FEEDBACK -->

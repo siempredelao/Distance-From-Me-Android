@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- ACTIVITY MAIN -->
+    <!-- ACTIVITY MAIN -->
     <string name="app_name">Distance From Me</string>
     <string name="action_search">Suche</string>
     <string name="action_social_share">Ort teilen</string>
@@ -41,10 +41,9 @@
     <string name="elevation_profile">Höhenprofil</string>
     <string name="preference_elevation_title">Höhenprofil zeigen</string>
     <string name="preference_elevation_summary">Berechnet Höhenprofil. Diese Aufgabe kann einige Zeit dauern, je nach Netzwerk</string>
-    
-    
 
-	<!-- ACTIVITY SHOINFO -->
+
+    <!-- ACTIVITY SHOINFO -->
     <string name="current">Ungefährer aktuelle Position</string>
     <string name="destination">Ungefährer Ziel</string>
     <string name="noaddress">Adresse nicht gefunden</string>
@@ -55,7 +54,7 @@
     <string name="to">Bis</string>
     <string name="space">Es gibt</string>
     <string name="nolocation">Fehler in der Suche der Adresse. Klicken Sie auf AKTUALISIEREN, um die Information zu bearbeiten</string>
-	<string name="nonetwork">Internet-Verbindung nicht aktiviert. Aktivieren Sie Ihre Verbindung und versuchen Sie es erneut</string>
+    <string name="nonetwork">Internet-Verbindung nicht aktiviert. Aktivieren Sie Ihre Verbindung und versuchen Sie es erneut</string>
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Bestimmen Sie einen Alias für die Entfernung:</string>
     <string name="alias_dialog_accept">Akzeptieren</string>

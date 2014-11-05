@@ -8,33 +8,32 @@
         <item name="popupMenuStyle">@style/PopupMenu.NewTheme</item>
         <item name="dropDownListViewStyle">@style/DropDownListView.NewTheme</item>
         <item name="actionDropDownStyle">@style/DropDownNav.NewTheme</item>
-        
+
         <!-- Light.DarkActionBar specific -->
         <!-- Con esto funciona el menú desplegable -->
         <item name="actionBarWidgetTheme">@style/NewTheme.Widget</item>
     </style>
 
-    
-    
+
     <!-- ActionBar style -->
     <style name="ActionBar.Solid.NewTheme" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="background">@drawable/newtheme_action_bar_gradient</item>
     </style>
-    
+
     <style name="PopupMenu.NewTheme" parent="@style/Widget.AppCompat.PopupMenu">
         <item name="android:popupBackground">@color/item_background</item>
     </style>
-    
+
     <style name="DropDownListView.NewTheme" parent="@style/Widget.AppCompat.ListView.DropDown">
         <item name="android:listSelector">@drawable/newtheme_selectable_background</item>
     </style>
-    
+
     <style name="DropDownNav.NewTheme" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:background">@drawable/newtheme_spinner_background_ab</item>
         <item name="android:dropDownSelector">@drawable/newtheme_selectable_background</item>
     </style>
-    
-    
+
+
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="NewTheme.Widget" parent="@style/Theme.AppCompat">
         <item name="popupMenuStyle">@style/PopupMenu.NewTheme</item>

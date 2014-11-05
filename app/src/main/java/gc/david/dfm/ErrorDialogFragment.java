@@ -6,6 +6,7 @@ package gc.david.dfm;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 /**
@@ -14,31 +15,32 @@ import android.support.v4.app.DialogFragment;
  */
 public class ErrorDialogFragment extends DialogFragment {
 
-	// Global field to contain the error dialog
-	private Dialog dialog;
+    // Global field to contain the error dialog
+    private Dialog dialog;
 
-	/**
-	 * Default constructor. Sets the dialog field to null
-	 */
-	public ErrorDialogFragment() {
-		super();
-		dialog = null;
-	}
+    /**
+     * Default constructor. Sets the dialog field to null
+     */
+    public ErrorDialogFragment() {
+        super();
+        dialog = null;
+    }
 
-	/**
-	 * Set the dialog to display
-	 *
-	 * @param dialog An error dialog
-	 */
-	public void setDialog(final Dialog dialog) {
-		this.dialog = dialog;
-	}
+    /**
+     * Set the dialog to display
+     *
+     * @param dialog An error dialog
+     */
+    public void setDialog(final Dialog dialog) {
+        this.dialog = dialog;
+    }
 
-	/**
-	 * This method must return a Dialog to the DialogFragment.
-	 */
-	@Override
-	public Dialog onCreateDialog(final Bundle savedInstanceState) {
-		return dialog;
-	}
+    /**
+     * This method must return a Dialog to the DialogFragment.
+     */
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
+        return dialog;
+    }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/category_centre_title">
         <ListPreference
@@ -9,18 +9,18 @@
             android:entryValues="@array/modecode"
             android:key="centre"
             android:summary="@string/preference_centre_summary"
-            android:title="@string/dialog_title" />
+            android:title="@string/dialog_title"/>
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="elevation_chart"
-            android:title="@string/preference_elevation_title"
             android:summary="@string/preference_elevation_summary"
-            android:defaultValue="true" />
+            android:title="@string/preference_elevation_title"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/category_db_title" >
+    <PreferenceCategory android:title="@string/category_db_title">
         <Preference
             android:key="bbdd"
             android:summary="@string/preference_db_summary"
-            android:title="@string/preference_db_title" />
+            android:title="@string/preference_db_title"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

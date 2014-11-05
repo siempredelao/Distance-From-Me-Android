@@ -43,8 +43,7 @@
     <string name="preference_elevation_summary">Calcula el perfil d\'elevació. Aquesta tasca pot tardar algun temps depenent de la seua connexión.</string>
 
 
-
-	<!-- ACTIVITY SHOINFO -->
+    <!-- ACTIVITY SHOINFO -->
     <string name="current">Posició actual aproximada</string>
     <string name="destination">Destinació aproximada</string>
     <string name="noaddress">No s\'ha trobat adreça</string>

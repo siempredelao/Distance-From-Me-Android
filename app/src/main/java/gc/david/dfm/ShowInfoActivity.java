@@ -48,371 +48,382 @@ import static gc.david.dfm.Utils.toastIt;
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
-	@InjectView(R.id.titulo_datos1)
-	protected TextView tvHeaderOriginAddress;
-	@InjectView(R.id.titulo_datos2)
-	protected TextView tvHeaderDestinationAddress;
-	@InjectView(R.id.datos1)
-	protected TextView tvOriginAddress;
-	@InjectView(R.id.datos2)
-	protected TextView tvDestinationAddress;
-	@InjectView(R.id.distancia)
-	protected TextView tvDistance;
+    @InjectView(R.id.titulo_datos1)
+    protected TextView tvHeaderOriginAddress;
+    @InjectView(R.id.titulo_datos2)
+    protected TextView tvHeaderDestinationAddress;
+    @InjectView(R.id.datos1)
+    protected TextView tvOriginAddress;
+    @InjectView(R.id.datos2)
+    protected TextView tvDestinationAddress;
+    @InjectView(R.id.distancia)
+    protected TextView tvDistance;
 
-	private MenuItem menuItem = null;
-	private List<LatLng> positionsList = null;
-	private String originAddress = "";
-	private String destinationAddress = "";
-	private String distance = null;
-	private boolean wasSavingWhenOrientationChanged = false;
-	private Dialog savingInDBDialog = null;
-	private EditText etAlias;
-	private final String originAddressKey = "originAddress";
-	private final String destinationAddressKey = "destinationAddress";
-	private final String distanceKey = "distance";
-	private final String wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
-	private final String aliasHintKey = "aliasHint";
-	public static final String POSITIONS_LIST_EXTRA_KEY_NAME = "positionsList";
-	public static final String DISTANCE_EXTRA_KEY_NAME = "distancia";
+    private             MenuItem     menuItem                           = null;
+    private             List<LatLng> positionsList                      = null;
+    private             String       originAddress                      = "";
+    private             String       destinationAddress                 = "";
+    private             String       distance                           = null;
+    private             boolean      wasSavingWhenOrientationChanged    = false;
+    private             Dialog       savingInDBDialog                   = null;
+    private             EditText     etAlias                            = null;
+    private final       String       originAddressKey                   = "originAddress";
+    private final       String       destinationAddressKey              = "destinationAddress";
+    private final       String       distanceKey                        = "distance";
+    private final       String       wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
+    private final       String       aliasHintKey                       = "aliasHint";
+    public static final String       POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
+    public static final String       DISTANCE_EXTRA_KEY_NAME            = "distancia";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_show_info);
-		inject(this);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show_info);
+        inject(this);
 
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		getIntentData();
+        getIntentData();
 
-		fillTitlesHeaders();
+        fillTitlesHeaders();
 
-		if (savedInstanceState == null) {
-			fillAddressesInfo();
-		} else {
-			originAddress = savedInstanceState.getString(originAddressKey);
-			destinationAddress = savedInstanceState.getString(destinationAddressKey);
+        if (savedInstanceState == null) {
+            fillAddressesInfo();
+        } else {
+            originAddress = savedInstanceState.getString(originAddressKey);
+            destinationAddress = savedInstanceState.getString(destinationAddressKey);
 
-			tvOriginAddress.setText(originAddress +
-					"\n\n(" +
-					positionsList.get(0).latitude + ", " +
-					positionsList.get(0).longitude + ")");
+            tvOriginAddress.setText(originAddress +
+                                    "\n\n(" +
+                                    positionsList.get(0).latitude + ", " +
+                                    positionsList.get(0).longitude + ")");
 
-			tvDestinationAddress.setText(destinationAddress + "\n\n(" +
-					positionsList.get(positionsList.size() - 1).latitude +
-					", " +
-					positionsList.get(positionsList.size() - 1).longitude + ")");
+            tvDestinationAddress.setText(destinationAddress + "\n\n(" +
+                                         positionsList.get(positionsList.size() - 1).latitude +
+                                         ", " +
+                                         positionsList.get(positionsList.size() - 1).longitude + ")");
 
-			// Este se modifica dos veces...
-			distance = savedInstanceState.getString(distanceKey);
+            // Este se modifica dos veces...
+            distance = savedInstanceState.getString(distanceKey);
 
-			wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(wasSavingWhenOrientationChangedKey);
-			if (wasSavingWhenOrientationChanged) {
-				final String aliasHint = savedInstanceState.getString(aliasHintKey);
-				saveDataToDB(aliasHint);
-			}
-		}
+            wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(wasSavingWhenOrientationChangedKey);
+            if (wasSavingWhenOrientationChanged) {
+                final String aliasHint = savedInstanceState.getString(aliasHintKey);
+                saveDataToDB(aliasHint);
+            }
+        }
 
-		fillDistanceInfo();
-	}
+        fillDistanceInfo();
+    }
 
-	private DaoSession getApplicationDaoSession() {
-		return ((DFMApplication) getApplicationContext()).getDaoSession();
-	}
+    private DaoSession getApplicationDaoSession() {
+        return ((DFMApplication) getApplicationContext()).getDaoSession();
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		outState.putString(originAddressKey, originAddress);
-		outState.putString(destinationAddressKey, destinationAddress);
-		outState.putString(distanceKey, distance);
-		outState.putBoolean(wasSavingWhenOrientationChangedKey, wasSavingWhenOrientationChanged);
-		if (wasSavingWhenOrientationChanged) {
-			outState.putString(aliasHintKey, etAlias.getText().toString());
-			if (savingInDBDialog != null) {
-				savingInDBDialog.dismiss();
-				savingInDBDialog = null;
-			}
-		}
-	}
+        outState.putString(originAddressKey, originAddress);
+        outState.putString(destinationAddressKey, destinationAddress);
+        outState.putString(distanceKey, distance);
+        outState.putBoolean(wasSavingWhenOrientationChangedKey, wasSavingWhenOrientationChanged);
+        if (wasSavingWhenOrientationChanged) {
+            outState.putString(aliasHintKey, etAlias.getText().toString());
+            if (savingInDBDialog != null) {
+                savingInDBDialog.dismiss();
+                savingInDBDialog = null;
+            }
+        }
+    }
 
-	/**
-	 * Get data form the Intent.
-	 */
-	private void getIntentData() {
-		final Intent inputDataIntent = getIntent();
-		positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
-		distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
-	}
+    /**
+     * Get data form the Intent.
+     */
+    private void getIntentData() {
+        final Intent inputDataIntent = getIntent();
+        positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
+        distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
+    }
 
-	/**
-	 * Fill Textviews titles.
-	 */
-	private void fillTitlesHeaders() {
-		tvHeaderOriginAddress.setText(getText(R.string.current) + ":");
-		tvHeaderDestinationAddress.setText(getText(R.string.destination) + ":");
-	}
+    /**
+     * Fill Textviews titles.
+     */
+    private void fillTitlesHeaders() {
+        tvHeaderOriginAddress.setText(getText(R.string.current) + ":");
+        tvHeaderDestinationAddress.setText(getText(R.string.destination) + ":");
+    }
 
-	/**
-	 * Get the addresses associated to LatLng points and fill the Textviews.
-	 */
-	private void fillAddressesInfo() {
-		try {
-			originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
-			destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
-					tvDestinationAddress).get();
+    /**
+     * Get the addresses associated to LatLng points and fill the Textviews.
+     */
+    private void fillAddressesInfo() {
+        try {
+            originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
+            destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
+                                                              tvDestinationAddress).get();
 
-			// Esto a lo mejor hay que ponerlo en el onPostExecute!
-			tvOriginAddress.setText(originAddress +
-					"\n\n(" +
-					positionsList.get(0).latitude +
-					", " +
-					positionsList.get(0).longitude + ")");
-			tvDestinationAddress.setText(destinationAddress +
-					"\n\n(" +
-					positionsList.get(positionsList.size() - 1).latitude +
-					", " +
-					positionsList.get(positionsList.size() - 1).longitude + ")");
-		} catch (final InterruptedException e) {
-			e.printStackTrace();
-		} catch (final ExecutionException e) {
-			e.printStackTrace();
-		} catch (final CancellationException e) {
-			// No hay conexión, se cancela la búsqueda de las direcciones
-			// No se hace nada aquí, ya lo hace el hilo
-		}
-	}
+            // Esto a lo mejor hay que ponerlo en el onPostExecute!
+            tvOriginAddress.setText(originAddress +
+                                    "\n\n(" +
+                                    positionsList.get(0).latitude +
+                                    ", " +
+                                    positionsList.get(0).longitude + ")");
+            tvDestinationAddress.setText(destinationAddress +
+                                         "\n\n(" +
+                                         positionsList.get(positionsList.size() - 1).latitude +
+                                         ", " +
+                                         positionsList.get(positionsList.size() - 1).longitude + ")");
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        } catch (final ExecutionException e) {
+            e.printStackTrace();
+        } catch (final CancellationException e) {
+            // No hay conexión, se cancela la búsqueda de las direcciones
+            // No se hace nada aquí, ya lo hace el hilo
+        }
+    }
 
-	/**
-	 * Fill Textview tvDistance.
-	 */
-	private void fillDistanceInfo() {
-		tvDistance.setText(getText(R.string.distance) + ": " + distance);
-	}
+    /**
+     * Fill Textview tvDistance.
+     */
+    private void fillDistanceInfo() {
+        tvDistance.setText(getText(R.string.distance) + ": " + distance);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.show_info, menu);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.show_info, menu);
 
-		// Establecer el menu Compartir
-		final MenuItem shareItem = menu.findItem(R.id.action_social_share);
-		final ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat
-				.getActionProvider(shareItem);
-		final Intent shareDistanceIntent = createDefaultShareIntent();
-		if (verifyAppReceiveIntent(shareDistanceIntent)) {
-			mShareActionProvider.setShareIntent(shareDistanceIntent);
-		}
-		// else mostrar un Toast
-		return true;
-	}
+        // Establecer el menu Compartir
+        final MenuItem shareItem = menu.findItem(R.id.action_social_share);
+        final ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        final Intent shareDistanceIntent = createDefaultShareIntent();
+        if (verifyAppReceiveIntent(shareDistanceIntent)) {
+            mShareActionProvider.setShareIntent(shareDistanceIntent);
+        }
+        // else mostrar un Toast
+        return true;
+    }
 
-	/**
-	 * Creates an Intent to share data.
-	 *
-	 * @return A new Intent to show different options to share data.
-	 */
-	private Intent createDefaultShareIntent() {
-		final Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.setType("text/plain");
-		shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
-		shareIntent.putExtra(Intent.EXTRA_TEXT, "\nDistance From Me (http://goo.gl/0IBHFN)\n"
-				+ getText(R.string.from) + "\n"
-				+ originAddress + "\n\n" + getText(R.string.to) + "\n"
-				+ destinationAddress + "\n\n" + getText(R.string.space) + "\n" + distance);
-		return shareIntent;
-	}
+    /**
+     * Creates an Intent to share data.
+     *
+     * @return A new Intent to show different options to share data.
+     */
+    private Intent createDefaultShareIntent() {
+        final Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "\nDistance From Me (http://goo.gl/0IBHFN)\n"
+                                                +
+                                                getText(R.string.from) +
+                                                "\n"
+                                                +
+                                                originAddress +
+                                                "\n\n" +
+                                                getText(R.string.to) +
+                                                "\n"
+                                                +
+                                                destinationAddress +
+                                                "\n\n" +
+                                                getText(R.string.space) +
+                                                "\n" +
+                                                distance);
+        return shareIntent;
+    }
 
-	/**
-	 * Verify if there are applications that can handle the intent.
-	 *
-	 * @param intent The intent to verify.
-	 * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
-	 */
-	private boolean verifyAppReceiveIntent(final Intent intent) {
-		final PackageManager packageManager = getPackageManager();
-		final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-		return activities.size() > 0;
-	}
+    /**
+     * Verify if there are applications that can handle the intent.
+     *
+     * @param intent The intent to verify.
+     * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
+     */
+    private boolean verifyAppReceiveIntent(final Intent intent) {
+        final PackageManager packageManager = getPackageManager();
+        final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        return activities.size() > 0;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_social_share:
-				return true;
-			case R.id.refresh:
-				menuItem = item;
-				fillAddressesInfo();
-				return true;
-			case R.id.menu_save:
-				saveDataToDB("");
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_social_share:
+                return true;
+            case R.id.refresh:
+                menuItem = item;
+                fillAddressesInfo();
+                return true;
+            case R.id.menu_save:
+                saveDataToDB("");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	/**
-	 * Saves the current data into the database.
-	 *
-	 * @param defaultText String text when orientation changes.
-	 */
-	private void saveDataToDB(final String defaultText) {
-		wasSavingWhenOrientationChanged = true;
-		// Pedir al usuario que introduzca un texto descriptivo
-		final AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
-		etAlias = new EditText(getApplicationContext());
-		etAlias.setTextColor(Color.BLACK);
-		etAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-		etAlias.setText(defaultText);
+    /**
+     * Saves the current data into the database.
+     *
+     * @param defaultText String text when orientation changes.
+     */
+    private void saveDataToDB(final String defaultText) {
+        wasSavingWhenOrientationChanged = true;
+        // Pedir al usuario que introduzca un texto descriptivo
+        final AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
+        etAlias = new EditText(getApplicationContext());
+        etAlias.setTextColor(Color.BLACK);
+        etAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        etAlias.setText(defaultText);
 
-		builder.setMessage(getText(R.string.alias_dialog_message))
-				.setTitle(getText(R.string.alias_dialog_title))
-				.setView(etAlias)
-				.setInverseBackgroundForced(false)
-				.setOnCancelListener(new OnCancelListener() {
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						wasSavingWhenOrientationChanged = false;
-					}
-				})
-				.setPositiveButton(getText(R.string.alias_dialog_accept), new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						insertDataIntoDatabase(etAlias.getText().toString());
-						wasSavingWhenOrientationChanged = false;
-					}
+        builder.setMessage(getText(R.string.alias_dialog_message))
+               .setTitle(getText(R.string.alias_dialog_title))
+               .setView(etAlias)
+               .setInverseBackgroundForced(false)
+               .setOnCancelListener(new OnCancelListener() {
+                   @Override
+                   public void onCancel(DialogInterface dialog) {
+                       wasSavingWhenOrientationChanged = false;
+                   }
+               })
+               .setPositiveButton(getText(R.string.alias_dialog_accept), new OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       insertDataIntoDatabase(etAlias.getText().toString());
+                       wasSavingWhenOrientationChanged = false;
+                   }
 
-					/**
-					 * Adds a new distance to the database with the current
-					 * data and shows the user a message.
-					 *
-					 * @param alias Alias written by the user.
-					 */
-					private void insertDataIntoDatabase(final String alias) {
-						String aliasToSave = "";
-						if (alias.compareTo("") != 0) {
-							aliasToSave = alias;
-						}
-						// TODO hacer esto en segundo plano
-						final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
-						final long distanceId = getApplicationDaoSession().insert(distance1);
+                   /**
+                    * Adds a new distance to the database with the current
+                    * data and shows the user a message.
+                    *
+                    * @param alias Alias written by the user.
+                    */
+                   private void insertDataIntoDatabase(final String alias) {
+                       String aliasToSave = "";
+                       if (alias.compareTo("") != 0) {
+                           aliasToSave = alias;
+                       }
+                       // TODO hacer esto en segundo plano
+                       final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
+                       final long distanceId = getApplicationDaoSession().insert(distance1);
 
-						for (LatLng positionAsLatLng : positionsList) {
-							final Position position = new Position(null,
-									positionAsLatLng.latitude,
-									positionAsLatLng.longitude,
-									distanceId);
-							getApplicationDaoSession().insert(position);
-						}
+                       for (LatLng positionAsLatLng : positionsList) {
+                           final Position position = new Position(null,
+                                                                  positionAsLatLng.latitude,
+                                                                  positionAsLatLng.longitude,
+                                                                  distanceId);
+                           getApplicationDaoSession().insert(position);
+                       }
 
-						// Mostrar un mensaje de que se ha guardado correctamente
-						if (!aliasToSave.equals("")) {
-							toastIt(getText(R.string.alias_dialog_toast_1) + aliasToSave + getText(R.string.alias_dialog_toast_2), getApplicationContext());
-						} else {
-							toastIt(getText(R.string.alias_dialog_toast_3), getApplicationContext());
-						}
-					}
-				});
-		(savingInDBDialog = builder.create()).show();
-	}
+                       // Mostrar un mensaje de que se ha guardado correctamente
+                       if (!aliasToSave.equals("")) {
+                           toastIt(getText(R.string.alias_dialog_toast_1) +
+                                   aliasToSave +
+                                   getText(R.string.alias_dialog_toast_2), getApplicationContext());
+                       } else {
+                           toastIt(getText(R.string.alias_dialog_toast_3), getApplicationContext());
+                       }
+                   }
+               });
+        (savingInDBDialog = builder.create()).show();
+    }
 
-	/**
-	 * A subclass of AsyncTask that calls getFromLocation() in the background.
-	 */
-	private class GetAddressTask extends AsyncTask<Object, Void, String> {
+    /**
+     * A subclass of AsyncTask that calls getFromLocation() in the background.
+     */
+    private class GetAddressTask extends AsyncTask<Object, Void, String> {
 
-		private Context context;
+        private Context context;
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			this.context = getApplicationContext();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.context = getApplicationContext();
 
-			startUpdate();
+            startUpdate();
 
-			if (!isOnline(context)) {
-				toastIt(getText(R.string.nonetwork), context);
+            if (!isOnline(context)) {
+                toastIt(getText(R.string.nonetwork), context);
 
-				endUpdate();
-				cancel(false);
-			}
-		}
+                endUpdate();
+                cancel(false);
+            }
+        }
 
-		@Override
-		protected String doInBackground(Object... params) {
-			final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-			// Get the current location from the input parameter list
-			final LatLng currentLocation = (LatLng) params[0];
-			// Create a list to contain the result address
-			List<Address> addresses = null;
-			try {
-				addresses = geocoder.getFromLocation(currentLocation.latitude,
-						currentLocation.longitude, 1);
-			} catch (final IOException e1) {
-				e1.printStackTrace();
-				return (getText(R.string.nolocation).toString());
-			} catch (final IllegalArgumentException e2) {
-				// Error message to post in the log
-				final String errorString = "Illegal arguments "
-						+ Double.toString(currentLocation.latitude)
-						+ " , "
-						+ Double.toString(currentLocation.longitude)
-						+ " passed to address service";
-				e2.printStackTrace();
-				return errorString;
-			}
-			// If the reverse geocode returned an address
-			if (addresses != null && addresses.size() > 0) {
-				// Get the first address
-				final Address address = addresses.get(0);
-				// Format the first line of address (if available), city, and
-				// country name.
-				return String.format(
-						"%s%s%s%s",
-						// If there's a street address, add it
-						address.getMaxAddressLineIndex() > 0 ?
-								address.getAddressLine(0) + "\n" : "",
-						// Añadimos también el código postal
-						address.getPostalCode() != null ?
-								address.getPostalCode() + " " : "",
-						// Locality is usually a city
-						address.getLocality() != null ?
-								address.getLocality() + "\n" : "",
-						// The country of the address
-						address.getCountryName());
-			} else {
-				// If there aren't any addresses, post a message
-				return getText(R.string.noaddress).toString();
-			}
-		}
+        @Override
+        protected String doInBackground(Object... params) {
+            final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+            // Get the current location from the input parameter list
+            final LatLng currentLocation = (LatLng) params[0];
+            // Create a list to contain the result address
+            List<Address> addresses;
+            try {
+                addresses = geocoder.getFromLocation(currentLocation.latitude,
+                                                     currentLocation.longitude, 1);
+            } catch (final IOException e1) {
+                e1.printStackTrace();
+                return (getText(R.string.nolocation).toString());
+            } catch (final IllegalArgumentException e2) {
+                // Error message to post in the log
+                final String errorString = "Illegal arguments "
+                                           + Double.toString(currentLocation.latitude)
+                                           + " , "
+                                           + Double.toString(currentLocation.longitude)
+                                           + " passed to address service";
+                e2.printStackTrace();
+                return errorString;
+            }
+            // If the reverse geocode returned an address
+            if (addresses != null && addresses.size() > 0) {
+                // Get the first address
+                final Address address = addresses.get(0);
+                // Format the first line of address (if available), city, and
+                // country name.
+                return String.format("%s%s%s%s",
+                                     // If there's a street address, add it
+                                     address.getMaxAddressLineIndex() > 0 ?
+                                     address.getAddressLine(0) + "\n" : "",
+                                     // Añadimos también el código postal
+                                     address.getPostalCode() != null ?
+                                     address.getPostalCode() + " " : "",
+                                     // Locality is usually a city
+                                     address.getLocality() != null ?
+                                     address.getLocality() + "\n" : "",
+                                     // The country of the address
+                                     address.getCountryName());
+            } else {
+                // If there aren't any addresses, post a message
+                return getText(R.string.noaddress).toString();
+            }
+        }
 
-		@Override
-		protected void onPostExecute(String result) {
-			endUpdate();
+        @Override
+        protected void onPostExecute(String result) {
+            endUpdate();
 
-			super.onPostExecute(result);
-		}
+            super.onPostExecute(result);
+        }
 
-		/**
-		 * Change the appearance of the refresh button to a ProgressBar.
-		 */
-		private void startUpdate() {
-			if (menuItem != null) {
-				MenuItemCompat.setActionView(menuItem, R.layout.actionbar_indeterminate_progress);
-				MenuItemCompat.expandActionView(menuItem);
-			}
-		}
+        /**
+         * Change the appearance of the refresh button to a ProgressBar.
+         */
+        private void startUpdate() {
+            if (menuItem != null) {
+                MenuItemCompat.setActionView(menuItem, R.layout.actionbar_indeterminate_progress);
+                MenuItemCompat.expandActionView(menuItem);
+            }
+        }
 
-		/**
-		 * Restore the refresh button to his normal appearance.
-		 */
-		private void endUpdate() {
-			if (menuItem != null) {
-				MenuItemCompat.collapseActionView(menuItem);
-				MenuItemCompat.setActionView(menuItem, null);
-			}
-		}
-	}
+        /**
+         * Restore the refresh button to his normal appearance.
+         */
+        private void endUpdate() {
+            if (menuItem != null) {
+                MenuItemCompat.collapseActionView(menuItem);
+                MenuItemCompat.setActionView(menuItem, null);
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- ACTIVITY MAIN -->
+    <!-- ACTIVITY MAIN -->
     <string name="app_name">Distance From Me</string>
     <string name="action_search">Buscar</string>
     <string name="action_social_share">Compartir</string>
@@ -43,8 +43,7 @@
     <string name="preference_elevation_summary">Calcula el perfil de elevación. Esta tarea puede tardar algún tiempo dependiendo de su conexión.</string>
 
 
-    
-	<!-- ACTIVITY SHOINFO -->
+    <!-- ACTIVITY SHOINFO -->
     <string name="current">Posición actual aproximada</string>
     <string name="destination">Destino aproximado</string>
     <string name="noaddress">No se ha encontrado dirección</string>

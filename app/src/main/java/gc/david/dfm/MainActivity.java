@@ -76,7 +76,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,7 +88,6 @@ import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.map.MarkerInfoWindowAdapter;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
-import gc.david.dfm.model.NavigationDrawerItemAdapter;
 import gc.david.dfm.model.Position;
 
 import static butterknife.ButterKnife.inject;
@@ -103,176 +101,175 @@ import static gc.david.dfm.Utils.toastIt;
  * @author David
  */
 public class MainActivity extends ActionBarActivity implements LocationListener,
-		GooglePlayServicesClient.ConnectionCallbacks,
-		GooglePlayServicesClient.OnConnectionFailedListener {
+                                                               GooglePlayServicesClient.ConnectionCallbacks,
+                                                               GooglePlayServicesClient.OnConnectionFailedListener {
 
-	private final int FIRST_DRAWER_ITEM_INDEX = 1;
-	private GoogleMap googleMap = null;
-	// A request to connect to Location Services
-	private LocationRequest locationRequest = null;
-	// Stores the current instantiation of the location client in this object
-	private LocationClient locationClient = null;
-	// Current position
-	private Location currentLocation = null;
-	// Moves to current position if app has just started
-	private boolean appHasJustStarted = true;
-	private String distanceMeasuredAsText = "";
-	private MenuItem searchMenuItem = null;
-	// Show position if we come from other app (p.e. Whatsapp)
-	private boolean mustShowPositionWhenComingFromOutside = false;
-	private LatLng sendDestinationPosition = null;
-	private IMBanner banner = null;
-	// Google Map items padding
-	private boolean bannerShown = false;
-	private boolean elevationChartShown = false;
-	private static final int ELEVATION_SAMPLES = 100;
-	@SuppressWarnings("rawtypes")
-	private AsyncTask showingElevationTask = null;
-	private GraphView graphView = null;
-	private float DEVICE_DENSITY;
-	private ActionBarDrawerToggle actionBarDrawerToggle;
-	private DrawerLayout drawerLayout;
-	private ListView drawerList;
+    private final        int             FIRST_DRAWER_ITEM_INDEX               = 1;
+    private              GoogleMap       googleMap                             = null;
+    // A request to connect to Location Services
+    private              LocationRequest locationRequest                       = null;
+    // Stores the current instantiation of the location client in this object
+    private              LocationClient  locationClient                        = null;
+    // Current position
+    private              Location        currentLocation                       = null;
+    // Moves to current position if app has just started
+    private              boolean         appHasJustStarted                     = true;
+    private              String          distanceMeasuredAsText                = "";
+    private              MenuItem        searchMenuItem                        = null;
+    // Show position if we come from other app (p.e. Whatsapp)
+    private              boolean         mustShowPositionWhenComingFromOutside = false;
+    private              LatLng          sendDestinationPosition               = null;
+    private              IMBanner        banner                                = null;
+    // Google Map items padding
+    private              boolean         bannerShown                           = false;
+    private              boolean         elevationChartShown                   = false;
+    private static final int             ELEVATION_SAMPLES                     = 100;
+    @SuppressWarnings("rawtypes")
+    private              AsyncTask       showingElevationTask                  = null;
+    private              GraphView       graphView                             = null;
+    private float                 DEVICE_DENSITY;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout          drawerLayout;
+    private ListView              drawerList;
 
-	@InjectView(R.id.elevationchart)
-	protected RelativeLayout rlElevationChart;
-	@InjectView(R.id.closeChart)
-	protected ImageView ivCloseElevationChart;
+    @InjectView(R.id.elevationchart)
+    protected RelativeLayout rlElevationChart;
+    @InjectView(R.id.closeChart)
+    protected ImageView      ivCloseElevationChart;
 
-	private static enum DistanceMode {
-		DISTANCE_FROM_CURRENT_POINT,
-		DISTANCE_FROM_ANY_POINT
-	}
+    private static enum DistanceMode {
+        DISTANCE_FROM_CURRENT_POINT,
+        DISTANCE_FROM_ANY_POINT
+    }
 
-	private DistanceMode distanceMode;
-	private List<LatLng> coordinates;
-	private boolean calculatingDistance;
+    private DistanceMode distanceMode;
+    private List<LatLng> coordinates;
+    private boolean      calculatingDistance;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		inject(this);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        inject(this);
 
-		DEVICE_DENSITY = getResources().getDisplayMetrics().density;
+        DEVICE_DENSITY = getResources().getDisplayMetrics().density;
 
-		final SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.map));
-		googleMap = fragment.getMap();
+        final SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
+        googleMap = fragment.getMap();
 
-		if (googleMap != null) {
-			googleMap.setMyLocationEnabled(true);
-			googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        if (googleMap != null) {
+            googleMap.setMyLocationEnabled(true);
+            googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-			// InMobi Ads
-			InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
-			banner = (IMBanner) findViewById(R.id.banner);
-			if (banner != null) {
-				// Si no hay red el banner no carga ni aunque esté vacío
-				banner.setRefreshInterval(30);
-				banner.setIMBannerListener(new IMBannerListener() {
-					@Override
-					public void onShowBannerScreen(IMBanner arg0) {
-					}
+            // InMobi Ads
+            InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
+            banner = (IMBanner) findViewById(R.id.banner);
+            if (banner != null) {
+                // Si no hay red el banner no carga ni aunque esté vacío
+                banner.setRefreshInterval(30);
+                banner.setIMBannerListener(new IMBannerListener() {
+                    @Override
+                    public void onShowBannerScreen(IMBanner arg0) {
+                    }
 
-					@Override
-					public void onLeaveApplication(IMBanner arg0) {
-					}
+                    @Override
+                    public void onLeaveApplication(IMBanner arg0) {
+                    }
 
-					@Override
-					public void onDismissBannerScreen(IMBanner arg0) {
-					}
+                    @Override
+                    public void onDismissBannerScreen(IMBanner arg0) {
+                    }
 
-					@Override
-					public void onBannerRequestSucceeded(IMBanner arg0) {
-						bannerShown = true;
-						fixMapPadding();
-					}
+                    @Override
+                    public void onBannerRequestSucceeded(IMBanner arg0) {
+                        bannerShown = true;
+                        fixMapPadding();
+                    }
 
-					@Override
-					public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
-					}
+                    @Override
+                    public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
+                    }
 
-					@Override
-					public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
-					}
-				});
-				banner.loadBanner();
-			}
+                    @Override
+                    public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
+                    }
+                });
+                banner.loadBanner();
+            }
 
-			if (!isOnline(getApplicationContext())) {
-				showWifiAlertDialog();
-			}
+            if (!isOnline(getApplicationContext())) {
+                showWifiAlertDialog();
+            }
 
-			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
-				@Override
-				public void onMapLongClick(LatLng point) {
-					calculatingDistance = true;
+            googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+                @Override
+                public void onMapLongClick(LatLng point) {
+                    calculatingDistance = true;
 
-					if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-						if (coordinates == null || coordinates.isEmpty()) {
-							toastIt(getString(R.string.first_point_needed), getApplicationContext());
-						} else {
-							coordinates.add(point);
-							drawAndShowMultipleDistances(coordinates, "", false, true);
-						}
-					}
-					// Si no hemos encontrado la posición actual, no podremos
-					// calcular la distancia
-					else if (currentLocation != null) {
-						if ((distanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
-							coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-						}
-						coordinates.add(point);
-						drawAndShowMultipleDistances(coordinates, "", false, true);
-					}
+                    if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+                        if (coordinates == null || coordinates.isEmpty()) {
+                            toastIt(getString(R.string.first_point_needed), getApplicationContext());
+                        } else {
+                            coordinates.add(point);
+                            drawAndShowMultipleDistances(coordinates, "", false, true);
+                        }
+                    }
+                    // Si no hemos encontrado la posición actual, no podremos
+                    // calcular la distancia
+                    else if (currentLocation != null) {
+                        if ((distanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
+                            coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                        }
+                        coordinates.add(point);
+                        drawAndShowMultipleDistances(coordinates, "", false, true);
+                    }
 
-					calculatingDistance = false;
-				}
-			});
+                    calculatingDistance = false;
+                }
+            });
 
-			googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-				@Override
-				public void onMapClick(LatLng point) {
-					if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-						if (!calculatingDistance) {
-							coordinates.clear();
-						}
+            googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng point) {
+                    if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+                        if (!calculatingDistance) {
+                            coordinates.clear();
+                        }
 
-						calculatingDistance = true;
+                        calculatingDistance = true;
 
-						if (coordinates.isEmpty()) {
-							googleMap.clear();
-						}
-						coordinates.add(point);
-						googleMap.addMarker(new MarkerOptions().position(point));
-					} else {
-						// Si no hemos encontrado la posición actual, no podremos
-						// calcular la distancia
-						if (currentLocation != null) {
-							if (coordinates != null) {
-								if (!calculatingDistance) {
-									coordinates.clear();
-								}
-								calculatingDistance = true;
+                        if (coordinates.isEmpty()) {
+                            googleMap.clear();
+                        }
+                        coordinates.add(point);
+                        googleMap.addMarker(new MarkerOptions().position(point));
+                    } else {
+                        // Si no hemos encontrado la posición actual, no podremos
+                        // calcular la distancia
+                        if (currentLocation != null) {
+                            if (coordinates != null) {
+                                if (!calculatingDistance) {
+                                    coordinates.clear();
+                                }
+                                calculatingDistance = true;
 
-								if (coordinates.isEmpty()) {
-									googleMap.clear();
-									coordinates.add(new LatLng(currentLocation.getLatitude(),
-											currentLocation.getLongitude()));
-								}
-								coordinates.add(point);
-								googleMap.addMarker(new MarkerOptions().position(point));
-							} else {
-								throw new IllegalStateException("Empty coordinates list");
-							}
-						}
-					}
-				}
-			});
+                                if (coordinates.isEmpty()) {
+                                    googleMap.clear();
+                                    coordinates.add(new LatLng(currentLocation.getLatitude(),
+                                                               currentLocation.getLongitude()));
+                                }
+                                coordinates.add(point);
+                                googleMap.addMarker(new MarkerOptions().position(point));
+                            } else {
+                                throw new IllegalStateException("Empty coordinates list");
+                            }
+                        }
+                    }
+                }
+            });
 
-			// TODO Release 1.5
-			// Cambiar esto: debería modificar solamentela posición que estemos tuneando y recalcular
+            // TODO Release 1.5
+            // Cambiar esto: debería modificar solamentela posición que estemos tuneando y recalcular
 //			googleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
 ////				private String selectedMarkerId;
 //
@@ -308,1186 +305,1185 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 //				}
 //			});
 
-			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-				@Override
-				public void onInfoWindowClick(Marker marker) {
-					final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
+            googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
 
-					showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
-							Lists.newArrayList(coordinates));
-					showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
-					startActivity(showInfoActivityIntent);
-				}
-			});
+                    showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
+                                                    Lists.newArrayList(coordinates));
+                    showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
+                    startActivity(showInfoActivityIntent);
+                }
+            });
 
-			googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(this));
+            googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(this));
 
-			// Iniciando la app
-			if (currentLocation == null) {
-				toastIt(getText(R.string.loading), getApplicationContext());
-			}
+            // Iniciando la app
+            if (currentLocation == null) {
+                toastIt(getText(R.string.loading), getApplicationContext());
+            }
 
-			handleIntents(getIntent());
+            handleIntents(getIntent());
 
-			final List<String> distanceModes = Lists.newArrayList(getString(R.string.navigation_drawer_starting_point_current_position_item),
-					getString(R.string.navigation_drawer_starting_point_any_position_item));
-			final List<Integer> distanceIcons = Lists.newArrayList(R.drawable.ic_action_device_gps_fixed,
-					R.drawable.ic_action_communication_location_on);
-			drawerList = (ListView) findViewById(R.id.left_drawer);
-			drawerList.setAdapter(new NavigationDrawerItemAdapter(this, distanceModes, distanceIcons));
+            final List<String> distanceModes = Lists.newArrayList(getString(R.string.navigation_drawer_starting_point_current_position_item),
+                                                                  getString(R.string.navigation_drawer_starting_point_any_position_item));
+            final List<Integer> distanceIcons = Lists.newArrayList(R.drawable.ic_action_device_gps_fixed,
+                                                                   R.drawable.ic_action_communication_location_on);
+            drawerList = (ListView) findViewById(R.id.left_drawer);
+            drawerList.setAdapter(new NavigationDrawerItemAdapter(this, distanceModes, distanceIcons));
 
-			// TODO cambiar esto por un header como dios manda
-			final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			final View convertView = inflater.inflate(R.layout.simple_textview_list_item, drawerList, false);
-			final TextView tvListElement = (TextView) convertView.findViewById(R.id.simple_textview);
-			tvListElement.setText(getString(R.string.navigation_drawer_starting_point_header));
-			tvListElement.setClickable(false);
-			tvListElement.setTextColor(getResources().getColor(R.color.white));
-			drawerList.addHeaderView(convertView);
+            // TODO cambiar esto por un header como dios manda
+            final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View convertView = inflater.inflate(R.layout.simple_textview_list_item, drawerList, false);
+            final TextView tvListElement = (TextView) convertView.findViewById(R.id.simple_textview);
+            tvListElement.setText(getString(R.string.navigation_drawer_starting_point_header));
+            tvListElement.setClickable(false);
+            tvListElement.setTextColor(getResources().getColor(R.color.white));
+            drawerList.addHeaderView(convertView);
 
-			drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					selectItem(position);
-				}
-			});
+            drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    selectItem(position);
+                }
+            });
 
-			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-			actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-					R.string.wait, R.string.wait) {
-				@Override
-				public void onDrawerOpened(View drawerView) {
-					super.onDrawerOpened(drawerView);
-					supportInvalidateOptionsMenu();
-				}
+            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.wait, R.string.wait) {
+                @Override
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    supportInvalidateOptionsMenu();
+                }
 
-				@Override
-				public void onDrawerClosed(View drawerView) {
-					super.onDrawerClosed(drawerView);
-					supportInvalidateOptionsMenu();
-				}
-			};
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    super.onDrawerClosed(drawerView);
+                    supportInvalidateOptionsMenu();
+                }
+            };
 
-			drawerLayout.setDrawerListener(actionBarDrawerToggle);
+            drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-			getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
 
-			if (savedInstanceState == null) {
-				// TODO change this because the header!!!!
-				selectItem(FIRST_DRAWER_ITEM_INDEX);
-			}
-		}
+            if (savedInstanceState == null) {
+                // TODO change this because the header!!!!
+                selectItem(FIRST_DRAWER_ITEM_INDEX);
+            }
+        }
 
-		// Create a new global location parameters object
-		locationRequest = LocationRequest.create();
-		// Set the update interval
-		locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
-		// Use high accuracy
-		locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-		// Set the interval ceiling to one minute
-		locationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+        // Create a new global location parameters object
+        locationRequest = LocationRequest.create();
+        // Set the update interval
+        locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
+        // Use high accuracy
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // Set the interval ceiling to one minute
+        locationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
-		// Create a new location client, using the enclosing class to handle
-		// callbacks
-		locationClient = new LocationClient(this, this, this);
-	}
+        // Create a new location client, using the enclosing class to handle
+        // callbacks
+        locationClient = new LocationClient(this, this, this);
+    }
 
-	private DaoSession getApplicationDaoSession() {
-		return ((DFMApplication) getApplicationContext()).getDaoSession();
-	}
+    private DaoSession getApplicationDaoSession() {
+        return ((DFMApplication) getApplicationContext()).getDaoSession();
+    }
 
-	/**
-	 * Swaps starting point in the main content view
-	 */
-	private void selectItem(int position) {
-		distanceMode =
-				(position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
-						DistanceMode.DISTANCE_FROM_CURRENT_POINT :
-						DistanceMode.DISTANCE_FROM_ANY_POINT;
+    /**
+     * Swaps starting point in the main content view
+     */
+    private void selectItem(int position) {
+        distanceMode = (position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
+                       DistanceMode.DISTANCE_FROM_CURRENT_POINT :
+                       DistanceMode.DISTANCE_FROM_ANY_POINT;
 
-		// Highlight the selected item and close the drawer
-		drawerList.setItemChecked(position, true);
-		drawerLayout.closeDrawer(drawerList);
+        // Highlight the selected item and close the drawer
+        drawerList.setItemChecked(position, true);
+        drawerLayout.closeDrawer(drawerList);
 
-		calculatingDistance = false;
+        calculatingDistance = false;
 
-		coordinates = Lists.newArrayList();
-		googleMap.clear();
-		if (showingElevationTask != null) {
-			showingElevationTask.cancel(true);
-		}
-		rlElevationChart.setVisibility(View.INVISIBLE);
-		elevationChartShown = false;
-		fixMapPadding();
-	}
+        coordinates = Lists.newArrayList();
+        googleMap.clear();
+        if (showingElevationTask != null) {
+            showingElevationTask.cancel(true);
+        }
+        rlElevationChart.setVisibility(View.INVISIBLE);
+        elevationChartShown = false;
+        fixMapPadding();
+    }
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
-		// Sync the toggle state after onRestoreInstanceState has occurred.
-		actionBarDrawerToggle.syncState();
-	}
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        actionBarDrawerToggle.syncState();
+    }
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		actionBarDrawerToggle.onConfigurationChanged(newConfig);
-	}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		setIntent(intent);
-		handleIntents(intent);
-	}
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntents(intent);
+    }
 
-	/**
-	 * Handles all Intent types.
-	 *
-	 * @param intent The input intent.
-	 */
-	private void handleIntents(final Intent intent) {
-		if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
-			handleSearchIntent(intent);
-		} else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-			try {
-				handleSendPositionIntent(intent);
-			} catch (NoSuchFieldException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    /**
+     * Handles all Intent types.
+     *
+     * @param intent The input intent.
+     */
+    private void handleIntents(final Intent intent) {
+        if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
+            handleSearchIntent(intent);
+        } else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+            try {
+                handleSendPositionIntent(intent);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	/**
-	 * Handles a search intent.
-	 *
-	 * @param intent Input intent.
-	 */
-	private void handleSearchIntent(final Intent intent) {
-		// Para controlar instancias únicas, no queremos que cada vez que
-		// busquemos nos inicie una nueva instancia de la aplicación
-		final String query = intent.getStringExtra(SearchManager.QUERY);
-		if (currentLocation != null) {
-			new SearchPositionByName().execute(query);
-		}
-		MenuItemCompat.collapseActionView(searchMenuItem);
-	}
+    /**
+     * Handles a search intent.
+     *
+     * @param intent Input intent.
+     */
+    private void handleSearchIntent(final Intent intent) {
+        // Para controlar instancias únicas, no queremos que cada vez que
+        // busquemos nos inicie una nueva instancia de la aplicación
+        final String query = intent.getStringExtra(SearchManager.QUERY);
+        if (currentLocation != null) {
+            new SearchPositionByName().execute(query);
+        }
+        MenuItemCompat.collapseActionView(searchMenuItem);
+    }
 
-	/**
-	 * Handles a send intent with position data.
-	 *
-	 * @param intent Input intent with position data.
-	 */
-	private void handleSendPositionIntent(final Intent intent) throws NoSuchFieldException {
-		final Uri uri = intent.getData();
+    /**
+     * Handles a send intent with position data.
+     *
+     * @param intent Input intent with position data.
+     */
+    private void handleSendPositionIntent(final Intent intent) throws NoSuchFieldException {
+        final Uri uri = intent.getData();
 
-		// Buscamos las coordenadas dentro del parámetro 'q' de la url
-		final String queryParameter = uri.getQueryParameter("q");
-		if (queryParameter != null) {
-			// http://www.regexplanet.com/advanced/java/index.html
-			// De momento solo reconoce el patron latitud,longitud
-			final String regex = "(\\-?\\d+\\.\\d+),(\\-?\\d+\\.\\d+)";
-			final Pattern pattern = Pattern.compile(regex);
-			final Matcher matcher = pattern.matcher(queryParameter);
-			if (matcher.find()) {
-				sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)), Double.valueOf(matcher.group(2)));
-				mustShowPositionWhenComingFromOutside = true;
-			} else {
-				throw new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " + matcher.toString());
-			}
-		} else {
-			throw new NoSuchFieldException("Query sin parámetro q.");
-		}
-	}
+        // Buscamos las coordenadas dentro del parámetro 'q' de la url
+        final String queryParameter = uri.getQueryParameter("q");
+        if (queryParameter != null) {
+            // http://www.regexplanet.com/advanced/java/index.html
+            // De momento solo reconoce el patron latitud,longitud
+            final String regex = "(\\-?\\d+\\.\\d+),(\\-?\\d+\\.\\d+)";
+            final Pattern pattern = Pattern.compile(regex);
+            final Matcher matcher = pattern.matcher(queryParameter);
+            if (matcher.find()) {
+                sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)),
+                                                     Double.valueOf(matcher.group(2)));
+                mustShowPositionWhenComingFromOutside = true;
+            } else {
+                throw new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " + matcher.toString());
+            }
+        } else {
+            throw new NoSuchFieldException("Query sin parámetro q.");
+        }
+    }
 
-	/**
-	 * A subclass of AsyncTask that calls getFromLocationName() in the background.
-	 */
-	private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
+    /**
+     * A subclass of AsyncTask that calls getFromLocationName() in the background.
+     */
+    private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
 
-		protected List<Address> addressList;
-		protected StringBuilder fullAddress;
-		protected LatLng selectedPosition;
-		protected ProgressDialog progressDialog;
+        protected List<Address>  addressList;
+        protected StringBuilder  fullAddress;
+        protected LatLng         selectedPosition;
+        protected ProgressDialog progressDialog;
 
-		@Override
-		protected void onPreExecute() {
-			addressList = null;
-			fullAddress = new StringBuilder();
-			selectedPosition = null;
+        @Override
+        protected void onPreExecute() {
+            addressList = null;
+            fullAddress = new StringBuilder();
+            selectedPosition = null;
 
-			// Comprobamos que haya conexión con internet (WiFi o Datos)
-			if (!isOnline(getApplicationContext())) {
-				showWifiAlertDialog();
+            // Comprobamos que haya conexión con internet (WiFi o Datos)
+            if (!isOnline(getApplicationContext())) {
+                showWifiAlertDialog();
 
-				// Restauramos el menú y que vuelva a empezar de nuevo
-				MenuItemCompat.collapseActionView(searchMenuItem);
-				cancel(false);
-			} else {
-				progressDialog = new ProgressDialog(MainActivity.this);
-				progressDialog.setTitle(R.string.searching);
-				progressDialog.setMessage(getText(R.string.wait));
-				progressDialog.setCancelable(false);
-				progressDialog.setIndeterminate(true);
-				progressDialog.show();
-			}
-		}
+                // Restauramos el menú y que vuelva a empezar de nuevo
+                MenuItemCompat.collapseActionView(searchMenuItem);
+                cancel(false);
+            } else {
+                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setTitle(R.string.searching);
+                progressDialog.setMessage(getText(R.string.wait));
+                progressDialog.setCancelable(false);
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+            }
+        }
 
-		@Override
-		protected Integer doInBackground(Object... params) {
-			/* get latitude and longitude from the addressList */
-			final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-			try {
-				addressList = geoCoder.getFromLocationName((String) params[0], 5);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return -1; // Network is unavailable or any other I/O problem occurs
-			}
-			if (addressList == null) {
-				return -3; // No backend service available
-			} else if (addressList.isEmpty()) {
-				return -2; // No matches were found
-			} else {
-				return 0;
-			}
-		}
+        @Override
+        protected Integer doInBackground(Object... params) {
+            /* get latitude and longitude from the addressList */
+            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                addressList = geoCoder.getFromLocationName((String) params[0], 5);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return -1; // Network is unavailable or any other I/O problem occurs
+            }
+            if (addressList == null) {
+                return -3; // No backend service available
+            } else if (addressList.isEmpty()) {
+                return -2; // No matches were found
+            } else {
+                return 0;
+            }
+        }
 
-		@Override
-		protected void onPostExecute(Integer result) {
-			switch (result) {
-				case 0:
-					if (addressList != null && addressList.size() > 0) {
-						// Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
-						if (addressList.size() == 1) {
-							processSelectedAddress(0);
-							handleSelectedAddress();
-						} else {
-							final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-							builder.setTitle(getText(R.string.select_address));
-							builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog, int item) {
-											processSelectedAddress(item);
-											handleSelectedAddress();
-										}
-									});
-							builder.create().show();
-						}
-					}
-					break;
-				case -1:
-					toastIt(getText(R.string.nofindaddress), getApplicationContext());
-					break;
-				case -2:
-					toastIt(getText(R.string.noresults), getApplicationContext());
-					break;
-				case -3:
-					toastIt(getText(R.string.nofindaddress), getApplicationContext());
-					break;
-			}
-			progressDialog.dismiss();
-			MenuItemCompat.collapseActionView(searchMenuItem);
-		}
+        @Override
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case 0:
+                    if (addressList != null && addressList.size() > 0) {
+                        // Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
+                        if (addressList.size() == 1) {
+                            processSelectedAddress(0);
+                            handleSelectedAddress();
+                        } else {
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle(getText(R.string.select_address));
+                            builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
+                                             new DialogInterface.OnClickListener() {
+                                                 public void onClick(DialogInterface dialog, int item) {
+                                                     processSelectedAddress(item);
+                                                     handleSelectedAddress();
+                                                 }
+                                             });
+                            builder.create().show();
+                        }
+                    }
+                    break;
+                case -1:
+                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
+                    break;
+                case -2:
+                    toastIt(getText(R.string.noresults), getApplicationContext());
+                    break;
+                case -3:
+                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
+                    break;
+            }
+            progressDialog.dismiss();
+            MenuItemCompat.collapseActionView(searchMenuItem);
+        }
 
-		private void handleSelectedAddress() {
-			if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-				coordinates.add(selectedPosition);
-				if (coordinates.isEmpty()) {
-					// add marker
-					final Marker marker = addMarker(selectedPosition);
-					marker.setTitle(fullAddress.toString());
-					marker.showInfoWindow();
-					// moveCamera
-					moveCameraZoom(selectedPosition, selectedPosition, false);
-					distanceMeasuredAsText = calculateDistance(Lists.newArrayList(selectedPosition, selectedPosition));
-					// That means we are looking for a first position, so we want to calculate a distance starting
-					// from here
-					calculatingDistance = true;
-				} else {
-					drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
-				}
-			} else {
-				if (coordinates.isEmpty()) {
-					coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-				}
-				coordinates.add(selectedPosition);
-				drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
-			}
-		}
+        private void handleSelectedAddress() {
+            if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+                coordinates.add(selectedPosition);
+                if (coordinates.isEmpty()) {
+                    // add marker
+                    final Marker marker = addMarker(selectedPosition);
+                    marker.setTitle(fullAddress.toString());
+                    marker.showInfoWindow();
+                    // moveCamera
+                    moveCameraZoom(selectedPosition, selectedPosition, false);
+                    distanceMeasuredAsText = calculateDistance(Lists.newArrayList(selectedPosition, selectedPosition));
+                    // That means we are looking for a first position, so we want to calculate a distance starting
+                    // from here
+                    calculatingDistance = true;
+                } else {
+                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+                }
+            } else {
+                if (coordinates.isEmpty()) {
+                    coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                }
+                coordinates.add(selectedPosition);
+                drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+            }
+        }
 
-		/**
-		 * Processes the address selected by the user and sets the new destination
-		 * position.
-		 *
-		 * @param item The item index in the AlertDialog.
-		 */
-		protected void processSelectedAddress(final int item) {
-			// Fill address info to show in the marker info window
-			final Address address = addressList.get(item);
-			for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-				fullAddress.append(address.getAddressLine(i)).append("\n");
-			}
-			selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
-		}
+        /**
+         * Processes the address selected by the user and sets the new destination
+         * position.
+         *
+         * @param item The item index in the AlertDialog.
+         */
+        protected void processSelectedAddress(final int item) {
+            // Fill address info to show in the marker info window
+            final Address address = addressList.get(item);
+            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                fullAddress.append(address.getAddressLine(i)).append("\n");
+            }
+            selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
+        }
 
-		/**
-		 * Extract a list of address from a list of Address objects.
-		 *
-		 * @param addressList An Address's list.
-		 * @return A string list with only addresses in text.
-		 */
-		protected List<String> groupAddresses(final List<Address> addressList) {
-			final List<String> result = new ArrayList<String>();
-			StringBuilder stringBuilder;
-			for (final Address l : addressList) {
-				stringBuilder = new StringBuilder();
-				for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
-					stringBuilder.append(l.getAddressLine(j)).append("\n");
-				}
-				result.add(stringBuilder.toString());
-			}
-			return result;
-		}
-	}
+        /**
+         * Extract a list of address from a list of Address objects.
+         *
+         * @param addressList An Address's list.
+         * @return A string list with only addresses in text.
+         */
+        protected List<String> groupAddresses(final List<Address> addressList) {
+            final List<String> result = Lists.newArrayList();
+            StringBuilder stringBuilder;
+            for (final Address l : addressList) {
+                stringBuilder = new StringBuilder();
+                for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
+                    stringBuilder.append(l.getAddressLine(j)).append("\n");
+                }
+                result.add(stringBuilder.toString());
+            }
+            return result;
+        }
+    }
 
-	/**
-	 * A subclass of SearchPositionByName to get position by coordinates.
-	 */
-	private class SearchPositionByCoordinates extends SearchPositionByName {
-		@Override
-		protected Integer doInBackground(Object... params) {
-			/* get latitude and longitude from the addressList */
-			final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-			final LatLng latLng = (LatLng) params[0];
-			try {
-				addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-			} catch (final IOException e) {
-				e.printStackTrace();
-				return -1; // No encuentra una dirección, no puede conectar con el servidor
-			} catch (final IllegalArgumentException e) {
-				throw new IllegalArgumentException("Error en latitud=" + latLng.latitude + "o longitud=" +
-						latLng.longitude + ". \n" + e);
-			}
-			if (addressList == null) {
-				return -3; // empty list if there is no backend service available
-			} else if (addressList.size() > 0) {
-				return 0;
-			} else {
-				return -2; // null if no matches were found // Cuando no hay conexión que sirva
-			}
-		}
+    /**
+     * A subclass of SearchPositionByName to get position by coordinates.
+     */
+    private class SearchPositionByCoordinates extends SearchPositionByName {
+        @Override
+        protected Integer doInBackground(Object... params) {
+            /* get latitude and longitude from the addressList */
+            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            final LatLng latLng = (LatLng) params[0];
+            try {
+                addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            } catch (final IOException e) {
+                e.printStackTrace();
+                return -1; // No encuentra una dirección, no puede conectar con el servidor
+            } catch (final IllegalArgumentException e) {
+                throw new IllegalArgumentException("Error en latitud=" +
+                                                   latLng.latitude +
+                                                   "o longitud=" +
+                                                   latLng.longitude +
+                                                   ". \n" +
+                                                   e);
+            }
+            if (addressList == null) {
+                return -3; // empty list if there is no backend service available
+            } else if (addressList.size() > 0) {
+                return 0;
+            } else {
+                return -2; // null if no matches were found // Cuando no hay conexión que sirva
+            }
+        }
 
-		@Override
-		protected void onPostExecute(Integer result) {
-			switch (result) {
-				case 0:
-					processSelectedAddress(0);
-					drawAndShowMultipleDistances(Lists.newArrayList(new LatLng(currentLocation.getLatitude(),
-											currentLocation.getLongitude()),
-									selectedPosition),
-							fullAddress.toString(),
-							false,
-							true);
-					break;
-				case -1:
-					toastIt(getText(R.string.nofindaddress), getApplicationContext());
-					break;
-				case -2:
-					toastIt(getText(R.string.noresults), getApplicationContext());
-					break;
-				case -3:
-					toastIt(getText(R.string.nofindaddress), getApplicationContext());
-					break;
-			}
-			progressDialog.dismiss();
-		}
+        @Override
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case 0:
+                    processSelectedAddress(0);
+                    drawAndShowMultipleDistances(Lists.newArrayList(new LatLng(currentLocation.getLatitude(),
+                                                                               currentLocation.getLongitude()),
+                                                                    selectedPosition),
+                                                 fullAddress.toString(),
+                                                 false,
+                                                 true);
+                    break;
+                case -1:
+                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
+                    break;
+                case -2:
+                    toastIt(getText(R.string.noresults), getApplicationContext());
+                    break;
+                case -3:
+                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
+                    break;
+            }
+            progressDialog.dismiss();
+        }
 
-	}
+    }
 
-	/**
-	 * Shows the wireless centralized settings in API<11, otherwise shows general settings
-	 */
-	private void showWifiAlertDialog() {
-		showAlertDialog(
-				(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
-						android.provider.Settings.ACTION_WIRELESS_SETTINGS :
-						android.provider.Settings.ACTION_SETTINGS),
-				getText(R.string.no_connection),
-				getText(R.string.wireless_off),
-				getText(R.string.wireless_enable),
-				getText(R.string.do_nothing),
-				MainActivity.this);
-	}
+    /**
+     * Shows the wireless centralized settings in API<11, otherwise shows general settings
+     */
+    private void showWifiAlertDialog() {
+        showAlertDialog((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
+                         android.provider.Settings.ACTION_WIRELESS_SETTINGS :
+                         android.provider.Settings.ACTION_SETTINGS),
+                        getText(R.string.no_connection),
+                        getText(R.string.wireless_off),
+                        getText(R.string.wireless_enable),
+                        getText(R.string.do_nothing),
+                        MainActivity.this);
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the options menu from XML
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the options menu from XML
+        final MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
 
-		// Expandir el EditText de la búsqueda a lo largo del ActionBar
-		searchMenuItem = menu.findItem(R.id.action_search);
-		final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-		// Configure the search info and add any event listeners
-		final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		// Indicamos que la activity actual sea la buscadora
-		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-		searchView.setSubmitButtonEnabled(false);
-		searchView.setQueryRefinementEnabled(true);
-		searchView.setIconifiedByDefault(true);
+        // Expandir el EditText de la búsqueda a lo largo del ActionBar
+        searchMenuItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        // Configure the search info and add any event listeners
+        final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        // Indicamos que la activity actual sea la buscadora
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSubmitButtonEnabled(false);
+        searchView.setQueryRefinementEnabled(true);
+        searchView.setIconifiedByDefault(true);
 
-		// Muestra el item de menú de cargar si hay elementos en la BD
-		final MenuItem loadItem = menu.findItem(R.id.action_load);
-		// TODO hacerlo en segundo plano
-		final List<Distance> allDistances = getApplicationDaoSession()
-				.loadAll(Distance.class);
-		if (allDistances.size() == 0) {
-			loadItem.setVisible(false);
-		}
-		return super.onCreateOptionsMenu(menu);
-	}
+        // Muestra el item de menú de cargar si hay elementos en la BD
+        final MenuItem loadItem = menu.findItem(R.id.action_load);
+        // TODO hacerlo en segundo plano
+        final List<Distance> allDistances = getApplicationDaoSession().loadAll(Distance.class);
+        if (allDistances.size() == 0) {
+            loadItem.setVisible(false);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// The action bar home/up action should open or close the drawer.
-		// ActionBarDrawerToggle will take care of this.
-		if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
-		switch (item.getItemId()) {
-			case R.id.action_search:
-				return true;
-			case R.id.action_load:
-				loadDistancesFromDB();
-				return true;
-			case R.id.menu_rateapp:
-				showRateDialog();
-				return true;
-			case R.id.menu_legalnotices:
-				showGooglePlayServiceLicenseDialog();
-				return true;
-			case R.id.menu_settings:
-				openSettingsActivity();
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                return true;
+            case R.id.action_load:
+                loadDistancesFromDB();
+                return true;
+            case R.id.menu_rateapp:
+                showRateDialog();
+                return true;
+            case R.id.menu_legalnotices:
+                showGooglePlayServiceLicenseDialog();
+                return true;
+            case R.id.menu_settings:
+                openSettingsActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
-	@Override
-	public void onBackPressed() {
-		if (drawerLayout.isDrawerOpen(Gravity.START)) {
-			drawerLayout.closeDrawer(Gravity.START);
-		} else {
-			super.onBackPressed();
-		}
-	}
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(Gravity.START)) {
+            drawerLayout.closeDrawer(Gravity.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
-	/**
-	 * Loads all entries stored in the database and show them to the user in a
-	 * dialog.
-	 */
-	private void loadDistancesFromDB() {
-		// TODO hacer esto en segundo plano
-		final List<Distance> allDistances = getApplicationDaoSession()
-				.loadAll(Distance.class);
+    /**
+     * Loads all entries stored in the database and show them to the user in a
+     * dialog.
+     */
+    private void loadDistancesFromDB() {
+        // TODO hacer esto en segundo plano
+        final List<Distance> allDistances = getApplicationDaoSession().loadAll(Distance.class);
 
-		if (allDistances != null && allDistances.size() > 0) {
-			final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
-			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(getText(R.string.list_dialog_title).toString())
-					.setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							final Distance distance = distanceAdapter.getDistanceList().get(which);
-							final List<Position> positionList = getApplicationDaoSession().getPositionDao()._queryDistance_PositionList(distance.getId());
-							coordinates.clear();
-							coordinates.addAll(convertPositionListToLatLngList(positionList));
+        if (allDistances != null && allDistances.size() > 0) {
+            final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getText(R.string.list_dialog_title).toString())
+                   .setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                           final Distance distance = distanceAdapter.getDistanceList().get(which);
+                           final List<Position> positionList = getApplicationDaoSession().getPositionDao()
+                                                                                         ._queryDistance_PositionList(distance.getId());
+                           coordinates.clear();
+                           coordinates.addAll(convertPositionListToLatLngList(positionList));
 
-							drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
-						}
-					}).create().show();
-		} else {
-			toastIt(getText(R.string.no_distances_registered), getApplicationContext());
-		}
-	}
+                           drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
+                       }
+                   }).create().show();
+        } else {
+            toastIt(getText(R.string.no_distances_registered), getApplicationContext());
+        }
+    }
 
-	private List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
-		final List<LatLng> result = Lists.newArrayList();
-		for (final Position position : positionList) {
-			result.add(new LatLng(position.getLatitude(), position.getLongitude()));
-		}
-		return result;
-	}
+    private List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
+        final List<LatLng> result = Lists.newArrayList();
+        for (final Position position : positionList) {
+            result.add(new LatLng(position.getLatitude(), position.getLongitude()));
+        }
+        return result;
+    }
 
-	/**
-	 * Shows settings activity.
-	 */
-	private void openSettingsActivity() {
-		startActivity(new Intent(this, SettingsActivity.class));
-	}
+    /**
+     * Shows settings activity.
+     */
+    private void openSettingsActivity() {
+        startActivity(new Intent(this, SettingsActivity.class));
+    }
 
-	/**
-	 * Shows rate dialog.
-	 */
-	private void showRateDialog() {
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.rate_title)
-				.setMessage(R.string.rate_message)
-				.setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						openPlayStoreAppPage();
-					}
-				})
-				.setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						openFeedbackActivity();
-					}
-				}).create().show();
-	}
+    /**
+     * Shows rate dialog.
+     */
+    private void showRateDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.rate_title)
+               .setMessage(R.string.rate_message)
+               .setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       dialog.dismiss();
+                       openPlayStoreAppPage();
+                   }
+               })
+               .setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       dialog.dismiss();
+                       openFeedbackActivity();
+                   }
+               }).create().show();
+    }
 
-	/**
-	 * Opens Google Play Store, in Distance From Me page
-	 */
-	private void openPlayStoreAppPage() {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
-	}
+    /**
+     * Opens Google Play Store, in Distance From Me page
+     */
+    private void openPlayStoreAppPage() {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
+    }
 
-	/**
-	 * Opens the feedback activity.
-	 */
-	private void openFeedbackActivity() {
-		final Intent openFeedbackActivityIntent = new Intent(MainActivity.this, FeedbackActivity.class);
-		startActivity(openFeedbackActivityIntent);
-	}
+    /**
+     * Opens the feedback activity.
+     */
+    private void openFeedbackActivity() {
+        final Intent openFeedbackActivityIntent = new Intent(MainActivity.this, FeedbackActivity.class);
+        startActivity(openFeedbackActivityIntent);
+    }
 
-	/**
-	 * Shows an AlertDialog with the Google Play Services License.
-	 */
-	private void showGooglePlayServiceLicenseDialog() {
-		final String LicenseInfo = GooglePlayServicesUtil
-				.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
-		final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
-		LicenseDialog.setTitle(R.string.menu_legalnotices);
-		LicenseDialog.setMessage(LicenseInfo);
-		LicenseDialog.show();
-	}
+    /**
+     * Shows an AlertDialog with the Google Play Services License.
+     */
+    private void showGooglePlayServiceLicenseDialog() {
+        final String LicenseInfo = GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
+        final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
+        LicenseDialog.setTitle(R.string.menu_legalnotices);
+        LicenseDialog.setMessage(LicenseInfo);
+        LicenseDialog.show();
+    }
 
-	/**
-	 * Called when the Activity is no longer visible at all. Stop updates and
-	 * disconnect.
-	 */
-	@Override
-	public void onStop() {
-		// If the client is connected
-		if (locationClient.isConnected()) {
-			stopPeriodicUpdates();
-		}
+    /**
+     * Called when the Activity is no longer visible at all. Stop updates and
+     * disconnect.
+     */
+    @Override
+    public void onStop() {
+        // If the client is connected
+        if (locationClient.isConnected()) {
+            stopPeriodicUpdates();
+        }
 
-		// After disconnect() is called, the client is considered "dead".
-		locationClient.disconnect();
+        // After disconnect() is called, the client is considered "dead".
+        locationClient.disconnect();
 
-		super.onStop();
-	}
+        super.onStop();
+    }
 
-	/**
-	 * Called when the Activity is restarted, even before it becomes visible.
-	 */
-	@Override
-	public void onStart() {
-		super.onStart();
-		/*
-		 * Connect the client. Don't re-start any requests here; instead, wait
+    /**
+     * Called when the Activity is restarted, even before it becomes visible.
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        /*
+         * Connect the client. Don't re-start any requests here; instead, wait
 		 * for onResume()
 		 */
-		locationClient.connect();
-	}
+        locationClient.connect();
+    }
 
-	/**
-	 * Called when the system detects that this Activity is now visible.
-	 */
-	@SuppressLint("NewApi")
-	@Override
-	public void onResume() {
-		super.onResume();
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-			invalidateOptionsMenu();
-		}
-		checkPlayServices();
-	}
+    /**
+     * Called when the system detects that this Activity is now visible.
+     */
+    @SuppressLint("NewApi")
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            invalidateOptionsMenu();
+        }
+        checkPlayServices();
+    }
 
-	@Override
-	public void onDestroy() {
-		if (showingElevationTask != null) {
-			showingElevationTask.cancel(true);
-		}
-		super.onDestroy();
-	}
+    @Override
+    public void onDestroy() {
+        if (showingElevationTask != null) {
+            showingElevationTask.cancel(true);
+        }
+        super.onDestroy();
+    }
 
-	/**
-	 * Handle results returned to this Activity by other Activities started with
-	 * startActivityForResult(). In particular, the method onConnectionFailed()
-	 * in LocationUpdateRemover and LocationUpdateRequester may call
-	 * startResolutionForResult() to start an Activity that handles Google Play
-	 * services problems. The result of this call returns here, to
-	 * onActivityResult.
-	 */
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    /**
+     * Handle results returned to this Activity by other Activities started with
+     * startActivityForResult(). In particular, the method onConnectionFailed()
+     * in LocationUpdateRemover and LocationUpdateRequester may call
+     * startResolutionForResult() to start an Activity that handles Google Play
+     * services problems. The result of this call returns here, to
+     * onActivityResult.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
-		// Choose what to do based on the request code
-		switch (requestCode) {
+        // Choose what to do based on the request code
+        switch (requestCode) {
 
-			// If the request code matches the code sent in onConnectionFailed
-			case LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST:
+            // If the request code matches the code sent in onConnectionFailed
+            case LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST:
 
-				switch (resultCode) {
-					// If Google Play services resolved the problem
-					case Activity.RESULT_OK:
+                switch (resultCode) {
+                    // If Google Play services resolved the problem
+                    case Activity.RESULT_OK:
 
-						// Log the result
-						// Log.d(LocationUtils.APPTAG, getString(R.string.resolved));
+                        // Log the result
+                        // Log.d(LocationUtils.APPTAG, getString(R.string.resolved));
 
-						// Display the result
-						// mConnectionState.setText(R.string.connected);
-						// mConnectionStatus.setText(R.string.resolved);
-						break;
+                        // Display the result
+                        // mConnectionState.setText(R.string.connected);
+                        // mConnectionStatus.setText(R.string.resolved);
+                        break;
 
-					// If any other result was returned by Google Play services
-					default:
-						// Log the result
-						// Log.d(LocationUtils.APPTAG,
-						// getString(R.string.no_resolution));
+                    // If any other result was returned by Google Play services
+                    default:
+                        // Log the result
+                        // Log.d(LocationUtils.APPTAG,
+                        // getString(R.string.no_resolution));
 
-						// Display the result
-						// mConnectionState.setText(R.string.disconnected);
-						// mConnectionStatus.setText(R.string.no_resolution);
+                        // Display the result
+                        // mConnectionState.setText(R.string.disconnected);
+                        // mConnectionStatus.setText(R.string.no_resolution);
 
-						break;
-				}
+                        break;
+                }
 
-				// If any other request code was received
-			default:
-				// Report that this Activity received an unknown requestCode
-				// Log.d(LocationUtils.APPTAG,
-				// getString(R.string.unknown_activity_request_code, requestCode));
+                // If any other request code was received
+            default:
+                // Report that this Activity received an unknown requestCode
+                // Log.d(LocationUtils.APPTAG,
+                // getString(R.string.unknown_activity_request_code, requestCode));
 
-				break;
-		}
-	}
+                break;
+        }
+    }
 
-	/**
-	 * Checks if Google Play Services is available on the device.
-	 *
-	 * @return Returns <code>true</code> if available; <code>false</code>
-	 * otherwise.
-	 */
-	private boolean checkPlayServices() {
-		// Comprobamos que Google Play Services está disponible en el terminal
-		final int resultCode = GooglePlayServicesUtil
-				.isGooglePlayServicesAvailable(getApplicationContext());
+    /**
+     * Checks if Google Play Services is available on the device.
+     *
+     * @return Returns <code>true</code> if available; <code>false</code>
+     * otherwise.
+     */
+    private boolean checkPlayServices() {
+        // Comprobamos que Google Play Services está disponible en el terminal
+        final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 
-		// Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
-		// de error y devolvemos falso
-		if (resultCode == ConnectionResult.SUCCESS) {
-			return true;
-		} else {
-			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				final int RQS_GooglePlayServices = 1;
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices).show();
-			} else {
-				// Log.i("checkPlayServices", "Dispositivo no soportado");
-				finish();
-			}
-			return false;
-		}
-	}
+        // Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
+        // de error y devolvemos falso
+        if (resultCode == ConnectionResult.SUCCESS) {
+            return true;
+        } else {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                final int RQS_GooglePlayServices = 1;
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices).show();
+            } else {
+                // Log.i("checkPlayServices", "Dispositivo no soportado");
+                finish();
+            }
+            return false;
+        }
+    }
 
-	/**
-	 * Called by Location Services when the request to connect the client
-	 * finishes successfully. At this point, you can request the current
-	 * location or start periodic updates
-	 */
-	@Override
-	public void onConnected(Bundle bundle) {
-		startPeriodicUpdates();
-	}
+    /**
+     * Called by Location Services when the request to connect the client
+     * finishes successfully. At this point, you can request the current
+     * location or start periodic updates
+     */
+    @Override
+    public void onConnected(Bundle bundle) {
+        startPeriodicUpdates();
+    }
 
-	/**
-	 * Called by Location Services if the connection to the location client
-	 * drops because of an error.
-	 */
-	@Override
-	public void onDisconnected() {
-	}
+    /**
+     * Called by Location Services if the connection to the location client
+     * drops because of an error.
+     */
+    @Override
+    public void onDisconnected() {
+    }
 
-	/**
-	 * Called by Location Services if the attempt to Location Services fails.
-	 */
-	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
-		/*
-		 * Google Play services can resolve some errors it detects. If the error
+    /**
+     * Called by Location Services if the attempt to Location Services fails.
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects. If the error
 		 * has a resolution, try sending an Intent to start a Google Play
 		 * services activity that can resolve error.
 		 */
-		if (connectionResult.hasResolution()) {
-			try {
-				// Start an Activity that tries to resolve the error
-				connectionResult.startResolutionForResult(this,
-						LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
-				/*
-				 * Thrown if Google Play services cancelled the original
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this, LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services cancelled the original
 				 * PendingIntent
 				 */
-			} catch (IntentSender.SendIntentException e) {
-				// Log the error
-				e.printStackTrace();
-			}
-		} else {
-			// If no resolution is available, display a dialog to the user with
-			// the error.
-			showErrorDialog(connectionResult.getErrorCode());
-		}
-	}
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            // If no resolution is available, display a dialog to the user with
+            // the error.
+            showErrorDialog(connectionResult.getErrorCode());
+        }
+    }
 
-	/**
-	 * Report location updates to the UI.
-	 */
-	@Override
-	public void onLocationChanged(Location location) {
-		if (currentLocation != null) {
-			currentLocation.set(location);
-		} else {
-			currentLocation = new Location(location);
-		}
+    /**
+     * Report location updates to the UI.
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        if (currentLocation != null) {
+            currentLocation.set(location);
+        } else {
+            currentLocation = new Location(location);
+        }
 
-		if (appHasJustStarted) {
-			if (mustShowPositionWhenComingFromOutside) {
-				if (currentLocation != null) {
-					new SearchPositionByCoordinates().execute(sendDestinationPosition);
-				}
-				mustShowPositionWhenComingFromOutside = false;
-			} else {
-				final LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
-				// 17 is a good zoom level for this action
-				googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
-			}
-			appHasJustStarted = false;
-		}
-	}
+        if (appHasJustStarted) {
+            if (mustShowPositionWhenComingFromOutside) {
+                if (currentLocation != null) {
+                    new SearchPositionByCoordinates().execute(sendDestinationPosition);
+                }
+                mustShowPositionWhenComingFromOutside = false;
+            } else {
+                final LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
+                // 17 is a good zoom level for this action
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+            }
+            appHasJustStarted = false;
+        }
+    }
 
-	/**
-	 * In response to a request to start updates, send a request to Location
-	 * Services.
-	 */
-	private void startPeriodicUpdates() {
-		locationClient.requestLocationUpdates(locationRequest, this);
-	}
+    /**
+     * In response to a request to start updates, send a request to Location
+     * Services.
+     */
+    private void startPeriodicUpdates() {
+        locationClient.requestLocationUpdates(locationRequest, this);
+    }
 
-	/**
-	 * In response to a request to stop updates, send a request to Location
-	 * Services.
-	 */
-	private void stopPeriodicUpdates() {
-		locationClient.removeLocationUpdates(this);
-	}
+    /**
+     * In response to a request to stop updates, send a request to Location
+     * Services.
+     */
+    private void stopPeriodicUpdates() {
+        locationClient.removeLocationUpdates(this);
+    }
 
-	/**
-	 * Shows a dialog returned by Google Play services for the connection error
-	 * code
-	 *
-	 * @param errorCode An error code returned from onConnectionFailed
-	 */
-	private void showErrorDialog(final int errorCode) {
+    /**
+     * Shows a dialog returned by Google Play services for the connection error
+     * code
+     *
+     * @param errorCode An error code returned from onConnectionFailed
+     */
+    private void showErrorDialog(final int errorCode) {
 
-		// Get the error dialog from Google Play services
-		final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
-				this, LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+        // Get the error dialog from Google Play services
+        final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
+                                                                         this,
+                                                                         LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
-		// If Google Play services can provide an error dialog
-		if (errorDialog != null) {
-			// Create a new DialogFragment in which to show the error dialog
-			final ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+        // If Google Play services can provide an error dialog
+        if (errorDialog != null) {
+            // Create a new DialogFragment in which to show the error dialog
+            final ErrorDialogFragment errorFragment = new ErrorDialogFragment();
 
-			// Set the dialog in the DialogFragment
-			errorFragment.setDialog(errorDialog);
+            // Set the dialog in the DialogFragment
+            errorFragment.setDialog(errorDialog);
 
-			// Show the error dialog in the DialogFragment
-			errorFragment.show(getSupportFragmentManager(), LocationUtils.APPTAG);
-		}
-	}
+            // Show the error dialog in the DialogFragment
+            errorFragment.show(getSupportFragmentManager(), LocationUtils.APPTAG);
+        }
+    }
 
-	private void drawAndShowMultipleDistances(final List<LatLng> coordinates,
-	                                          final String message,
-	                                          final boolean isLoadingFromDB,
-	                                          final boolean mustApplyZoomIfNeeded) {
-		// Borramos los antiguos marcadores y lineas
-		googleMap.clear();
+    private void drawAndShowMultipleDistances(final List<LatLng> coordinates,
+                                              final String message,
+                                              final boolean isLoadingFromDB,
+                                              final boolean mustApplyZoomIfNeeded) {
+        // Borramos los antiguos marcadores y lineas
+        googleMap.clear();
 
-		// Calculamos la distancia
-		distanceMeasuredAsText = calculateDistance(coordinates);
+        // Calculamos la distancia
+        distanceMeasuredAsText = calculateDistance(coordinates);
 
-		// Pintar todos menos el primero si es desde la posición actual
-		addMarkers(coordinates, distanceMeasuredAsText, message);
+        // Pintar todos menos el primero si es desde la posición actual
+        addMarkers(coordinates, distanceMeasuredAsText, message);
 
-		// Añadimos las líneas
-		addLines(coordinates, isLoadingFromDB);
+        // Añadimos las líneas
+        addLines(coordinates, isLoadingFromDB);
 
-		// Aquí hacer la animación de la cámara
-		moveCameraZoom(coordinates.get(0), coordinates.get(coordinates.size() - 1), mustApplyZoomIfNeeded);
+        // Aquí hacer la animación de la cámara
+        moveCameraZoom(coordinates.get(0), coordinates.get(coordinates.size() - 1), mustApplyZoomIfNeeded);
 
-		// Muestra el perfil de elevación si está en las preferencias
-		// y si está conectado a internet
-		if (getSharedPreferences(getBaseContext()).getBoolean("elevation_chart",
-				false) && isOnline(getApplicationContext())) {
-			getElevation(coordinates);
-		}
-	}
+        // Muestra el perfil de elevación si está en las preferencias
+        // y si está conectado a internet
+        if (getSharedPreferences(getBaseContext()).getBoolean("elevation_chart", false) &&
+            isOnline(getApplicationContext())) {
+            getElevation(coordinates);
+        }
+    }
 
-	/**
-	 * Adds a marker to the map in a specified position and shows its info
-	 * window.
-	 *
-	 * @param coordinates Positions list.
-	 * @param distance    Distance to destination.
-	 * @param message     Destination address (if needed).
-	 */
-	private void addMarkers(final List<LatLng> coordinates, final String distance, final String message) {
-		for (int i = 0; i < coordinates.size(); i++) {
-			if ((i == 0 && distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) || (i == coordinates.size() - 1)) {
-				final LatLng coordinate = coordinates.get(i);
-				final Marker marker = addMarker(coordinate);
-				// TODO Release 1.5
+    /**
+     * Adds a marker to the map in a specified position and shows its info
+     * window.
+     *
+     * @param coordinates Positions list.
+     * @param distance    Distance to destination.
+     * @param message     Destination address (if needed).
+     */
+    private void addMarkers(final List<LatLng> coordinates, final String distance, final String message) {
+        for (int i = 0; i < coordinates.size(); i++) {
+            if ((i == 0 && distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) || (i == coordinates.size() - 1)) {
+                final LatLng coordinate = coordinates.get(i);
+                final Marker marker = addMarker(coordinate);
+                // TODO Release 1.5
 //			    marker.setDraggable(true);
-				if (i == coordinates.size() - 1) {
-					marker.setTitle(message + distance);
-					marker.showInfoWindow();
-				}
-			}
-		}
-	}
+                if (i == coordinates.size() - 1) {
+                    marker.setTitle(message + distance);
+                    marker.showInfoWindow();
+                }
+            }
+        }
+    }
 
-	private Marker addMarker(final LatLng coordinate) {
-		return googleMap.addMarker(new MarkerOptions().position(coordinate));
-	}
+    private Marker addMarker(final LatLng coordinate) {
+        return googleMap.addMarker(new MarkerOptions().position(coordinate));
+    }
 
-	private void addLines(final List<LatLng> coordinates, final boolean isLoadingFromDB) {
-		for (int i = 0; i < coordinates.size() - 1; i++) {
-			addLine(coordinates.get(i), coordinates.get(i + 1), isLoadingFromDB);
-		}
-	}
+    private void addLines(final List<LatLng> coordinates, final boolean isLoadingFromDB) {
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            addLine(coordinates.get(i), coordinates.get(i + 1), isLoadingFromDB);
+        }
+    }
 
-	/**
-	 * Adds a line between start and end positions.
-	 *
-	 * @param start Start position.
-	 * @param end   Destination position.
-	 */
-	private void addLine(final LatLng start, final LatLng end, final boolean isLoadingFromDB) {
-		final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
-		lineOptions.width(3 * getResources().getDisplayMetrics().density);
-		lineOptions.color(isLoadingFromDB ? Color.YELLOW : Color.GREEN);
-		googleMap.addPolyline(lineOptions);
-	}
+    /**
+     * Adds a line between start and end positions.
+     *
+     * @param start Start position.
+     * @param end   Destination position.
+     */
+    private void addLine(final LatLng start, final LatLng end, final boolean isLoadingFromDB) {
+        final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
+        lineOptions.width(3 * getResources().getDisplayMetrics().density);
+        lineOptions.color(isLoadingFromDB ? Color.YELLOW : Color.GREEN);
+        googleMap.addPolyline(lineOptions);
+    }
 
-	/**
-	 * Returns the distance between start and end positions normalized by device
-	 * locale.
-	 *
-	 * @param coordinates position list.
-	 * @return The normalized distance.
-	 */
-	private String calculateDistance(final List<LatLng> coordinates) {
-		double distanceInMetres = 0.0;
-		for (int i = 0; i < coordinates.size() - 1; i++) {
-			distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
-					coordinates.get(i).longitude,
-					coordinates.get(i + 1).latitude,
-					coordinates.get(i + 1).longitude);
-		}
-		return Haversine.normalizeDistance(distanceInMetres, getResources().getConfiguration().locale);
-	}
+    /**
+     * Returns the distance between start and end positions normalized by device
+     * locale.
+     *
+     * @param coordinates position list.
+     * @return The normalized distance.
+     */
+    private String calculateDistance(final List<LatLng> coordinates) {
+        double distanceInMetres = 0.0;
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
+                                                      coordinates.get(i).longitude,
+                                                      coordinates.get(i + 1).latitude,
+                                                      coordinates.get(i + 1).longitude);
+        }
+        return Haversine.normalizeDistance(distanceInMetres, getResources().getConfiguration().locale);
+    }
 
-	/**
-	 * Moves camera position and applies zoom if needed.
-	 *
-	 * @param p1 Start position.
-	 * @param p2 Destination position.
-	 */
-	private void moveCameraZoom(final LatLng p1, final LatLng p2, final boolean mustApplyZoomIfNeeded) {
-		double centerLat = 0.0;
-		double centerLon = 0.0;
+    /**
+     * Moves camera position and applies zoom if needed.
+     *
+     * @param p1 Start position.
+     * @param p2 Destination position.
+     */
+    private void moveCameraZoom(final LatLng p1, final LatLng p2, final boolean mustApplyZoomIfNeeded) {
+        double centerLat = 0.0;
+        double centerLon = 0.0;
 
-		// Diferenciamos según preferencias
-		final String centre = getSharedPreferences(getBaseContext()).getString("centre", "CEN");
-		if (centre.equals("CEN")) {
-			centerLat = (p1.latitude + p2.latitude) / 2;
-			centerLon = (p1.longitude + p2.longitude) / 2;
-		} else if (centre.equals("DES")) {
-			centerLat = p2.latitude;
-			centerLon = p2.longitude;
-		} else if (centre.equals("NO")) {
-			return;
-		}
+        // Diferenciamos según preferencias
+        final String centre = getSharedPreferences(getBaseContext()).getString("centre", "CEN");
+        if (centre.equals("CEN")) {
+            centerLat = (p1.latitude + p2.latitude) / 2;
+            centerLon = (p1.longitude + p2.longitude) / 2;
+        } else if (centre.equals("DES")) {
+            centerLat = p2.latitude;
+            centerLon = p2.longitude;
+        } else if (centre.equals("NO")) {
+            return;
+        }
 
-		if (mustApplyZoomIfNeeded) {
-			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLat, centerLon),
-					calculateZoom(p1, p2)));
-		} else {
-			googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(p2.latitude, p2.longitude)));
-		}
-	}
+        if (mustApplyZoomIfNeeded) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLat, centerLon),
+                                                                      calculateZoom(p1, p2)));
+        } else {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(p2.latitude, p2.longitude)));
+        }
+    }
 
-	private SharedPreferences getSharedPreferences(final Context context) {
-		return PreferenceManager.getDefaultSharedPreferences(context);
-	}
+    private SharedPreferences getSharedPreferences(final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
-	/**
-	 * Calculates zoom level to make possible current and destination positions
-	 * appear in the device.
-	 *
-	 * @param origin      Current position.
-	 * @param destination Destination position.
-	 * @return Zoom level.
-	 */
-	private float calculateZoom(final LatLng origin, final LatLng destination) {
-		double distanceInMetres = Haversine.getDistance(origin.latitude, origin.longitude,
-				destination.latitude, destination.longitude);
-		double kms = distanceInMetres / 1000;
+    /**
+     * Calculates zoom level to make possible current and destination positions
+     * appear in the device.
+     *
+     * @param origin      Current position.
+     * @param destination Destination position.
+     * @return Zoom level.
+     */
+    private float calculateZoom(final LatLng origin, final LatLng destination) {
+        double distanceInMetres = Haversine.getDistance(origin.latitude,
+                                                        origin.longitude,
+                                                        destination.latitude,
+                                                        destination.longitude);
+        double kms = distanceInMetres / 1000;
 
-		if (kms > 2700) {
-			return 3;
-		} else if (kms > 1300) {
-			return 4;
-		} else if (kms > 650) {
-			return 5;
-		} else if (kms > 325) {
-			return 6;
-		} else if (kms > 160) {
-			return 7;
-		} else if (kms > 80) {
-			return 8;
-		} else if (kms > 40) {
-			return 9;
-		} else if (kms > 20) {
-			return 10;
-		} else if (kms > 10) {
-			return 11;
-		} else if (kms > 5) {
-			return 12;
-		} else if (kms > 2.5) {
-			return 13;
-		} else if (kms > 1.25) {
-			return 14;
-		} else if (kms > 0.6) {
-			return 15;
-		} else if (kms > 0.3) {
-			return 16;
-		} else if (kms > 0.15) {
-			return 17;
-		}
-		return 18;
-	}
+        if (kms > 2700) {
+            return 3;
+        } else if (kms > 1300) {
+            return 4;
+        } else if (kms > 650) {
+            return 5;
+        } else if (kms > 325) {
+            return 6;
+        } else if (kms > 160) {
+            return 7;
+        } else if (kms > 80) {
+            return 8;
+        } else if (kms > 40) {
+            return 9;
+        } else if (kms > 20) {
+            return 10;
+        } else if (kms > 10) {
+            return 11;
+        } else if (kms > 5) {
+            return 12;
+        } else if (kms > 2.5) {
+            return 13;
+        } else if (kms > 1.25) {
+            return 14;
+        } else if (kms > 0.6) {
+            return 15;
+        } else if (kms > 0.3) {
+            return 16;
+        } else if (kms > 0.15) {
+            return 17;
+        }
+        return 18;
+    }
 
-	/**
-	 * Calculates elevation points in background and shows elevation chart.
-	 *
-	 * @param coordinates Positions list.
-	 */
-	private void getElevation(final List<LatLng> coordinates) {
-		String positionListUrlParameter = "";
-		for (int i = 0; i < coordinates.size(); i++) {
-			final LatLng coordinate = coordinates.get(i);
-			positionListUrlParameter += String.valueOf(coordinate.latitude) + "," + String.valueOf(coordinate.longitude);
-			if (i != coordinates.size() - 1) {
-				positionListUrlParameter += "|";
-			}
-		}
-		if (positionListUrlParameter.isEmpty()) {
-			throw new IllegalStateException("Coordinates list empty");
-		}
+    /**
+     * Calculates elevation points in background and shows elevation chart.
+     *
+     * @param coordinates Positions list.
+     */
+    private void getElevation(final List<LatLng> coordinates) {
+        String positionListUrlParameter = "";
+        for (int i = 0; i < coordinates.size(); i++) {
+            final LatLng coordinate = coordinates.get(i);
+            positionListUrlParameter += String.valueOf(coordinate.latitude) +
+                                        "," +
+                                        String.valueOf(coordinate.longitude);
+            if (i != coordinates.size() - 1) {
+                positionListUrlParameter += "|";
+            }
+        }
+        if (positionListUrlParameter.isEmpty()) {
+            throw new IllegalStateException("Coordinates list empty");
+        }
 
-		if (showingElevationTask != null) {
-			showingElevationTask.cancel(true);
-		}
-		showingElevationTask = new GetAltitude().execute(positionListUrlParameter);
-	}
+        if (showingElevationTask != null) {
+            showingElevationTask.cancel(true);
+        }
+        showingElevationTask = new GetAltitude().execute(positionListUrlParameter);
+    }
 
-	/**
-	 * A subclass of AsyncTask that gets elevation points from coordinates in
-	 * background and shows an elevation chart.
-	 *
-	 * @author David
-	 */
-	private class GetAltitude extends AsyncTask<String, Void, Double> {
+    /**
+     * A subclass of AsyncTask that gets elevation points from coordinates in
+     * background and shows an elevation chart.
+     *
+     * @author David
+     */
+    private class GetAltitude extends AsyncTask<String, Void, Double> {
 
-		private HttpClient httpClient = null;
-		private HttpGet httpGet = null;
-		private HttpResponse httpResponse;
-		private String responseAsString;
-		private InputStream inputStream = null;
-		private JSONObject responseJSON;
+        private HttpClient httpClient = null;
+        private HttpGet    httpGet    = null;
+        private HttpResponse httpResponse;
+        private String       responseAsString;
+        private InputStream inputStream = null;
+        private JSONObject responseJSON;
 
-		@Override
-		protected void onPreExecute() {
-			httpClient = new DefaultHttpClient();
-			responseAsString = null;
+        @Override
+        protected void onPreExecute() {
+            httpClient = new DefaultHttpClient();
+            responseAsString = null;
 
-			// Delete elevation chart if exists
-			if (graphView != null) {
-				rlElevationChart.removeView(graphView);
-			}
-			rlElevationChart.setVisibility(View.INVISIBLE);
-			graphView = null;
-			elevationChartShown = false;
-			fixMapPadding();
-		}
+            // Delete elevation chart if exists
+            if (graphView != null) {
+                rlElevationChart.removeView(graphView);
+            }
+            rlElevationChart.setVisibility(View.INVISIBLE);
+            graphView = null;
+            elevationChartShown = false;
+            fixMapPadding();
+        }
 
-		@Override
-		protected Double doInBackground(String... params) {
-			httpGet = new HttpGet("http://maps.googleapis.com/maps/api/elevation/json?sensor=true"
-					+ "&path=" + Uri.encode(params[0])
-					+ "&samples=" + ELEVATION_SAMPLES);
-			httpGet.setHeader("content-type", "application/json");
-			try {
-				httpResponse = httpClient.execute(httpGet);
-				inputStream = httpResponse.getEntity().getContent();
-				if (inputStream != null) {
-					responseAsString = convertInputStreamToString(inputStream);
-					responseJSON = new JSONObject(responseAsString);
-					if (responseJSON.get("status").equals("OK")) {
-						buildElevationChart(responseJSON.getJSONArray("results"));
-					}
-				}
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IllegalStateException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
+        @Override
+        protected Double doInBackground(String... params) {
+            httpGet = new HttpGet("http://maps.googleapis.com/maps/api/elevation/json?sensor=true"
+                                  + "&path=" + Uri.encode(params[0])
+                                  + "&samples=" + ELEVATION_SAMPLES);
+            httpGet.setHeader("content-type", "application/json");
+            try {
+                httpResponse = httpClient.execute(httpGet);
+                inputStream = httpResponse.getEntity().getContent();
+                if (inputStream != null) {
+                    responseAsString = convertInputStreamToString(inputStream);
+                    responseJSON = new JSONObject(responseAsString);
+                    if (responseJSON.get("status").equals("OK")) {
+                        buildElevationChart(responseJSON.getJSONArray("results"));
+                    }
+                }
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
-		@Override
-		protected void onPostExecute(Double result) {
-			showElevationProfileChart();
-			// When HttpClient instance is no longer needed
-			// shut down the connection manager to ensure
-			// immediate deallocation of all system resources
-			httpClient.getConnectionManager().shutdown();
-		}
+        @Override
+        protected void onPostExecute(Double result) {
+            showElevationProfileChart();
+            // When HttpClient instance is no longer needed
+            // shut down the connection manager to ensure
+            // immediate deallocation of all system resources
+            httpClient.getConnectionManager().shutdown();
+        }
 
-		/**
-		 * Converts the InputStream with the retrieved data to String.
-		 *
-		 * @param inputStream The input stream.
-		 * @return The InputStream converted to String.
-		 * @throws IOException
-		 */
-		private String convertInputStreamToString(final InputStream inputStream) throws IOException {
-			final BufferedReader bufferedReader =
-					new BufferedReader(new InputStreamReader(inputStream));
-			String line;
-			StringBuilder result = new StringBuilder();
-			while ((line = bufferedReader.readLine()) != null) {
-				result.append(line);
-			}
+        /**
+         * Converts the InputStream with the retrieved data to String.
+         *
+         * @param inputStream The input stream.
+         * @return The InputStream converted to String.
+         * @throws IOException
+         */
+        private String convertInputStreamToString(final InputStream inputStream) throws IOException {
+            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            StringBuilder result = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                result.append(line);
+            }
 
-			inputStream.close();
-			bufferedReader.close();
-			return result.toString();
-		}
+            inputStream.close();
+            bufferedReader.close();
+            return result.toString();
+        }
 
-		/**
-		 * Builds the information about the elevation profile chart. Use this in
-		 * a background task.
-		 *
-		 * @param array JSON array with the response data.
-		 * @throws JSONException
-		 */
-		private void buildElevationChart(final JSONArray array) throws JSONException {
-			// Creates the serie and adds data to it
-			final GraphViewSeries series =
-					new GraphViewSeries(
-							null,
-							new GraphViewSeriesStyle(getResources().getColor(R.color.elevation_chart_line),
-									(int) (3 * DEVICE_DENSITY)),
-							new GraphView.GraphViewData[]{});
+        /**
+         * Builds the information about the elevation profile chart. Use this in
+         * a background task.
+         *
+         * @param array JSON array with the response data.
+         * @throws JSONException
+         */
+        private void buildElevationChart(final JSONArray array) throws JSONException {
+            // Creates the serie and adds data to it
+            final GraphViewSeries series =
+                    new GraphViewSeries(null,
+                                        new GraphViewSeriesStyle(getResources().getColor(R.color.elevation_chart_line),
+                                                                 (int) (3 * DEVICE_DENSITY)),
+                                        new GraphView.GraphViewData[]{});
 
-			for (int w = 0; w < array.length(); w++)
-				series.appendData(
-						new GraphView.GraphViewData(
-								w,
-								Haversine.normalizeAltitudeByLocale(
-										Double.valueOf(array.getJSONObject(w)
-												.get("elevation").toString()),
-										Locale.getDefault())),
-						false,
-						array.length());
+            for (int w = 0; w < array.length(); w++) {
+                series.appendData(new GraphView.GraphViewData(w,
+                                                              Haversine.normalizeAltitudeByLocale(Double.valueOf(array.getJSONObject(w)
+                                                                                                                      .get("elevation")
+                                                                                                                      .toString()),
+                                                                                                  Locale.getDefault())),
+                                  false,
+                                  array.length());
+            }
 
-			// Creates the line and add it to the chart
-			graphView = new LineGraphView(
-					getApplicationContext(),
-					getText(R.string.elevation_profile).toString() + " ("
-							+ Haversine.getAltitudeUnitByLocale(Locale.getDefault())
-							+ ")");
-			graphView.addSeries(series);
-			graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
-			graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
-			graphView.getGraphViewStyle().setTextSize(15 * DEVICE_DENSITY);
-			graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
-		}
+            // Creates the line and add it to the chart
+            graphView = new LineGraphView(getApplicationContext(),
+                                          getText(R.string.elevation_profile).toString() + " ("
+                                          + Haversine.getAltitudeUnitByLocale(Locale.getDefault())
+                                          + ")");
+            graphView.addSeries(series);
+            graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
+            graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
+            graphView.getGraphViewStyle().setTextSize(15 * DEVICE_DENSITY);
+            graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
+        }
 
-		/**
-		 * Shows the elevation profile chart.
-		 */
-		private void showElevationProfileChart() {
-			if (graphView != null) {
-				rlElevationChart.setVisibility(LinearLayout.VISIBLE);
-				rlElevationChart.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
-				rlElevationChart.addView(graphView);
-				elevationChartShown = true;
-				fixMapPadding();
+        /**
+         * Shows the elevation profile chart.
+         */
+        private void showElevationProfileChart() {
+            if (graphView != null) {
+                rlElevationChart.setVisibility(LinearLayout.VISIBLE);
+                rlElevationChart.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
+                rlElevationChart.addView(graphView);
+                elevationChartShown = true;
+                fixMapPadding();
 
-				ivCloseElevationChart.setVisibility(View.VISIBLE);
-				ivCloseElevationChart.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						rlElevationChart.removeView(graphView);
-						rlElevationChart.setVisibility(View.INVISIBLE);
-						elevationChartShown = false;
-						fixMapPadding();
-					}
-				});
-			}
-		}
-	}
+                ivCloseElevationChart.setVisibility(View.VISIBLE);
+                ivCloseElevationChart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        rlElevationChart.removeView(graphView);
+                        rlElevationChart.setVisibility(View.INVISIBLE);
+                        elevationChartShown = false;
+                        fixMapPadding();
+                    }
+                });
+            }
+        }
+    }
 
-	/**
-	 * Sets map attending to the action which is performed.
-	 */
-	private void fixMapPadding() {
-		if (bannerShown) {
-			if (elevationChartShown) {
-				googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
-			} else {
-				googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
-			}
-		} else {
-			if (elevationChartShown) {
-				googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
-			} else {
-				googleMap.setPadding(0, 0, 0, 0);
-			}
-		}
-	}
+    /**
+     * Sets map attending to the action which is performed.
+     */
+    private void fixMapPadding() {
+        if (bannerShown) {
+            if (elevationChartShown) {
+                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
+            } else {
+                googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
+            }
+        } else {
+            if (elevationChartShown) {
+                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
+            } else {
+                googleMap.setPadding(0, 0, 0, 0);
+            }
+        }
+    }
 }

@@ -12,23 +12,23 @@ import gc.david.dfm.model.DaoSession;
  */
 public class DFMApplication extends Application {
 
-	private DaoSession daoSession;
+    private DaoSession daoSession;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-		setupDatabase();
-	}
+        setupDatabase();
+    }
 
-	private void setupDatabase() {
-		final UpgradeHelper helper = new UpgradeHelper(this, "DistanciasDB.db", null);
-		final SQLiteDatabase db = helper.getWritableDatabase();
-		final DaoMaster daoMaster = new DaoMaster(db);
-		daoSession = daoMaster.newSession();
-	}
+    private void setupDatabase() {
+        final UpgradeHelper helper = new UpgradeHelper(this, "DistanciasDB.db", null);
+        final SQLiteDatabase db = helper.getWritableDatabase();
+        final DaoMaster daoMaster = new DaoMaster(db);
+        daoSession = daoMaster.newSession();
+    }
 
-	public DaoSession getDaoSession() {
-		return daoSession;
-	}
+    public DaoSession getDaoSession() {
+        return daoSession;
+    }
 }
