@@ -62,6 +62,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
+import com.splunk.mint.Mint;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -149,6 +150,11 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Mint.initAndStartSession(MainActivity.this, "6f2149e6");
+        // Enable logging
+        Mint.enableLogging(true);
+
         setContentView(R.layout.activity_main);
         inject(this);
 
@@ -401,6 +407,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                        DistanceMode.DISTANCE_FROM_CURRENT_POINT :
                        DistanceMode.DISTANCE_FROM_ANY_POINT;
 
+        Mint.addExtraData("distanceMode", String.valueOf(distanceMode));
+
         // Highlight the selected item and close the drawer
         drawerList.setItemChecked(position, true);
         drawerLayout.closeDrawer(drawerList);
@@ -489,9 +497,11 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                      Double.valueOf(matcher.group(2)));
                 mustShowPositionWhenComingFromOutside = true;
             } else {
+                Mint.addExtraData("queryParameter", queryParameter);
                 throw new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " + matcher.toString());
             }
         } else {
+            Mint.addExtraData("queryParameter", null);
             throw new NoSuchFieldException("Query sin parámetro q.");
         }
     }
