@@ -73,6 +73,8 @@ public class FeedbackActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_feedback);
 		inject(this);
 
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		feedbackTypes = Arrays.asList(getResources().getStringArray(R.array.feedback_type_list));
 		questionExpandableListAdapter = new QuestionExpandableListAdapter(getApplicationContext(),
 				getString(R.string.problem_type_listview_title),

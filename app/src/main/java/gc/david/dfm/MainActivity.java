@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,15 +21,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -40,13 +48,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.common.collect.Lists;
 import com.inmobi.commons.InMobi;
 import com.inmobi.monetization.IMBanner;
 import com.inmobi.monetization.IMBannerListener;
@@ -69,7 +76,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -77,12 +83,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.InjectView;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.map.MarkerInfoWindowAdapter;
+import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
+import gc.david.dfm.model.NavigationDrawerItemAdapter;
 import gc.david.dfm.model.Position;
 
+import static butterknife.ButterKnife.inject;
 import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
@@ -92,10 +102,11 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class MainActivity extends ActionBarActivity implements
-		LocationListener, GooglePlayServicesClient.ConnectionCallbacks,
+public class MainActivity extends ActionBarActivity implements LocationListener,
+		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
+	private final int FIRST_DRAWER_ITEM_INDEX = 1;
 	private GoogleMap googleMap = null;
 	// A request to connect to Location Services
 	private LocationRequest locationRequest = null;
@@ -103,19 +114,13 @@ public class MainActivity extends ActionBarActivity implements
 	private LocationClient locationClient = null;
 	// Current position
 	private Location currentLocation = null;
-	private Polyline polyline = null;
-	private final int RQS_GooglePlayServices = 1;
 	// Moves to current position if app has just started
 	private boolean appHasJustStarted = true;
-	// Distinguish between position polishing and other position searching
-	private boolean mustApplyZoom = true;
 	private String distanceMeasuredAsText = "";
 	private MenuItem searchMenuItem = null;
 	// Show position if we come from other app (p.e. Whatsapp)
 	private boolean mustShowPositionWhenComingFromOutside = false;
 	private LatLng sendDestinationPosition = null;
-	// To change line color when we choose a distanceMeasuredAsText from database
-	private boolean loadingDistance = false;
 	private IMBanner banner = null;
 	// Google Map items padding
 	private boolean bannerShown = false;
@@ -125,11 +130,29 @@ public class MainActivity extends ActionBarActivity implements
 	private AsyncTask showingElevationTask = null;
 	private GraphView graphView = null;
 	private float DEVICE_DENSITY;
+	private ActionBarDrawerToggle actionBarDrawerToggle;
+	private DrawerLayout drawerLayout;
+	private ListView drawerList;
+
+	@InjectView(R.id.elevationchart)
+	protected RelativeLayout rlElevationChart;
+	@InjectView(R.id.closeChart)
+	protected ImageView ivCloseElevationChart;
+
+	private static enum DistanceMode {
+		DISTANCE_FROM_CURRENT_POINT,
+		DISTANCE_FROM_ANY_POINT
+	}
+
+	private DistanceMode distanceMode;
+	private List<LatLng> coordinates;
+	private boolean calculatingDistance;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		inject(this);
 
 		DEVICE_DENSITY = getResources().getDisplayMetrics().density;
 
@@ -184,55 +207,116 @@ public class MainActivity extends ActionBarActivity implements
 			googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 				@Override
 				public void onMapLongClick(LatLng point) {
+					calculatingDistance = true;
+
+					if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+						if (coordinates == null || coordinates.isEmpty()) {
+							toastIt(getString(R.string.first_point_needed), getApplicationContext());
+						} else {
+							coordinates.add(point);
+							drawAndShowMultipleDistances(coordinates, "", false, true);
+						}
+					}
 					// Si no hemos encontrado la posición actual, no podremos
 					// calcular la distancia
-					if (currentLocation != null) {
-						showDistanceOnMap(new LatLng(currentLocation.getLatitude(),
-								currentLocation.getLongitude()), point, "");
+					else if (currentLocation != null) {
+						if ((distanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
+							coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+						}
+						coordinates.add(point);
+						drawAndShowMultipleDistances(coordinates, "", false, true);
+					}
+
+					calculatingDistance = false;
+				}
+			});
+
+			googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+				@Override
+				public void onMapClick(LatLng point) {
+					if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+						if (!calculatingDistance) {
+							coordinates.clear();
+						}
+
+						calculatingDistance = true;
+
+						if (coordinates.isEmpty()) {
+							googleMap.clear();
+						}
+						coordinates.add(point);
+						googleMap.addMarker(new MarkerOptions().position(point));
+					} else {
+						// Si no hemos encontrado la posición actual, no podremos
+						// calcular la distancia
+						if (currentLocation != null) {
+							if (coordinates != null) {
+								if (!calculatingDistance) {
+									coordinates.clear();
+								}
+								calculatingDistance = true;
+
+								if (coordinates.isEmpty()) {
+									googleMap.clear();
+									coordinates.add(new LatLng(currentLocation.getLatitude(),
+											currentLocation.getLongitude()));
+								}
+								coordinates.add(point);
+								googleMap.addMarker(new MarkerOptions().position(point));
+							} else {
+								throw new IllegalStateException("Empty coordinates list");
+							}
+						}
 					}
 				}
 			});
 
-			googleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
-				@Override
-				public void onMarkerDragStart(Marker marker) {
-					// nothing
-				}
-
-				@Override
-				public void onMarkerDragEnd(Marker marker) {
-					// NO movemos el zoom porque estamos simplemente afinando la
-					// posición
-					mustApplyZoom = false;
-					showDistanceOnMap(
-							new LatLng(currentLocation.getLatitude(), currentLocation
-									.getLongitude()),
-							new LatLng(marker.getPosition().latitude, marker
-									.getPosition().longitude), "");
-					mustApplyZoom = true;
-				}
-
-				@Override
-				public void onMarkerDrag(Marker marker) {
-					// nothing
-				}
-			});
+			// TODO Release 1.5
+			// Cambiar esto: debería modificar solamentela posición que estemos tuneando y recalcular
+//			googleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
+////				private String selectedMarkerId;
+//
+//				@Override
+//				public void onMarkerDragStart(Marker marker) {
+////					selectedMarkerId = null;
+////					final String markerId = marker.getId();
+////					if (coordinates.contains(markerId)) {
+////						for (int i = 0; i < coordinates.size(); i++) {
+////							final LatLng position = coordinates.get(i);
+////							if (markerId.latitude == position.latitude &&
+////									markerId.longitude == position.longitude) {
+////								selectedMarkerId = i;
+////								break;
+////							}
+////						}
+////					}
+//				}
+//
+//				@Override
+//				public void onMarkerDragEnd(Marker marker) {
+////					if (selectedMarkerId != -1) {
+////						coordinates.set(selectedMarkerId, marker.getPosition());
+////					}
+////					// NO movemos el zoom porque estamos simplemente afinando la
+////					// posición
+////					drawAndShowMultipleDistances(coordinates, "", false, false);
+//				}
+//
+//				@Override
+//				public void onMarkerDrag(Marker marker) {
+//					// nothing
+//				}
+//			});
 
 			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
-					if (currentLocation != null) {
-						final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
-						showInfoActivityIntent.putExtra(ShowInfoActivity.originExtraKeyName, new LatLng(currentLocation.getLatitude(),
-								currentLocation.getLongitude()));
-						showInfoActivityIntent.putExtra(ShowInfoActivity.destinationExtraKeyName, new LatLng(
-								marker.getPosition().latitude,
-								marker.getPosition().longitude));
-						showInfoActivityIntent.putExtra(ShowInfoActivity.distanceExtraKeyName, distanceMeasuredAsText);
-						startActivity(showInfoActivityIntent);
-					} else {
-						toastIt(getText(R.string.loading), getApplicationContext());
-					}
+					final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
+
+					showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
+							Lists.newArrayList(coordinates));
+					showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
+					startActivity(showInfoActivityIntent);
 				}
 			});
 
@@ -244,6 +328,55 @@ public class MainActivity extends ActionBarActivity implements
 			}
 
 			handleIntents(getIntent());
+
+			final List<String> distanceModes = Lists.newArrayList(getString(R.string.navigation_drawer_starting_point_current_position_item),
+					getString(R.string.navigation_drawer_starting_point_any_position_item));
+			final List<Integer> distanceIcons = Lists.newArrayList(R.drawable.ic_action_device_gps_fixed,
+					R.drawable.ic_action_communication_location_on);
+			drawerList = (ListView) findViewById(R.id.left_drawer);
+			drawerList.setAdapter(new NavigationDrawerItemAdapter(this, distanceModes, distanceIcons));
+
+			// TODO cambiar esto por un header como dios manda
+			final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final View convertView = inflater.inflate(R.layout.simple_textview_list_item, drawerList, false);
+			final TextView tvListElement = (TextView) convertView.findViewById(R.id.simple_textview);
+			tvListElement.setText(getString(R.string.navigation_drawer_starting_point_header));
+			tvListElement.setClickable(false);
+			tvListElement.setTextColor(getResources().getColor(R.color.white));
+			drawerList.addHeaderView(convertView);
+
+			drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					selectItem(position);
+				}
+			});
+
+			drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+			actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+					R.string.wait, R.string.wait) {
+				@Override
+				public void onDrawerOpened(View drawerView) {
+					super.onDrawerOpened(drawerView);
+					supportInvalidateOptionsMenu();
+				}
+
+				@Override
+				public void onDrawerClosed(View drawerView) {
+					super.onDrawerClosed(drawerView);
+					supportInvalidateOptionsMenu();
+				}
+			};
+
+			drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setHomeButtonEnabled(true);
+
+			if (savedInstanceState == null) {
+				// TODO change this because the header!!!!
+				selectItem(FIRST_DRAWER_ITEM_INDEX);
+			}
 		}
 
 		// Create a new global location parameters object
@@ -258,6 +391,48 @@ public class MainActivity extends ActionBarActivity implements
 		// Create a new location client, using the enclosing class to handle
 		// callbacks
 		locationClient = new LocationClient(this, this, this);
+	}
+
+	private DaoSession getApplicationDaoSession() {
+		return ((DFMApplication) getApplicationContext()).getDaoSession();
+	}
+
+	/**
+	 * Swaps starting point in the main content view
+	 */
+	private void selectItem(int position) {
+		distanceMode =
+				(position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
+						DistanceMode.DISTANCE_FROM_CURRENT_POINT :
+						DistanceMode.DISTANCE_FROM_ANY_POINT;
+
+		// Highlight the selected item and close the drawer
+		drawerList.setItemChecked(position, true);
+		drawerLayout.closeDrawer(drawerList);
+
+		calculatingDistance = false;
+
+		coordinates = Lists.newArrayList();
+		googleMap.clear();
+		if (showingElevationTask != null) {
+			showingElevationTask.cancel(true);
+		}
+		rlElevationChart.setVisibility(View.INVISIBLE);
+		elevationChartShown = false;
+		fixMapPadding();
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		actionBarDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		actionBarDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -321,7 +496,7 @@ public class MainActivity extends ActionBarActivity implements
 				throw new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " + matcher.toString());
 			}
 		} else {
-			throw new NoSuchFieldException("Query sin parámetro q." + queryParameter);
+			throw new NoSuchFieldException("Query sin parámetro q.");
 		}
 	}
 
@@ -340,24 +515,21 @@ public class MainActivity extends ActionBarActivity implements
 			addressList = null;
 			fullAddress = new StringBuilder();
 			selectedPosition = null;
-			progressDialog = new ProgressDialog(MainActivity.this);
-			progressDialog.setTitle(R.string.searching);
-			progressDialog.setMessage(getText(R.string.wait));
-			progressDialog.setCancelable(false);
-			progressDialog.setIndeterminate(true);
-			progressDialog.show();
 
 			// Comprobamos que haya conexión con internet (WiFi o Datos)
 			if (!isOnline(getApplicationContext())) {
-				if (progressDialog != null) {
-					progressDialog.dismiss();
-				}
-
 				showWifiAlertDialog();
 
 				// Restauramos el menú y que vuelva a empezar de nuevo
 				MenuItemCompat.collapseActionView(searchMenuItem);
 				cancel(false);
+			} else {
+				progressDialog = new ProgressDialog(MainActivity.this);
+				progressDialog.setTitle(R.string.searching);
+				progressDialog.setMessage(getText(R.string.wait));
+				progressDialog.setCancelable(false);
+				progressDialog.setIndeterminate(true);
+				progressDialog.show();
 			}
 		}
 
@@ -369,14 +541,14 @@ public class MainActivity extends ActionBarActivity implements
 				addressList = geoCoder.getFromLocationName((String) params[0], 5);
 			} catch (IOException e) {
 				e.printStackTrace();
-				return -1; // No encuentra una dirección, no puede conectar con el servidor
+				return -1; // Network is unavailable or any other I/O problem occurs
 			}
 			if (addressList == null) {
-				return -3; // empty list if there is no backend service available
-			} else if (addressList.size() > 0) {
-				return 0;
+				return -3; // No backend service available
+			} else if (addressList.isEmpty()) {
+				return -2; // No matches were found
 			} else {
-				return -2; // null if no matches were found // Cuando no hay conexión que sirva
+				return 0;
 			}
 		}
 
@@ -388,25 +560,15 @@ public class MainActivity extends ActionBarActivity implements
 						// Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
 						if (addressList.size() == 1) {
 							processSelectedAddress(0);
+							handleSelectedAddress();
 						} else {
 							final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 							builder.setTitle(getText(R.string.select_address));
-							builder.setItems(
-									groupAdresses(addressList)
-											.toArray(new String[addressList.size()]),
+							builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
 									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-										                    int item) {
+										public void onClick(DialogInterface dialog, int item) {
 											processSelectedAddress(item);
-
-											if (selectedPosition != null) {
-												showDistanceOnMap(
-														new LatLng(
-																currentLocation.getLatitude(),
-																currentLocation.getLongitude()),
-														selectedPosition,
-														fullAddress.toString());
-											}
+											handleSelectedAddress();
 										}
 									});
 							builder.create().show();
@@ -423,19 +585,34 @@ public class MainActivity extends ActionBarActivity implements
 					toastIt(getText(R.string.nofindaddress), getApplicationContext());
 					break;
 			}
-
-			if (progressDialog != null) {
-				progressDialog.dismiss();
-			}
-
-			if (selectedPosition != null) {
-				showDistanceOnMap(new LatLng(currentLocation.getLatitude(),
-								currentLocation.getLongitude()),
-						selectedPosition,
-						fullAddress.toString());
-			}
-
+			progressDialog.dismiss();
 			MenuItemCompat.collapseActionView(searchMenuItem);
+		}
+
+		private void handleSelectedAddress() {
+			if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+				coordinates.add(selectedPosition);
+				if (coordinates.isEmpty()) {
+					// add marker
+					final Marker marker = addMarker(selectedPosition);
+					marker.setTitle(fullAddress.toString());
+					marker.showInfoWindow();
+					// moveCamera
+					moveCameraZoom(selectedPosition, selectedPosition, false);
+					distanceMeasuredAsText = calculateDistance(Lists.newArrayList(selectedPosition, selectedPosition));
+					// That means we are looking for a first position, so we want to calculate a distance starting
+					// from here
+					calculatingDistance = true;
+				} else {
+					drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+				}
+			} else {
+				if (coordinates.isEmpty()) {
+					coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+				}
+				coordinates.add(selectedPosition);
+				drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+			}
 		}
 
 		/**
@@ -445,11 +622,12 @@ public class MainActivity extends ActionBarActivity implements
 		 * @param item The item index in the AlertDialog.
 		 */
 		protected void processSelectedAddress(final int item) {
-			// esto para el marcador!
-			for (int i = 0; i <= addressList.get(item).getMaxAddressLineIndex(); i++) {
-				fullAddress.append(addressList.get(item).getAddressLine(i)).append("\n");
+			// Fill address info to show in the marker info window
+			final Address address = addressList.get(item);
+			for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+				fullAddress.append(address.getAddressLine(i)).append("\n");
 			}
-			selectedPosition = new LatLng(addressList.get(item).getLatitude(), addressList.get(item).getLongitude());
+			selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
 		}
 
 		/**
@@ -458,7 +636,7 @@ public class MainActivity extends ActionBarActivity implements
 		 * @param addressList An Address's list.
 		 * @return A string list with only addresses in text.
 		 */
-		protected List<String> groupAdresses(final List<Address> addressList) {
+		protected List<String> groupAddresses(final List<Address> addressList) {
 			final List<String> result = new ArrayList<String>();
 			StringBuilder stringBuilder;
 			for (final Address l : addressList) {
@@ -504,6 +682,12 @@ public class MainActivity extends ActionBarActivity implements
 			switch (result) {
 				case 0:
 					processSelectedAddress(0);
+					drawAndShowMultipleDistances(Lists.newArrayList(new LatLng(currentLocation.getLatitude(),
+											currentLocation.getLongitude()),
+									selectedPosition),
+							fullAddress.toString(),
+							false,
+							true);
 					break;
 				case -1:
 					toastIt(getText(R.string.nofindaddress), getApplicationContext());
@@ -515,19 +699,9 @@ public class MainActivity extends ActionBarActivity implements
 					toastIt(getText(R.string.nofindaddress), getApplicationContext());
 					break;
 			}
-
-			if (progressDialog != null) {
-				progressDialog.dismiss();
-			}
-
-			if (selectedPosition != null) {
-				showDistanceOnMap(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
-						selectedPosition,
-						fullAddress.toString());
-			}
-
-			MenuItemCompat.collapseActionView(searchMenuItem);
+			progressDialog.dismiss();
 		}
+
 	}
 
 	/**
@@ -565,17 +739,22 @@ public class MainActivity extends ActionBarActivity implements
 		// Muestra el item de menú de cargar si hay elementos en la BD
 		final MenuItem loadItem = menu.findItem(R.id.action_load);
 		// TODO hacerlo en segundo plano
-		final List<Distance> allDistances = ((DFMApplication) getApplicationContext())
-				.getDaoSession()
+		final List<Distance> allDistances = getApplicationDaoSession()
 				.loadAll(Distance.class);
 		if (allDistances.size() == 0) {
 			loadItem.setVisible(false);
 		}
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// The action bar home/up action should open or close the drawer.
+		// ActionBarDrawerToggle will take care of this.
+		if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+
 		switch (item.getItemId()) {
 			case R.id.action_search:
 				return true;
@@ -596,14 +775,22 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (drawerLayout.isDrawerOpen(Gravity.START)) {
+			drawerLayout.closeDrawer(Gravity.START);
+		} else {
+			super.onBackPressed();
+		}
+	}
+
 	/**
 	 * Loads all entries stored in the database and show them to the user in a
 	 * dialog.
 	 */
 	private void loadDistancesFromDB() {
 		// TODO hacer esto en segundo plano
-		final List<Distance> allDistances = ((DFMApplication) getApplicationContext())
-				.getDaoSession()
+		final List<Distance> allDistances = getApplicationDaoSession()
 				.loadAll(Distance.class);
 
 		if (allDistances != null && allDistances.size() > 0) {
@@ -613,23 +800,25 @@ public class MainActivity extends ActionBarActivity implements
 					.setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							loadingDistance = true;
 							final Distance distance = distanceAdapter.getDistanceList().get(which);
-							final List<Position> positionList = ((DFMApplication) getApplicationContext())
-									.getDaoSession().getPositionDao()._queryDistance_PositionList(distance.getId());
-							// TODO hacer que esto vaya a un método que lo dibuje atentiendo al número de posiciones
-							// que hay. Actualmente solo lo hace para una distancia [0=origen, 1=destino]
-							final LatLng originLatLng = new LatLng(positionList.get(0).getLatitude(),
-									positionList.get(0).getLongitude());
-							final LatLng destinationLatLng = new LatLng(positionList.get(1).getLatitude(),
-									positionList.get(1).getLongitude());
+							final List<Position> positionList = getApplicationDaoSession().getPositionDao()._queryDistance_PositionList(distance.getId());
+							coordinates.clear();
+							coordinates.addAll(convertPositionListToLatLngList(positionList));
 
-							showDistanceOnMap(originLatLng, destinationLatLng, distance.getName() + "\n");
+							drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
 						}
 					}).create().show();
 		} else {
 			toastIt(getText(R.string.no_distances_registered), getApplicationContext());
 		}
+	}
+
+	private List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
+		final List<LatLng> result = Lists.newArrayList();
+		for (final Position position : positionList) {
+			result.add(new LatLng(position.getLatitude(), position.getLongitude()));
+		}
+		return result;
 	}
 
 	/**
@@ -809,8 +998,8 @@ public class MainActivity extends ActionBarActivity implements
 			return true;
 		} else {
 			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-				GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices)
-						.show();
+				final int RQS_GooglePlayServices = 1;
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices).show();
 			} else {
 				// Log.i("checkPlayServices", "Dispositivo no soportado");
 				finish();
@@ -934,35 +1123,30 @@ public class MainActivity extends ActionBarActivity implements
 		}
 	}
 
-	/**
-	 * Calculates the distanceMeasuredAsText to a specified position, adds the marker and the
-	 * line.
-	 *
-	 * @param start   Start position.
-	 * @param end     Destination position.
-	 * @param message Address to show in the info window (if needed).
-	 */
-	private void showDistanceOnMap(final LatLng start, final LatLng end, final String message) {
+	private void drawAndShowMultipleDistances(final List<LatLng> coordinates,
+	                                          final String message,
+	                                          final boolean isLoadingFromDB,
+	                                          final boolean mustApplyZoomIfNeeded) {
 		// Borramos los antiguos marcadores y lineas
 		googleMap.clear();
 
 		// Calculamos la distancia
-		distanceMeasuredAsText = calculateDistance(start, end);
+		distanceMeasuredAsText = calculateDistance(coordinates);
 
-		// Añadimos el nuevo marcador
-		addMarker(end, distanceMeasuredAsText, message);
+		// Pintar todos menos el primero si es desde la posición actual
+		addMarkers(coordinates, distanceMeasuredAsText, message);
 
-		// Añadimos la línea
-		addLine(start, end);
+		// Añadimos las líneas
+		addLines(coordinates, isLoadingFromDB);
 
 		// Aquí hacer la animación de la cámara
-		moveCameraZoom(start, end);
+		moveCameraZoom(coordinates.get(0), coordinates.get(coordinates.size() - 1), mustApplyZoomIfNeeded);
 
 		// Muestra el perfil de elevación si está en las preferencias
 		// y si está conectado a internet
-		if (getSharedPreferences(getBaseContext()).getBoolean("elevation_chart", false)
-				&& isOnline(getApplicationContext())) {
-			getElevation(start, end);
+		if (getSharedPreferences(getBaseContext()).getBoolean("elevation_chart",
+				false) && isOnline(getApplicationContext())) {
+			getElevation(coordinates);
 		}
 	}
 
@@ -970,15 +1154,33 @@ public class MainActivity extends ActionBarActivity implements
 	 * Adds a marker to the map in a specified position and shows its info
 	 * window.
 	 *
-	 * @param point    Destination position.
-	 * @param distance Distance to destination.
-	 * @param message  Destination address (if needed).
+	 * @param coordinates Positions list.
+	 * @param distance    Distance to destination.
+	 * @param message     Destination address (if needed).
 	 */
-	private void addMarker(final LatLng point, final String distance, final String message) {
-		final Marker marker = googleMap.addMarker(new MarkerOptions().position(point)
-				.title(message + distance));
-		marker.setDraggable(true);
-		marker.showInfoWindow();
+	private void addMarkers(final List<LatLng> coordinates, final String distance, final String message) {
+		for (int i = 0; i < coordinates.size(); i++) {
+			if ((i == 0 && distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) || (i == coordinates.size() - 1)) {
+				final LatLng coordinate = coordinates.get(i);
+				final Marker marker = addMarker(coordinate);
+				// TODO Release 1.5
+//			    marker.setDraggable(true);
+				if (i == coordinates.size() - 1) {
+					marker.setTitle(message + distance);
+					marker.showInfoWindow();
+				}
+			}
+		}
+	}
+
+	private Marker addMarker(final LatLng coordinate) {
+		return googleMap.addMarker(new MarkerOptions().position(coordinate));
+	}
+
+	private void addLines(final List<LatLng> coordinates, final boolean isLoadingFromDB) {
+		for (int i = 0; i < coordinates.size() - 1; i++) {
+			addLine(coordinates.get(i), coordinates.get(i + 1), isLoadingFromDB);
+		}
 	}
 
 	/**
@@ -987,35 +1189,28 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param start Start position.
 	 * @param end   Destination position.
 	 */
-	private void addLine(final LatLng start, final LatLng end) {
-		if (polyline != null) {
-			polyline.remove();
-			polyline = null;
-		}
+	private void addLine(final LatLng start, final LatLng end, final boolean isLoadingFromDB) {
 		final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
 		lineOptions.width(3 * getResources().getDisplayMetrics().density);
-		if (loadingDistance) {
-			loadingDistance = false;
-			lineOptions.color(Color.YELLOW);
-		} else
-			lineOptions.color(Color.GREEN);
-		polyline = googleMap.addPolyline(lineOptions);
+		lineOptions.color(isLoadingFromDB ? Color.YELLOW : Color.GREEN);
+		googleMap.addPolyline(lineOptions);
 	}
 
 	/**
 	 * Returns the distance between start and end positions normalized by device
 	 * locale.
 	 *
-	 * @param start Start position.
-	 * @param end   Destination position.
+	 * @param coordinates position list.
 	 * @return The normalized distance.
 	 */
-	private String calculateDistance(final LatLng start, final LatLng end) {
-		double distanceInMetres = Haversine.getDistance(start.latitude,
-				start.longitude,
-				end.latitude,
-				end.longitude);
-
+	private String calculateDistance(final List<LatLng> coordinates) {
+		double distanceInMetres = 0.0;
+		for (int i = 0; i < coordinates.size() - 1; i++) {
+			distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
+					coordinates.get(i).longitude,
+					coordinates.get(i + 1).latitude,
+					coordinates.get(i + 1).longitude);
+		}
 		return Haversine.normalizeDistance(distanceInMetres, getResources().getConfiguration().locale);
 	}
 
@@ -1025,7 +1220,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * @param p1 Start position.
 	 * @param p2 Destination position.
 	 */
-	private void moveCameraZoom(final LatLng p1, final LatLng p2) {
+	private void moveCameraZoom(final LatLng p1, final LatLng p2, final boolean mustApplyZoomIfNeeded) {
 		double centerLat = 0.0;
 		double centerLon = 0.0;
 
@@ -1037,9 +1232,11 @@ public class MainActivity extends ActionBarActivity implements
 		} else if (centre.equals("DES")) {
 			centerLat = p2.latitude;
 			centerLon = p2.longitude;
+		} else if (centre.equals("NO")) {
+			return;
 		}
 
-		if (mustApplyZoom) {
+		if (mustApplyZoomIfNeeded) {
 			googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLat, centerLon),
 					calculateZoom(p1, p2)));
 		} else {
@@ -1101,21 +1298,25 @@ public class MainActivity extends ActionBarActivity implements
 	/**
 	 * Calculates elevation points in background and shows elevation chart.
 	 *
-	 * @param start Start position.
-	 * @param end   Destination position.
+	 * @param coordinates Positions list.
 	 */
-	private void getElevation(final LatLng start, final LatLng end) {
-		final String startPos = String.valueOf(start.latitude) +
-				"," +
-				String.valueOf(start.longitude);
-		final String endPos = String.valueOf(end.latitude) +
-				"," +
-				String.valueOf(end.longitude);
+	private void getElevation(final List<LatLng> coordinates) {
+		String positionListUrlParameter = "";
+		for (int i = 0; i < coordinates.size(); i++) {
+			final LatLng coordinate = coordinates.get(i);
+			positionListUrlParameter += String.valueOf(coordinate.latitude) + "," + String.valueOf(coordinate.longitude);
+			if (i != coordinates.size() - 1) {
+				positionListUrlParameter += "|";
+			}
+		}
+		if (positionListUrlParameter.isEmpty()) {
+			throw new IllegalStateException("Coordinates list empty");
+		}
 
 		if (showingElevationTask != null) {
 			showingElevationTask.cancel(true);
 		}
-		showingElevationTask = new GetAltitude().execute(startPos, endPos);
+		showingElevationTask = new GetAltitude().execute(positionListUrlParameter);
 	}
 
 	/**
@@ -1132,29 +1333,26 @@ public class MainActivity extends ActionBarActivity implements
 		private String responseAsString;
 		private InputStream inputStream = null;
 		private JSONObject responseJSON;
-		private RelativeLayout layout;
 
 		@Override
 		protected void onPreExecute() {
 			httpClient = new DefaultHttpClient();
 			responseAsString = null;
+
 			// Delete elevation chart if exists
-			layout = (RelativeLayout) findViewById(R.id.elevationchart);
 			if (graphView != null) {
-				layout.removeView(graphView);
+				rlElevationChart.removeView(graphView);
 			}
-			layout.setVisibility(LinearLayout.INVISIBLE);
+			rlElevationChart.setVisibility(View.INVISIBLE);
 			graphView = null;
 			elevationChartShown = false;
 			fixMapPadding();
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		protected Double doInBackground(String... params) {
 			httpGet = new HttpGet("http://maps.googleapis.com/maps/api/elevation/json?sensor=true"
-					+ "&path=" + params[0]
-					+ URLEncoder.encode("|") + params[1]
+					+ "&path=" + Uri.encode(params[0])
 					+ "&samples=" + ELEVATION_SAMPLES);
 			httpGet.setHeader("content-type", "application/json");
 			try {
@@ -1163,10 +1361,8 @@ public class MainActivity extends ActionBarActivity implements
 				if (inputStream != null) {
 					responseAsString = convertInputStreamToString(inputStream);
 					responseJSON = new JSONObject(responseAsString);
-					if (responseJSON != null) {
-						if (responseJSON.get("status").equals("OK")) {
-							buildElevationChart(responseJSON.getJSONArray("results"));
-						}
+					if (responseJSON.get("status").equals("OK")) {
+						buildElevationChart(responseJSON.getJSONArray("results"));
 					}
 				}
 			} catch (ClientProtocolException e) {
@@ -1200,7 +1396,7 @@ public class MainActivity extends ActionBarActivity implements
 		private String convertInputStreamToString(final InputStream inputStream) throws IOException {
 			final BufferedReader bufferedReader =
 					new BufferedReader(new InputStreamReader(inputStream));
-			String line = "";
+			String line;
 			StringBuilder result = new StringBuilder();
 			while ((line = bufferedReader.readLine()) != null) {
 				result.append(line);
@@ -1256,25 +1452,22 @@ public class MainActivity extends ActionBarActivity implements
 		 */
 		private void showElevationProfileChart() {
 			if (graphView != null) {
-				layout.setVisibility(LinearLayout.VISIBLE);
-				layout.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
-				layout.addView(graphView);
+				rlElevationChart.setVisibility(LinearLayout.VISIBLE);
+				rlElevationChart.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
+				rlElevationChart.addView(graphView);
 				elevationChartShown = true;
 				fixMapPadding();
 
-				final ImageView closeChart = (ImageView) findViewById(R.id.closeChart);
-				if (closeChart != null) {
-					closeChart.setVisibility(LinearLayout.VISIBLE);
-					closeChart.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							layout.removeView(graphView);
-							layout.setVisibility(LinearLayout.INVISIBLE);
-							elevationChartShown = false;
-							fixMapPadding();
-						}
-					});
-				}
+				ivCloseElevationChart.setVisibility(View.VISIBLE);
+				ivCloseElevationChart.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						rlElevationChart.removeView(graphView);
+						rlElevationChart.setVisibility(View.INVISIBLE);
+						elevationChartShown = false;
+						fixMapPadding();
+					}
+				});
 			}
 		}
 	}
@@ -1283,7 +1476,6 @@ public class MainActivity extends ActionBarActivity implements
 	 * Sets map attending to the action which is performed.
 	 */
 	private void fixMapPadding() {
-		final RelativeLayout rlElevationChart = (RelativeLayout) findViewById(R.id.elevationchart);
 		if (bannerShown) {
 			if (elevationChartShown) {
 				googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);

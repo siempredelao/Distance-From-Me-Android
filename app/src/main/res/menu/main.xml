@@ -1,32 +1,31 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:actual="http://schemas.android.com/apk/res-auto" >
- 
+<menu xmlns:actual="http://schemas.android.com/apk/res-auto"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/action_search"
-        actual:actionViewClass="android.support.v7.widget.SearchView"
-        actual:showAsAction="ifRoom|collapseActionView"
         android:icon="@drawable/ic_action_search"
         android:orderInCategory="1"
-        android:title="@string/action_search"/>
+        android:title="@string/action_search"
+        actual:actionViewClass="android.support.v7.widget.SearchView"
+        actual:showAsAction="ifRoom|collapseActionView"/>
     <item
         android:id="@+id/action_load"
         android:orderInCategory="2"
-        android:icon="@drawable/ic_action_collections_collection"
-        actual:showAsAction="ifRoom|withText"
-        android:title="@string/action_load"/>
+        android:title="@string/action_load"
+        actual:showAsAction="never"/>
     <item
         android:id="@+id/menu_rateapp"
         android:orderInCategory="3"
-        android:showAsAction="never"
-        android:title="@string/menu_rateapp"/>
+        android:title="@string/menu_rateapp"
+        actual:showAsAction="never"/>
     <item
         android:id="@+id/menu_legalnotices"
         android:orderInCategory="4"
-        android:showAsAction="never"
-        android:title="@string/menu_legalnotices"/>
+        android:title="@string/menu_legalnotices"
+        actual:showAsAction="never"/>
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="5"
-        android:showAsAction="never"
-        android:title="@string/menu_settings"/>
+        android:title="@string/menu_settings"
+        actual:showAsAction="never"/>
 </menu>

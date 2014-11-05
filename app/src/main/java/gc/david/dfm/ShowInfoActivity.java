@@ -15,7 +15,6 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.InputType;
@@ -34,6 +33,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.InjectView;
+import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 
@@ -43,9 +43,8 @@ import static gc.david.dfm.Utils.toastIt;
 
 /**
  * ShowInfoActivity shows information about the distance to the user.
- * 
+ *
  * @author David
- * 
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
@@ -60,23 +59,21 @@ public class ShowInfoActivity extends ActionBarActivity {
 	@InjectView(R.id.distancia)
 	protected TextView tvDistance;
 
-	private MenuItem menuItem                   = null;
-	private LatLng originLatLng					= null;
-	private LatLng destinationLatLng			= null;
-	private String originAddress				= "";
-	private String destinationAddress			= "";
-	private String distance						= null;
+	private MenuItem menuItem = null;
+	private List<LatLng> positionsList = null;
+	private String originAddress = "";
+	private String destinationAddress = "";
+	private String distance = null;
 	private boolean wasSavingWhenOrientationChanged = false;
-	private Dialog savingInDBDialog				= null;
+	private Dialog savingInDBDialog = null;
 	private EditText etAlias;
 	private final String originAddressKey = "originAddress";
 	private final String destinationAddressKey = "destinationAddress";
 	private final String distanceKey = "distance";
 	private final String wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
 	private final String aliasHintKey = "aliasHint";
-	public static final String originExtraKeyName = "origen";
-	public static final String destinationExtraKeyName = "destino";
-	public static final String distanceExtraKeyName = "distancia";
+	public static final String POSITIONS_LIST_EXTRA_KEY_NAME = "positionsList";
+	public static final String DISTANCE_EXTRA_KEY_NAME = "distancia";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,23 +81,27 @@ public class ShowInfoActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_show_info);
 		inject(this);
 
-		final ActionBar actionBar = getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		getIntentData();
 
 		fillTitlesHeaders();
 
-		if (savedInstanceState == null){
+		if (savedInstanceState == null) {
 			fillAddressesInfo();
 		} else {
 			originAddress = savedInstanceState.getString(originAddressKey);
 			destinationAddress = savedInstanceState.getString(destinationAddressKey);
 
-			tvOriginAddress.setText(originAddress + "\n\n(" + originLatLng.latitude + ", "
-					+ originLatLng.longitude + ")");
-			tvDestinationAddress.setText(destinationAddress + "\n\n(" + destinationLatLng.latitude + ", "
-					+ destinationLatLng.longitude + ")");
+			tvOriginAddress.setText(originAddress +
+					"\n\n(" +
+					positionsList.get(0).latitude + ", " +
+					positionsList.get(0).longitude + ")");
+
+			tvDestinationAddress.setText(destinationAddress + "\n\n(" +
+					positionsList.get(positionsList.size() - 1).latitude +
+					", " +
+					positionsList.get(positionsList.size() - 1).longitude + ")");
 
 			// Este se modifica dos veces...
 			distance = savedInstanceState.getString(distanceKey);
@@ -115,10 +116,14 @@ public class ShowInfoActivity extends ActionBarActivity {
 		fillDistanceInfo();
 	}
 
+	private DaoSession getApplicationDaoSession() {
+		return ((DFMApplication) getApplicationContext()).getDaoSession();
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
+
 		outState.putString(originAddressKey, originAddress);
 		outState.putString(destinationAddressKey, destinationAddress);
 		outState.putString(distanceKey, distance);
@@ -137,9 +142,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 	 */
 	private void getIntentData() {
 		final Intent inputDataIntent = getIntent();
-		originLatLng = (LatLng) inputDataIntent.getParcelableExtra(originExtraKeyName);
-		destinationLatLng = (LatLng) inputDataIntent.getParcelableExtra(destinationExtraKeyName);
-		distance = inputDataIntent.getStringExtra(distanceExtraKeyName);
+		positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
+		distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
 	}
 
 	/**
@@ -155,14 +159,21 @@ public class ShowInfoActivity extends ActionBarActivity {
 	 */
 	private void fillAddressesInfo() {
 		try {
-			originAddress = new GetAddressTask().execute(originLatLng, tvOriginAddress).get();
-			destinationAddress = new GetAddressTask().execute(destinationLatLng, tvDestinationAddress).get();
+			originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
+			destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
+					tvDestinationAddress).get();
 
 			// Esto a lo mejor hay que ponerlo en el onPostExecute!
-			tvOriginAddress.setText(originAddress + "\n\n(" + originLatLng.latitude + ", "
-					+ originLatLng.longitude + ")");
-			tvDestinationAddress.setText(destinationAddress + "\n\n(" + destinationLatLng.latitude + ", "
-					+ destinationLatLng.longitude + ")");
+			tvOriginAddress.setText(originAddress +
+					"\n\n(" +
+					positionsList.get(0).latitude +
+					", " +
+					positionsList.get(0).longitude + ")");
+			tvDestinationAddress.setText(destinationAddress +
+					"\n\n(" +
+					positionsList.get(positionsList.size() - 1).latitude +
+					", " +
+					positionsList.get(positionsList.size() - 1).longitude + ")");
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		} catch (final ExecutionException e) {
@@ -172,7 +183,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 			// No se hace nada aquí, ya lo hace el hilo
 		}
 	}
-	
+
 	/**
 	 * Fill Textview tvDistance.
 	 */
@@ -199,7 +210,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
 	/**
 	 * Creates an Intent to share data.
-	 * 
+	 *
 	 * @return A new Intent to show different options to share data.
 	 */
 	private Intent createDefaultShareIntent() {
@@ -212,15 +223,14 @@ public class ShowInfoActivity extends ActionBarActivity {
 				+ destinationAddress + "\n\n" + getText(R.string.space) + "\n" + distance);
 		return shareIntent;
 	}
-	
+
 	/**
 	 * Verify if there are applications that can handle the intent.
-	 * 
-	 * @param intent
-	 *            The intent to verify.
+	 *
+	 * @param intent The intent to verify.
 	 * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
 	 */
-	private boolean verifyAppReceiveIntent(final Intent intent){
+	private boolean verifyAppReceiveIntent(final Intent intent) {
 		final PackageManager packageManager = getPackageManager();
 		final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
 		return activities.size() > 0;
@@ -229,23 +239,23 @@ public class ShowInfoActivity extends ActionBarActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.action_social_share:
-			return true;
-		case R.id.refresh:
-			menuItem = item;
-			fillAddressesInfo();
-			return true;
-		case R.id.menu_save:
-			saveDataToDB("");
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.action_social_share:
+				return true;
+			case R.id.refresh:
+				menuItem = item;
+				fillAddressesInfo();
+				return true;
+			case R.id.menu_save:
+				saveDataToDB("");
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	/**
 	 * Saves the current data into the database.
-	 * 
+	 *
 	 * @param defaultText String text when orientation changes.
 	 */
 	private void saveDataToDB(final String defaultText) {
@@ -256,7 +266,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 		etAlias.setTextColor(Color.BLACK);
 		etAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		etAlias.setText(defaultText);
-		
+
 		builder.setMessage(getText(R.string.alias_dialog_message))
 				.setTitle(getText(R.string.alias_dialog_title))
 				.setView(etAlias)
@@ -273,11 +283,11 @@ public class ShowInfoActivity extends ActionBarActivity {
 						insertDataIntoDatabase(etAlias.getText().toString());
 						wasSavingWhenOrientationChanged = false;
 					}
-					
+
 					/**
 					 * Adds a new distance to the database with the current
 					 * data and shows the user a message.
-					 * 
+					 *
 					 * @param alias Alias written by the user.
 					 */
 					private void insertDataIntoDatabase(final String alias) {
@@ -287,13 +297,15 @@ public class ShowInfoActivity extends ActionBarActivity {
 						}
 						// TODO hacer esto en segundo plano
 						final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
-						final long distanceId = ((DFMApplication) getApplicationContext()).getDaoSession().insert(distance1);
-						final Position originPosition = new Position(null, originLatLng.latitude,
-								originLatLng.longitude, distanceId);
-						final Position destinationPosition = new Position(null, destinationLatLng.latitude,
-								destinationLatLng.longitude, distanceId);
-						((DFMApplication) getApplicationContext()).getDaoSession().insert(originPosition);
-						((DFMApplication) getApplicationContext()).getDaoSession().insert(destinationPosition);
+						final long distanceId = getApplicationDaoSession().insert(distance1);
+
+						for (LatLng positionAsLatLng : positionsList) {
+							final Position position = new Position(null,
+									positionAsLatLng.latitude,
+									positionAsLatLng.longitude,
+									distanceId);
+							getApplicationDaoSession().insert(position);
+						}
 
 						// Mostrar un mensaje de que se ha guardado correctamente
 						if (!aliasToSave.equals("")) {
@@ -305,7 +317,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 				});
 		(savingInDBDialog = builder.create()).show();
 	}
-	
+
 	/**
 	 * A subclass of AsyncTask that calls getFromLocation() in the background.
 	 */

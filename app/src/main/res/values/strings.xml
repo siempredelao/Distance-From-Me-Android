@@ -36,15 +36,20 @@
     <string name="preference_centre_summary">Where pointing the map at distance measuring</string>
     <string name="mode_DES">Centre in destination</string>
     <string name="mode_CEN">Centre in the middle</string>
+    <string name="mode_NO">No animation</string>
     <string name="category_db_title">Distance register</string>
     <string name="preference_db_title">Delete distances</string>
     <string name="preference_db_summary">Touch to delete all saved distances</string>
     <string name="elevation_profile">Elevation profile</string>
     <string name="preference_elevation_title">Show elevation profile</string>
     <string name="preference_elevation_summary">Calculates elevation profile. This task may take some time depending on your network.</string>
-    
+    <string name="first_point_needed">Starting point needed. Please select a point.</string>
+    <string name="navigation_drawer_starting_point_header">STARTING POINT</string>
+    <string name="navigation_drawer_starting_point_current_position_item">Current position</string>
+    <string name="navigation_drawer_starting_point_any_position_item">Any position</string>
 
-    
+
+
     <!-- ACTIVITY SHOWINFO -->
     <string name="current">Current estimated position</string>
     <string name="destination">Estimated destination</string>

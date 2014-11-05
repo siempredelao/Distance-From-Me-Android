@@ -1,42 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity" >
+    android:layout_height="match_parent">
 
-    <fragment
-        android:id="@+id/map"
-        android:layout_width="match_parent"
+    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:orientation="vertical"
+                 tools:context=".MainActivity">
+
+        <fragment
+            android:id="@+id/map"
+            class="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <com.inmobi.monetization.IMBanner
+            android:id="@+id/banner"
+            adSize="15"
+            appId="9b61f509a1454023b5295d8aea4482c2"
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"/>
+
+        <RelativeLayout
+            android:id="@+id/elevationchart"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_margin="2dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/closeChart"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:contentDescription="Close elevation chart"
+                android:src="@drawable/close_pop"
+                android:visibility="invisible"/>
+        </RelativeLayout>
+    </FrameLayout>
+
+    <ListView
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
         android:layout_height="match_parent"
-        class="com.google.android.gms.maps.SupportMapFragment" />
-
-    <com.inmobi.monetization.IMBanner
-        android:id="@+id/banner"
-        android:layout_width="320dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom"
-        adSize="15"
-        appId="9b61f509a1454023b5295d8aea4482c2" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:orientation="vertical"
-        android:visibility="visible"
-        android:layout_margin="2dp"
-        android:id="@+id/elevationchart">
-
-        <ImageView
-            android:id="@+id/closeChart"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:contentDescription="Close elevation chart"
-            android:src="@drawable/close_pop"
-            android:visibility="invisible" />
-
-    </RelativeLayout>
-</FrameLayout>
+        android:layout_gravity="start"
+        android:background="@color/item_background"
+        android:dividerHeight="1dp"
+        android:choiceMode="singleChoice" />
+</android.support.v4.widget.DrawerLayout>
