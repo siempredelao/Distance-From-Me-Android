@@ -111,7 +111,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     private              LocationRequest locationRequest                       = null;
     // Stores the current instantiation of the location client in this object
     private              LocationClient  locationClient                        = null;
-    // Current position
     private              Location        currentLocation                       = null;
     // Moves to current position if app has just started
     private              boolean         appHasJustStarted                     = true;
@@ -121,7 +120,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     private              boolean         mustShowPositionWhenComingFromOutside = false;
     private              LatLng          sendDestinationPosition               = null;
     private              IMBanner        banner                                = null;
-    // Google Map items padding
     private              boolean         bannerShown                           = false;
     private              boolean         elevationChartShown                   = false;
     private static final int             ELEVATION_SAMPLES                     = 100;
@@ -1140,7 +1138,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         distanceMeasuredAsText = calculateDistance(coordinates);
 
         // Pintar todos menos el primero si es desde la posición actual
-        addMarkers(coordinates, distanceMeasuredAsText, message);
+        addMarkers(coordinates, distanceMeasuredAsText, message, isLoadingFromDB);
 
         // Añadimos las líneas
         addLines(coordinates, isLoadingFromDB);
@@ -1160,13 +1158,18 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Adds a marker to the map in a specified position and shows its info
      * window.
      *
-     * @param coordinates Positions list.
-     * @param distance    Distance to destination.
-     * @param message     Destination address (if needed).
+     * @param coordinates     Positions list.
+     * @param distance        Distance to destination.
+     * @param message         Destination address (if needed).
+     * @param isLoadingFromDB Indicates whether we are loading data from database.
      */
-    private void addMarkers(final List<LatLng> coordinates, final String distance, final String message) {
+    private void addMarkers(final List<LatLng> coordinates,
+                            final String distance,
+                            final String message,
+                            final boolean isLoadingFromDB) {
         for (int i = 0; i < coordinates.size(); i++) {
-            if ((i == 0 && distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) || (i == coordinates.size() - 1)) {
+            if ((i == 0 && (isLoadingFromDB || distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT)) ||
+                (i == coordinates.size() - 1)) {
                 final LatLng coordinate = coordinates.get(i);
                 final Marker marker = addMarker(coordinate);
                 // TODO Release 1.5
