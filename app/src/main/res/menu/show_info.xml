@@ -5,7 +5,7 @@
         android:id="@+id/action_social_share"
         android:icon="@drawable/ic_action_social_share"
         android:orderInCategory="1"
-        android:title="@string/action_social_share"
+        android:title="@string/action_bar_item_social_share_title"
         actual:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         actual:showAsAction="ifRoom"/>
     <item
@@ -13,13 +13,13 @@
         android:alphabeticShortcut="r"
         android:icon="@drawable/ic_action_navigation_refresh"
         android:orderInCategory="2"
-        android:title="@string/menuitem_refresh"
+        android:title="@string/action_bar_item_refresh_title"
         actual:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_save"
         android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="3"
-        android:title="@string/menu_guardar"
+        android:title="@string/action_bar_item_save_title"
         actual:showAsAction="ifRoom|withText"/>
 
 </menu>

@@ -26,7 +26,7 @@ public class SettingsActivity extends PreferenceActivity {
                 // TODO hacerlo en segundo plano
                 getApplicationDaoSession().deleteAll(Distance.class);
                 getApplicationDaoSession().deleteAll(Position.class);
-                toastIt(getText(R.string.distances_deleted), getApplicationContext());
+                toastIt(getString(R.string.toast_distances_deleted), getApplicationContext());
                 return false;
             }
         });

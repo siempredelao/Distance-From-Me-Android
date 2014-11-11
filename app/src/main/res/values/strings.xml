@@ -1,85 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- ACTIVITY MAIN -->
-    <string name="app_name">Distance From Me</string>
-    <string name="action_search">Search</string>
-    <string name="action_social_share">Share</string>
-    <string name="menu_legalnotices">Legal notices</string>
-    <string name="search_hint">Search Distance From Me</string>
-    <string name="searching">Searching</string>
-    <string name="wait">Please wait\u2026</string>
-    <string name="nofindaddress">No backend service available or very poor network signal. Try again in a while</string>
-    <string name="noresults">No matches were found</string>
-    <string name="loading">Searching your position. Please, wait</string>
-    <string name="action_load">Load distance</string>
-    <string name="gps_off">GPS disabled, would you like to enable it?</string>
-    <string name="gps_enable">Enable GPS</string>
-    <string name="do_nothing">Do nothing</string>
-    <string name="no_connection">Connection problems</string>
-    <string name="wireless_off">No wireless or network connection available, would you like to enable?</string>
-    <string name="wireless_enable">Enable</string>
-    <string name="select_address">Select an address</string>
-    <string name="list_dialog_title">Choose a distance</string>
-    <string name="menu_rateapp">Rate app</string>
-    <string name="rate_title">Rate this app</string>
-    <string name="rate_message">If you enjoy using Distance From Me, please give 5 stars and write a nice comment. Anyway, you can also complain about any error or make a suggestion by sending an email to the dev team.</string>
-    <string name="rate_positive_button">Go to Google Play Store</string>
-    <string name="rate_negative_button">Complain!</string>
-    <string name="complain_message">Complain/Suggestion about Distance From Me</string>
-    <string name="complain_hint">I want to tell the dev team </string>
-    <string name="complain_problem">There are no email clients installed</string>
-    <string name="menu_settings">Settings</string>
-    <string name="distances_deleted">Distances deleted</string>
-    <string name="no_distances_registered">No distances saved</string>
-    <string name="category_centre_title">Distance measure</string>
-    <string name="dialog_title">Centre map</string>
-    <string name="preference_centre_summary">Where pointing the map at distance measuring</string>
-    <string name="mode_DES">Centre in destination</string>
-    <string name="mode_CEN">Centre in the middle</string>
-    <string name="mode_NO">No animation</string>
-    <string name="category_db_title">Distance register</string>
-    <string name="preference_db_title">Delete distances</string>
-    <string name="preference_db_summary">Touch to delete all saved distances</string>
-    <string name="elevation_profile">Elevation profile</string>
-    <string name="preference_elevation_title">Show elevation profile</string>
-    <string name="preference_elevation_summary">Calculates elevation profile. This task may take some time depending on your network.</string>
-    <string name="first_point_needed">Starting point needed. Please select a point.</string>
+    <string name="app_name" translatable="false">Distance From Me</string>
+
+    <string name="action_bar_search_title">Search</string>
+    <string name="action_bar_search_hint">Search Distance From Me</string>
+    <string name="menu_legal_notices_title">Legal notices</string>
+    <string name="menu_load_title">Load distance</string>
+    <string name="menu_rate_app_title">Rate app</string>
+    <string name="menu_settings_title">Settings</string>
+
+    <string name="progressdialog_search_position_title">Searching</string>
+    <string name="progressdialog_search_position_message">Please wait\u2026</string>
+
+    <string name="toast_loading_position">Searching your position. Please, wait</string>
+    <string name="toast_no_find_address">No backend service available or very poor network signal. Try again in a while</string>
+    <string name="toast_no_results">No matches were found</string>
+
+    <string name="dialog_connection_problems_title">Connection problems</string>
+    <string name="dialog_connection_problems_message">No wireless or network connection available, would you like to enable?</string>
+    <string name="dialog_connection_problems_negative_button">Do nothing</string>
+    <string name="dialog_connection_problems_positive_button">Enable</string>
+
+    <string name="dialog_select_address_title">Select an address</string>
+    <string name="dialog_load_distances_title">Choose a distance</string>
+
+    <string name="dialog_rate_app_title">Rate this app</string>
+    <string name="dialog_rate_app_message">If you enjoy using Distance From Me, please give 5 stars and write a nice comment. Anyway, you can also contact the dev team if you have any suggestion, problem,\u2026</string>
+    <string name="dialog_rate_app_positive_button">Go to Play Store</string>
+    <string name="dialog_rate_app_negative_button">Contact us!</string>
+
     <string name="navigation_drawer_starting_point_header">STARTING POINT</string>
     <string name="navigation_drawer_starting_point_current_position_item">Current position</string>
     <string name="navigation_drawer_starting_point_any_position_item">Any position</string>
 
+    <string name="elevation_chart_title">Elevation profile (%s)</string>
+    <string name="toast_first_point_needed">Starting point needed. Please select a point.</string>
+
+
+    <!-- ACTIVITY SETTINGS -->
+    <string name="toast_distances_deleted">Distances deleted</string>
+    <string name="category_centre_title">Distance measure</string>
+    <string name="dialog_centre_map_title">Centre map</string>
+
+    <string name="preference_centre_map_title">Centre map</string>
+    <string name="preference_centre_map_summary">Where pointing the map at distance measuring</string>
+    <string name="animation_destination_item">Centre in destination</string>
+    <string name="animation_center_item">Centre in the middle</string>
+    <string name="no_animation_item">No animation</string>
+
+    <string name="preference_show_elevation_title">Show elevation profile</string>
+    <string name="preference_show_elevation_summary">Calculates elevation profile. This task may take some time depending on your network.</string>
+
+    <string name="category_db_title">Distance register</string>
+
+    <string name="preference_delete_distances_title">Delete distances</string>
+    <string name="preference_delete_distances_summary">Touch to delete all saved distances</string>
+
 
     <!-- ACTIVITY SHOWINFO -->
-    <string name="current">Current estimated position</string>
-    <string name="destination">Estimated destination</string>
-    <string name="noaddress">No address found for location</string>
-    <string name="distance">Distance</string>
-    <string name="menuitem_refresh">Refresh data</string>
-    <string name="menu_guardar">Save</string>
-    <string name="from">From</string>
-    <string name="to">To</string>
-    <string name="space">There are</string>
-    <string name="nolocation">Error trying to get address. Use refresh button</string>
-    <string name="nonetwork">Wireless connection failed. Turn on your wireless connection and try again refreshing</string>
+    <string name="action_bar_item_social_share_title">Share</string>
+    <string name="action_bar_item_refresh_title">Refresh data</string>
+    <string name="action_bar_item_save_title">Save</string>
+    <string name="info_current_position_title">Current estimated position:</string>
+    <string name="info_destination_position_title">Estimated destination:</string>
+    <string name="info_distance_title">Distance: %s</string>
+    <string name="error_no_address_found_message">No address found for location</string>
+    <string name="share_distance_from_message">From</string>
+    <string name="share_distance_to_message">To</string>
+    <string name="share_distance_there_are_message">There are</string>
+    <string name="toast_no_location_found">Error trying to get address. Use refresh button</string>
+    <string name="toast_network_problems">Wireless connection failed. Turn on your wireless connection and try again refreshing</string>
+
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Assign an alias to this distance:</string>
     <string name="alias_dialog_accept">Accept</string>
-    <string name="alias_dialog_toast_1">Distance \"</string>
-    <string name="alias_dialog_toast_2">\" correctly saved</string>
-    <string name="alias_dialog_toast_3">Distance correctly saved</string>
+    <string name="alias_dialog_with_name_toast">Distance \"%s\" correctly saved</string>
+    <string name="alias_dialog_no_name_toast">Distance correctly saved</string>
 
 
     <!-- ACTIVITY FEEDBACK -->
+    <string name="toast_send_feedback_error">There are no email clients installed</string>
     <string name="problem_type_header">Type of question</string>
     <string name="problem_type_listview_title">Select your question</string>
+
     <string name="problem_description_header">Detail of your question</string>
-    <string name="problem_description_hint">Write here your question! :)</string>
-    <string name="feedback_type_suggestion">Suggestion</string>
-    <string name="feedback_type_complain">Complain</string>
-    <string name="feedback_type_other">Other</string>
-    <string name="no_feedback_type_dialog_title">No type of question</string>
-    <string name="no_feedback_description_dialog_title">No description</string>
-    <string name="no_feedback_type_dialog_message">Please, provide a type of question in this contact form.</string>
-    <string name="no_feedback_description_dialog_message">Please, provide a description of your question in this contact form.</string>
+    <string name="problem_description_hint">Write here the details! :)</string>
+
+    <string name="expandable_item_feedback_type_suggestion">Suggestion</string>
+    <string name="expandable_item_feedback_type_complaint">Complaint</string>
+    <string name="expandable_item_feedback_type_other">Other</string>
+
+    <string name="dialog_no_feedback_type_title">No type of question</string>
+    <string name="dialog_no_feedback_type_message">Please, provide a type of question in this contact form.</string>
+    <string name="dialog_no_feedback_description_title">No description</string>
+    <string name="dialog_no_feedback_description_message">Please, provide a description of your question in this contact form.</string>
 
 </resources>

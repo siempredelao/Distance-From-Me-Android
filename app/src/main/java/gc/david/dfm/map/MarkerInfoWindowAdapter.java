@@ -19,10 +19,10 @@ import static butterknife.ButterKnife.inject;
  */
 public class MarkerInfoWindowAdapter implements InfoWindowAdapter {
 
-    @InjectView(R.id.infowindow_address_textview)
-    protected TextView tvAddress;
+    private final View     view;
 
-    private final View view;
+    @InjectView(R.id.infowindow_address_textview)
+    protected     TextView tvAddress;
 
     public MarkerInfoWindowAdapter(final Activity activity) {
         view = activity.getLayoutInflater().inflate(R.layout.custom_info, null);

@@ -34,20 +34,6 @@ import static gc.david.dfm.Utils.toastIt;
  */
 public class FeedbackActivity extends ActionBarActivity {
 
-    @InjectView(R.id.problem_type_expandablelistview)
-    protected ExpandableListView expandableListView;
-    @InjectView(R.id.problem_description_edittext)
-    protected EditText           etDetails;
-    @InjectView(R.id.problem_type_header_textview)
-    protected TextView           tvQuestionTypeHeader;
-    @InjectView(R.id.problem_description_header_textview)
-    protected TextView           tvQuestionDescriptionHeader;
-    @InjectView(R.id.send_feedback_button)
-    protected Button             tvSendFeedback;
-
-    private QuestionExpandableListAdapter questionExpandableListAdapter;
-    private List<String>                  feedbackTypes;
-
     private final TextWatcher nonEmptyTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
@@ -66,6 +52,20 @@ public class FeedbackActivity extends ActionBarActivity {
             }
         }
     };
+
+    @InjectView(R.id.problem_type_expandablelistview)
+    protected ExpandableListView expandableListView;
+    @InjectView(R.id.problem_description_edittext)
+    protected EditText           etDetails;
+    @InjectView(R.id.problem_type_header_textview)
+    protected TextView           tvQuestionTypeHeader;
+    @InjectView(R.id.problem_description_header_textview)
+    protected TextView           tvQuestionDescriptionHeader;
+    @InjectView(R.id.send_feedback_button)
+    protected Button             tvSendFeedback;
+
+    private QuestionExpandableListAdapter questionExpandableListAdapter;
+    private List<String>                  feedbackTypes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +131,7 @@ public class FeedbackActivity extends ActionBarActivity {
                 hideKeyboard();
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                toastIt(getText(R.string.complain_problem), getApplicationContext());
+                toastIt(getString(R.string.toast_send_feedback_error), getApplicationContext());
             }
         }
     }
@@ -144,17 +144,19 @@ public class FeedbackActivity extends ActionBarActivity {
 
         if (!validateQuestionType) {
             showAlertDialog(null,
-                            getString(R.string.no_feedback_type_dialog_title),
-                            getString(R.string.no_feedback_type_dialog_message),
+                            getString(R.string.dialog_no_feedback_type_title),
+                            getString(R.string.dialog_no_feedback_type_message),
                             null,
-                            getText(android.R.string.ok), FeedbackActivity.this);
+                            getString(android.R.string.ok),
+                            FeedbackActivity.this);
             return false;
         } else if (!validateDescription) {
             showAlertDialog(null,
-                            getString(R.string.no_feedback_description_dialog_title),
-                            getString(R.string.no_feedback_description_dialog_message),
+                            getString(R.string.dialog_no_feedback_description_title),
+                            getString(R.string.dialog_no_feedback_description_message),
                             null,
-                            getText(android.R.string.ok), FeedbackActivity.this);
+                            getString(android.R.string.ok),
+                            FeedbackActivity.this);
             return false;
         }
         return true;

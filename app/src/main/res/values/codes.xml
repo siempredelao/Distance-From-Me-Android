@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="mode">
-        <item>@string/mode_DES</item>
-        <item>@string/mode_CEN</item>
-        <item>@string/mode_NO</item>
+    <string-array name="centre_animation_entries">
+        <item>@string/animation_destination_item</item>
+        <item>@string/animation_center_item</item>
+        <item>@string/no_animation_item</item>
     </string-array>
-    <string-array name="modecode">
+    <string-array name="centre_animation_entryValues">
         <item>DES</item>
         <item>CEN</item>
         <item>NO</item>
