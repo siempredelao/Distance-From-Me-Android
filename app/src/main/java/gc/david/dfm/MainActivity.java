@@ -452,8 +452,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             handleSearchIntent(intent);
         } else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
             try {
-                handleSendPositionIntent(intent);
-            } catch (NoSuchFieldException e) {
+                handleViewPositionIntent(intent);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -479,29 +479,62 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      *
      * @param intent Input intent with position data.
      */
-    private void handleSendPositionIntent(final Intent intent) throws NoSuchFieldException {
+    private void handleViewPositionIntent(final Intent intent) throws Exception {
         final Uri uri = intent.getData();
+        Mint.addExtraData("queryParameter", uri.toString());
 
-        // Buscamos las coordenadas dentro del parámetro 'q' de la url
-        final String queryParameter = uri.getQueryParameter("q");
-        if (queryParameter != null) {
-            // http://www.regexplanet.com/advanced/java/index.html
-            // De momento solo reconoce el patron latitud,longitud
-            final String regex = "(\\-?\\d+\\.\\d+),(\\-?\\d+\\.\\d+)";
-            final Pattern pattern = Pattern.compile(regex);
-            final Matcher matcher = pattern.matcher(queryParameter);
+        final String uriScheme = uri.getScheme();
+        if (uriScheme.equals("geo")) {
+            final String schemeSpecificPart = uri.getSchemeSpecificPart();
+            final Matcher matcher = getMatcherForUri(schemeSpecificPart);
             if (matcher.find()) {
-                sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)),
-                                                     Double.valueOf(matcher.group(2)));
-                mustShowPositionWhenComingFromOutside = true;
+                if (matcher.group(1).equals("0") && matcher.group(2).equals("0")) {
+                    if (matcher.find()) { // Manage geo:0,0?q=lat,lng(label)
+                        setDestinationPosition(matcher);
+                    } else { // Manage geo:0,0?q=my+street+address
+                        String destination = Uri.decode(uri.getQuery()).replace('+', ' ');
+                        destination = destination.replace("q=", "");
+
+                        // TODO check this ugly workaround
+                        new SearchPositionByName().execute(destination);
+                        mustShowPositionWhenComingFromOutside = true;
+                    }
+                } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
+                    setDestinationPosition(matcher);
+                }
             } else {
-                Mint.addExtraData("queryParameter", queryParameter);
                 throw new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " + matcher.toString());
             }
+        } else if ((uriScheme.equals("http") || uriScheme.equals("https"))
+                   && (uri.getHost().equals("maps.google.com"))) { // Manage maps.google.com?q=latitude,longitude
+
+            final String queryParameter = uri.getQueryParameter("q");
+            if (queryParameter != null) {
+                final Matcher matcher = getMatcherForUri(queryParameter);
+                if (matcher.find()) {
+                    setDestinationPosition(matcher);
+                } else {
+                    throw new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " + matcher.toString());
+                }
+            } else {
+                throw new NoSuchFieldException("Query sin parámetro q.");
+            }
         } else {
-            Mint.addExtraData("queryParameter", null);
-            throw new NoSuchFieldException("Query sin parámetro q.");
+            throw new Exception("Imposible tratar la query " + uri.toString());
         }
+    }
+
+    private void setDestinationPosition(final Matcher matcher) {
+        sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)), Double.valueOf(matcher.group(2)));
+        mustShowPositionWhenComingFromOutside = true;
+    }
+
+    private Matcher getMatcherForUri(final String schemeSpecificPart) {
+        // http://regex101.com/
+        // http://www.regexplanet.com/advanced/java/index.html
+        final String regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)";
+        final Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(schemeSpecificPart);
     }
 
     /**
@@ -590,7 +623,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                     break;
             }
             progressDialog.dismiss();
-            MenuItemCompat.collapseActionView(searchMenuItem);
+            if (searchMenuItem != null) {
+                MenuItemCompat.collapseActionView(searchMenuItem);
+            }
         }
 
         private void handleSelectedAddress() {
@@ -611,11 +646,16 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                     drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
                 }
             } else {
-                if (coordinates.isEmpty()) {
-                    coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                if (!appHasJustStarted) {
+                    if (coordinates.isEmpty()) {
+                        coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                    }
+                    coordinates.add(selectedPosition);
+                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+                } else {
+                    // Coming from View Action Intent
+                    sendDestinationPosition = selectedPosition;
                 }
-                coordinates.add(selectedPosition);
-                drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
             }
         }
 
