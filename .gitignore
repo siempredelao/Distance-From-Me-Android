@@ -21,5 +21,4 @@ gradle
 # Local configuration file (sdk path, etc)
 local.properties
 .classpath
-import-summary.txt
 *.iml
