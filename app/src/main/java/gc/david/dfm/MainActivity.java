@@ -330,7 +330,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             final List<Integer> distanceIcons = Lists.newArrayList(R.drawable.ic_action_device_gps_fixed,
                                                                    R.drawable.ic_action_communication_location_on);
             drawerList = (ListView) findViewById(R.id.left_drawer);
-            drawerList.setAdapter(new NavigationDrawerItemAdapter(this, distanceModes, distanceIcons));
 
             // TODO cambiar esto por un header como dios manda
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -340,6 +339,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             tvListElement.setClickable(false);
             tvListElement.setTextColor(getResources().getColor(R.color.white));
             drawerList.addHeaderView(convertView);
+            drawerList.setAdapter(new NavigationDrawerItemAdapter(this, distanceModes, distanceIcons));
 
             drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

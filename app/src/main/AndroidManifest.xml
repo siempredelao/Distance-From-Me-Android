@@ -49,6 +49,7 @@
             <!-- Capturar la visualización con el whatsapp por ejemplo -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
@@ -62,10 +63,11 @@
             <!-- Capturar la visualización de cualquier uri "geo" -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data android:scheme="geo" />
+                <data android:scheme="geo"/>
             </intent-filter>
 
             <meta-data
@@ -117,13 +119,13 @@
             android:value="@integer/google_play_services_version"/>
 
         <!-- Debug key -->
+        <!--<meta-data-->
+            <!--android:name="com.google.android.maps.v2.API_KEY"-->
+            <!--android:value="AIzaSyCjo4HxVTL5RYKXsmZ76Sj9lXyRXcWRDEI"/>-->
+        <!-- Release key -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCjo4HxVTL5RYKXsmZ76Sj9lXyRXcWRDEI"/>
-        <!-- Release key -->
-        <!--<meta-data-->
-        <!--android:name="com.google.android.maps.v2.API_KEY"-->
-        <!--android:value="AIzaSyBNgeKm600hGUcFTDan6d2m5OHsKUeQm4Q" />-->
+            android:value="AIzaSyBNgeKm600hGUcFTDan6d2m5OHsKUeQm4Q"/>
     </application>
 
 </manifest>

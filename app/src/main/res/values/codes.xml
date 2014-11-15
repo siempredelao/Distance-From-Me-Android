@@ -6,8 +6,8 @@
         <item>@string/no_animation_item</item>
     </string-array>
     <string-array name="centre_animation_entryValues">
-        <item>DES</item>
-        <item>CEN</item>
-        <item>NO</item>
+        <item>@string/animation_destination_code</item>
+        <item>@string/animation_center_code</item>
+        <item>@string/no_animation_code</item>
     </string-array>
 </resources>

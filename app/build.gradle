@@ -7,12 +7,12 @@ android {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 10
 		targetSdkVersion 21
-		versionName '1.4'
-		versionCode 14
+		versionName '1.8'
+		versionCode 18
 	}
 	buildTypes {
 		release {
-			runProguard true
+			runProguard false
 			proguardFiles 'proguard-project.txt'
 		}
 	}
