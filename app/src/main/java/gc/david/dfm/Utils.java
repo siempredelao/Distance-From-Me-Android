@@ -19,8 +19,8 @@ public class Utils {
      * @param charSequence The string to show.
      * @param context      Activity context.
      */
-    public static void toastIt(final CharSequence charSequence, final Context context) {
-        Toast.makeText(context, charSequence.toString(), Toast.LENGTH_LONG).show();
+    public static void toastIt(final String charSequence, final Context context) {
+        Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
     }
 
 
@@ -47,10 +47,10 @@ public class Utils {
      * @param activity       Activity which runs this method.
      */
     public static void showAlertDialog(final String action,
-                                       final CharSequence title,
-                                       final CharSequence message,
-                                       final CharSequence positiveButton,
-                                       final CharSequence negativeButton,
+                                       final String title,
+                                       final String message,
+                                       final String positiveButton,
+                                       final String negativeButton,
                                        final Activity activity) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title)

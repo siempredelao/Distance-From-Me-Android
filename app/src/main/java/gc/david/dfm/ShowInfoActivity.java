@@ -48,6 +48,14 @@ import static gc.david.dfm.Utils.toastIt;
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
+    public static final String       POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
+    public static final String       DISTANCE_EXTRA_KEY_NAME            = "distancia";
+    private final       String       originAddressKey                   = "originAddress";
+    private final       String       destinationAddressKey              = "destinationAddress";
+    private final       String       distanceKey                        = "distance";
+    private final       String       wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
+    private final       String       aliasHintKey                       = "aliasHint";
+
     @InjectView(R.id.titulo_datos1)
     protected TextView tvHeaderOriginAddress;
     @InjectView(R.id.titulo_datos2)
@@ -67,13 +75,6 @@ public class ShowInfoActivity extends ActionBarActivity {
     private             boolean      wasSavingWhenOrientationChanged    = false;
     private             Dialog       savingInDBDialog                   = null;
     private             EditText     etAlias                            = null;
-    private final       String       originAddressKey                   = "originAddress";
-    private final       String       destinationAddressKey              = "destinationAddress";
-    private final       String       distanceKey                        = "distance";
-    private final       String       wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
-    private final       String       aliasHintKey                       = "aliasHint";
-    public static final String       POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
-    public static final String       DISTANCE_EXTRA_KEY_NAME            = "distancia";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,15 +94,14 @@ public class ShowInfoActivity extends ActionBarActivity {
             originAddress = savedInstanceState.getString(originAddressKey);
             destinationAddress = savedInstanceState.getString(destinationAddressKey);
 
-            tvOriginAddress.setText(originAddress +
-                                    "\n\n(" +
-                                    positionsList.get(0).latitude + ", " +
-                                    positionsList.get(0).longitude + ")");
+            tvOriginAddress.setText(String.format("%s\n\n(%f,%f)",
+                                                  originAddress, positionsList.get(0).latitude,
+                                                  positionsList.get(0).longitude));
 
-            tvDestinationAddress.setText(destinationAddress + "\n\n(" +
-                                         positionsList.get(positionsList.size() - 1).latitude +
-                                         ", " +
-                                         positionsList.get(positionsList.size() - 1).longitude + ")");
+            tvDestinationAddress.setText(String.format("%s\n\n(%f,%f)",
+                                                       destinationAddress,
+                                                       positionsList.get(positionsList.size() - 1).latitude,
+                                                       positionsList.get(positionsList.size() - 1).longitude));
 
             // Este se modifica dos veces...
             distance = savedInstanceState.getString(distanceKey);
@@ -150,8 +150,8 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Fill Textviews titles.
      */
     private void fillTitlesHeaders() {
-        tvHeaderOriginAddress.setText(getText(R.string.current) + ":");
-        tvHeaderDestinationAddress.setText(getText(R.string.destination) + ":");
+        tvHeaderOriginAddress.setText(getString(R.string.info_current_position_title));
+        tvHeaderDestinationAddress.setText(getString(R.string.info_destination_position_title));
     }
 
     /**
@@ -164,16 +164,14 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                               tvDestinationAddress).get();
 
             // Esto a lo mejor hay que ponerlo en el onPostExecute!
-            tvOriginAddress.setText(originAddress +
-                                    "\n\n(" +
-                                    positionsList.get(0).latitude +
-                                    ", " +
-                                    positionsList.get(0).longitude + ")");
-            tvDestinationAddress.setText(destinationAddress +
-                                         "\n\n(" +
-                                         positionsList.get(positionsList.size() - 1).latitude +
-                                         ", " +
-                                         positionsList.get(positionsList.size() - 1).longitude + ")");
+            tvOriginAddress.setText(String.format("%s\n\n(%f,%f)",
+                                                  originAddress,
+                                                  positionsList.get(0).latitude,
+                                                  positionsList.get(0).longitude));
+            tvDestinationAddress.setText(String.format("%s\n\n(%f,%f)",
+                                                       destinationAddress,
+                                                       positionsList.get(positionsList.size() - 1).latitude,
+                                                       positionsList.get(positionsList.size() - 1).longitude));
         } catch (final InterruptedException e) {
             e.printStackTrace();
         } catch (final ExecutionException e) {
@@ -188,7 +186,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Fill Textview tvDistance.
      */
     private void fillDistanceInfo() {
-        tvDistance.setText(getText(R.string.distance) + ": " + distance);
+        tvDistance.setText(getString(R.string.info_distance_title, distance));
     }
 
     @Override
@@ -216,21 +214,15 @@ public class ShowInfoActivity extends ActionBarActivity {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "\nDistance From Me (http://goo.gl/0IBHFN)\n"
-                                                +
-                                                getText(R.string.from) +
-                                                "\n"
-                                                +
-                                                originAddress +
-                                                "\n\n" +
-                                                getText(R.string.to) +
-                                                "\n"
-                                                +
-                                                destinationAddress +
-                                                "\n\n" +
-                                                getText(R.string.space) +
-                                                "\n" +
+
+        final String extra_text = String.format("\nDistance From Me (http://goo.gl/0IBHFN)\n%s\n%s\n\n%s\n%s\n\n%s\n%s",
+                                                getString(R.string.share_distance_from_message),
+                                                originAddress,
+                                                getString(R.string.share_distance_to_message),
+                                                destinationAddress,
+                                                getString(R.string.share_distance_there_are_message),
                                                 distance);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, extra_text);
         return shareIntent;
     }
 
@@ -277,8 +269,8 @@ public class ShowInfoActivity extends ActionBarActivity {
         etAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         etAlias.setText(defaultText);
 
-        builder.setMessage(getText(R.string.alias_dialog_message))
-               .setTitle(getText(R.string.alias_dialog_title))
+        builder.setMessage(getString(R.string.alias_dialog_message))
+               .setTitle(getString(R.string.alias_dialog_title))
                .setView(etAlias)
                .setInverseBackgroundForced(false)
                .setOnCancelListener(new OnCancelListener() {
@@ -287,7 +279,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                        wasSavingWhenOrientationChanged = false;
                    }
                })
-               .setPositiveButton(getText(R.string.alias_dialog_accept), new OnClickListener() {
+               .setPositiveButton(getString(R.string.alias_dialog_accept), new OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
                        insertDataIntoDatabase(etAlias.getText().toString());
@@ -319,11 +311,10 @@ public class ShowInfoActivity extends ActionBarActivity {
 
                        // Mostrar un mensaje de que se ha guardado correctamente
                        if (!aliasToSave.equals("")) {
-                           toastIt(getText(R.string.alias_dialog_toast_1) +
-                                   aliasToSave +
-                                   getText(R.string.alias_dialog_toast_2), getApplicationContext());
+                           toastIt(getString(R.string.alias_dialog_with_name_toast, aliasToSave),
+                                   getApplicationContext());
                        } else {
-                           toastIt(getText(R.string.alias_dialog_toast_3), getApplicationContext());
+                           toastIt(getString(R.string.alias_dialog_no_name_toast), getApplicationContext());
                        }
                    }
                });
@@ -345,7 +336,7 @@ public class ShowInfoActivity extends ActionBarActivity {
             startUpdate();
 
             if (!isOnline(context)) {
-                toastIt(getText(R.string.nonetwork), context);
+                toastIt(getString(R.string.toast_network_problems), context);
 
                 endUpdate();
                 cancel(false);
@@ -364,14 +355,12 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                      currentLocation.longitude, 1);
             } catch (final IOException e1) {
                 e1.printStackTrace();
-                return (getText(R.string.nolocation).toString());
+                return (getString(R.string.toast_no_location_found));
             } catch (final IllegalArgumentException e2) {
                 // Error message to post in the log
-                final String errorString = "Illegal arguments "
-                                           + Double.toString(currentLocation.latitude)
-                                           + " , "
-                                           + Double.toString(currentLocation.longitude)
-                                           + " passed to address service";
+                final String errorString = String.format("Illegal arguments %s.%s passed to address service",
+                                                         Double.toString(currentLocation.latitude),
+                                                         Double.toString(currentLocation.longitude));
                 e2.printStackTrace();
                 return errorString;
             }
@@ -395,7 +384,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                                      address.getCountryName());
             } else {
                 // If there aren't any addresses, post a message
-                return getText(R.string.noaddress).toString();
+                return getString(R.string.error_no_address_found_message);
             }
         }
 

@@ -4,23 +4,23 @@
     <PreferenceCategory android:title="@string/category_centre_title">
         <ListPreference
             android:defaultValue="CEN"
-            android:dialogTitle="@string/dialog_title"
-            android:entries="@array/mode"
-            android:entryValues="@array/modecode"
-            android:key="centre"
-            android:summary="@string/preference_centre_summary"
-            android:title="@string/dialog_title"/>
+            android:dialogTitle="@string/dialog_centre_map_title"
+            android:entries="@array/centre_animation_entries"
+            android:entryValues="@array/centre_animation_entryValues"
+            android:key="animation"
+            android:summary="@string/preference_centre_map_summary"
+            android:title="@string/preference_centre_map_title"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="elevation_chart"
-            android:summary="@string/preference_elevation_summary"
-            android:title="@string/preference_elevation_title"/>
+            android:summary="@string/preference_show_elevation_summary"
+            android:title="@string/preference_show_elevation_title"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/category_db_title">
         <Preference
             android:key="bbdd"
-            android:summary="@string/preference_db_summary"
-            android:title="@string/preference_db_title"/>
+            android:summary="@string/preference_delete_distances_summary"
+            android:title="@string/preference_delete_distances_title"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

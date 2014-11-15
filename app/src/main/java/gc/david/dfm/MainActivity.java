@@ -105,45 +105,40 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                                GooglePlayServicesClient.ConnectionCallbacks,
                                                                GooglePlayServicesClient.OnConnectionFailedListener {
 
-    private final        int             FIRST_DRAWER_ITEM_INDEX               = 1;
-    private              GoogleMap       googleMap                             = null;
-    // A request to connect to Location Services
-    private              LocationRequest locationRequest                       = null;
-    // Stores the current instantiation of the location client in this object
-    private              LocationClient  locationClient                        = null;
-    private              Location        currentLocation                       = null;
-    // Moves to current position if app has just started
-    private              boolean         appHasJustStarted                     = true;
-    private              String          distanceMeasuredAsText                = "";
-    private              MenuItem        searchMenuItem                        = null;
-    // Show position if we come from other app (p.e. Whatsapp)
-    private              boolean         mustShowPositionWhenComingFromOutside = false;
-    private              LatLng          sendDestinationPosition               = null;
-    private              IMBanner        banner                                = null;
-    private              boolean         bannerShown                           = false;
-    private              boolean         elevationChartShown                   = false;
-    private static final int             ELEVATION_SAMPLES                     = 100;
-    @SuppressWarnings("rawtypes")
-    private              AsyncTask       showingElevationTask                  = null;
-    private              GraphView       graphView                             = null;
-    private float                 DEVICE_DENSITY;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private DrawerLayout          drawerLayout;
-    private ListView              drawerList;
+    private static final int ELEVATION_SAMPLES       = 100;
+    private final        int FIRST_DRAWER_ITEM_INDEX = 1;
 
     @InjectView(R.id.elevationchart)
     protected RelativeLayout rlElevationChart;
     @InjectView(R.id.closeChart)
     protected ImageView      ivCloseElevationChart;
 
-    private static enum DistanceMode {
-        DISTANCE_FROM_CURRENT_POINT,
-        DISTANCE_FROM_ANY_POINT
-    }
-
-    private DistanceMode distanceMode;
-    private List<LatLng> coordinates;
-    private boolean      calculatingDistance;
+    private GoogleMap       googleMap                             = null;
+    // A request to connect to Location Services
+    private LocationRequest locationRequest                       = null;
+    // Stores the current instantiation of the location client in this object
+    private LocationClient  locationClient                        = null;
+    private Location        currentLocation                       = null;
+    // Moves to current position if app has just started
+    private boolean         appHasJustStarted                     = true;
+    private String          distanceMeasuredAsText                = "";
+    private MenuItem        searchMenuItem                        = null;
+    // Show position if we come from other app (p.e. Whatsapp)
+    private boolean         mustShowPositionWhenComingFromOutside = false;
+    private LatLng          sendDestinationPosition               = null;
+    private IMBanner        banner                                = null;
+    private boolean         bannerShown                           = false;
+    private boolean         elevationChartShown                   = false;
+    @SuppressWarnings("rawtypes")
+    private AsyncTask       showingElevationTask                  = null;
+    private GraphView       graphView                             = null;
+    private float                 DEVICE_DENSITY;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout          drawerLayout;
+    private ListView              drawerList;
+    private DistanceMode          distanceMode;
+    private List<LatLng>          coordinates;
+    private boolean               calculatingDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,7 +207,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
                     if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                         if (coordinates == null || coordinates.isEmpty()) {
-                            toastIt(getString(R.string.first_point_needed), getApplicationContext());
+                            toastIt(getString(R.string.toast_first_point_needed), getApplicationContext());
                         } else {
                             coordinates.add(point);
                             drawAndShowMultipleDistances(coordinates, "", false, true);
@@ -325,7 +320,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
             // Iniciando la app
             if (currentLocation == null) {
-                toastIt(getText(R.string.loading), getApplicationContext());
+                toastIt(getString(R.string.toast_loading_position), getApplicationContext());
             }
 
             handleIntents(getIntent());
@@ -354,7 +349,10 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             });
 
             drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.wait, R.string.wait) {
+            actionBarDrawerToggle = new ActionBarDrawerToggle(this,
+                                                              drawerLayout,
+                                                              R.string.progressdialog_search_position_message,
+                                                              R.string.progressdialog_search_position_message) {
                 @Override
                 public void onDrawerOpened(View drawerView) {
                     super.onDrawerOpened(drawerView);
@@ -401,26 +399,28 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Swaps starting point in the main content view
      */
     private void selectItem(int position) {
-        distanceMode = (position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
-                       DistanceMode.DISTANCE_FROM_CURRENT_POINT :
-                       DistanceMode.DISTANCE_FROM_ANY_POINT;
+        if (position != 0) {
+            distanceMode = (position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
+                           DistanceMode.DISTANCE_FROM_CURRENT_POINT :
+                           DistanceMode.DISTANCE_FROM_ANY_POINT;
 
-        Mint.addExtraData("distanceMode", String.valueOf(distanceMode));
+            Mint.addExtraData("distanceMode", String.valueOf(distanceMode));
 
-        // Highlight the selected item and close the drawer
-        drawerList.setItemChecked(position, true);
-        drawerLayout.closeDrawer(drawerList);
+            // Highlight the selected item and close the drawer
+            drawerList.setItemChecked(position, true);
+            drawerLayout.closeDrawer(drawerList);
 
-        calculatingDistance = false;
+            calculatingDistance = false;
 
-        coordinates = Lists.newArrayList();
-        googleMap.clear();
-        if (showingElevationTask != null) {
-            showingElevationTask.cancel(true);
+            coordinates = Lists.newArrayList();
+            googleMap.clear();
+            if (showingElevationTask != null) {
+                showingElevationTask.cancel(true);
+            }
+            rlElevationChart.setVisibility(View.INVISIBLE);
+            elevationChartShown = false;
+            fixMapPadding();
         }
-        rlElevationChart.setVisibility(View.INVISIBLE);
-        elevationChartShown = false;
-        fixMapPadding();
     }
 
     @Override
@@ -538,231 +538,16 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     }
 
     /**
-     * A subclass of AsyncTask that calls getFromLocationName() in the background.
-     */
-    private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
-
-        protected List<Address>  addressList;
-        protected StringBuilder  fullAddress;
-        protected LatLng         selectedPosition;
-        protected ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            addressList = null;
-            fullAddress = new StringBuilder();
-            selectedPosition = null;
-
-            // Comprobamos que haya conexión con internet (WiFi o Datos)
-            if (!isOnline(getApplicationContext())) {
-                showWifiAlertDialog();
-
-                // Restauramos el menú y que vuelva a empezar de nuevo
-                MenuItemCompat.collapseActionView(searchMenuItem);
-                cancel(false);
-            } else {
-                progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setTitle(R.string.searching);
-                progressDialog.setMessage(getText(R.string.wait));
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
-            }
-        }
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-            /* get latitude and longitude from the addressList */
-            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            try {
-                addressList = geoCoder.getFromLocationName((String) params[0], 5);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return -1; // Network is unavailable or any other I/O problem occurs
-            }
-            if (addressList == null) {
-                return -3; // No backend service available
-            } else if (addressList.isEmpty()) {
-                return -2; // No matches were found
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            switch (result) {
-                case 0:
-                    if (addressList != null && addressList.size() > 0) {
-                        // Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
-                        if (addressList.size() == 1) {
-                            processSelectedAddress(0);
-                            handleSelectedAddress();
-                        } else {
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setTitle(getText(R.string.select_address));
-                            builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
-                                             new DialogInterface.OnClickListener() {
-                                                 public void onClick(DialogInterface dialog, int item) {
-                                                     processSelectedAddress(item);
-                                                     handleSelectedAddress();
-                                                 }
-                                             });
-                            builder.create().show();
-                        }
-                    }
-                    break;
-                case -1:
-                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
-                    break;
-                case -2:
-                    toastIt(getText(R.string.noresults), getApplicationContext());
-                    break;
-                case -3:
-                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
-                    break;
-            }
-            progressDialog.dismiss();
-            if (searchMenuItem != null) {
-                MenuItemCompat.collapseActionView(searchMenuItem);
-            }
-        }
-
-        private void handleSelectedAddress() {
-            if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-                coordinates.add(selectedPosition);
-                if (coordinates.isEmpty()) {
-                    // add marker
-                    final Marker marker = addMarker(selectedPosition);
-                    marker.setTitle(fullAddress.toString());
-                    marker.showInfoWindow();
-                    // moveCamera
-                    moveCameraZoom(selectedPosition, selectedPosition, false);
-                    distanceMeasuredAsText = calculateDistance(Lists.newArrayList(selectedPosition, selectedPosition));
-                    // That means we are looking for a first position, so we want to calculate a distance starting
-                    // from here
-                    calculatingDistance = true;
-                } else {
-                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
-                }
-            } else {
-                if (!appHasJustStarted) {
-                    if (coordinates.isEmpty()) {
-                        coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                    }
-                    coordinates.add(selectedPosition);
-                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
-                } else {
-                    // Coming from View Action Intent
-                    sendDestinationPosition = selectedPosition;
-                }
-            }
-        }
-
-        /**
-         * Processes the address selected by the user and sets the new destination
-         * position.
-         *
-         * @param item The item index in the AlertDialog.
-         */
-        protected void processSelectedAddress(final int item) {
-            // Fill address info to show in the marker info window
-            final Address address = addressList.get(item);
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                fullAddress.append(address.getAddressLine(i)).append("\n");
-            }
-            selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
-        }
-
-        /**
-         * Extract a list of address from a list of Address objects.
-         *
-         * @param addressList An Address's list.
-         * @return A string list with only addresses in text.
-         */
-        protected List<String> groupAddresses(final List<Address> addressList) {
-            final List<String> result = Lists.newArrayList();
-            StringBuilder stringBuilder;
-            for (final Address l : addressList) {
-                stringBuilder = new StringBuilder();
-                for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
-                    stringBuilder.append(l.getAddressLine(j)).append("\n");
-                }
-                result.add(stringBuilder.toString());
-            }
-            return result;
-        }
-    }
-
-    /**
-     * A subclass of SearchPositionByName to get position by coordinates.
-     */
-    private class SearchPositionByCoordinates extends SearchPositionByName {
-        @Override
-        protected Integer doInBackground(Object... params) {
-            /* get latitude and longitude from the addressList */
-            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
-            final LatLng latLng = (LatLng) params[0];
-            try {
-                addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-            } catch (final IOException e) {
-                e.printStackTrace();
-                return -1; // No encuentra una dirección, no puede conectar con el servidor
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalArgumentException("Error en latitud=" +
-                                                   latLng.latitude +
-                                                   "o longitud=" +
-                                                   latLng.longitude +
-                                                   ". \n" +
-                                                   e);
-            }
-            if (addressList == null) {
-                return -3; // empty list if there is no backend service available
-            } else if (addressList.size() > 0) {
-                return 0;
-            } else {
-                return -2; // null if no matches were found // Cuando no hay conexión que sirva
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            switch (result) {
-                case 0:
-                    processSelectedAddress(0);
-                    drawAndShowMultipleDistances(Lists.newArrayList(new LatLng(currentLocation.getLatitude(),
-                                                                               currentLocation.getLongitude()),
-                                                                    selectedPosition),
-                                                 fullAddress.toString(),
-                                                 false,
-                                                 true);
-                    break;
-                case -1:
-                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
-                    break;
-                case -2:
-                    toastIt(getText(R.string.noresults), getApplicationContext());
-                    break;
-                case -3:
-                    toastIt(getText(R.string.nofindaddress), getApplicationContext());
-                    break;
-            }
-            progressDialog.dismiss();
-        }
-
-    }
-
-    /**
      * Shows the wireless centralized settings in API<11, otherwise shows general settings
      */
     private void showWifiAlertDialog() {
         showAlertDialog((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
                          android.provider.Settings.ACTION_WIRELESS_SETTINGS :
                          android.provider.Settings.ACTION_SETTINGS),
-                        getText(R.string.no_connection),
-                        getText(R.string.wireless_off),
-                        getText(R.string.wireless_enable),
-                        getText(R.string.do_nothing),
+                        getString(R.string.dialog_connection_problems_title),
+                        getString(R.string.dialog_connection_problems_message),
+                        getString(R.string.dialog_connection_problems_positive_button),
+                        getString(R.string.dialog_connection_problems_negative_button),
                         MainActivity.this);
     }
 
@@ -841,7 +626,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         if (allDistances != null && allDistances.size() > 0) {
             final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getText(R.string.list_dialog_title).toString())
+            builder.setTitle(getString(R.string.dialog_load_distances_title))
                    .setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
@@ -854,8 +639,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                            drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
                        }
                    }).create().show();
-        } else {
-            toastIt(getText(R.string.no_distances_registered), getApplicationContext());
         }
     }
 
@@ -879,22 +662,24 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     private void showRateDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.rate_title)
-               .setMessage(R.string.rate_message)
-               .setPositiveButton(getText(R.string.rate_positive_button), new DialogInterface.OnClickListener() {
-                   @Override
-                   public void onClick(DialogInterface dialog, int which) {
-                       dialog.dismiss();
-                       openPlayStoreAppPage();
-                   }
-               })
-               .setNegativeButton(getText(R.string.rate_negative_button), new DialogInterface.OnClickListener() {
-                   @Override
-                   public void onClick(DialogInterface dialog, int which) {
-                       dialog.dismiss();
-                       openFeedbackActivity();
-                   }
-               }).create().show();
+        builder.setTitle(R.string.dialog_rate_app_title)
+               .setMessage(R.string.dialog_rate_app_message)
+               .setPositiveButton(getString(R.string.dialog_rate_app_positive_button),
+                                  new DialogInterface.OnClickListener() {
+                                      @Override
+                                      public void onClick(DialogInterface dialog, int which) {
+                                          dialog.dismiss();
+                                          openPlayStoreAppPage();
+                                      }
+                                  })
+               .setNegativeButton(getString(R.string.dialog_rate_app_negative_button),
+                                  new DialogInterface.OnClickListener() {
+                                      @Override
+                                      public void onClick(DialogInterface dialog, int which) {
+                                          dialog.dismiss();
+                                          openFeedbackActivity();
+                                      }
+                                  }).create().show();
     }
 
     /**
@@ -918,7 +703,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     private void showGooglePlayServiceLicenseDialog() {
         final String LicenseInfo = GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
         final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
-        LicenseDialog.setTitle(R.string.menu_legalnotices);
+        LicenseDialog.setTitle(R.string.menu_legal_notices_title);
         LicenseDialog.setMessage(LicenseInfo);
         LicenseDialog.show();
     }
@@ -1274,7 +1059,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         double centerLon = 0.0;
 
         // Diferenciamos según preferencias
-        final String centre = getSharedPreferences(getBaseContext()).getString("centre", "CEN");
+        final String centre = getSharedPreferences(getBaseContext()).getString("animation", "CEN");
         if (centre.equals("CEN")) {
             centerLat = (p1.latitude + p2.latitude) / 2;
             centerLon = (p1.longitude + p2.longitude) / 2;
@@ -1370,6 +1155,244 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             showingElevationTask.cancel(true);
         }
         showingElevationTask = new GetAltitude().execute(positionListUrlParameter);
+    }
+
+    /**
+     * Sets map attending to the action which is performed.
+     */
+    private void fixMapPadding() {
+        if (bannerShown) {
+            if (elevationChartShown) {
+                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
+            } else {
+                googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
+            }
+        } else {
+            if (elevationChartShown) {
+                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
+            } else {
+                googleMap.setPadding(0, 0, 0, 0);
+            }
+        }
+    }
+
+    private static enum DistanceMode {
+        DISTANCE_FROM_CURRENT_POINT,
+        DISTANCE_FROM_ANY_POINT
+    }
+
+    /**
+     * A subclass of AsyncTask that calls getFromLocationName() in the background.
+     */
+    private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
+
+        protected List<Address>  addressList;
+        protected StringBuilder  fullAddress;
+        protected LatLng         selectedPosition;
+        protected ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            addressList = null;
+            fullAddress = new StringBuilder();
+            selectedPosition = null;
+
+            // Comprobamos que haya conexión con internet (WiFi o Datos)
+            if (!isOnline(getApplicationContext())) {
+                showWifiAlertDialog();
+
+                // Restauramos el menú y que vuelva a empezar de nuevo
+                MenuItemCompat.collapseActionView(searchMenuItem);
+                cancel(false);
+            } else {
+                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setTitle(R.string.progressdialog_search_position_title);
+                progressDialog.setMessage(getString(R.string.progressdialog_search_position_message));
+                progressDialog.setCancelable(false);
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+            }
+        }
+
+        @Override
+        protected Integer doInBackground(Object... params) {
+            /* get latitude and longitude from the addressList */
+            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                addressList = geoCoder.getFromLocationName((String) params[0], 5);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return -1; // Network is unavailable or any other I/O problem occurs
+            }
+            if (addressList == null) {
+                return -3; // No backend service available
+            } else if (addressList.isEmpty()) {
+                return -2; // No matches were found
+            } else {
+                return 0;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case 0:
+                    if (addressList != null && addressList.size() > 0) {
+                        // Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
+                        if (addressList.size() == 1) {
+                            processSelectedAddress(0);
+                            handleSelectedAddress();
+                        } else {
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setTitle(getString(R.string.dialog_select_address_title));
+                            builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
+                                             new DialogInterface.OnClickListener() {
+                                                 public void onClick(DialogInterface dialog, int item) {
+                                                     processSelectedAddress(item);
+                                                     handleSelectedAddress();
+                                                 }
+                                             });
+                            builder.create().show();
+                        }
+                    }
+                    break;
+                case -1:
+                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    break;
+                case -2:
+                    toastIt(getString(R.string.toast_no_results), getApplicationContext());
+                    break;
+                case -3:
+                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    break;
+            }
+            progressDialog.dismiss();
+            if (searchMenuItem != null) {
+                MenuItemCompat.collapseActionView(searchMenuItem);
+            }
+        }
+
+        private void handleSelectedAddress() {
+            if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+                coordinates.add(selectedPosition);
+                if (coordinates.isEmpty()) {
+                    // add marker
+                    final Marker marker = addMarker(selectedPosition);
+                    marker.setTitle(fullAddress.toString());
+                    marker.showInfoWindow();
+                    // moveCamera
+                    moveCameraZoom(selectedPosition, selectedPosition, false);
+                    distanceMeasuredAsText = calculateDistance(Lists.newArrayList(selectedPosition, selectedPosition));
+                    // That means we are looking for a first position, so we want to calculate a distance starting
+                    // from here
+                    calculatingDistance = true;
+                } else {
+                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+                }
+            } else {
+                if (!appHasJustStarted) {
+                    if (coordinates.isEmpty()) {
+                        coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                    }
+                    coordinates.add(selectedPosition);
+                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+                } else {
+                    // Coming from View Action Intent
+                    sendDestinationPosition = selectedPosition;
+                }
+            }
+        }
+
+        /**
+         * Processes the address selected by the user and sets the new destination
+         * position.
+         *
+         * @param item The item index in the AlertDialog.
+         */
+        protected void processSelectedAddress(final int item) {
+            // Fill address info to show in the marker info window
+            final Address address = addressList.get(item);
+            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
+                fullAddress.append(address.getAddressLine(i)).append("\n");
+            }
+            selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
+        }
+
+        /**
+         * Extract a list of address from a list of Address objects.
+         *
+         * @param addressList An Address's list.
+         * @return A string list with only addresses in text.
+         */
+        protected List<String> groupAddresses(final List<Address> addressList) {
+            final List<String> result = Lists.newArrayList();
+            StringBuilder stringBuilder;
+            for (final Address l : addressList) {
+                stringBuilder = new StringBuilder();
+                for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
+                    stringBuilder.append(l.getAddressLine(j)).append("\n");
+                }
+                result.add(stringBuilder.toString());
+            }
+            return result;
+        }
+    }
+
+    /**
+     * A subclass of SearchPositionByName to get position by coordinates.
+     */
+    private class SearchPositionByCoordinates extends SearchPositionByName {
+        @Override
+        protected Integer doInBackground(Object... params) {
+            /* get latitude and longitude from the addressList */
+            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            final LatLng latLng = (LatLng) params[0];
+            try {
+                addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+            } catch (final IOException e) {
+                e.printStackTrace();
+                return -1; // No encuentra una dirección, no puede conectar con el servidor
+            } catch (final IllegalArgumentException e) {
+                ;
+                throw new IllegalArgumentException(String.format("Error en latitud=%f o longitud=%f.\n%s",
+                                                                 latLng.latitude,
+                                                                 latLng.longitude,
+                                                                 e.toString()));
+            }
+            if (addressList == null) {
+                return -3; // empty list if there is no backend service available
+            } else if (addressList.size() > 0) {
+                return 0;
+            } else {
+                return -2; // null if no matches were found // Cuando no hay conexión que sirva
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            switch (result) {
+                case 0:
+                    processSelectedAddress(0);
+                    drawAndShowMultipleDistances(Lists.newArrayList(new LatLng(currentLocation.getLatitude(),
+                                                                               currentLocation.getLongitude()),
+                                                                    selectedPosition),
+                                                 fullAddress.toString(),
+                                                 false,
+                                                 true);
+                    break;
+                case -1:
+                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    break;
+                case -2:
+                    toastIt(getString(R.string.toast_no_results), getApplicationContext());
+                    break;
+                case -3:
+                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    break;
+            }
+            progressDialog.dismiss();
+        }
+
     }
 
     /**
@@ -1486,9 +1509,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
             // Creates the line and add it to the chart
             graphView = new LineGraphView(getApplicationContext(),
-                                          getText(R.string.elevation_profile).toString() + " ("
-                                          + Haversine.getAltitudeUnitByLocale(Locale.getDefault())
-                                          + ")");
+                                          getString(R.string.elevation_chart_title,
+                                                    Haversine.getAltitudeUnitByLocale(Locale.getDefault())));
             graphView.addSeries(series);
             graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
             graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
@@ -1517,25 +1539,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                         fixMapPadding();
                     }
                 });
-            }
-        }
-    }
-
-    /**
-     * Sets map attending to the action which is performed.
-     */
-    private void fixMapPadding() {
-        if (bannerShown) {
-            if (elevationChartShown) {
-                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
-            } else {
-                googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
-            }
-        } else {
-            if (elevationChartShown) {
-                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
-            } else {
-                googleMap.setPadding(0, 0, 0, 0);
             }
         }
     }

@@ -31,17 +31,6 @@ public class NavigationDrawerItemAdapter extends BaseAdapter {
         this.itemIcons = itemIcons;
     }
 
-    static class ViewHolder {
-        @InjectView(R.id.navigation_drawer_item_icon)
-        protected ImageView ivIcon;
-        @InjectView(R.id.navigation_drawer_item_title)
-        protected TextView  tvTitle;
-
-        public ViewHolder(final View view) {
-            inject(this, view);
-        }
-    }
-
     @Override
     public int getCount() {
         return itemTitles.size();
@@ -76,5 +65,16 @@ public class NavigationDrawerItemAdapter extends BaseAdapter {
         holder.tvTitle.setText(itemTitles.get(position));
 
         return item;
+    }
+
+    static class ViewHolder {
+        @InjectView(R.id.navigation_drawer_item_icon)
+        protected ImageView ivIcon;
+        @InjectView(R.id.navigation_drawer_item_title)
+        protected TextView  tvTitle;
+
+        public ViewHolder(final View view) {
+            inject(this, view);
+        }
     }
 }

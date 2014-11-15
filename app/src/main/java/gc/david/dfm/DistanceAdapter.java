@@ -36,19 +36,6 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
         return distanceList;
     }
 
-    static class ViewHolder {
-        @InjectView(R.id.alias)
-        protected TextView title;
-        @InjectView(R.id.distancia)
-        protected TextView distance;
-        @InjectView(R.id.fecha)
-        protected TextView date;
-
-        public ViewHolder(final View view) {
-            inject(this, view);
-        }
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -71,5 +58,18 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
         holder.date.setText(formatDate(distanceList.get(position).getDate(), "yyyy-MM-dd"));
 
         return item;
+    }
+
+    static class ViewHolder {
+        @InjectView(R.id.alias)
+        protected TextView title;
+        @InjectView(R.id.distancia)
+        protected TextView distance;
+        @InjectView(R.id.fecha)
+        protected TextView date;
+
+        public ViewHolder(final View view) {
+            inject(this, view);
+        }
     }
 }

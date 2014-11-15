@@ -15,8 +15,8 @@ import java.util.List;
 public class QuestionExpandableListAdapter extends BaseExpandableListAdapter {
 
     private final Context      context;
-    private       String       header;
     private final List<String> selectableElements;
+    private       String       header;
 
     public QuestionExpandableListAdapter(final Context context,
                                          final String header,
