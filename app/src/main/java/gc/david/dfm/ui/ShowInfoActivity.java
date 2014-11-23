@@ -1,4 +1,4 @@
-package gc.david.dfm;
+package gc.david.dfm.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,6 +33,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.InjectView;
+import gc.david.dfm.DFMApplication;
+import gc.david.dfm.R;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
@@ -48,13 +50,13 @@ import static gc.david.dfm.Utils.toastIt;
  */
 public class ShowInfoActivity extends ActionBarActivity {
 
-    public static final String       POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
-    public static final String       DISTANCE_EXTRA_KEY_NAME            = "distancia";
-    private final       String       originAddressKey                   = "originAddress";
-    private final       String       destinationAddressKey              = "destinationAddress";
-    private final       String       distanceKey                        = "distance";
-    private final       String       wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
-    private final       String       aliasHintKey                       = "aliasHint";
+    public static final String POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
+    public static final String DISTANCE_EXTRA_KEY_NAME            = "distancia";
+    private final       String originAddressKey                   = "originAddress";
+    private final       String destinationAddressKey              = "destinationAddress";
+    private final       String distanceKey                        = "distance";
+    private final       String wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
+    private final       String aliasHintKey                       = "aliasHint";
 
     @InjectView(R.id.titulo_datos1)
     protected TextView tvHeaderOriginAddress;
@@ -67,14 +69,14 @@ public class ShowInfoActivity extends ActionBarActivity {
     @InjectView(R.id.distancia)
     protected TextView tvDistance;
 
-    private             MenuItem     menuItem                           = null;
-    private             List<LatLng> positionsList                      = null;
-    private             String       originAddress                      = "";
-    private             String       destinationAddress                 = "";
-    private             String       distance                           = null;
-    private             boolean      wasSavingWhenOrientationChanged    = false;
-    private             Dialog       savingInDBDialog                   = null;
-    private             EditText     etAlias                            = null;
+    private MenuItem     menuItem                        = null;
+    private List<LatLng> positionsList                   = null;
+    private String       originAddress                   = "";
+    private String       destinationAddress              = "";
+    private String       distance                        = null;
+    private boolean      wasSavingWhenOrientationChanged = false;
+    private Dialog       savingInDBDialog                = null;
+    private EditText     etAlias                         = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

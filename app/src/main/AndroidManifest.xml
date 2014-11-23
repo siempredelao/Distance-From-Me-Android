@@ -32,7 +32,7 @@
 
         <!-- A partir de la API 12 hay que poner android:configChanges="orientation|screenSize" para rotar la pantalla -->
         <activity
-            android:name="gc.david.dfm.MainActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
@@ -76,30 +76,30 @@
         </activity>
 
         <activity
-            android:name="gc.david.dfm.ShowInfoActivity"
+            android:name=".ui.ShowInfoActivity"
             android:configChanges="screenSize|keyboardHidden"
             android:label="@string/app_name"
-            android:parentActivityName="gc.david.dfm.MainActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="gc.david.dfm.MainActivity"/>
         </activity>
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName="gc.david.dfm.MainActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="gc.david.dfm.MainActivity"/>
         </activity>
 
         <activity
-            android:name=".FeedbackActivity"
+            android:name=".ui.FeedbackActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName="gc.david.dfm.MainActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="gc.david.dfm.MainActivity"/>

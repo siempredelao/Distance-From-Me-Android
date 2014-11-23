@@ -1,4 +1,4 @@
-package gc.david.dfm;
+package gc.david.dfm.ui;
 
 import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
@@ -24,6 +24,8 @@ import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import gc.david.dfm.adapter.QuestionExpandableListAdapter;
+import gc.david.dfm.R;
 
 import static butterknife.ButterKnife.inject;
 import static gc.david.dfm.Utils.showAlertDialog;

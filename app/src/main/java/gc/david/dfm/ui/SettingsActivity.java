@@ -1,10 +1,12 @@
-package gc.david.dfm;
+package gc.david.dfm.ui;
 
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
+import gc.david.dfm.DFMApplication;
+import gc.david.dfm.R;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;

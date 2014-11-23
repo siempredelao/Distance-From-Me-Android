@@ -1,4 +1,4 @@
-package gc.david.dfm;
+package gc.david.dfm.ui;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -84,9 +84,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.InjectView;
+import gc.david.dfm.DFMApplication;
+import gc.david.dfm.adapter.DistanceAdapter;
+import gc.david.dfm.adapter.NavigationDrawerItemAdapter;
+import gc.david.dfm.R;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
-import gc.david.dfm.map.MarkerInfoWindowAdapter;
+import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;

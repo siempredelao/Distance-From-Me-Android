@@ -1,4 +1,4 @@
-package gc.david.dfm;
+package gc.david.dfm.adapter;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import butterknife.InjectView;
+import gc.david.dfm.R;
 
 import static butterknife.ButterKnife.inject;
 

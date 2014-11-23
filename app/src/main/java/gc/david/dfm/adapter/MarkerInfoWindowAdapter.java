@@ -1,4 +1,4 @@
-package gc.david.dfm.map;
+package gc.david.dfm.adapter;
 
 import android.app.Activity;
 import android.view.View;

@@ -1,4 +1,4 @@
-package gc.david.dfm;
+package gc.david.dfm.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import gc.david.dfm.R;
 
 /**
  * Created by David on 17/10/2014.
