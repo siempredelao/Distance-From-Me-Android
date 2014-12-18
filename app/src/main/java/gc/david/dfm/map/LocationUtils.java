@@ -1,9 +1,6 @@
 package gc.david.dfm.map;
 
 public final class LocationUtils {
-    // Debugging tag for the application
-    public static final String APPTAG = "LocationSample";
-
     /**
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult

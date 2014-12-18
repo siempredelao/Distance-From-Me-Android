@@ -25,6 +25,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,11 +40,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -85,12 +86,12 @@ import java.util.regex.Pattern;
 
 import butterknife.InjectView;
 import gc.david.dfm.DFMApplication;
-import gc.david.dfm.adapter.DistanceAdapter;
-import gc.david.dfm.adapter.NavigationDrawerItemAdapter;
 import gc.david.dfm.R;
+import gc.david.dfm.adapter.DistanceAdapter;
+import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
+import gc.david.dfm.adapter.NavigationDrawerItemAdapter;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
-import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
@@ -106,8 +107,8 @@ import static gc.david.dfm.Utils.toastIt;
  * @author David
  */
 public class MainActivity extends ActionBarActivity implements LocationListener,
-                                                               GooglePlayServicesClient.ConnectionCallbacks,
-                                                               GooglePlayServicesClient.OnConnectionFailedListener {
+                                                               GoogleApiClient.ConnectionCallbacks,
+                                                               GoogleApiClient.OnConnectionFailedListener {
 
     private static final int ELEVATION_SAMPLES       = 100;
     private final        int FIRST_DRAWER_ITEM_INDEX = 1;
@@ -121,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     // A request to connect to Location Services
     private LocationRequest locationRequest                       = null;
     // Stores the current instantiation of the location client in this object
-    private LocationClient  locationClient                        = null;
+    private GoogleApiClient googleApiClient                       = null;
     private Location        currentLocation                       = null;
     // Moves to current position if app has just started
     private boolean         appHasJustStarted                     = true;
@@ -156,6 +157,11 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         inject(this);
 
         DEVICE_DENSITY = getResources().getDisplayMetrics().density;
+
+        googleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API)
+                                                           .addConnectionCallbacks(this)
+                                                           .addOnConnectionFailedListener(this)
+                                                           .build();
 
         final SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         googleMap = fragment.getMap();
@@ -380,19 +386,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 selectItem(FIRST_DRAWER_ITEM_INDEX);
             }
         }
-
-        // Create a new global location parameters object
-        locationRequest = LocationRequest.create();
-        // Set the update interval
-        locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
-        // Use high accuracy
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        // Set the interval ceiling to one minute
-        locationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-
-        // Create a new location client, using the enclosing class to handle
-        // callbacks
-        locationClient = new LocationClient(this, this, this);
     }
 
     private DaoSession getApplicationDaoSession() {
@@ -718,14 +711,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     public void onStop() {
-        // If the client is connected
-        if (locationClient.isConnected()) {
+        if (googleApiClient.isConnected()) {
             stopPeriodicUpdates();
         }
-
-        // After disconnect() is called, the client is considered "dead".
-        locationClient.disconnect();
-
         super.onStop();
     }
 
@@ -739,7 +727,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * Connect the client. Don't re-start any requests here; instead, wait
 		 * for onResume()
 		 */
-        locationClient.connect();
+        googleApiClient.connect();
     }
 
     /**
@@ -851,12 +839,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         startPeriodicUpdates();
     }
 
-    /**
-     * Called by Location Services if the connection to the location client
-     * drops because of an error.
-     */
     @Override
-    public void onDisconnected() {
+    public void onConnectionSuspended(int i) {
+        Log.i("onConnectionSuspended", "GoogleApiClient connection has been suspended");
     }
 
     /**
@@ -919,7 +904,13 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Services.
      */
     private void startPeriodicUpdates() {
-        locationClient.requestLocationUpdates(locationRequest, this);
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
+        // Set the interval ceiling to one minute
+        locationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
     /**
@@ -927,7 +918,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Services.
      */
     private void stopPeriodicUpdates() {
-        locationClient.removeLocationUpdates(this);
+        // After disconnect() is called, the client is considered "dead".
+        googleApiClient.disconnect();
     }
 
     /**
@@ -952,7 +944,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             errorFragment.setDialog(errorDialog);
 
             // Show the error dialog in the DialogFragment
-            errorFragment.show(getSupportFragmentManager(), LocationUtils.APPTAG);
+            errorFragment.show(getSupportFragmentManager(), "Geofence detection");
         }
     }
 
