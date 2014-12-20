@@ -445,13 +445,15 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param intent The input intent.
      */
     private void handleIntents(final Intent intent) {
-        if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
-            handleSearchIntent(intent);
-        } else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-            try {
-                handleViewPositionIntent(intent);
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (intent != null) {
+            if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
+                handleSearchIntent(intent);
+            } else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+                try {
+                    handleViewPositionIntent(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
