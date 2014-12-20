@@ -651,7 +651,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Shows settings activity.
      */
     private void openSettingsActivity() {
-        startActivity(new Intent(this, SettingsActivity.class));
+        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
     }
 
     /**
@@ -1287,7 +1287,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 }
             } else {
                 if (!appHasJustStarted) {
-                    if (coordinates.isEmpty()) {
+                    if (coordinates == null || coordinates.isEmpty()) {
+                        coordinates = Lists.newArrayList();
                         coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                     }
                     coordinates.add(selectedPosition);
