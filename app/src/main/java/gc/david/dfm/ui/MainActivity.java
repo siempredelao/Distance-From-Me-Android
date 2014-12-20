@@ -886,10 +886,10 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         if (appHasJustStarted) {
             if (mustShowPositionWhenComingFromOutside) {
-                if (currentLocation != null) {
+                if (currentLocation != null && sendDestinationPosition != null) {
                     new SearchPositionByCoordinates().execute(sendDestinationPosition);
+                    mustShowPositionWhenComingFromOutside = false;
                 }
-                mustShowPositionWhenComingFromOutside = false;
             } else {
                 final LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
                 // 17 is a good zoom level for this action
@@ -1349,7 +1349,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 e.printStackTrace();
                 return -1; // No encuentra una dirección, no puede conectar con el servidor
             } catch (final IllegalArgumentException e) {
-                ;
                 throw new IllegalArgumentException(String.format("Error en latitud=%f o longitud=%f.\n%s",
                                                                  latLng.latitude,
                                                                  latLng.longitude,
