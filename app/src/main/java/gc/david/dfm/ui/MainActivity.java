@@ -424,7 +424,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        actionBarDrawerToggle.syncState();
+        if (actionBarDrawerToggle != null) {
+            actionBarDrawerToggle.syncState();
+        }
     }
 
     @Override
