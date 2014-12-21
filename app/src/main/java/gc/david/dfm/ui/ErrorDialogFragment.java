@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.splunk.mint.Mint;
+
 /**
  * Defines a DialogFragment to display the error dialog generated in
  * showErrorDialog.
@@ -23,6 +25,7 @@ public class ErrorDialogFragment extends DialogFragment {
      */
     public ErrorDialogFragment() {
         super();
+        Mint.leaveBreadcrumb("ErrorDialogFragment::Constructor");
         dialog = null;
     }
 
@@ -32,6 +35,7 @@ public class ErrorDialogFragment extends DialogFragment {
      * @param dialog An error dialog
      */
     public void setDialog(final Dialog dialog) {
+        Mint.leaveBreadcrumb("ErrorDialogFragment::setDialog");
         this.dialog = dialog;
     }
 
@@ -41,6 +45,7 @@ public class ErrorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
+        Mint.leaveBreadcrumb("ErrorDialogFragment::onCreateDialog");
         return dialog;
     }
 }

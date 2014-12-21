@@ -9,6 +9,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
+import com.splunk.mint.Mint;
+
 /**
  * Created by David on 15/10/2014.
  */
@@ -31,6 +33,7 @@ public class Utils {
      * otherwise, returns <code>false</code>.
      */
     public static boolean isOnline(final Context context) {
+        Mint.leaveBreadcrumb("Utils::isOnline");
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
@@ -52,6 +55,7 @@ public class Utils {
                                        final String positiveButton,
                                        final String negativeButton,
                                        final Activity activity) {
+        Mint.leaveBreadcrumb("Utils::showAlertDialog");
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title)
                .setMessage(message)

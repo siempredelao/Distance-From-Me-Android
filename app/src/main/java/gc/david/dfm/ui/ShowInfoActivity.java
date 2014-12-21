@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.splunk.mint.Mint;
 
 import java.io.IOException;
 import java.util.Date;
@@ -80,6 +81,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Mint.leaveBreadcrumb("ShowInfoActivity::onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
         inject(this);
@@ -119,11 +121,13 @@ public class ShowInfoActivity extends ActionBarActivity {
     }
 
     private DaoSession getApplicationDaoSession() {
+        Mint.leaveBreadcrumb("ShowInfoActivity::getApplicationDaoSession");
         return ((DFMApplication) getApplicationContext()).getDaoSession();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Mint.leaveBreadcrumb("ShowInfoActivity::onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
         outState.putString(originAddressKey, originAddress);
@@ -143,6 +147,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Get data form the Intent.
      */
     private void getIntentData() {
+        Mint.leaveBreadcrumb("ShowInfoActivity::getIntentData");
         final Intent inputDataIntent = getIntent();
         positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
         distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
@@ -152,6 +157,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Fill Textviews titles.
      */
     private void fillTitlesHeaders() {
+        Mint.leaveBreadcrumb("ShowInfoActivity::fillTitlesHeaders");
         tvHeaderOriginAddress.setText(getString(R.string.info_current_position_title));
         tvHeaderDestinationAddress.setText(getString(R.string.info_destination_position_title));
     }
@@ -160,6 +166,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Get the addresses associated to LatLng points and fill the Textviews.
      */
     private void fillAddressesInfo() {
+        Mint.leaveBreadcrumb("ShowInfoActivity::fillAddressesInfo");
         try {
             originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
             destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
@@ -176,9 +183,12 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                        positionsList.get(positionsList.size() - 1).longitude));
         } catch (final InterruptedException e) {
             e.printStackTrace();
+            Mint.logException(e);
         } catch (final ExecutionException e) {
             e.printStackTrace();
+            Mint.logException(e);
         } catch (final CancellationException e) {
+            Mint.logException(e);
             // No hay conexión, se cancela la búsqueda de las direcciones
             // No se hace nada aquí, ya lo hace el hilo
         }
@@ -188,11 +198,13 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Fill Textview tvDistance.
      */
     private void fillDistanceInfo() {
+        Mint.leaveBreadcrumb("ShowInfoActivity::fillDistanceInfo");
         tvDistance.setText(getString(R.string.info_distance_title, distance));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Mint.leaveBreadcrumb("ShowInfoActivity::onCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.show_info, menu);
 
@@ -213,6 +225,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @return A new Intent to show different options to share data.
      */
     private Intent createDefaultShareIntent() {
+        Mint.leaveBreadcrumb("ShowInfoActivity::createDefaultShareIntent");
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
@@ -235,6 +248,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
      */
     private boolean verifyAppReceiveIntent(final Intent intent) {
+        Mint.leaveBreadcrumb("ShowInfoActivity::verifyAppReceiveIntent");
         final PackageManager packageManager = getPackageManager();
         final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
         return activities.size() > 0;
@@ -242,6 +256,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Mint.leaveBreadcrumb("ShowInfoActivity::onOptionsItemSelected");
         switch (item.getItemId()) {
             case R.id.action_social_share:
                 return true;
@@ -263,6 +278,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @param defaultText String text when orientation changes.
      */
     private void saveDataToDB(final String defaultText) {
+        Mint.leaveBreadcrumb("ShowInfoActivity::saveDataToDB");
         wasSavingWhenOrientationChanged = true;
         // Pedir al usuario que introduzca un texto descriptivo
         final AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
@@ -295,6 +311,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                     * @param alias Alias written by the user.
                     */
                    private void insertDataIntoDatabase(final String alias) {
+                       Mint.leaveBreadcrumb("ShowInfoActivity::insertDataIntoDatabase");
                        String aliasToSave = "";
                        if (alias.compareTo("") != 0) {
                            aliasToSave = alias;
@@ -332,6 +349,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
+            Mint.leaveBreadcrumb("GetAddressTask::onPreExecute");
             super.onPreExecute();
             this.context = getApplicationContext();
 
@@ -347,6 +365,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(Object... params) {
+            Mint.leaveBreadcrumb("GetAddressTask::doInBackground");
             final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             // Get the current location from the input parameter list
             final LatLng currentLocation = (LatLng) params[0];
@@ -357,6 +376,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                      currentLocation.longitude, 1);
             } catch (final IOException e1) {
                 e1.printStackTrace();
+                Mint.logException(e1);
                 return (getString(R.string.toast_no_location_found));
             } catch (final IllegalArgumentException e2) {
                 // Error message to post in the log
@@ -364,6 +384,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                          Double.toString(currentLocation.latitude),
                                                          Double.toString(currentLocation.longitude));
                 e2.printStackTrace();
+                Mint.logException(e2);
                 return errorString;
             }
             // If the reverse geocode returned an address
@@ -392,6 +413,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            Mint.leaveBreadcrumb("GetAddressTask::onPostExecute");
             endUpdate();
 
             super.onPostExecute(result);
@@ -401,6 +423,7 @@ public class ShowInfoActivity extends ActionBarActivity {
          * Change the appearance of the refresh button to a ProgressBar.
          */
         private void startUpdate() {
+            Mint.leaveBreadcrumb("GetAddressTask::startUpdate");
             if (menuItem != null) {
                 MenuItemCompat.setActionView(menuItem, R.layout.actionbar_indeterminate_progress);
                 MenuItemCompat.expandActionView(menuItem);
@@ -411,6 +434,7 @@ public class ShowInfoActivity extends ActionBarActivity {
          * Restore the refresh button to his normal appearance.
          */
         private void endUpdate() {
+            Mint.leaveBreadcrumb("GetAddressTask::endUpdate");
             if (menuItem != null) {
                 MenuItemCompat.collapseActionView(menuItem);
                 MenuItemCompat.setActionView(menuItem, null);
