@@ -470,7 +470,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         if (currentLocation != null) {
             new SearchPositionByName().execute(query);
         }
-        MenuItemCompat.collapseActionView(searchMenuItem);
+        if (searchMenuItem != null) {
+            MenuItemCompat.collapseActionView(searchMenuItem);
+        }
     }
 
     /**
