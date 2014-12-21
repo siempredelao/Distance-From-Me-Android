@@ -168,6 +168,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         if (googleMap != null) {
             googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
             googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
             // InMobi Ads
