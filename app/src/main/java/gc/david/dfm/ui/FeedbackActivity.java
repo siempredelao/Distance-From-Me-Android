@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
+import com.splunk.mint.Mint;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +51,7 @@ public class FeedbackActivity extends ActionBarActivity {
 
         @Override
         public void afterTextChanged(Editable editable) {
+            Mint.leaveBreadcrumb("FeedbackActivity::nonEmptyTextWatcher afterTextChanged");
             if (etDetails.getText().length() != 0) {
                 tvQuestionDescriptionHeader.setTextColor(getResources().getColor(R.color.item_background));
             }
@@ -71,6 +74,7 @@ public class FeedbackActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Mint.leaveBreadcrumb("FeedbackActivity::onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
         inject(this);
@@ -101,6 +105,7 @@ public class FeedbackActivity extends ActionBarActivity {
 
     @OnClick(R.id.send_feedback_button)
     protected void submit_query() {
+        Mint.leaveBreadcrumb("FeedbackActivity::submit_query");
         if (!validateFields()) {
             return;
         }
@@ -133,12 +138,14 @@ public class FeedbackActivity extends ActionBarActivity {
                 hideKeyboard();
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
+                Mint.logException(e);
                 toastIt(getString(R.string.toast_send_feedback_error), getApplicationContext());
             }
         }
     }
 
     private boolean validateFields() {
+        Mint.leaveBreadcrumb("FeedbackActivity::validateFields");
         final boolean validateQuestionType = isOneFeedbackTypeSelected();
         final boolean validateDescription = !etDetails.getText().toString().equals("");
 
@@ -165,11 +172,13 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private void hideKeyboard() {
+        Mint.leaveBreadcrumb("FeedbackActivity::hideKeyboard");
         final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(etDetails.getWindowToken(), 0);
     }
 
     private void focusFieldsRegardingValidation(final boolean validateQuestionType, final boolean validateDescription) {
+        Mint.leaveBreadcrumb("FeedbackActivity::focusFieldsRegardingValidation");
         if (!validateQuestionType) {
             tvQuestionTypeHeader.setTextColor(Color.RED);
         }
@@ -179,6 +188,7 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private String getDeviceInfo() {
+        Mint.leaveBreadcrumb("FeedbackActivity::getDeviceInfo");
         return "\n\nImportant device info for analysis:" +
                "\n\nVersion:" +
                "\nCODENAME=" + Build.VERSION.CODENAME +
@@ -210,6 +220,7 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private String getMemoryParameters() {
+        Mint.leaveBreadcrumb("FeedbackActivity::getMemoryParameters");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
             final ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -224,6 +235,7 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private boolean isOneFeedbackTypeSelected() {
+        Mint.leaveBreadcrumb("FeedbackActivity::isOneFeedbackTypeSelected");
         final String groupHeader = getGroupName();
         for (final String type : feedbackTypes) {
             if (type.contains(groupHeader)) {
@@ -234,6 +246,7 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private String getGroupName() {
+        Mint.leaveBreadcrumb("FeedbackActivity::getGroupName");
         return (String) questionExpandableListAdapter.getGroup(0);
     }
 }

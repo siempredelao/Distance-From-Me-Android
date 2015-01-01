@@ -3,6 +3,8 @@ package gc.david.dfm;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.splunk.mint.Mint;
+
 import gc.david.dfm.migration.UpgradeHelper;
 import gc.david.dfm.model.DaoMaster;
 import gc.david.dfm.model.DaoSession;
@@ -16,12 +18,14 @@ public class DFMApplication extends Application {
 
     @Override
     public void onCreate() {
+        Mint.leaveBreadcrumb("DFMApplication::onCreate");
         super.onCreate();
 
         setupDatabase();
     }
 
     private void setupDatabase() {
+        Mint.leaveBreadcrumb("DFMApplication::setupDatabase");
         final UpgradeHelper helper = new UpgradeHelper(this, "DistanciasDB.db", null);
         final SQLiteDatabase db = helper.getWritableDatabase();
         final DaoMaster daoMaster = new DaoMaster(db);
@@ -29,6 +33,7 @@ public class DFMApplication extends Application {
     }
 
     public DaoSession getDaoSession() {
+        Mint.leaveBreadcrumb("DFMApplication::getDaoSession");
         return daoSession;
     }
 }
