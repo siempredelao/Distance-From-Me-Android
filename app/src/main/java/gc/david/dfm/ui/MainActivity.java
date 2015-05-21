@@ -460,7 +460,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     public void onConfigurationChanged(Configuration newConfig) {
         Mint.leaveBreadcrumb("MainActivity::onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
-        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+        if (actionBarDrawerToggle != null) {
+            actionBarDrawerToggle.onConfigurationChanged(newConfig);
+        }
     }
 
     @Override
