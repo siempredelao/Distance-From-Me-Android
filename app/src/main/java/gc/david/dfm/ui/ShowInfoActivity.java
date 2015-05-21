@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 import butterknife.InjectView;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
@@ -83,7 +84,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate");
+        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
@@ -96,6 +97,7 @@ public class ShowInfoActivity extends ActionBarActivity {
         fillTitlesHeaders();
 
         if (savedInstanceState == null) {
+            DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
             fillAddressesInfo();
         } else {
             originAddress = savedInstanceState.getString(originAddressKey);
@@ -131,7 +133,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        DFMLogger.logMessage(TAG, "onSaveInstanceState");
+        DFMLogger.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
         
         super.onSaveInstanceState(outState);
 
@@ -162,6 +164,7 @@ public class ShowInfoActivity extends ActionBarActivity {
     /**
      * Fill Textviews titles.
      */
+    // TODO move this stupid method to layout file!
     private void fillTitlesHeaders() {
         DFMLogger.logMessage(TAG, "fillTitlesHeaders");
         
@@ -268,7 +271,7 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DFMLogger.logMessage(TAG, "onOptionsItemSelected");
+        DFMLogger.logMessage(TAG, "onOptionsItemSelected item=" + item.getItemId());
 
         switch (item.getItemId()) {
             case R.id.action_social_share:
@@ -291,7 +294,7 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @param defaultText String text when orientation changes.
      */
     private void saveDataToDB(final String defaultText) {
-        DFMLogger.logMessage(TAG, "saveDataToDB");
+        DFMLogger.logMessage(TAG, "saveDataToDB defaultText=" + defaultText);
 
         wasSavingWhenOrientationChanged = true;
         // Pedir al usuario que introduzca un texto descriptivo

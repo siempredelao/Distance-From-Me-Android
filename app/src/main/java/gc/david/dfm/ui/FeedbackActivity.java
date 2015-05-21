@@ -25,6 +25,7 @@ import java.util.List;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.QuestionExpandableListAdapter;
 import gc.david.dfm.logger.DFMLogger;
 
@@ -76,7 +77,7 @@ public class FeedbackActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate");
+        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
@@ -96,6 +97,7 @@ public class FeedbackActivity extends ActionBarActivity {
                                         int groupCount,
                                         int childCount,
                                         long l) {
+                DFMLogger.logMessage(TAG, "onChildClick selected=" + questionExpandableListAdapter.getChild(0, childCount));
                 expandableListView.collapseGroup(0);
                 questionExpandableListAdapter.setGroup((String) questionExpandableListAdapter.getChild(0, childCount));
                 tvQuestionTypeHeader.setTextColor(getResources().getColor(R.color.item_background));

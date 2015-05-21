@@ -148,7 +148,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate");
+        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -212,6 +212,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                     }
                 });
                 banner.loadBanner();
+            } else {
+                DFMLogger.logMessage(TAG, "onCreate banner null");
             }
 
             if (!isOnline(getApplicationContext())) {
@@ -408,6 +410,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 // TODO change this because the header!!!!
                 selectItem(FIRST_DRAWER_ITEM_INDEX);
             }
+        } else {
+            DFMLogger.logMessage(TAG, "onCreate mysteriously googleMap is null...");
         }
     }
 
@@ -444,6 +448,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             coordinates = Lists.newArrayList();
             googleMap.clear();
             if (showingElevationTask != null) {
+                DFMLogger.logMessage(TAG, "selectItem cancelling elevation task");
                 showingElevationTask.cancel(true);
             }
             rlElevationChart.setVisibility(View.INVISIBLE);
@@ -456,7 +461,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onPostCreate");
+        DFMLogger.logMessage(TAG, "onPostCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
 
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
@@ -653,11 +658,13 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DFMLogger.logMessage(TAG, "onOptionsItemSelected");
+        DFMLogger.logMessage(TAG, "onOptionsItemSelected item=" + item.getItemId());
 
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
         if (actionBarDrawerToggle != null && actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            DFMLogger.logMessage(TAG, "onOptionsItemSelected ActionBar home button click");
+
             return true;
         }
 
@@ -848,6 +855,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "onDestroy");
 
         if (showingElevationTask != null) {
+            DFMLogger.logMessage(TAG, "onDestroy cancelling showing elevation task before destroying app");
             showingElevationTask.cancel(true);
         }
         super.onDestroy();
@@ -863,7 +871,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        DFMLogger.logMessage(TAG, "onActivityResult");
+        DFMLogger.logMessage(TAG, "onActivityResult requestCode=" + requestCode + ", " +
+                                  "resultCode=" + resultCode + "intent=" + Utils.dumpIntentToString(intent));
 
         // Choose what to do based on the request code
         switch (requestCode) {
@@ -921,13 +930,18 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         // Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
         // de error y devolvemos falso
         if (resultCode == ConnectionResult.SUCCESS) {
+            DFMLogger.logMessage(TAG, "checkPlayServices success");
+
             return true;
         } else {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError");
+
                 final int RQS_GooglePlayServices = 1;
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices).show();
             } else {
-                // Log.i("checkPlayServices", "Dispositivo no soportado");
+                DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing");
+
                 finish();
             }
             return false;
@@ -964,6 +978,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 		 * services activity that can resolve error.
 		 */
         if (connectionResult.hasResolution()) {
+            DFMLogger.logMessage(TAG, "onConnectionFailed connection has resolution");
+
             try {
                 // Start an Activity that tries to resolve the error
                 connectionResult.startResolutionForResult(this, LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
@@ -977,6 +993,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 DFMLogger.logException(e);
             }
         } else {
+            DFMLogger.logMessage(TAG, "onConnectionFailed connection does not have resolution");
             // If no resolution is available, display a dialog to the user with
             // the error.
             showErrorDialog(connectionResult.getErrorCode());
@@ -997,12 +1014,18 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         }
 
         if (appHasJustStarted) {
+            DFMLogger.logMessage(TAG, "onLocationChanged appHasJustStarted");
+
             if (mustShowPositionWhenComingFromOutside) {
+                DFMLogger.logMessage(TAG, "onLocationChanged mustShowPositionWhenComingFromOutside");
+
                 if (currentLocation != null && sendDestinationPosition != null) {
                     new SearchPositionByCoordinates().execute(sendDestinationPosition);
                     mustShowPositionWhenComingFromOutside = false;
                 }
             } else {
+                DFMLogger.logMessage(TAG, "onLocationChanged NOT mustShowPositionWhenComingFromOutside");
+
                 final LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
                 // 17 is a good zoom level for this action
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
@@ -1045,7 +1068,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param errorCode An error code returned from onConnectionFailed
      */
     private void showErrorDialog(final int errorCode) {
-        DFMLogger.logMessage(TAG, "showErrorDialog");
+        DFMLogger.logMessage(TAG, "showErrorDialog errorCode=" + errorCode);
 
         // Get the error dialog from Google Play services
         final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
@@ -1299,6 +1322,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         }
 
         if (showingElevationTask != null) {
+            DFMLogger.logMessage(TAG, "getElevation cancelling previous elevation asynctask");
             showingElevationTask.cancel(true);
         }
         showingElevationTask = new GetAltitude().execute(positionListUrlParameter);
@@ -1311,15 +1335,27 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "fixMapPadding");
 
         if (bannerShown) {
+            DFMLogger.logMessage(TAG, "fixMapPadding bannerShown");
+
             if (elevationChartShown) {
+                DFMLogger.logMessage(TAG, "fixMapPadding elevationChartShown");
+
                 googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
             } else {
+                DFMLogger.logMessage(TAG, "fixMapPadding NOT elevationChartShown");
+
                 googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
             }
         } else {
+            DFMLogger.logMessage(TAG, "fixMapPadding NOT bannerShown");
+
             if (elevationChartShown) {
+                DFMLogger.logMessage(TAG, "fixMapPadding elevationChartShown");
+
                 googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
             } else {
+                DFMLogger.logMessage(TAG, "fixMapPadding NOT elevationChartShown");
+
                 googleMap.setPadding(0, 0, 0, 0);
             }
         }
@@ -1391,7 +1427,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPostExecute(Integer result) {
-            DFMLogger.logMessage(TAG, "onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute result=" + result);
 
             switch (result) {
                 case 0:
@@ -1431,11 +1467,13 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         }
 
         private void handleSelectedAddress() {
-            DFMLogger.logMessage(TAG, "handleSelectedAddress");
+            DFMLogger.logMessage(TAG, "handleSelectedAddress" + distanceMode);
 
             if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                 coordinates.add(selectedPosition);
                 if (coordinates.isEmpty()) {
+                    DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
+
                     // add marker
                     final Marker marker = addMarker(selectedPosition);
                     marker.setTitle(fullAddress.toString());
@@ -1451,13 +1489,19 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 }
             } else {
                 if (!appHasJustStarted) {
+                    DFMLogger.logMessage(TAG, "handleSelectedAddress appHasJustStarted");
+
                     if (coordinates == null || coordinates.isEmpty()) {
+                        DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
+
                         coordinates = Lists.newArrayList();
                         coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                     }
                     coordinates.add(selectedPosition);
                     drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
                 } else {
+                    DFMLogger.logMessage(TAG, "handleSelectedAddress NOT appHasJustStarted");
+
                     // Coming from View Action Intent
                     sendDestinationPosition = selectedPosition;
                 }
@@ -1471,7 +1515,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * @param item The item index in the AlertDialog.
          */
         protected void processSelectedAddress(final int item) {
-            DFMLogger.logMessage(TAG, "processSelectedAddress");
+            DFMLogger.logMessage(TAG, "processSelectedAddress item=" + item);
 
             // Fill address info to show in the marker info window
             final Address address = addressList.get(item);
@@ -1542,7 +1586,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPostExecute(Integer result) {
-            DFMLogger.logMessage(TAG, "onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute result=" + result);
 
             switch (result) {
                 case 0:
@@ -1621,6 +1665,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                         buildElevationChart(responseJSON.getJSONArray("results"));
                     }
                 }
+                // TODO merge this catches!
             } catch (ClientProtocolException e) {
                 e.printStackTrace();
                 DFMLogger.logException(e);
@@ -1639,7 +1684,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPostExecute(Double result) {
-            DFMLogger.logMessage(TAG, "onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute result=" + result);
 
             showElevationProfileChart();
             // When HttpClient instance is no longer needed

@@ -28,7 +28,7 @@ public class Utils {
      * @param context      Activity context.
      */
     public static void toastIt(final String charSequence, final Context context) {
-        DFMLogger.logMessage(TAG, "toastIt");
+        DFMLogger.logMessage(TAG, "toastIt message=" + charSequence);
 
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
     }
@@ -105,5 +105,12 @@ public class Utils {
             intentAsString = "intent with empty bundle";
         }
         return intentAsString;
+    }
+
+    public static String dumpBundleToString(Bundle bundle) {
+        if (bundle == null) {
+            return "bundle is null";
+        }
+        return bundle.toString();
     }
 }
