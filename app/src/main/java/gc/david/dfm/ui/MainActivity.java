@@ -633,7 +633,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         Mint.leaveBreadcrumb("MainActivity::onOptionsItemSelected");
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
-        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
+        if (actionBarDrawerToggle != null && actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -660,7 +660,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     @Override
     public void onBackPressed() {
         Mint.leaveBreadcrumb("MainActivity::onBackPressed");
-        if (drawerLayout.isDrawerOpen(Gravity.START)) {
+        if (drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
             drawerLayout.closeDrawer(Gravity.START);
         } else {
             super.onBackPressed();
