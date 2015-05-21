@@ -60,6 +60,22 @@
     <string name="preference_delete_distances_title">Delete distances</string>
     <string name="preference_delete_distances_summary">Touch to delete all saved distances</string>
 
+    <string name="category_unit_title">Measuring unit</string>
+    <string name="preference_unit_summary">Choose a measurement unit. By default, it is set regarding your current device language.</string>
+    <string name="preference_unit_title">Select preferred unit</string>
+    <string name="preference_unit_dialog_title">Select unit</string>
+    <string name="preference_unit_entry_EU">meters, kilometers</string>
+    <string name="preference_unit_entry_US">miles, yards, feet</string>
+    <string name="preference_unit_entry_value_EU" translatable="false">EU</string>
+    <string name="preference_unit_entry_value_US" translatable="false">US</string>
+    <string-array name="preferred_unit_entries">
+        <item>@string/preference_unit_entry_EU</item>
+        <item>@string/preference_unit_entry_US</item>
+    </string-array>
+    <string-array name="preferred_unit_entryValues">
+        <item>@string/preference_unit_entry_value_EU</item>
+        <item>@string/preference_unit_entry_value_US</item>
+    </string-array>
 
     <!-- ACTIVITY SHOWINFO -->
     <string name="action_bar_item_social_share_title">Share</string>

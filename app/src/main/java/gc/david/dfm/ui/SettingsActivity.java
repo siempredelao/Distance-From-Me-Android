@@ -1,11 +1,15 @@
 package gc.david.dfm.ui;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
 import com.splunk.mint.Mint;
+
+import java.util.Locale;
 
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
@@ -36,6 +40,27 @@ public class SettingsActivity extends PreferenceActivity {
                 return false;
             }
         });
+
+        // Set default unit if not already set
+        final SharedPreferences preferences = getSharedPreferences("gc.david.dfm_preferences", Context.MODE_PRIVATE);
+        final String defaultUnit = preferences.getString("unit", null);
+        if (defaultUnit == null) {
+            final SharedPreferences.Editor editor = preferences.edit();
+
+            final Locale locale = getResources().getConfiguration().locale;
+            if (locale.equals(Locale.CANADA)
+                || locale.equals(Locale.CHINA)
+                || locale.equals(Locale.JAPAN)
+                || locale.equals(Locale.KOREA)
+                || locale.equals(Locale.TAIWAN)
+                || locale.equals(Locale.UK)
+                || locale.equals(Locale.US)) {
+                editor.putString("unit", getString(R.string.preference_unit_entry_value_US));
+            } else {
+                editor.putString("unit", getString(R.string.preference_unit_entry_value_EU));
+            }
+            editor.commit();
+        }
     }
 
     private DaoSession getApplicationDaoSession() {

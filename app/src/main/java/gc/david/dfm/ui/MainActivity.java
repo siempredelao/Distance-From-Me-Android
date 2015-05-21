@@ -1123,7 +1123,19 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                       coordinates.get(i + 1).latitude,
                                                       coordinates.get(i + 1).longitude);
         }
-        return Haversine.normalizeDistance(distanceInMetres, getResources().getConfiguration().locale);
+
+        Locale defaultLocale = getResources().getConfiguration().locale;
+
+        final SharedPreferences preferences = getSharedPreferences("gc.david.dfm_preferences", Context.MODE_PRIVATE);
+        final String defaultUnit = preferences.getString("unit", null);
+        if (defaultUnit != null) {
+            if (getString(R.string.preference_unit_entry_value_US).equals(defaultUnit)) {
+                defaultLocale = Locale.US;
+            } else { // EU
+                defaultLocale = Locale.FRANCE;
+            }
+        }
+        return Haversine.normalizeDistance(distanceInMetres, defaultLocale);
     }
 
     /**
@@ -1603,12 +1615,24 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                                  (int) (3 * DEVICE_DENSITY)),
                                         new GraphView.GraphViewData[]{});
 
+            Locale defaultLocale = Locale.getDefault();
+
+            final SharedPreferences preferences = getSharedPreferences("gc.david.dfm_preferences", Context.MODE_PRIVATE);
+            final String defaultUnit = preferences.getString("unit", null);
+            if (defaultUnit != null) {
+                if (getString(R.string.preference_unit_entry_value_US).equals(defaultUnit)) {
+                    defaultLocale = Locale.US;
+                } else { // EU
+                    defaultLocale = Locale.FRANCE;
+                }
+            }
+
             for (int w = 0; w < array.length(); w++) {
                 series.appendData(new GraphView.GraphViewData(w,
                                                               Haversine.normalizeAltitudeByLocale(Double.valueOf(array.getJSONObject(w)
                                                                                                                       .get("elevation")
                                                                                                                       .toString()),
-                                                                                                  Locale.getDefault())),
+                                                                                                  defaultLocale)),
                                   false,
                                   array.length());
             }
@@ -1616,7 +1640,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             // Creates the line and add it to the chart
             graphView = new LineGraphView(getApplicationContext(),
                                           getString(R.string.elevation_chart_title,
-                                                    Haversine.getAltitudeUnitByLocale(Locale.getDefault())));
+                                                    Haversine.getAltitudeUnitByLocale(defaultLocale)));
             graphView.addSeries(series);
             graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
             graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
