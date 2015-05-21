@@ -480,9 +480,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     private void handleIntents(final Intent intent) {
         Mint.leaveBreadcrumb("MainActivity::handleIntents");
         if (intent != null) {
-            if (intent.getAction().equals(Intent.ACTION_SEARCH)) {
+            if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 handleSearchIntent(intent);
-            } else if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+            } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 try {
                     handleViewPositionIntent(intent);
                 } catch (Exception e) {
