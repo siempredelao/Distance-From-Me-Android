@@ -25,7 +25,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,7 +62,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
-import com.splunk.mint.Mint;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -87,9 +85,11 @@ import java.util.regex.Pattern;
 import butterknife.InjectView;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.DistanceAdapter;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
 import gc.david.dfm.adapter.NavigationDrawerItemAdapter;
+import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.model.DaoSession;
@@ -110,6 +110,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                                GoogleApiClient.ConnectionCallbacks,
                                                                GoogleApiClient.OnConnectionFailedListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int ELEVATION_SAMPLES       = 100;
     private final        int FIRST_DRAWER_ITEM_INDEX = 1;
 
@@ -147,13 +148,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        DFMLogger.logMessage(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
-
-        Mint.initAndStartSession(MainActivity.this, "6f2149e6");
-        // Enable logging
-        Mint.enableLogging(true);
-        Mint.leaveBreadcrumb("MainActivity::onCreate");
-
         setContentView(R.layout.activity_main);
         inject(this);
 
@@ -181,35 +178,37 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 banner.setIMBannerListener(new IMBannerListener() {
                     @Override
                     public void onShowBannerScreen(IMBanner arg0) {
-                        Mint.leaveBreadcrumb("MainActivity::banner onShowBannerScreen");
+                        DFMLogger.logMessage(TAG, "onShowBannerScreen");
                     }
 
                     @Override
                     public void onLeaveApplication(IMBanner arg0) {
-                        Mint.leaveBreadcrumb("MainActivity::banner onLeaveApplication");
+                        DFMLogger.logMessage(TAG, "onLeaveApplication");
                     }
 
                     @Override
                     public void onDismissBannerScreen(IMBanner arg0) {
-                        Mint.leaveBreadcrumb("MainActivity::banner onDismissBannerScreen");
+                        DFMLogger.logMessage(TAG, "onDismissBannerScreen");
                     }
 
                     @Override
                     public void onBannerRequestSucceeded(IMBanner arg0) {
-                        Mint.leaveBreadcrumb("MainActivity::banner onBannerRequestSucceeded");
+                        DFMLogger.logMessage(TAG, "onBannerRequestSucceeded");
+
                         bannerShown = true;
                         fixMapPadding();
                     }
 
                     @Override
                     public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
-                        Mint.leaveBreadcrumb("MainActivity::banner onBannerRequestFailed");
+                        DFMLogger.logMessage(TAG, "onBannerRequestFailed");
                     }
 
                     @Override
                     public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
-                        Mint.leaveBreadcrumb("MainActivity::banner onBannerInteraction");
-                        Mint.logEvent("Ad tapped");
+                        DFMLogger.logMessage(TAG, "onBannerInteraction");
+
+                        DFMLogger.logEvent("Ad tapped");
                     }
                 });
                 banner.loadBanner();
@@ -222,7 +221,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
                 @Override
                 public void onMapLongClick(LatLng point) {
-                    Mint.leaveBreadcrumb("MainActivity::googleMap onMapLongClick");
+                    DFMLogger.logMessage(TAG, "onMapLongClick");
+
                     calculatingDistance = true;
 
                     if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
@@ -250,7 +250,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng point) {
-                    Mint.leaveBreadcrumb("MainActivity::googleMap onMapClick");
+                    DFMLogger.logMessage(TAG, "onMapClick");
+
                     if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                         if (!calculatingDistance) {
                             coordinates.clear();
@@ -282,7 +283,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                 googleMap.addMarker(new MarkerOptions().position(point));
                             } else {
                                 final IllegalStateException illegalStateException = new IllegalStateException("Empty coordinates list");
-                                Mint.logException(illegalStateException);
+                                DFMLogger.logException(illegalStateException);
+
                                 throw illegalStateException;
                             }
                         }
@@ -330,7 +332,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                    Mint.leaveBreadcrumb("MainActivity::googleMap onInfoWindowClick");
+                    DFMLogger.logMessage(TAG, "onInfoWindowClick");
+
                     final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
 
                     showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
@@ -379,14 +382,16 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                               R.string.progressdialog_search_position_message) {
                 @Override
                 public void onDrawerOpened(View drawerView) {
-                    Mint.leaveBreadcrumb("MainActivity::actionBarDrawerToggle onDrawerOpened");
+                    DFMLogger.logMessage(TAG, "onDrawerOpened");
+
                     super.onDrawerOpened(drawerView);
                     supportInvalidateOptionsMenu();
                 }
 
                 @Override
                 public void onDrawerClosed(View drawerView) {
-                    Mint.leaveBreadcrumb("MainActivity::actionBarDrawerToggle onDrawerClosed");
+                    DFMLogger.logMessage(TAG, "onDrawerClosed");
+
                     super.onDrawerClosed(drawerView);
                     supportInvalidateOptionsMenu();
                 }
@@ -398,7 +403,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             getSupportActionBar().setHomeButtonEnabled(true);
 
             if (savedInstanceState == null) {
-                Mint.leaveBreadcrumb("MainActivity savedInstanceState == null");
+                DFMLogger.logMessage(TAG, "onCreate savedInstanceState == null");
+
                 // TODO change this because the header!!!!
                 selectItem(FIRST_DRAWER_ITEM_INDEX);
             }
@@ -406,7 +412,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     }
 
     private DaoSession getApplicationDaoSession() {
-        Mint.leaveBreadcrumb("MainActivity::getApplicationDaoSession");
+        DFMLogger.logMessage(TAG, "getApplicationDaoSession");
+
         return ((DFMApplication) getApplicationContext()).getDaoSession();
     }
 
@@ -414,18 +421,19 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Swaps starting point in the main content view
      */
     private void selectItem(int position) {
-        Mint.leaveBreadcrumb("MainActivity::selectItem " + position);
+        DFMLogger.logMessage(TAG, "selectItem " + position);
+
         if (position != 0) {
             if (position == 1) {
-                Mint.logEvent("Distance from current point");
+                DFMLogger.logMessage(TAG, "selectItem Distance from current point");
             } else if (position == 2) {
-                Mint.logEvent("Distance from any point");
+                DFMLogger.logMessage(TAG, "selectItem Distance from any point");
             }
             distanceMode = (position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
                            DistanceMode.DISTANCE_FROM_CURRENT_POINT :
                            DistanceMode.DISTANCE_FROM_ANY_POINT;
 
-            Mint.addExtraData("distanceMode", String.valueOf(distanceMode));
+            DFMLogger.logMessage(TAG, "selectItem distanceMode " + distanceMode);
 
             // Highlight the selected item and close the drawer
             drawerList.setItemChecked(position, true);
@@ -442,32 +450,39 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             elevationChartShown = false;
             fixMapPadding();
         } else {
-            Mint.leaveBreadcrumb("MainActivity::selectItem 0 not valid!");
+            DFMLogger.logMessage(TAG, "selectItem 0 not valid!");
         }
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
-        Mint.leaveBreadcrumb("MainActivity::onPostCreate");
+        DFMLogger.logMessage(TAG, "onPostCreate");
+
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if (actionBarDrawerToggle != null) {
             actionBarDrawerToggle.syncState();
+        } else {
+            DFMLogger.logMessage(TAG, "onPostCreate actionBarDrawerToggle null");
         }
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        Mint.leaveBreadcrumb("MainActivity::onConfigurationChanged");
+        DFMLogger.logMessage(TAG, "onConfigurationChanged");
+
         super.onConfigurationChanged(newConfig);
         if (actionBarDrawerToggle != null) {
             actionBarDrawerToggle.onConfigurationChanged(newConfig);
+        } else {
+            DFMLogger.logMessage(TAG, "onConfigurationChanged actionBarDrawerToggle null");
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Mint.leaveBreadcrumb("MainActivity::onNewIntent");
+        DFMLogger.logMessage(TAG, "onNewIntent " + Utils.dumpIntentToString(intent));
+
         setIntent(intent);
         handleIntents(intent);
     }
@@ -478,7 +493,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param intent The input intent.
      */
     private void handleIntents(final Intent intent) {
-        Mint.leaveBreadcrumb("MainActivity::handleIntents");
+        DFMLogger.logMessage(TAG, "handleIntents");
+
         if (intent != null) {
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 handleSearchIntent(intent);
@@ -487,7 +503,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                     handleViewPositionIntent(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Mint.logException(e);
+                    DFMLogger.logException(e);
                 }
             }
         }
@@ -499,7 +515,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param intent Input intent.
      */
     private void handleSearchIntent(final Intent intent) {
-        Mint.leaveBreadcrumb("MainActivity::handleSearchIntent");
+        DFMLogger.logMessage(TAG, "handleSearchIntent");
+
         // Para controlar instancias únicas, no queremos que cada vez que
         // busquemos nos inicie una nueva instancia de la aplicación
         final String query = intent.getStringExtra(SearchManager.QUERY);
@@ -517,9 +534,9 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param intent Input intent with position data.
      */
     private void handleViewPositionIntent(final Intent intent) throws Exception {
-        Mint.leaveBreadcrumb("MainActivity::handleViewPositionIntent");
+        DFMLogger.logMessage(TAG, "handleViewPositionIntent");
         final Uri uri = intent.getData();
-        Mint.addExtraData("queryParameter", uri.toString());
+        DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=" + uri.toString());
 
         final String uriScheme = uri.getScheme();
         if (uriScheme.equals("geo")) {
@@ -543,7 +560,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             } else {
                 final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                            matcher.toString());
-                Mint.logException(noSuchFieldException);
+                DFMLogger.logException(noSuchFieldException);
                 throw noSuchFieldException;
             }
         } else if ((uriScheme.equals("http") || uriScheme.equals("https"))
@@ -557,29 +574,31 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 } else {
                     final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                                matcher.toString());
-                    Mint.logException(noSuchFieldException);
+                    DFMLogger.logException(noSuchFieldException);
                     throw noSuchFieldException;
                 }
             } else {
                 final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
-                Mint.logException(noSuchFieldException);
+                DFMLogger.logException(noSuchFieldException);
                 throw noSuchFieldException;
             }
         } else {
             final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
-            Mint.logException(exception);
+            DFMLogger.logException(exception);
             throw exception;
         }
     }
 
     private void setDestinationPosition(final Matcher matcher) {
-        Mint.leaveBreadcrumb("MainActivity::setDestinationPosition");
+        DFMLogger.logMessage(TAG, "setDestinationPosition");
+
         sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)), Double.valueOf(matcher.group(2)));
         mustShowPositionWhenComingFromOutside = true;
     }
 
     private Matcher getMatcherForUri(final String schemeSpecificPart) {
-        Mint.leaveBreadcrumb("MainActivity::getMatcherForUri " + schemeSpecificPart);
+        DFMLogger.logMessage(TAG, "getMatcherForUri scheme=" + schemeSpecificPart);
+
         // http://regex101.com/
         // http://www.regexplanet.com/advanced/java/index.html
         final String regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)";
@@ -591,7 +610,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Shows the wireless centralized settings in API<11, otherwise shows general settings
      */
     private void showWifiAlertDialog() {
-        Mint.leaveBreadcrumb("MainActivity::showWifiAlertDialog");
+        DFMLogger.logMessage(TAG, "showWifiAlertDialog");
+
         showAlertDialog((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
                          android.provider.Settings.ACTION_WIRELESS_SETTINGS :
                          android.provider.Settings.ACTION_SETTINGS),
@@ -604,7 +624,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Mint.leaveBreadcrumb("MainActivity::onCreateOptionsMenu");
+        DFMLogger.logMessage(TAG, "onCreateOptionsMenu");
+
         // Inflate the options menu from XML
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
@@ -632,7 +653,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Mint.leaveBreadcrumb("MainActivity::onOptionsItemSelected");
+        DFMLogger.logMessage(TAG, "onOptionsItemSelected");
+
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
         if (actionBarDrawerToggle != null && actionBarDrawerToggle.onOptionsItemSelected(item)) {
@@ -661,7 +683,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     public void onBackPressed() {
-        Mint.leaveBreadcrumb("MainActivity::onBackPressed");
+        DFMLogger.logMessage(TAG, "onBackPressed");
+
         if (drawerLayout != null && drawerLayout.isDrawerOpen(Gravity.START)) {
             drawerLayout.closeDrawer(Gravity.START);
         } else {
@@ -674,7 +697,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * dialog.
      */
     private void loadDistancesFromDB() {
-        Mint.leaveBreadcrumb("MainActivity::loadDistancesFromDB");
+        DFMLogger.logMessage(TAG, "loadDistancesFromDB");
+
         // TODO hacer esto en segundo plano
         final List<Distance> allDistances = getApplicationDaoSession().loadAll(Distance.class);
 
@@ -698,7 +722,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     }
 
     private List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
-        Mint.leaveBreadcrumb("MainActivity::convertPositionListToLatLngList");
+        DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
+
         final List<LatLng> result = Lists.newArrayList();
         for (final Position position : positionList) {
             result.add(new LatLng(position.getLatitude(), position.getLongitude()));
@@ -710,7 +735,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Shows settings activity.
      */
     private void openSettingsActivity() {
-        Mint.leaveBreadcrumb("MainActivity::openSettingsActivity");
+        DFMLogger.logMessage(TAG, "openSettingsActivity");
+
         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
     }
 
@@ -718,7 +744,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Shows rate dialog.
      */
     private void showRateDialog() {
-        Mint.leaveBreadcrumb("MainActivity::showRateDialog");
+        DFMLogger.logMessage(TAG, "showRateDialog");
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.dialog_rate_app_title)
                .setMessage(R.string.dialog_rate_app_message)
@@ -744,7 +771,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Opens Google Play Store, in Distance From Me page
      */
     private void openPlayStoreAppPage() {
-        Mint.leaveBreadcrumb("MainActivity::openPlayStoreAppPage");
+        DFMLogger.logMessage(TAG, "openPlayStoreAppPage");
+
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
     }
 
@@ -752,7 +780,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Opens the feedback activity.
      */
     private void openFeedbackActivity() {
-        Mint.leaveBreadcrumb("MainActivity::openFeedbackActivity");
+        DFMLogger.logMessage(TAG, "openFeedbackActivity");
+
         final Intent openFeedbackActivityIntent = new Intent(MainActivity.this, FeedbackActivity.class);
         startActivity(openFeedbackActivityIntent);
     }
@@ -761,7 +790,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Shows an AlertDialog with the Google Play Services License.
      */
     private void showGooglePlayServiceLicenseDialog() {
-        Mint.leaveBreadcrumb("MainActivity::showGooglePlayServiceLicenseDialog");
+        DFMLogger.logMessage(TAG, "showGooglePlayServiceLicenseDialog");
+
         final String LicenseInfo = GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
         final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
         LicenseDialog.setTitle(R.string.menu_legal_notices_title);
@@ -775,7 +805,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     public void onStop() {
-        Mint.leaveBreadcrumb("MainActivity::onStop");
+        DFMLogger.logMessage(TAG, "onStop");
+
         if (googleApiClient.isConnected()) {
             stopPeriodicUpdates();
         }
@@ -787,7 +818,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     public void onStart() {
-        Mint.leaveBreadcrumb("MainActivity::onStart");
+        DFMLogger.logMessage(TAG, "onStart");
+
         super.onStart();
         /*
          * Connect the client. Don't re-start any requests here; instead, wait
@@ -802,7 +834,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     @SuppressLint("NewApi")
     @Override
     public void onResume() {
-        Mint.leaveBreadcrumb("MainActivity::onResume");
+        DFMLogger.logMessage(TAG, "onResume");
+
         super.onResume();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             invalidateOptionsMenu();
@@ -812,7 +845,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
     @Override
     public void onDestroy() {
-        Mint.leaveBreadcrumb("MainActivity::onDestroy");
+        DFMLogger.logMessage(TAG, "onDestroy");
+
         if (showingElevationTask != null) {
             showingElevationTask.cancel(true);
         }
@@ -829,7 +863,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Mint.leaveBreadcrumb("MainActivity::onActivityResult");
+        DFMLogger.logMessage(TAG, "onActivityResult");
 
         // Choose what to do based on the request code
         switch (requestCode) {
@@ -879,7 +913,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * otherwise.
      */
     private boolean checkPlayServices() {
-        Mint.leaveBreadcrumb("MainActivity::checkPlayServices");
+        DFMLogger.logMessage(TAG, "checkPlayServices");
+
         // Comprobamos que Google Play Services está disponible en el terminal
         final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 
@@ -906,14 +941,14 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     public void onConnected(Bundle bundle) {
-        Mint.leaveBreadcrumb("MainActivity::onConnected");
+        DFMLogger.logMessage(TAG, "onConnected");
+
         startPeriodicUpdates();
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Mint.leaveBreadcrumb("MainActivity::onConnectionSuspended");
-        Log.i("onConnectionSuspended", "GoogleApiClient connection has been suspended");
+        DFMLogger.logMessage(TAG, "onConnectionSuspended GoogleApiClient connection has been suspended");
     }
 
     /**
@@ -921,7 +956,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Mint.leaveBreadcrumb("MainActivity::onConnectionFailed");
+        DFMLogger.logMessage(TAG, "onConnectionFailed");
+
         /*
          * Google Play services can resolve some errors it detects. If the error
 		 * has a resolution, try sending an Intent to start a Google Play
@@ -938,7 +974,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             } catch (IntentSender.SendIntentException e) {
                 // Log the error
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
             }
         } else {
             // If no resolution is available, display a dialog to the user with
@@ -952,7 +988,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     @Override
     public void onLocationChanged(Location location) {
-        Mint.leaveBreadcrumb("MainActivity::onLocationChanged");
+        DFMLogger.logMessage(TAG, "onLocationChanged");
+
         if (currentLocation != null) {
             currentLocation.set(location);
         } else {
@@ -979,7 +1016,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Services.
      */
     private void startPeriodicUpdates() {
-        Mint.leaveBreadcrumb("MainActivity::startPeriodicUpdates");
+        DFMLogger.logMessage(TAG, "startPeriodicUpdates");
+
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
@@ -994,7 +1032,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Services.
      */
     private void stopPeriodicUpdates() {
-        Mint.leaveBreadcrumb("MainActivity::stopPeriodicUpdates");
+        DFMLogger.logMessage(TAG, "stopPeriodicUpdates");
+
         // After disconnect() is called, the client is considered "dead".
         googleApiClient.disconnect();
     }
@@ -1006,7 +1045,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param errorCode An error code returned from onConnectionFailed
      */
     private void showErrorDialog(final int errorCode) {
-        Mint.leaveBreadcrumb("MainActivity::showErrorDialog");
+        DFMLogger.logMessage(TAG, "showErrorDialog");
 
         // Get the error dialog from Google Play services
         final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
@@ -1030,7 +1069,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                               final String message,
                                               final boolean isLoadingFromDB,
                                               final boolean mustApplyZoomIfNeeded) {
-        Mint.leaveBreadcrumb("MainActivity::drawAndShowMultipleDistances");
+        DFMLogger.logMessage(TAG, "drawAndShowMultipleDistances");
+
         // Borramos los antiguos marcadores y lineas
         googleMap.clear();
 
@@ -1067,7 +1107,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                             final String distance,
                             final String message,
                             final boolean isLoadingFromDB) {
-        Mint.leaveBreadcrumb("MainActivity::addMarkers");
+        DFMLogger.logMessage(TAG, "addMarkers");
+
         for (int i = 0; i < coordinates.size(); i++) {
             if ((i == 0 && (isLoadingFromDB || distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT)) ||
                 (i == coordinates.size() - 1)) {
@@ -1084,12 +1125,14 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     }
 
     private Marker addMarker(final LatLng coordinate) {
-        Mint.leaveBreadcrumb("MainActivity::addMarker");
+        DFMLogger.logMessage(TAG, "addMarker");
+
         return googleMap.addMarker(new MarkerOptions().position(coordinate));
     }
 
     private void addLines(final List<LatLng> coordinates, final boolean isLoadingFromDB) {
-        Mint.leaveBreadcrumb("MainActivity::addLines");
+        DFMLogger.logMessage(TAG, "addLines");
+
         for (int i = 0; i < coordinates.size() - 1; i++) {
             addLine(coordinates.get(i), coordinates.get(i + 1), isLoadingFromDB);
         }
@@ -1102,7 +1145,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param end   Destination position.
      */
     private void addLine(final LatLng start, final LatLng end, final boolean isLoadingFromDB) {
-        Mint.leaveBreadcrumb("MainActivity::addLine");
+        DFMLogger.logMessage(TAG, "addLine");
+
         final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
         lineOptions.width(3 * getResources().getDisplayMetrics().density);
         lineOptions.color(isLoadingFromDB ? Color.YELLOW : Color.GREEN);
@@ -1117,7 +1161,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @return The normalized distance.
      */
     private String calculateDistance(final List<LatLng> coordinates) {
-        Mint.leaveBreadcrumb("MainActivity::calculateDistance");
+        DFMLogger.logMessage(TAG, "calculateDistance");
+
         double distanceInMetres = 0.0;
         for (int i = 0; i < coordinates.size() - 1; i++) {
             distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
@@ -1147,7 +1192,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param p2 Destination position.
      */
     private void moveCameraZoom(final LatLng p1, final LatLng p2, final boolean mustApplyZoomIfNeeded) {
-        Mint.leaveBreadcrumb("MainActivity::moveCameraZoom");
+        DFMLogger.logMessage(TAG, "moveCameraZoom");
+
         double centerLat = 0.0;
         double centerLon = 0.0;
 
@@ -1172,7 +1218,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     }
 
     private SharedPreferences getSharedPreferences(final Context context) {
-        Mint.leaveBreadcrumb("MainActivity::getSharedPreferences");
+        DFMLogger.logMessage(TAG, "getSharedPreferences");
+
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -1185,7 +1232,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @return Zoom level.
      */
     private float calculateZoom(final LatLng origin, final LatLng destination) {
-        Mint.leaveBreadcrumb("MainActivity::calculateZoom");
+        DFMLogger.logMessage(TAG, "calculateZoom");
+
         double distanceInMetres = Haversine.getDistance(origin.latitude,
                                                         origin.longitude,
                                                         destination.latitude,
@@ -1232,7 +1280,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * @param coordinates Positions list.
      */
     private void getElevation(final List<LatLng> coordinates) {
-        Mint.leaveBreadcrumb("MainActivity::getElevation");
+        DFMLogger.logMessage(TAG, "getElevation");
+
         String positionListUrlParameter = "";
         for (int i = 0; i < coordinates.size(); i++) {
             final LatLng coordinate = coordinates.get(i);
@@ -1245,7 +1294,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         }
         if (positionListUrlParameter.isEmpty()) {
             final IllegalStateException illegalStateException = new IllegalStateException("Coordinates list empty");
-            Mint.logException(illegalStateException);
+            DFMLogger.logException(illegalStateException);
             throw illegalStateException;
         }
 
@@ -1259,7 +1308,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * Sets map attending to the action which is performed.
      */
     private void fixMapPadding() {
-        Mint.leaveBreadcrumb("MainActivity::fixMapPadding");
+        DFMLogger.logMessage(TAG, "fixMapPadding");
+
         if (bannerShown) {
             if (elevationChartShown) {
                 googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
@@ -1285,6 +1335,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
 
+        private final String TAG = SearchPositionByName.class.getSimpleName();
+
         protected List<Address>  addressList;
         protected StringBuilder  fullAddress;
         protected LatLng         selectedPosition;
@@ -1292,7 +1344,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPreExecute() {
-            Mint.leaveBreadcrumb("SearchPositionByName::onPreExecute");
+            DFMLogger.logMessage(TAG, "onPreExecute");
+
             addressList = null;
             fullAddress = new StringBuilder();
             selectedPosition = null;
@@ -1316,14 +1369,15 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected Integer doInBackground(Object... params) {
-            Mint.leaveBreadcrumb("SearchPositionByName::doInBackground");
+            DFMLogger.logMessage(TAG, "doInBackground");
+
             /* get latitude and longitude from the addressList */
             final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
             try {
                 addressList = geoCoder.getFromLocationName((String) params[0], 5);
             } catch (IOException e) {
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
                 return -1; // Network is unavailable or any other I/O problem occurs
             }
             if (addressList == null) {
@@ -1337,7 +1391,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPostExecute(Integer result) {
-            Mint.leaveBreadcrumb("SearchPositionByName::onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute");
+
             switch (result) {
                 case 0:
                     if (addressList != null && addressList.size() > 0) {
@@ -1376,7 +1431,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         }
 
         private void handleSelectedAddress() {
-            Mint.leaveBreadcrumb("SearchPositionByName::handleSelectedAddress");
+            DFMLogger.logMessage(TAG, "handleSelectedAddress");
+
             if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                 coordinates.add(selectedPosition);
                 if (coordinates.isEmpty()) {
@@ -1415,7 +1471,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * @param item The item index in the AlertDialog.
          */
         protected void processSelectedAddress(final int item) {
-            Mint.leaveBreadcrumb("SearchPositionByName::processSelectedAddress");
+            DFMLogger.logMessage(TAG, "processSelectedAddress");
+
             // Fill address info to show in the marker info window
             final Address address = addressList.get(item);
             for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
@@ -1431,7 +1488,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * @return A string list with only addresses in text.
          */
         protected List<String> groupAddresses(final List<Address> addressList) {
-            Mint.leaveBreadcrumb("SearchPositionByName::groupAddresses");
+            DFMLogger.logMessage(TAG, "groupAddresses");
+
             final List<String> result = Lists.newArrayList();
             StringBuilder stringBuilder;
             for (final Address l : addressList) {
@@ -1449,9 +1507,13 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      * A subclass of SearchPositionByName to get position by coordinates.
      */
     private class SearchPositionByCoordinates extends SearchPositionByName {
+
+        private final String TAG = SearchPositionByCoordinates.class.getSimpleName();
+
         @Override
         protected Integer doInBackground(Object... params) {
-            Mint.leaveBreadcrumb("SearchPositionByCoordinates::doInBackground");
+            DFMLogger.logMessage(TAG, "doInBackground");
+
             /* get latitude and longitude from the addressList */
             final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
             final LatLng latLng = (LatLng) params[0];
@@ -1459,14 +1521,14 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
             } catch (final IOException e) {
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
                 return -1; // No encuentra una dirección, no puede conectar con el servidor
             } catch (final IllegalArgumentException e) {
                 final IllegalArgumentException illegalArgumentException = new IllegalArgumentException(String.format("Error en latitud=%f o longitud=%f.\n%s",
                                                                                                                      latLng.latitude,
                                                                                                                      latLng.longitude,
                                                                                                                      e.toString()));
-                Mint.logException(illegalArgumentException);
+                DFMLogger.logException(illegalArgumentException);
                 throw illegalArgumentException;
             }
             if (addressList == null) {
@@ -1480,7 +1542,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPostExecute(Integer result) {
-            Mint.leaveBreadcrumb("SearchPositionByCoordinates::onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute");
+
             switch (result) {
                 case 0:
                     processSelectedAddress(0);
@@ -1514,6 +1577,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
      */
     private class GetAltitude extends AsyncTask<String, Void, Double> {
 
+        private final String TAG = GetAltitude.class.getSimpleName();
+
         private HttpClient httpClient = null;
         private HttpGet    httpGet    = null;
         private HttpResponse httpResponse;
@@ -1523,7 +1588,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected void onPreExecute() {
-            Mint.leaveBreadcrumb("GetAltitude::onPreExecute");
+            DFMLogger.logMessage(TAG, "onPreExecute");
+
             httpClient = new DefaultHttpClient();
             responseAsString = null;
 
@@ -1539,7 +1605,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
         @Override
         protected Double doInBackground(String... params) {
-            Mint.leaveBreadcrumb("GetAltitude::doInBackground");
+            DFMLogger.logMessage(TAG, "doInBackground");
+
             httpGet = new HttpGet("http://maps.googleapis.com/maps/api/elevation/json?sensor=true"
                                   + "&path=" + Uri.encode(params[0])
                                   + "&samples=" + ELEVATION_SAMPLES);
@@ -1556,23 +1623,24 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 }
             } catch (ClientProtocolException e) {
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
             } catch (IllegalStateException e) {
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
             } catch (IOException e) {
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
             } catch (JSONException e) {
                 e.printStackTrace();
-                Mint.logException(e);
+                DFMLogger.logException(e);
             }
             return null;
         }
 
         @Override
         protected void onPostExecute(Double result) {
-            Mint.leaveBreadcrumb("GetAltitude::onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute");
+
             showElevationProfileChart();
             // When HttpClient instance is no longer needed
             // shut down the connection manager to ensure
@@ -1588,7 +1656,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * @throws IOException
          */
         private String convertInputStreamToString(final InputStream inputStream) throws IOException {
-            Mint.leaveBreadcrumb("GetAltitude::convertInputStreamToString");
+            DFMLogger.logMessage(TAG, "convertInputStreamToString");
+
             final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             StringBuilder result = new StringBuilder();
@@ -1609,7 +1678,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * @throws JSONException
          */
         private void buildElevationChart(final JSONArray array) throws JSONException {
-            Mint.leaveBreadcrumb("GetAltitude::buildElevationChart");
+            DFMLogger.logMessage(TAG, "buildElevationChart");
+
             // Creates the serie and adds data to it
             final GraphViewSeries series =
                     new GraphViewSeries(null,
@@ -1654,7 +1724,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
          * Shows the elevation profile chart.
          */
         private void showElevationProfileChart() {
-            Mint.leaveBreadcrumb("GetAltitude::showElevationProfileChart");
+            DFMLogger.logMessage(TAG, "showElevationProfileChart");
+
             if (graphView != null) {
                 rlElevationChart.setVisibility(LinearLayout.VISIBLE);
                 rlElevationChart.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
