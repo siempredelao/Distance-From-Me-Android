@@ -7,14 +7,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.widget.Toast;
 
-import com.splunk.mint.Mint;
+import java.util.Set;
+
+import gc.david.dfm.logger.DFMLogger;
 
 /**
  * Created by David on 15/10/2014.
  */
 public class Utils {
+
+    private static final String TAG = Utils.class.getSimpleName();
+
     /**
      * Makes toasting easy!
      *
@@ -22,6 +28,8 @@ public class Utils {
      * @param context      Activity context.
      */
     public static void toastIt(final String charSequence, final Context context) {
+        DFMLogger.logMessage(TAG, "toastIt message=" + charSequence);
+
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
     }
 
@@ -33,7 +41,8 @@ public class Utils {
      * otherwise, returns <code>false</code>.
      */
     public static boolean isOnline(final Context context) {
-        Mint.leaveBreadcrumb("Utils::isOnline");
+        DFMLogger.logMessage(TAG, "isOnline");
+
         final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
@@ -55,7 +64,8 @@ public class Utils {
                                        final String positiveButton,
                                        final String negativeButton,
                                        final Activity activity) {
-        Mint.leaveBreadcrumb("Utils::showAlertDialog");
+        DFMLogger.logMessage(TAG, "showAlertDialog");
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title)
                .setMessage(message)
@@ -74,5 +84,33 @@ public class Utils {
                                       }
                                   });
         builder.create().show();
+    }
+
+    public static String dumpIntentToString(final Intent intent) {
+        if (intent == null) {
+            return "intent is null";
+        }
+
+        String intentAsString = "";
+        final Bundle bundle = intent.getExtras();
+
+        if (bundle != null) {
+            final Set<String> keys = bundle.keySet();
+            intentAsString += "intent=[ ";
+            for (final String key : keys) {
+                intentAsString += key + "=" + bundle.get(key) + ", ";
+            }
+            intentAsString += " ]";
+        } else {
+            intentAsString = "intent with empty bundle";
+        }
+        return intentAsString;
+    }
+
+    public static String dumpBundleToString(Bundle bundle) {
+        if (bundle == null) {
+            return "bundle is null";
+        }
+        return bundle.toString();
     }
 }

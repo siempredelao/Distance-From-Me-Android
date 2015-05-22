@@ -19,15 +19,15 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
-import com.splunk.mint.Mint;
-
 import java.util.Arrays;
 import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
-import gc.david.dfm.adapter.QuestionExpandableListAdapter;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
+import gc.david.dfm.adapter.QuestionExpandableListAdapter;
+import gc.david.dfm.logger.DFMLogger;
 
 import static butterknife.ButterKnife.inject;
 import static gc.david.dfm.Utils.showAlertDialog;
@@ -37,6 +37,8 @@ import static gc.david.dfm.Utils.toastIt;
  * Created by David on 17/10/2014.
  */
 public class FeedbackActivity extends ActionBarActivity {
+
+    private static final String TAG = FeedbackActivity.class.getSimpleName();
 
     private final TextWatcher nonEmptyTextWatcher = new TextWatcher() {
         @Override
@@ -51,7 +53,8 @@ public class FeedbackActivity extends ActionBarActivity {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            Mint.leaveBreadcrumb("FeedbackActivity::nonEmptyTextWatcher afterTextChanged");
+            DFMLogger.logMessage(TAG, "afterTextChanged");
+
             if (etDetails.getText().length() != 0) {
                 tvQuestionDescriptionHeader.setTextColor(getResources().getColor(R.color.item_background));
             }
@@ -74,7 +77,8 @@ public class FeedbackActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Mint.leaveBreadcrumb("FeedbackActivity::onCreate");
+        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
         inject(this);
@@ -93,6 +97,7 @@ public class FeedbackActivity extends ActionBarActivity {
                                         int groupCount,
                                         int childCount,
                                         long l) {
+                DFMLogger.logMessage(TAG, "onChildClick selected=" + questionExpandableListAdapter.getChild(0, childCount));
                 expandableListView.collapseGroup(0);
                 questionExpandableListAdapter.setGroup((String) questionExpandableListAdapter.getChild(0, childCount));
                 tvQuestionTypeHeader.setTextColor(getResources().getColor(R.color.item_background));
@@ -105,7 +110,8 @@ public class FeedbackActivity extends ActionBarActivity {
 
     @OnClick(R.id.send_feedback_button)
     protected void submit_query() {
-        Mint.leaveBreadcrumb("FeedbackActivity::submit_query");
+        DFMLogger.logMessage(TAG, "submit_query");
+
         if (!validateFields()) {
             return;
         }
@@ -138,14 +144,15 @@ public class FeedbackActivity extends ActionBarActivity {
                 hideKeyboard();
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                Mint.logException(e);
+                DFMLogger.logException(e);
                 toastIt(getString(R.string.toast_send_feedback_error), getApplicationContext());
             }
         }
     }
 
     private boolean validateFields() {
-        Mint.leaveBreadcrumb("FeedbackActivity::validateFields");
+        DFMLogger.logMessage(TAG, "validateFields");
+
         final boolean validateQuestionType = isOneFeedbackTypeSelected();
         final boolean validateDescription = !etDetails.getText().toString().equals("");
 
@@ -172,13 +179,15 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private void hideKeyboard() {
-        Mint.leaveBreadcrumb("FeedbackActivity::hideKeyboard");
+        DFMLogger.logMessage(TAG, "hideKeyboard");
+
         final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(etDetails.getWindowToken(), 0);
     }
 
     private void focusFieldsRegardingValidation(final boolean validateQuestionType, final boolean validateDescription) {
-        Mint.leaveBreadcrumb("FeedbackActivity::focusFieldsRegardingValidation");
+        DFMLogger.logMessage(TAG, "focusFieldsRegardingValidation");
+
         if (!validateQuestionType) {
             tvQuestionTypeHeader.setTextColor(Color.RED);
         }
@@ -188,7 +197,8 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private String getDeviceInfo() {
-        Mint.leaveBreadcrumb("FeedbackActivity::getDeviceInfo");
+        DFMLogger.logMessage(TAG, "getDeviceInfo");
+
         return "\n\nImportant device info for analysis:" +
                "\n\nVersion:" +
                "\nCODENAME=" + Build.VERSION.CODENAME +
@@ -220,7 +230,8 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private String getMemoryParameters() {
-        Mint.leaveBreadcrumb("FeedbackActivity::getMemoryParameters");
+        DFMLogger.logMessage(TAG, "getMemoryParameters");
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
             final ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
@@ -235,7 +246,8 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private boolean isOneFeedbackTypeSelected() {
-        Mint.leaveBreadcrumb("FeedbackActivity::isOneFeedbackTypeSelected");
+        DFMLogger.logMessage(TAG, "isOneFeedbackTypeSelected");
+
         final String groupHeader = getGroupName();
         for (final String type : feedbackTypes) {
             if (type.contains(groupHeader)) {
@@ -246,7 +258,8 @@ public class FeedbackActivity extends ActionBarActivity {
     }
 
     private String getGroupName() {
-        Mint.leaveBreadcrumb("FeedbackActivity::getGroupName");
+        DFMLogger.logMessage(TAG, "getGroupName");
+
         return (String) questionExpandableListAdapter.getGroup(0);
     }
 }

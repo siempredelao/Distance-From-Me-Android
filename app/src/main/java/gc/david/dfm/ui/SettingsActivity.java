@@ -7,12 +7,11 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
-import com.splunk.mint.Mint;
-
 import java.util.Locale;
 
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
+import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
@@ -20,10 +19,14 @@ import gc.david.dfm.model.Position;
 import static gc.david.dfm.Utils.toastIt;
 
 public class SettingsActivity extends PreferenceActivity {
+
+    private static final String TAG = SettingsActivity.class.getSimpleName();
+
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Mint.leaveBreadcrumb("SettingsActivity::onCreate");
+        DFMLogger.logMessage(TAG, "onCreate");
+
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.settings);
@@ -32,7 +35,8 @@ public class SettingsActivity extends PreferenceActivity {
         bbddPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Mint.leaveBreadcrumb("SettingsActivity::onPreferenceClick delete entries");
+                DFMLogger.logMessage(TAG, "onPreferenceClick delete entries");
+
                 // TODO hacerlo en segundo plano
                 getApplicationDaoSession().deleteAll(Distance.class);
                 getApplicationDaoSession().deleteAll(Position.class);
@@ -64,7 +68,8 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private DaoSession getApplicationDaoSession() {
-        Mint.leaveBreadcrumb("SettingsActivity::getApplicationDaoSession");
+        DFMLogger.logMessage(TAG, "getApplicationDaoSession");
+
         return ((DFMApplication) getApplicationContext()).getDaoSession();
     }
 }

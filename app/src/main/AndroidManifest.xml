@@ -126,6 +126,9 @@
         <!--<meta-data-->
             <!--android:name="com.google.android.maps.v2.API_KEY"-->
             <!--android:value="AIzaSyBNgeKm600hGUcFTDan6d2m5OHsKUeQm4Q"/>-->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="8e0385314ec35f002d83083f2a102babce173f98" />
     </application>
 
 </manifest>

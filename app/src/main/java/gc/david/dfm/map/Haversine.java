@@ -1,9 +1,9 @@
 package gc.david.dfm.map;
 
-import com.splunk.mint.Mint;
-
 import java.text.DecimalFormat;
 import java.util.Locale;
+
+import gc.david.dfm.logger.DFMLogger;
 
 /**
  * Haversine class implements static methods to calculate distances between two
@@ -14,6 +14,8 @@ import java.util.Locale;
  * @see <a href="http://en.wikipedia.org/wiki/Haversine_formula">Haversine</a>
  */
 public final class Haversine {
+
+    private static final String TAG = Haversine.class.getSimpleName();
 
     private static final double EARTH_RADIUS_IN_METRES = 6371000;
     private static final double MILE_IN_METRES         = 1609.344;
@@ -34,8 +36,9 @@ public final class Haversine {
                                      final double longitudeA,
                                      final double latitudeB,
                                      final double longitudeB) {
-        Mint.leaveBreadcrumb("Haversine::getDistance (" + latitudeA + "," + longitudeA
-                             + ")-(" + latitudeB + "," + longitudeB + ")");
+        DFMLogger.logMessage(TAG, "getDistance (" + latitudeA + "," + longitudeA
+                                  + ")-(" + latitudeB + "," + longitudeB + ")");
+
         final double latitudeAInRadians = Math.toRadians(latitudeA);
         final double longitudeAInRadians = Math.toRadians(longitudeA);
         final double latitudeBInRadians = Math.toRadians(latitudeB);
@@ -63,10 +66,10 @@ public final class Haversine {
      * @return A String with the amount and the unit.
      */
     public static String normalizeDistance(final double distanceInMetres, final Locale locale) {
-        Mint.leaveBreadcrumb("Haversine::normalizeDistance " +
-                             distanceInMetres +
-                             " with locale " +
-                             locale.toString());
+        DFMLogger.logMessage(TAG, "normalizeDistance " +
+                                  distanceInMetres +
+                                  " with locale " +
+                                  locale.toString());
 
         final String normalizedDistance;
         final String measureUnit;
@@ -112,10 +115,11 @@ public final class Haversine {
      * @return A double with only the normalized amount.
      */
     public static double normalizeAltitudeByLocale(final double altitude, final Locale locale) {
-        Mint.leaveBreadcrumb("Haversine::normalizeAltitudeByLocale " +
-                             altitude +
-                             " with locale " +
-                             locale.toString());
+        DFMLogger.logMessage(TAG, "normalizeAltitudeByLocale " +
+                                  altitude +
+                                  " with locale " +
+                                  locale.toString());
+
         final double measure;
 
         if (locale.equals(Locale.CANADA)
@@ -136,7 +140,8 @@ public final class Haversine {
      * @return String with altitude unit.
      */
     public static String getAltitudeUnitByLocale(final Locale locale) {
-        Mint.leaveBreadcrumb("Haversine::getAltitudeUnitByLocale " + locale.toString());
+        DFMLogger.logMessage(TAG, "getAltitudeUnitByLocale " + locale.toString());
+
         if (locale.equals(Locale.CANADA)
             || locale.equals(Locale.UK)
             || locale.equals(Locale.US)) {

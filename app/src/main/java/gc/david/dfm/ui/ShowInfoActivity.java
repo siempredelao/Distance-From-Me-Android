@@ -24,7 +24,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.splunk.mint.Mint;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,6 +35,8 @@ import java.util.concurrent.ExecutionException;
 import butterknife.InjectView;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
+import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
@@ -50,6 +51,8 @@ import static gc.david.dfm.Utils.toastIt;
  * @author David
  */
 public class ShowInfoActivity extends ActionBarActivity {
+
+    private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
     public static final String POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
     public static final String DISTANCE_EXTRA_KEY_NAME            = "distancia";
@@ -81,7 +84,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Mint.leaveBreadcrumb("ShowInfoActivity::onCreate");
+        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
         inject(this);
@@ -93,6 +97,7 @@ public class ShowInfoActivity extends ActionBarActivity {
         fillTitlesHeaders();
 
         if (savedInstanceState == null) {
+            DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
             fillAddressesInfo();
         } else {
             originAddress = savedInstanceState.getString(originAddressKey);
@@ -121,13 +126,15 @@ public class ShowInfoActivity extends ActionBarActivity {
     }
 
     private DaoSession getApplicationDaoSession() {
-        Mint.leaveBreadcrumb("ShowInfoActivity::getApplicationDaoSession");
+        DFMLogger.logMessage(TAG, "getApplicationDaoSession");
+        
         return ((DFMApplication) getApplicationContext()).getDaoSession();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Mint.leaveBreadcrumb("ShowInfoActivity::onSaveInstanceState");
+        DFMLogger.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
+        
         super.onSaveInstanceState(outState);
 
         outState.putString(originAddressKey, originAddress);
@@ -147,7 +154,8 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Get data form the Intent.
      */
     private void getIntentData() {
-        Mint.leaveBreadcrumb("ShowInfoActivity::getIntentData");
+        DFMLogger.logMessage(TAG, "getIntentData");
+        
         final Intent inputDataIntent = getIntent();
         positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
         distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
@@ -156,8 +164,10 @@ public class ShowInfoActivity extends ActionBarActivity {
     /**
      * Fill Textviews titles.
      */
+    // TODO move this stupid method to layout file!
     private void fillTitlesHeaders() {
-        Mint.leaveBreadcrumb("ShowInfoActivity::fillTitlesHeaders");
+        DFMLogger.logMessage(TAG, "fillTitlesHeaders");
+        
         tvHeaderOriginAddress.setText(getString(R.string.info_current_position_title));
         tvHeaderDestinationAddress.setText(getString(R.string.info_destination_position_title));
     }
@@ -166,7 +176,8 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Get the addresses associated to LatLng points and fill the Textviews.
      */
     private void fillAddressesInfo() {
-        Mint.leaveBreadcrumb("ShowInfoActivity::fillAddressesInfo");
+        DFMLogger.logMessage(TAG, "fillAddressesInfo");
+        
         try {
             originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
             destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
@@ -183,12 +194,12 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                        positionsList.get(positionsList.size() - 1).longitude));
         } catch (final InterruptedException e) {
             e.printStackTrace();
-            Mint.logException(e);
+            DFMLogger.logException(e);
         } catch (final ExecutionException e) {
             e.printStackTrace();
-            Mint.logException(e);
+            DFMLogger.logException(e);
         } catch (final CancellationException e) {
-            Mint.logException(e);
+            DFMLogger.logException(e);
             // No hay conexión, se cancela la búsqueda de las direcciones
             // No se hace nada aquí, ya lo hace el hilo
         }
@@ -198,13 +209,15 @@ public class ShowInfoActivity extends ActionBarActivity {
      * Fill Textview tvDistance.
      */
     private void fillDistanceInfo() {
-        Mint.leaveBreadcrumb("ShowInfoActivity::fillDistanceInfo");
+        DFMLogger.logMessage(TAG, "fillDistanceInfo");
+
         tvDistance.setText(getString(R.string.info_distance_title, distance));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Mint.leaveBreadcrumb("ShowInfoActivity::onCreateOptionsMenu");
+        DFMLogger.logMessage(TAG, "onCreateOptionsMenu");
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.show_info, menu);
 
@@ -225,7 +238,8 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @return A new Intent to show different options to share data.
      */
     private Intent createDefaultShareIntent() {
-        Mint.leaveBreadcrumb("ShowInfoActivity::createDefaultShareIntent");
+        DFMLogger.logMessage(TAG, "createDefaultShareIntent");
+
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
@@ -248,7 +262,8 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
      */
     private boolean verifyAppReceiveIntent(final Intent intent) {
-        Mint.leaveBreadcrumb("ShowInfoActivity::verifyAppReceiveIntent");
+        DFMLogger.logMessage(TAG, "verifyAppReceiveIntent");
+
         final PackageManager packageManager = getPackageManager();
         final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
         return activities.size() > 0;
@@ -256,7 +271,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Mint.leaveBreadcrumb("ShowInfoActivity::onOptionsItemSelected");
+        DFMLogger.logMessage(TAG, "onOptionsItemSelected item=" + item.getItemId());
+
         switch (item.getItemId()) {
             case R.id.action_social_share:
                 return true;
@@ -278,7 +294,8 @@ public class ShowInfoActivity extends ActionBarActivity {
      * @param defaultText String text when orientation changes.
      */
     private void saveDataToDB(final String defaultText) {
-        Mint.leaveBreadcrumb("ShowInfoActivity::saveDataToDB");
+        DFMLogger.logMessage(TAG, "saveDataToDB defaultText=" + defaultText);
+
         wasSavingWhenOrientationChanged = true;
         // Pedir al usuario que introduzca un texto descriptivo
         final AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
@@ -311,7 +328,8 @@ public class ShowInfoActivity extends ActionBarActivity {
                     * @param alias Alias written by the user.
                     */
                    private void insertDataIntoDatabase(final String alias) {
-                       Mint.leaveBreadcrumb("ShowInfoActivity::insertDataIntoDatabase");
+                       DFMLogger.logMessage(TAG, "insertDataIntoDatabase");
+
                        String aliasToSave = "";
                        if (alias.compareTo("") != 0) {
                            aliasToSave = alias;
@@ -345,11 +363,14 @@ public class ShowInfoActivity extends ActionBarActivity {
      */
     private class GetAddressTask extends AsyncTask<Object, Void, String> {
 
+        private final String TAG = GetAddressTask.class.getSimpleName();
+
         private Context context;
 
         @Override
         protected void onPreExecute() {
-            Mint.leaveBreadcrumb("GetAddressTask::onPreExecute");
+            DFMLogger.logMessage(TAG, "onPreExecute");
+
             super.onPreExecute();
             this.context = getApplicationContext();
 
@@ -365,7 +386,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(Object... params) {
-            Mint.leaveBreadcrumb("GetAddressTask::doInBackground");
+            DFMLogger.logMessage(TAG, "doInBackground");
+
             final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             // Get the current location from the input parameter list
             final LatLng currentLocation = (LatLng) params[0];
@@ -376,7 +398,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                      currentLocation.longitude, 1);
             } catch (final IOException e1) {
                 e1.printStackTrace();
-                Mint.logException(e1);
+                DFMLogger.logException(e1);
                 return (getString(R.string.toast_no_location_found));
             } catch (final IllegalArgumentException e2) {
                 // Error message to post in the log
@@ -384,7 +406,7 @@ public class ShowInfoActivity extends ActionBarActivity {
                                                          Double.toString(currentLocation.latitude),
                                                          Double.toString(currentLocation.longitude));
                 e2.printStackTrace();
-                Mint.logException(e2);
+                DFMLogger.logException(e2);
                 return errorString;
             }
             // If the reverse geocode returned an address
@@ -413,7 +435,8 @@ public class ShowInfoActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            Mint.leaveBreadcrumb("GetAddressTask::onPostExecute");
+            DFMLogger.logMessage(TAG, "onPostExecute");
+
             endUpdate();
 
             super.onPostExecute(result);
@@ -423,7 +446,8 @@ public class ShowInfoActivity extends ActionBarActivity {
          * Change the appearance of the refresh button to a ProgressBar.
          */
         private void startUpdate() {
-            Mint.leaveBreadcrumb("GetAddressTask::startUpdate");
+            DFMLogger.logMessage(TAG, "startUpdate");
+
             if (menuItem != null) {
                 MenuItemCompat.setActionView(menuItem, R.layout.actionbar_indeterminate_progress);
                 MenuItemCompat.expandActionView(menuItem);
@@ -434,7 +458,8 @@ public class ShowInfoActivity extends ActionBarActivity {
          * Restore the refresh button to his normal appearance.
          */
         private void endUpdate() {
-            Mint.leaveBreadcrumb("GetAddressTask::endUpdate");
+            DFMLogger.logMessage(TAG, "endUpdate");
+
             if (menuItem != null) {
                 MenuItemCompat.collapseActionView(menuItem);
                 MenuItemCompat.setActionView(menuItem, null);
