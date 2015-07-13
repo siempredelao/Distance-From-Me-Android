@@ -22,7 +22,7 @@
 * [ButterKnife](http://jakewharton.github.io/butterknife)
 * [GreenDAO](http://greendao-orm.com)
 * [Guava](https://github.com/google/guava)
-* [Splunk Mint](http://www.splunk.com/mint)
+* [Crashlytics (Fabric)](https://get.fabric.io/crashlytics)
 
 ## Current status
 At this moment, *Distance From Me* is being constantly updated, adding new features and languages.
