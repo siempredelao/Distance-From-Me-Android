@@ -22,3 +22,5 @@ gradle
 local.properties
 .classpath
 *.iml
+app/src/main/res/values/other.xml
+app/crashlytics.properties

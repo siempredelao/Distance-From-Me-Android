@@ -170,7 +170,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
             googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
             // InMobi Ads
-            InMobi.initialize(this, "9b61f509a1454023b5295d8aea4482c2");
+            InMobi.initialize(this, getString(R.string.inmobi_api_key));
             banner = (IMBanner) findViewById(R.id.banner);
             if (banner != null) {
                 // Si no hay red el banner no carga ni aunque esté vacío
