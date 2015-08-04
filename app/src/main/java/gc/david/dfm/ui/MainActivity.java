@@ -64,7 +64,6 @@ import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.LineGraphView;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -1666,16 +1665,7 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                     }
                 }
                 // TODO merge this catches!
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-                DFMLogger.logException(e);
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-                DFMLogger.logException(e);
-            } catch (IOException e) {
-                e.printStackTrace();
-                DFMLogger.logException(e);
-            } catch (JSONException e) {
+            } catch (IllegalStateException | IOException | JSONException e) {
                 e.printStackTrace();
                 DFMLogger.logException(e);
             }
