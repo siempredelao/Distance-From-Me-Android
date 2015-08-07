@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ACTIVITY MAIN -->
     <string name="action_bar_search_title">Rechercher</string>
     <string name="action_bar_item_social_share_title">Partager</string>
     <string name="menu_legal_notices_title">Avis juridique</string>
@@ -69,4 +68,10 @@
     <string name="dialog_no_feedback_description_title">Pas de description</string>
     <string name="dialog_no_feedback_description_message">Écrivez la description de votre question dans le formulaire de contact, s\il vous plaît.</string>
     <string name="dialog_connection_problems_title">Problème de connexion</string>
+    <string name="category_unit_title">Unité de mesure</string>
+    <string name="preference_unit_dialog_title">Sélectionnez l\'unité</string>
+    <string name="preference_unit_entry_EU">métros, kilómetros</string>
+    <string name="preference_unit_entry_US">miles, yards, pieds</string>
+    <string name="preference_unit_summary">Choisissez une unité de mesure. Par défaut, il est choisi en tenant compte de la langue de votre appareil.</string>
+    <string name="preference_unit_title">Sélectionnez l\'unité préférée</string>
 </resources>

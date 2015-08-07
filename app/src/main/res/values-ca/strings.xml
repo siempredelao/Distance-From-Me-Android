@@ -18,7 +18,7 @@
     <string name="menu_rate_app_title">Puntua aplicació</string>
     <string name="dialog_rate_app_title">Puntua aquesta aplicació</string>
     <string name="dialog_rate_app_message">Si Distance From Me li sembla una bona aplicació, per favor, valore-la amb 5 estrelles y escriga un comentari adequat. Si no és així, també pot comunicar-se amb l\'equip de desenvolupament per a queixar-se d\'algun error o fer algun suggeriment.</string>
-    <string name="dialog_rate_app_positive_button">Abrir Play Store</string>
+    <string name="dialog_rate_app_positive_button">Obrir Play Store</string>
     <string name="dialog_rate_app_negative_button">Conta\'ns!</string>
     <string name="toast_send_feedback_error">No hi ha clients d\'email disponibles</string>
     <string name="menu_settings_title">Preferències</string>
@@ -68,4 +68,10 @@
     <string name="expandable_item_feedback_type_suggestion">Suggerència</string>
     <string name="dialog_connection_problems_title">Problema en la connexió</string>
     <string name="toast_first_point_needed">Si us plau, assenyale un punt inicial.</string>
+    <string name="category_unit_title">Unitat de mesura</string>
+    <string name="preference_unit_dialog_title">Seleccione unitat</string>
+    <string name="preference_unit_entry_EU">metres, quilòmetres</string>
+    <string name="preference_unit_entry_US">milles, iardes, peus</string>
+    <string name="preference_unit_summary">Trie una unitat de mesura. Per defecte, se selecciona atenent a la unitat del seu dispositiu.</string>
+    <string name="preference_unit_title">Seleccione unitat preferida</string>
 </resources>

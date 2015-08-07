@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ACTIVITY MAIN -->
     <string name="action_bar_search_title">Buscar</string>
     <string name="action_bar_item_social_share_title">Compartir</string>
     <string name="menu_legal_notices_title">Aviso legal</string>
@@ -69,4 +68,10 @@
     <string name="problem_type_listview_title">Seleccione tipo</string>
     <string name="problem_description_header">Detalles de su pregunta</string>
     <string name="preference_centre_map_title">Centrar mapa</string>
+    <string name="category_unit_title">Unidad de medida</string>
+    <string name="preference_unit_dialog_title">Seleccione unidad</string>
+    <string name="preference_unit_entry_EU">metros, kilómetros</string>
+    <string name="preference_unit_entry_US">millas, yardas, pies</string>
+    <string name="preference_unit_title">Seleccione unidad preferida</string>
+    <string name="preference_unit_summary">Elija una unidad de medida. Por defecto, se selecciona atendiendo al idioma de su dispositivo.</string>
 </resources>

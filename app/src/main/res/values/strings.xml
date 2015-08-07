@@ -60,8 +60,8 @@
     <string name="preference_delete_distances_title">Delete distances</string>
     <string name="preference_delete_distances_summary">Touch to delete all saved distances</string>
 
-    <string name="category_unit_title">Measuring unit</string>
-    <string name="preference_unit_summary">Choose a measurement unit. By default, it is set regarding your current device language.</string>
+    <string name="category_unit_title">Unit of measurement</string>
+    <string name="preference_unit_summary">Choose a unit of measurement. By default, it is set regarding your current device language.</string>
     <string name="preference_unit_title">Select preferred unit</string>
     <string name="preference_unit_dialog_title">Select unit</string>
     <string name="preference_unit_entry_EU">meters, kilometers</string>
