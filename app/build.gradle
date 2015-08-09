@@ -4,31 +4,13 @@ apply plugin: 'io.fabric'
 android {
 	compileSdkVersion 21
 	buildToolsVersion '22.0.1'
+
 	defaultConfig {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 10
 		targetSdkVersion 21
 		versionName '2.0'
 		versionCode 20
-	}
-}
-
-buildscript {
-	repositories {
-		maven {
-			url 'https://maven.fabric.io/public'
-		}
-	}
-
-	dependencies {
-		classpath 'io.fabric.tools:gradle:1.+'
-	}
-}
-
-repositories {
-	mavenCentral()
-    maven {
-		url 'https://maven.fabric.io/public'
 	}
 }
 
