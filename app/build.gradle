@@ -9,7 +9,7 @@ android {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 10
 		targetSdkVersion 21
-		versionName '2.0'
+		versionName '2.0dev'
 		versionCode 20
 	}
 }
