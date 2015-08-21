@@ -117,6 +117,12 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     protected RelativeLayout rlElevationChart;
     @InjectView(R.id.closeChart)
     protected ImageView      ivCloseElevationChart;
+    @InjectView(R.id.banner)
+    protected IMBanner banner;
+    @InjectView(R.id.drawer_layout)
+    protected DrawerLayout drawerLayout;
+    @InjectView(R.id.left_drawer)
+    protected ListView drawerList;
 
     private GoogleMap       googleMap                             = null;
     // A request to connect to Location Services
@@ -131,7 +137,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     // Show position if we come from other app (p.e. Whatsapp)
     private boolean         mustShowPositionWhenComingFromOutside = false;
     private LatLng          sendDestinationPosition               = null;
-    private IMBanner        banner                                = null;
     private boolean         bannerShown                           = false;
     private boolean         elevationChartShown                   = false;
     @SuppressWarnings("rawtypes")
@@ -139,8 +144,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     private GraphView       graphView                             = null;
     private float                 DEVICE_DENSITY;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private DrawerLayout          drawerLayout;
-    private ListView              drawerList;
     private DistanceMode          distanceMode;
     private List<LatLng>          coordinates;
     private boolean               calculatingDistance;
@@ -170,7 +173,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
 
             // InMobi Ads
             InMobi.initialize(this, getString(R.string.inmobi_api_key));
-            banner = (IMBanner) findViewById(R.id.banner);
             if (banner != null) {
                 // Si no hay red el banner no carga ni aunque esté vacío
                 banner.setRefreshInterval(30);
@@ -357,7 +359,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                                                                   getString(R.string.navigation_drawer_starting_point_any_position_item));
             final List<Integer> distanceIcons = Lists.newArrayList(R.drawable.ic_action_device_gps_fixed,
                                                                    R.drawable.ic_action_communication_location_on);
-            drawerList = (ListView) findViewById(R.id.left_drawer);
 
             // TODO cambiar esto por un header como dios manda
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -376,7 +377,6 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
                 }
             });
 
-            drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
             actionBarDrawerToggle = new ActionBarDrawerToggle(this,
                                                               drawerLayout,
                                                               R.string.progressdialog_search_position_message,
