@@ -22,9 +22,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -105,7 +106,7 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class MainActivity extends ActionBarActivity implements LocationListener,
+public class MainActivity extends AppCompatActivity implements LocationListener,
                                                                GoogleApiClient.ConnectionCallbacks,
                                                                GoogleApiClient.OnConnectionFailedListener {
 
@@ -117,6 +118,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
     protected RelativeLayout rlElevationChart;
     @InjectView(R.id.closeChart)
     protected ImageView      ivCloseElevationChart;
+    @InjectView(R.id.tbMain)
+    protected Toolbar tbMain;
     @InjectView(R.id.banner)
     protected IMBanner banner;
     @InjectView(R.id.drawer_layout)
@@ -155,6 +158,8 @@ public class MainActivity extends ActionBarActivity implements LocationListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         inject(this);
+
+        setSupportActionBar(tbMain);
 
         DEVICE_DENSITY = getResources().getDisplayMetrics().density;
 
