@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- TODO add icons! -->
+    <group
+        android:id="@+id/position_group_id"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_current_position"
+            android:checked="true"
+            android:title="@string/navigation_drawer_starting_point_current_position_item"/>
+        <item
+            android:id="@+id/menu_any_position"
+            android:title="@string/navigation_drawer_starting_point_any_position_item"/>
+    </group>
+
+    <item
+        android:id="@+id/menu_rate_app"
+        android:title="@string/menu_rate_app_title"/>
+
+    <item
+        android:id="@+id/menu_legal_notices"
+        android:title="@string/menu_legal_notices_title"/>
+
+    <group
+        android:id="@+id/settings_group_id"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_settings"
+            android:title="@string/menu_settings_title"/>
+    </group>
+</menu>
