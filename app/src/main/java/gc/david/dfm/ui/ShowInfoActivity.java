@@ -15,8 +15,9 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,7 +51,7 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class ShowInfoActivity extends ActionBarActivity {
+public class ShowInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
@@ -72,6 +73,8 @@ public class ShowInfoActivity extends ActionBarActivity {
     protected TextView tvDestinationAddress;
     @InjectView(R.id.distancia)
     protected TextView tvDistance;
+    @InjectView(R.id.tbMain)
+    protected Toolbar tbMain;
 
     private MenuItem     menuItem                        = null;
     private List<LatLng> positionsList                   = null;
@@ -90,6 +93,7 @@ public class ShowInfoActivity extends ActionBarActivity {
         setContentView(R.layout.activity_show_info);
         inject(this);
 
+        setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         getIntentData();

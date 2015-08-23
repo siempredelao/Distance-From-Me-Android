@@ -9,7 +9,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -36,7 +37,7 @@ import static gc.david.dfm.Utils.toastIt;
 /**
  * Created by David on 17/10/2014.
  */
-public class FeedbackActivity extends ActionBarActivity {
+public class FeedbackActivity extends AppCompatActivity {
 
     private static final String TAG = FeedbackActivity.class.getSimpleName();
 
@@ -71,6 +72,8 @@ public class FeedbackActivity extends ActionBarActivity {
     protected TextView           tvQuestionDescriptionHeader;
     @InjectView(R.id.send_feedback_button)
     protected Button             tvSendFeedback;
+    @InjectView(R.id.tbMain)
+    protected Toolbar            tbMain;
 
     private QuestionExpandableListAdapter questionExpandableListAdapter;
     private List<String>                  feedbackTypes;
@@ -83,6 +86,7 @@ public class FeedbackActivity extends ActionBarActivity {
         setContentView(R.layout.activity_feedback);
         inject(this);
 
+        setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         feedbackTypes = Arrays.asList(getResources().getStringArray(R.array.feedback_type_list));
