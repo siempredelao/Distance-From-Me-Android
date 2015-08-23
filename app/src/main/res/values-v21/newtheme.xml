@@ -5,6 +5,9 @@
         <item name="colorPrimaryDark">#142602</item>
         <item name="colorAccent">#99CC00</item>
 
-        <item name="android:textColorPrimary">#FFFFFF</item>
+        <!-- TODO NavigationView doesn't like textColorPrimary... -->
+        <!--<item name="android:textColorPrimary">#FFFFFF</item>-->
+
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 </resources>

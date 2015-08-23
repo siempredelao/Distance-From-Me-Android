@@ -20,23 +20,21 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -88,7 +86,6 @@ import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.DistanceAdapter;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
-import gc.david.dfm.adapter.NavigationDrawerItemAdapter;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
@@ -112,7 +109,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
 
     private static final String TAG                     = MainActivity.class.getSimpleName();
     private static final int    ELEVATION_SAMPLES       = 100;
-    private final        int    FIRST_DRAWER_ITEM_INDEX = 1;
 
     @InjectView(R.id.elevationchart)
     protected RelativeLayout rlElevationChart;
@@ -124,8 +120,8 @@ public class MainActivity extends BaseActivity implements LocationListener,
     protected IMBanner       banner;
     @InjectView(R.id.drawer_layout)
     protected DrawerLayout   drawerLayout;
-    @InjectView(R.id.left_drawer)
-    protected ListView       drawerList;
+    @InjectView(R.id.nvDrawer)
+    protected NavigationView nvDrawer;
 
     @Inject
     protected DaoSession daoSession;
@@ -152,7 +148,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
     private GraphView       graphView                             = null;
     private float                 DEVICE_DENSITY;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private DistanceMode          distanceMode;
     private List<LatLng>          coordinates;
     private boolean               calculatingDistance;
 
@@ -165,6 +160,12 @@ public class MainActivity extends BaseActivity implements LocationListener,
         inject(this);
 
         setSupportActionBar(tbMain);
+
+        final ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setHomeButtonEnabled(true);
+        }
 
         DEVICE_DENSITY = getResources().getDisplayMetrics().density;
 
@@ -238,7 +239,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
 
                     calculatingDistance = true;
 
-                    if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+                    if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                         if (coordinates == null || coordinates.isEmpty()) {
                             toastIt(getString(R.string.toast_first_point_needed), appContext);
                         } else {
@@ -249,7 +250,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
                     // Si no hemos encontrado la posición actual, no podremos
                     // calcular la distancia
                     else if (currentLocation != null) {
-                        if ((distanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
+                        if ((getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
                             coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                         }
                         coordinates.add(point);
@@ -265,7 +266,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
                 public void onMapClick(LatLng point) {
                     DFMLogger.logMessage(TAG, "onMapClick");
 
-                    if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+                    if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                         if (!calculatingDistance) {
                             coordinates.clear();
                         }
@@ -305,43 +306,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
                 }
             });
 
-            // TODO Future release
-            // Cambiar esto: debería modificar solamentela posición que estemos tuneando y recalcular
-//			googleMap.setOnMarkerDragListener(new OnMarkerDragListener() {
-////				private String selectedMarkerId;
-//
-//				@Override
-//				public void onMarkerDragStart(Marker marker) {
-////					selectedMarkerId = null;
-////					final String markerId = marker.getId();
-////					if (coordinates.contains(markerId)) {
-////						for (int i = 0; i < coordinates.size(); i++) {
-////							final LatLng position = coordinates.get(i);
-////							if (markerId.latitude == position.latitude &&
-////									markerId.longitude == position.longitude) {
-////								selectedMarkerId = i;
-////								break;
-////							}
-////						}
-////					}
-//				}
-//
-//				@Override
-//				public void onMarkerDragEnd(Marker marker) {
-////					if (selectedMarkerId != -1) {
-////						coordinates.set(selectedMarkerId, marker.getPosition());
-////					}
-////					// NO movemos el zoom porque estamos simplemente afinando la
-////					// posición
-////					drawAndShowMultipleDistances(coordinates, "", false, false);
-//				}
-//
-//				@Override
-//				public void onMarkerDrag(Marker marker) {
-//					// nothing
-//				}
-//			});
-
             googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -365,28 +329,38 @@ public class MainActivity extends BaseActivity implements LocationListener,
 
             handleIntents(getIntent());
 
-            final List<String> distanceModes = Lists.newArrayList(getString(R.string.navigation_drawer_starting_point_current_position_item),
-                                                                  getString(R.string.navigation_drawer_starting_point_any_position_item));
-            final List<Integer> distanceIcons = Lists.newArrayList(R.drawable.ic_action_device_gps_fixed,
-                                                                   R.drawable.ic_action_communication_location_on);
-
-            // TODO cambiar esto por un header como dios manda
-            final LayoutInflater inflater = (LayoutInflater) appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View convertView = inflater.inflate(R.layout.simple_textview_list_item, drawerList, false);
-            final TextView tvListElement = (TextView) convertView.findViewById(R.id.simple_textview);
-            tvListElement.setText(getString(R.string.navigation_drawer_starting_point_header));
-            tvListElement.setClickable(false);
-            tvListElement.setTextColor(getResources().getColor(R.color.white));
-            drawerList.addHeaderView(convertView);
-            drawerList.setAdapter(new NavigationDrawerItemAdapter(this, distanceModes, distanceIcons));
-
-            drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectItem(position);
+                public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.menu_current_position:
+                            menuItem.setChecked(true);
+                            drawerLayout.closeDrawers();
+                            onStartingPointSelected();
+                            return true;
+                        case R.id.menu_any_position:
+                            menuItem.setChecked(true);
+                            drawerLayout.closeDrawers();
+                            onStartingPointSelected();
+                            return true;
+                        case R.id.menu_rate_app:
+                            drawerLayout.closeDrawers();
+                            showRateDialog();
+                            return true;
+                        case R.id.menu_legal_notices:
+                            drawerLayout.closeDrawers();
+                            showGooglePlayServiceLicenseDialog();
+                            return true;
+                        case R.id.menu_settings:
+                            drawerLayout.closeDrawers();
+                            openSettingsActivity();
+                            return true;
+                    }
+                    return false;
                 }
             });
 
+            // TODO: 23.08.15 check if this is still needed
             actionBarDrawerToggle = new ActionBarDrawerToggle(this,
                                                               drawerLayout,
                                                               R.string.progressdialog_search_position_message,
@@ -407,17 +381,12 @@ public class MainActivity extends BaseActivity implements LocationListener,
                     supportInvalidateOptionsMenu();
                 }
             };
-
             drawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
 
             if (savedInstanceState == null) {
                 DFMLogger.logMessage(TAG, "onCreate savedInstanceState == null");
 
-                // TODO change this because the header!!!!
-                selectItem(FIRST_DRAWER_ITEM_INDEX);
+                onStartingPointSelected();
             }
         } else {
             DFMLogger.logMessage(TAG, "onCreate mysteriously googleMap is null...");
@@ -427,39 +396,30 @@ public class MainActivity extends BaseActivity implements LocationListener,
     /**
      * Swaps starting point in the main content view
      */
-    private void selectItem(int position) {
-        DFMLogger.logMessage(TAG, "selectItem " + position);
-
-        if (position != 0) {
-            if (position == 1) {
-                DFMLogger.logMessage(TAG, "selectItem Distance from current point");
-            } else if (position == 2) {
-                DFMLogger.logMessage(TAG, "selectItem Distance from any point");
-            }
-            distanceMode = (position == FIRST_DRAWER_ITEM_INDEX) ? // TODO change this because the header!!!!
-                           DistanceMode.DISTANCE_FROM_CURRENT_POINT :
-                           DistanceMode.DISTANCE_FROM_ANY_POINT;
-
-            DFMLogger.logMessage(TAG, "selectItem distanceMode " + distanceMode);
-
-            // Highlight the selected item and close the drawer
-            drawerList.setItemChecked(position, true);
-            drawerLayout.closeDrawer(drawerList);
-
-            calculatingDistance = false;
-
-            coordinates = Lists.newArrayList();
-            googleMap.clear();
-            if (showingElevationTask != null) {
-                DFMLogger.logMessage(TAG, "selectItem cancelling elevation task");
-                showingElevationTask.cancel(true);
-            }
-            rlElevationChart.setVisibility(View.INVISIBLE);
-            elevationChartShown = false;
-            fixMapPadding();
-        } else {
-            DFMLogger.logMessage(TAG, "selectItem 0 not valid!");
+    private void onStartingPointSelected() {
+        if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
+            DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from current point");
+        } else{
+            DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from any point");
         }
+
+        calculatingDistance = false;
+
+        coordinates = Lists.newArrayList();
+        googleMap.clear();
+        if (showingElevationTask != null) {
+            DFMLogger.logMessage(TAG, "onStartingPointSelected cancelling elevation task");
+            showingElevationTask.cancel(true);
+        }
+        rlElevationChart.setVisibility(View.INVISIBLE);
+        elevationChartShown = false;
+        fixMapPadding();
+    }
+
+    private DistanceMode getSelectedDistanceMode() {
+        return nvDrawer.getMenu().findItem(R.id.menu_current_position).isChecked()
+               ? DistanceMode.DISTANCE_FROM_CURRENT_POINT
+               : DistanceMode.DISTANCE_FROM_ANY_POINT;
     }
 
     @Override
@@ -676,15 +636,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
                 return true;
             case R.id.action_load:
                 loadDistancesFromDB();
-                return true;
-            case R.id.menu_rateapp:
-                showRateDialog();
-                return true;
-            case R.id.menu_legalnotices:
-                showGooglePlayServiceLicenseDialog();
-                return true;
-            case R.id.menu_settings:
-                openSettingsActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1136,7 +1087,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "addMarkers");
 
         for (int i = 0; i < coordinates.size(); i++) {
-            if ((i == 0 && (isLoadingFromDB || distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT)) ||
+            if ((i == 0 && (isLoadingFromDB || getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT)) ||
                 (i == coordinates.size() - 1)) {
                 final LatLng coordinate = coordinates.get(i);
                 final Marker marker = addMarker(coordinate);
@@ -1470,9 +1421,9 @@ public class MainActivity extends BaseActivity implements LocationListener,
         }
 
         private void handleSelectedAddress() {
-            DFMLogger.logMessage(TAG, "handleSelectedAddress" + distanceMode);
+            DFMLogger.logMessage(TAG, "handleSelectedAddress" + getSelectedDistanceMode());
 
-            if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+            if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                 coordinates.add(selectedPosition);
                 if (coordinates.isEmpty()) {
                     DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");

@@ -2,6 +2,7 @@
 <android.support.v4.widget.DrawerLayout
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
@@ -54,12 +55,12 @@
         </FrameLayout>
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nvDrawer"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/item_background"
-        android:choiceMode="singleChoice"
-        android:dividerHeight="1dp"/>
+        app:headerLayout="@layout/navigationview_header"
+        app:menu="@menu/navigationview_menu"/>
+
 </android.support.v4.widget.DrawerLayout>
