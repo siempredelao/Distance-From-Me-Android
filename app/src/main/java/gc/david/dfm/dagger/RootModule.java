@@ -9,10 +9,11 @@ import dagger.Module;
 import dagger.Provides;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.model.DaoSession;
+import gc.david.dfm.ui.FeedbackActivity;
 import gc.david.dfm.ui.MainActivity;
 import gc.david.dfm.ui.ShowInfoActivity;
 
-@Module
+@Module(injects = {MainActivity.class, ShowInfoActivity.class, FeedbackActivity.class})
 public class RootModule {
 
     private final DFMApplication application;

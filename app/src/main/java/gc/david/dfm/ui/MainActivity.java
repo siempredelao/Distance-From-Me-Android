@@ -23,7 +23,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -82,8 +81,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import butterknife.InjectView;
-import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.DistanceAdapter;
@@ -106,26 +106,31 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class MainActivity extends AppCompatActivity implements LocationListener,
-                                                               GoogleApiClient.ConnectionCallbacks,
-                                                               GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends BaseActivity implements LocationListener,
+                                                          GoogleApiClient.ConnectionCallbacks,
+                                                          GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int ELEVATION_SAMPLES       = 100;
-    private final        int FIRST_DRAWER_ITEM_INDEX = 1;
+    private static final String TAG                     = MainActivity.class.getSimpleName();
+    private static final int    ELEVATION_SAMPLES       = 100;
+    private final        int    FIRST_DRAWER_ITEM_INDEX = 1;
 
     @InjectView(R.id.elevationchart)
     protected RelativeLayout rlElevationChart;
     @InjectView(R.id.closeChart)
     protected ImageView      ivCloseElevationChart;
     @InjectView(R.id.tbMain)
-    protected Toolbar tbMain;
+    protected Toolbar        tbMain;
     @InjectView(R.id.banner)
-    protected IMBanner banner;
+    protected IMBanner       banner;
     @InjectView(R.id.drawer_layout)
-    protected DrawerLayout drawerLayout;
+    protected DrawerLayout   drawerLayout;
     @InjectView(R.id.left_drawer)
-    protected ListView drawerList;
+    protected ListView       drawerList;
+
+    @Inject
+    protected DaoSession daoSession;
+    @Inject
+    protected Context    appContext;
 
     private GoogleMap       googleMap                             = null;
     // A request to connect to Location Services
@@ -222,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 DFMLogger.logMessage(TAG, "onCreate banner null");
             }
 
-            if (!isOnline(getApplicationContext())) {
+            if (!isOnline(appContext)) {
                 showWifiAlertDialog();
             }
 
@@ -235,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                     if (distanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
                         if (coordinates == null || coordinates.isEmpty()) {
-                            toastIt(getString(R.string.toast_first_point_needed), getApplicationContext());
+                            toastIt(getString(R.string.toast_first_point_needed), appContext);
                         } else {
                             coordinates.add(point);
                             drawAndShowMultipleDistances(coordinates, "", false, true);
@@ -355,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
             // Iniciando la app
             if (currentLocation == null) {
-                toastIt(getString(R.string.toast_loading_position), getApplicationContext());
+                toastIt(getString(R.string.toast_loading_position), appContext);
             }
 
             handleIntents(getIntent());
@@ -366,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                                                                    R.drawable.ic_action_communication_location_on);
 
             // TODO cambiar esto por un header como dios manda
-            final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater inflater = (LayoutInflater) appContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View convertView = inflater.inflate(R.layout.simple_textview_list_item, drawerList, false);
             final TextView tvListElement = (TextView) convertView.findViewById(R.id.simple_textview);
             tvListElement.setText(getString(R.string.navigation_drawer_starting_point_header));
@@ -417,12 +422,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         } else {
             DFMLogger.logMessage(TAG, "onCreate mysteriously googleMap is null...");
         }
-    }
-
-    private DaoSession getApplicationDaoSession() {
-        DFMLogger.logMessage(TAG, "getApplicationDaoSession");
-
-        return ((DFMApplication) getApplicationContext()).getDaoSession();
     }
 
     /**
@@ -653,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         // Muestra el item de menú de cargar si hay elementos en la BD
         final MenuItem loadItem = menu.findItem(R.id.action_load);
         // TODO hacerlo en segundo plano
-        final List<Distance> allDistances = getApplicationDaoSession().loadAll(Distance.class);
+        final List<Distance> allDistances = daoSession.loadAll(Distance.class);
         if (allDistances.size() == 0) {
             loadItem.setVisible(false);
         }
@@ -711,7 +710,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "loadDistancesFromDB");
 
         // TODO hacer esto en segundo plano
-        final List<Distance> allDistances = getApplicationDaoSession().loadAll(Distance.class);
+        final List<Distance> allDistances = daoSession.loadAll(Distance.class);
 
         if (allDistances != null && allDistances.size() > 0) {
             final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
@@ -721,8 +720,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
                            final Distance distance = distanceAdapter.getDistanceList().get(which);
-                           final List<Position> positionList = getApplicationDaoSession().getPositionDao()
-                                                                                         ._queryDistance_PositionList(distance.getId());
+                           final List<Position> positionList = daoSession.getPositionDao()
+                                                                         ._queryDistance_PositionList(distance.getId());
                            coordinates.clear();
                            coordinates.addAll(convertPositionListToLatLngList(positionList));
 
@@ -803,7 +802,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void showGooglePlayServiceLicenseDialog() {
         DFMLogger.logMessage(TAG, "showGooglePlayServiceLicenseDialog");
 
-        final String LicenseInfo = GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(getApplicationContext());
+        final String LicenseInfo = GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(appContext);
         final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
         LicenseDialog.setTitle(R.string.menu_legal_notices_title);
         LicenseDialog.setMessage(LicenseInfo);
@@ -929,7 +928,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "checkPlayServices");
 
         // Comprobamos que Google Play Services está disponible en el terminal
-        final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+        final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(appContext);
 
         // Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
         // de error y devolvemos falso
@@ -1115,8 +1114,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         // Muestra el perfil de elevación si está en las preferencias
         // y si está conectado a internet
-        if (getSharedPreferences(getBaseContext()).getBoolean("elevation_chart", false) &&
-            isOnline(getApplicationContext())) {
+        if (getSharedPreferences(appContext).getBoolean("elevation_chart", false) &&
+            isOnline(appContext)) {
             getElevation(coordinates);
         }
     }
@@ -1391,7 +1390,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             selectedPosition = null;
 
             // Comprobamos que haya conexión con internet (WiFi o Datos)
-            if (!isOnline(getApplicationContext())) {
+            if (!isOnline(appContext)) {
                 showWifiAlertDialog();
 
                 // Restauramos el menú y que vuelva a empezar de nuevo
@@ -1412,7 +1411,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             DFMLogger.logMessage(TAG, "doInBackground");
 
             /* get latitude and longitude from the addressList */
-            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            final Geocoder geoCoder = new Geocoder(appContext, Locale.getDefault());
             try {
                 addressList = geoCoder.getFromLocationName((String) params[0], 5);
             } catch (IOException e) {
@@ -1455,13 +1454,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     }
                     break;
                 case -1:
-                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    toastIt(getString(R.string.toast_no_find_address), appContext);
                     break;
                 case -2:
-                    toastIt(getString(R.string.toast_no_results), getApplicationContext());
+                    toastIt(getString(R.string.toast_no_results), appContext);
                     break;
                 case -3:
-                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    toastIt(getString(R.string.toast_no_find_address), appContext);
                     break;
             }
             progressDialog.dismiss();
@@ -1563,7 +1562,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             DFMLogger.logMessage(TAG, "doInBackground");
 
             /* get latitude and longitude from the addressList */
-            final Geocoder geoCoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+            final Geocoder geoCoder = new Geocoder(appContext, Locale.getDefault());
             final LatLng latLng = (LatLng) params[0];
             try {
                 addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
@@ -1603,13 +1602,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                                                  true);
                     break;
                 case -1:
-                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    toastIt(getString(R.string.toast_no_find_address), appContext);
                     break;
                 case -2:
-                    toastIt(getString(R.string.toast_no_results), getApplicationContext());
+                    toastIt(getString(R.string.toast_no_results), appContext);
                     break;
                 case -3:
-                    toastIt(getString(R.string.toast_no_find_address), getApplicationContext());
+                    toastIt(getString(R.string.toast_no_find_address), appContext);
                     break;
             }
             progressDialog.dismiss();
@@ -1750,9 +1749,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
 
             // Creates the line and add it to the chart
-            graphView = new LineGraphView(getApplicationContext(),
-                                          getString(R.string.elevation_chart_title,
-                                                    Haversine.getAltitudeUnitByLocale(defaultLocale)));
+            graphView = new LineGraphView(appContext, getString(R.string.elevation_chart_title,
+                                                                Haversine.getAltitudeUnitByLocale(defaultLocale)));
             graphView.addSeries(series);
             graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
             graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
