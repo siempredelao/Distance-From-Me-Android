@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.crashlytics.android.Crashlytics;
 
+import dagger.ObjectGraph;
+import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.migration.UpgradeHelper;
 import gc.david.dfm.model.DaoMaster;
@@ -19,6 +21,7 @@ public class DFMApplication extends Application {
     private static final String TAG = DFMApplication.class.getSimpleName();
 
     private DaoSession daoSession;
+    private ObjectGraph objectGraph;
 
     @Override
     public void onCreate() {
@@ -31,6 +34,12 @@ public class DFMApplication extends Application {
         DFMLogger.logMessage(TAG, "onCreate");
 
         setupDatabase();
+
+        objectGraph = ObjectGraph.create(new RootModule(this));
+    }
+
+    public void inject(Object object) {
+        objectGraph.inject(object);
     }
 
     private void setupDatabase() {

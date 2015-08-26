@@ -15,7 +15,6 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -33,8 +32,9 @@ import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+
 import butterknife.InjectView;
-import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.logger.DFMLogger;
@@ -51,7 +51,7 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class ShowInfoActivity extends AppCompatActivity {
+public class ShowInfoActivity extends BaseActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
@@ -74,7 +74,14 @@ public class ShowInfoActivity extends AppCompatActivity {
     @InjectView(R.id.distancia)
     protected TextView tvDistance;
     @InjectView(R.id.tbMain)
-    protected Toolbar tbMain;
+    protected Toolbar  tbMain;
+
+    @Inject
+    protected DaoSession     daoSession;
+    @Inject
+    protected Context        appContext;
+    @Inject
+    protected PackageManager packageManager;
 
     private MenuItem     menuItem                        = null;
     private List<LatLng> positionsList                   = null;
@@ -88,7 +95,7 @@ public class ShowInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
         inject(this);
@@ -127,12 +134,6 @@ public class ShowInfoActivity extends AppCompatActivity {
         }
 
         fillDistanceInfo();
-    }
-
-    private DaoSession getApplicationDaoSession() {
-        DFMLogger.logMessage(TAG, "getApplicationDaoSession");
-        
-        return ((DFMApplication) getApplicationContext()).getDaoSession();
     }
 
     @Override
@@ -268,7 +269,6 @@ public class ShowInfoActivity extends AppCompatActivity {
     private boolean verifyAppReceiveIntent(final Intent intent) {
         DFMLogger.logMessage(TAG, "verifyAppReceiveIntent");
 
-        final PackageManager packageManager = getPackageManager();
         final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
         return activities.size() > 0;
     }
@@ -303,7 +303,7 @@ public class ShowInfoActivity extends AppCompatActivity {
         wasSavingWhenOrientationChanged = true;
         // Pedir al usuario que introduzca un texto descriptivo
         final AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
-        etAlias = new EditText(getApplicationContext());
+        etAlias = new EditText(appContext);
         etAlias.setTextColor(Color.BLACK);
         etAlias.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         etAlias.setText(defaultText);
@@ -340,22 +340,21 @@ public class ShowInfoActivity extends AppCompatActivity {
                        }
                        // TODO hacer esto en segundo plano
                        final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
-                       final long distanceId = getApplicationDaoSession().insert(distance1);
+                       final long distanceId = daoSession.insert(distance1);
 
                        for (LatLng positionAsLatLng : positionsList) {
                            final Position position = new Position(null,
                                                                   positionAsLatLng.latitude,
                                                                   positionAsLatLng.longitude,
                                                                   distanceId);
-                           getApplicationDaoSession().insert(position);
+                           daoSession.insert(position);
                        }
 
                        // Mostrar un mensaje de que se ha guardado correctamente
                        if (!aliasToSave.equals("")) {
-                           toastIt(getString(R.string.alias_dialog_with_name_toast, aliasToSave),
-                                   getApplicationContext());
+                           toastIt(getString(R.string.alias_dialog_with_name_toast, aliasToSave), appContext);
                        } else {
-                           toastIt(getString(R.string.alias_dialog_no_name_toast), getApplicationContext());
+                           toastIt(getString(R.string.alias_dialog_no_name_toast), appContext);
                        }
                    }
                });
@@ -376,7 +375,7 @@ public class ShowInfoActivity extends AppCompatActivity {
             DFMLogger.logMessage(TAG, "onPreExecute");
 
             super.onPreExecute();
-            this.context = getApplicationContext();
+            this.context = appContext;
 
             startUpdate();
 

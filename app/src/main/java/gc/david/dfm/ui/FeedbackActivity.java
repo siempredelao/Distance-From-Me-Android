@@ -4,12 +4,12 @@ import android.app.ActivityManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -37,7 +39,7 @@ import static gc.david.dfm.Utils.toastIt;
 /**
  * Created by David on 17/10/2014.
  */
-public class FeedbackActivity extends AppCompatActivity {
+public class FeedbackActivity extends BaseActivity {
 
     private static final String TAG = FeedbackActivity.class.getSimpleName();
 
@@ -75,6 +77,11 @@ public class FeedbackActivity extends AppCompatActivity {
     @InjectView(R.id.tbMain)
     protected Toolbar            tbMain;
 
+    @Inject
+    protected Context        appContext;
+    @Inject
+    protected PackageManager packageManager;
+
     private QuestionExpandableListAdapter questionExpandableListAdapter;
     private List<String>                  feedbackTypes;
 
@@ -90,7 +97,7 @@ public class FeedbackActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         feedbackTypes = Arrays.asList(getResources().getStringArray(R.array.feedback_type_list));
-        questionExpandableListAdapter = new QuestionExpandableListAdapter(getApplicationContext(),
+        questionExpandableListAdapter = new QuestionExpandableListAdapter(appContext,
                                                                           getString(R.string.problem_type_listview_title),
                                                                           feedbackTypes);
         expandableListView.setAdapter(questionExpandableListAdapter);
@@ -131,7 +138,7 @@ public class FeedbackActivity extends AppCompatActivity {
                                   "&body=" + Uri.encode(emailBody));
         sendToIntent.setData(uri);
 
-        final List<ResolveInfo> appsAbleToSendEmails = getPackageManager().queryIntentActivities(sendToIntent, 0);
+        final List<ResolveInfo> appsAbleToSendEmails = packageManager.queryIntentActivities(sendToIntent, 0);
 
         // Emulators may not like this check...
         if (!appsAbleToSendEmails.isEmpty()) {
@@ -149,7 +156,7 @@ public class FeedbackActivity extends AppCompatActivity {
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
                 DFMLogger.logException(e);
-                toastIt(getString(R.string.toast_send_feedback_error), getApplicationContext());
+                toastIt(getString(R.string.toast_send_feedback_error), appContext);
             }
         }
     }
