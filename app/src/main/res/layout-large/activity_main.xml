@@ -2,57 +2,67 @@
 <android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
 
-    <FrameLayout xmlns:tools="http://schemas.android.com/tools"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:orientation="vertical"
-                 tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <fragment
-            android:id="@+id/map"
-            class="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <include layout="@layout/toolbar"/>
 
-        <com.inmobi.monetization.IMBanner
-            android:id="@+id/banner"
-            adSize="12"
-            appId="9b61f509a1454023b5295d8aea4482c2"
-            android:layout_width="468dp"
-            android:layout_height="60dp"
-            android:layout_gravity="bottom"/>
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/elevationchart"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_margin="2dp"
-            android:orientation="vertical"
-            android:visibility="visible">
+            <fragment
+                android:id="@+id/map"
+                class="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-            <ImageView
-                android:id="@+id/closeChart"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:contentDescription="Close elevation chart"
-                android:src="@drawable/close_pop"
-                android:visibility="invisible"/>
+            <com.inmobi.monetization.IMBanner
+                android:id="@+id/banner"
+                adSize="12"
+                appId="9b61f509a1454023b5295d8aea4482c2"
+                android:layout_width="468dp"
+                android:layout_height="60dp"
+                android:layout_gravity="bottom"/>
 
-        </RelativeLayout>
-    </FrameLayout>
+            <RelativeLayout
+                android:id="@+id/elevationchart"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_margin="2dp"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-    <ListView
-        android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+                <ImageView
+                    android:id="@+id/closeChart"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="Close elevation chart"
+                    android:src="@drawable/close_pop"
+                    android:visibility="invisible"/>
+
+            </RelativeLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nvDrawer"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/item_background"
-        android:choiceMode="singleChoice"
-        android:dividerHeight="1dp"/>
+        app:headerLayout="@layout/navigationview_header"
+        app:menu="@menu/navigationview_menu"/>
+
 </android.support.v4.widget.DrawerLayout>
