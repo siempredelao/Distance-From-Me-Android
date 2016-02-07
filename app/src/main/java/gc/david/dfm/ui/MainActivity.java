@@ -69,10 +69,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -674,23 +672,13 @@ public class MainActivity extends BaseActivity implements LocationListener,
                     final List<Position> positionList = daoSession.getPositionDao()
                                                                   ._queryDistance_PositionList(distance.getId());
                     coordinates.clear();
-                    coordinates.addAll(convertPositionListToLatLngList(positionList));
+                    coordinates.addAll(Utils.convertPositionListToLatLngList(positionList));
 
                     drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
                 }
             });
             distanceSelectionDialogFragment.show(getSupportFragmentManager(), null);
         }
-    }
-
-    private List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
-        DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
-
-        final List<LatLng> result = Lists.newArrayList();
-        for (final Position position : positionList) {
-            result.add(new LatLng(position.getLatitude(), position.getLongitude()));
-        }
-        return result;
     }
 
     /**
@@ -1092,8 +1080,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
                 (i == coordinates.size() - 1)) {
                 final LatLng coordinate = coordinates.get(i);
                 final Marker marker = addMarker(coordinate);
-                // TODO Release 1.5
-//			    marker.setDraggable(true);
+
                 if (i == coordinates.size() - 1) {
                     marker.setTitle(message + distance);
                     marker.showInfoWindow();
@@ -1141,13 +1128,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
     private String calculateDistance(final List<LatLng> coordinates) {
         DFMLogger.logMessage(TAG, "calculateDistance");
 
-        double distanceInMetres = 0.0;
-        for (int i = 0; i < coordinates.size() - 1; i++) {
-            distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
-                                                      coordinates.get(i).longitude,
-                                                      coordinates.get(i + 1).latitude,
-                                                      coordinates.get(i + 1).longitude);
-        }
+        double distanceInMetres = Utils.calculateDistanceInMetres(coordinates);
 
         Locale defaultLocale = getResources().getConfiguration().locale;
 
@@ -1189,7 +1170,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
 
         if (mustApplyZoomIfNeeded) {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLat, centerLon),
-                                                                      calculateZoom(p1, p2)));
+                                                                      Utils.calculateZoom(p1, p2)));
         } else {
             googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(p2.latitude, p2.longitude)));
         }
@@ -1199,57 +1180,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "getSharedPreferences");
 
         return PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    /**
-     * Calculates zoom level to make possible current and destination positions
-     * appear in the device.
-     *
-     * @param origin      Current position.
-     * @param destination Destination position.
-     * @return Zoom level.
-     */
-    private float calculateZoom(final LatLng origin, final LatLng destination) {
-        DFMLogger.logMessage(TAG, "calculateZoom");
-
-        double distanceInMetres = Haversine.getDistance(origin.latitude,
-                                                        origin.longitude,
-                                                        destination.latitude,
-                                                        destination.longitude);
-        double kms = distanceInMetres / 1000;
-
-        if (kms > 2700) {
-            return 3;
-        } else if (kms > 1300) {
-            return 4;
-        } else if (kms > 650) {
-            return 5;
-        } else if (kms > 325) {
-            return 6;
-        } else if (kms > 160) {
-            return 7;
-        } else if (kms > 80) {
-            return 8;
-        } else if (kms > 40) {
-            return 9;
-        } else if (kms > 20) {
-            return 10;
-        } else if (kms > 10) {
-            return 11;
-        } else if (kms > 5) {
-            return 12;
-        } else if (kms > 2.5) {
-            return 13;
-        } else if (kms > 1.25) {
-            return 14;
-        } else if (kms > 0.6) {
-            return 15;
-        } else if (kms > 0.3) {
-            return 16;
-        } else if (kms > 0.15) {
-            return 17;
-        }
-        return 18;
     }
 
     /**
@@ -1316,7 +1246,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
         }
     }
 
-    private static enum DistanceMode {
+    private enum DistanceMode {
         DISTANCE_FROM_CURRENT_POINT,
         DISTANCE_FROM_ANY_POINT
     }
@@ -1593,7 +1523,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
                 httpResponse = httpClient.execute(httpGet);
                 inputStream = httpResponse.getEntity().getContent();
                 if (inputStream != null) {
-                    responseAsString = convertInputStreamToString(inputStream);
+                    responseAsString = Utils.convertInputStreamToString(inputStream);
                     responseJSON = new JSONObject(responseAsString);
                     if (responseJSON.get("status").equals("OK")) {
                         buildElevationChart(responseJSON.getJSONArray("results"));
@@ -1616,28 +1546,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
             // shut down the connection manager to ensure
             // immediate deallocation of all system resources
             httpClient.getConnectionManager().shutdown();
-        }
-
-        /**
-         * Converts the InputStream with the retrieved data to String.
-         *
-         * @param inputStream The input stream.
-         * @return The InputStream converted to String.
-         * @throws IOException
-         */
-        private String convertInputStreamToString(final InputStream inputStream) throws IOException {
-            DFMLogger.logMessage(TAG, "convertInputStreamToString");
-
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            StringBuilder result = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                result.append(line);
-            }
-
-            inputStream.close();
-            bufferedReader.close();
-            return result.toString();
         }
 
         /**

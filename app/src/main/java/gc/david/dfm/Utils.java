@@ -10,9 +10,20 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Set;
 
 import gc.david.dfm.logger.DFMLogger;
+import gc.david.dfm.map.Haversine;
+import gc.david.dfm.model.Position;
 
 /**
  * Created by David on 15/10/2014.
@@ -112,5 +123,110 @@ public class Utils {
             return "bundle is null";
         }
         return bundle.toString();
+    }
+
+    /**
+     * Converts the InputStream with the retrieved data to String.
+     *
+     * @param inputStream The input stream.
+     * @return The InputStream converted to String.
+     * @throws IOException
+     */
+    public static String convertInputStreamToString(final InputStream inputStream) throws IOException {
+        DFMLogger.logMessage(TAG, "convertInputStreamToString");
+
+        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        StringBuilder result = new StringBuilder();
+        while ((line = bufferedReader.readLine()) != null) {
+            result.append(line);
+        }
+
+        inputStream.close();
+        bufferedReader.close();
+        return result.toString();
+    }
+
+    /**
+     * Returns the distance between start and end positions normalized by device
+     * locale.
+     *
+     * @param coordinates position list.
+     * @return The distance in metres.
+     */
+    public static double calculateDistanceInMetres(final List<LatLng> coordinates) {
+        DFMLogger.logMessage(TAG, "calculateDistance");
+
+        double distanceInMetres = 0D;
+        for (int i = 0; i < coordinates.size() - 1; i++) {
+            distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
+                                                      coordinates.get(i).longitude,
+                                                      coordinates.get(i + 1).latitude,
+                                                      coordinates.get(i + 1).longitude);
+        }
+        return distanceInMetres;
+    }
+
+    /**
+     * Calculates zoom level to make possible current and destination positions
+     * appear in the device.
+     *
+     * @param origin      Current position.
+     * @param destination Destination position.
+     * @return Zoom level.
+     */
+    public static float calculateZoom(final LatLng origin, final LatLng destination) {
+        DFMLogger.logMessage(TAG, "calculateZoom");
+
+        double distanceInMetres = Haversine.getDistance(origin.latitude,
+                                                        origin.longitude,
+                                                        destination.latitude,
+                                                        destination.longitude);
+        double kms = distanceInMetres / 1000;
+
+        if (kms > 2700) {
+            return 3;
+        } else if (kms > 1300) {
+            return 4;
+        } else if (kms > 650) {
+            return 5;
+        } else if (kms > 325) {
+            return 6;
+        } else if (kms > 160) {
+            return 7;
+        } else if (kms > 80) {
+            return 8;
+        } else if (kms > 40) {
+            return 9;
+        } else if (kms > 20) {
+            return 10;
+        } else if (kms > 10) {
+            return 11;
+        } else if (kms > 5) {
+            return 12;
+        } else if (kms > 2.5) {
+            return 13;
+        } else if (kms > 1.25) {
+            return 14;
+        } else if (kms > 0.6) {
+            return 15;
+        } else if (kms > 0.3) {
+            return 16;
+        } else if (kms > 0.15) {
+            return 17;
+        }
+        return 18;
+    }
+
+    public static List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
+        DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
+
+        final Function<Position, LatLng> positionToLatlng = new Function<Position, LatLng>() {
+            @Override
+            public LatLng apply(Position input) {
+                return new LatLng(input.getLatitude(), input.getLongitude());
+            }
+        };
+        return Lists.transform(positionList, positionToLatlng);
     }
 }
