@@ -84,8 +84,9 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
-import gc.david.dfm.adapter.DistanceAdapter;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
+import gc.david.dfm.dialog.AddressSugestionsDialogFragment;
+import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
@@ -664,21 +665,21 @@ public class MainActivity extends BaseActivity implements LocationListener,
         final List<Distance> allDistances = daoSession.loadAll(Distance.class);
 
         if (allDistances != null && allDistances.size() > 0) {
-            final DistanceAdapter distanceAdapter = new DistanceAdapter(this, allDistances);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(getString(R.string.dialog_load_distances_title))
-                   .setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
-                       @Override
-                       public void onClick(DialogInterface dialog, int which) {
-                           final Distance distance = distanceAdapter.getDistanceList().get(which);
-                           final List<Position> positionList = daoSession.getPositionDao()
-                                                                         ._queryDistance_PositionList(distance.getId());
-                           coordinates.clear();
-                           coordinates.addAll(convertPositionListToLatLngList(positionList));
+            final DistanceSelectionDialogFragment distanceSelectionDialogFragment = new DistanceSelectionDialogFragment();
+            distanceSelectionDialogFragment.setDistanceList(allDistances);
+            distanceSelectionDialogFragment.setOnDialogActionListener(new DistanceSelectionDialogFragment.OnDialogActionListener() {
+                @Override
+                public void onItemClick(int position) {
+                    final Distance distance = allDistances.get(position);
+                    final List<Position> positionList = daoSession.getPositionDao()
+                                                                  ._queryDistance_PositionList(distance.getId());
+                    coordinates.clear();
+                    coordinates.addAll(convertPositionListToLatLngList(positionList));
 
-                           drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
-                       }
-                   }).create().show();
+                    drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
+                }
+            });
+            distanceSelectionDialogFragment.show(getSupportFragmentManager(), null);
         }
     }
 
@@ -1391,16 +1392,16 @@ public class MainActivity extends BaseActivity implements LocationListener,
                             processSelectedAddress(0);
                             handleSelectedAddress();
                         } else {
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setTitle(getString(R.string.dialog_select_address_title));
-                            builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
-                                             new DialogInterface.OnClickListener() {
-                                                 public void onClick(DialogInterface dialog, int item) {
-                                                     processSelectedAddress(item);
-                                                     handleSelectedAddress();
-                                                 }
-                                             });
-                            builder.create().show();
+                            final AddressSugestionsDialogFragment addressSugestionsDialogFragment = new AddressSugestionsDialogFragment();
+                            addressSugestionsDialogFragment.setAddressList(addressList);
+                            addressSugestionsDialogFragment.setOnDialogActionListener(new AddressSugestionsDialogFragment.OnDialogActionListener() {
+                                @Override
+                                public void onItemClick(int position) {
+                                    processSelectedAddress(position);
+                                    handleSelectedAddress();
+                                }
+                            });
+                            addressSugestionsDialogFragment.show(getSupportFragmentManager(), null);
                         }
                     }
                     break;
@@ -1477,27 +1478,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
                 fullAddress.append(address.getAddressLine(i)).append("\n");
             }
             selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
-        }
-
-        /**
-         * Extract a list of address from a list of Address objects.
-         *
-         * @param addressList An Address's list.
-         * @return A string list with only addresses in text.
-         */
-        protected List<String> groupAddresses(final List<Address> addressList) {
-            DFMLogger.logMessage(TAG, "groupAddresses");
-
-            final List<String> result = Lists.newArrayList();
-            StringBuilder stringBuilder;
-            for (final Address l : addressList) {
-                stringBuilder = new StringBuilder();
-                for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
-                    stringBuilder.append(l.getAddressLine(j)).append("\n");
-                }
-                result.add(stringBuilder.toString());
-            }
-            return result;
         }
     }
 
