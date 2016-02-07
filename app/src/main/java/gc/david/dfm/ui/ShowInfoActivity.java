@@ -63,10 +63,6 @@ public class ShowInfoActivity extends BaseActivity {
     private final       String wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
     private final       String aliasHintKey                       = "aliasHint";
 
-    @InjectView(R.id.titulo_datos1)
-    protected TextView tvHeaderOriginAddress;
-    @InjectView(R.id.titulo_datos2)
-    protected TextView tvHeaderDestinationAddress;
     @InjectView(R.id.datos1)
     protected TextView tvOriginAddress;
     @InjectView(R.id.datos2)
@@ -104,8 +100,6 @@ public class ShowInfoActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         getIntentData();
-
-        fillTitlesHeaders();
 
         if (savedInstanceState == null) {
             DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
@@ -164,17 +158,6 @@ public class ShowInfoActivity extends BaseActivity {
         final Intent inputDataIntent = getIntent();
         positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
         distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
-    }
-
-    /**
-     * Fill Textviews titles.
-     */
-    // TODO move this stupid method to layout file!
-    private void fillTitlesHeaders() {
-        DFMLogger.logMessage(TAG, "fillTitlesHeaders");
-        
-        tvHeaderOriginAddress.setText(getString(R.string.info_current_position_title));
-        tvHeaderDestinationAddress.setText(getString(R.string.info_destination_position_title));
     }
 
     /**
