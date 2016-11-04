@@ -44,7 +44,7 @@ ext {
 	butterKnifeVersion = '8.4.0'
 	greenDaoVersion = '1.3.1'
 	guavaVersion = '18.0'
-	crashlyticsVersion = '2.2.4'
+	crashlyticsVersion = '2.6.5'
 	daggerVersion = '1.2.2'
 }
 
