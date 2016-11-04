@@ -44,7 +44,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -102,7 +104,11 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener,
+                                                          OnMapReadyCallback,
+                                                          OnMapLongClickListener,
+                                                          OnMapClickListener,
+                                                          OnInfoWindowClickListener {
 
     private static final String TAG                     = MainActivity.class.getSimpleName();
     private static final int    ELEVATION_SAMPLES       = 100;
@@ -174,223 +180,216 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         DEVICE_DENSITY = getResources().getDisplayMetrics().density;
 
-        final SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
-        googleMap = fragment.getMap();
+        final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
+        supportMapFragment.getMapAsync(this);
 
-        if (googleMap != null) {
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
-            // InMobi Ads
-            InMobi.initialize(this, getString(R.string.inmobi_api_key));
-            if (banner != null) {
-                // Si no hay red el banner no carga ni aunque esté vacío
-                banner.setRefreshInterval(30);
-                banner.setIMBannerListener(new IMBannerListener() {
-                    @Override
-                    public void onShowBannerScreen(IMBanner arg0) {
-                        DFMLogger.logMessage(TAG, "onShowBannerScreen");
-                    }
-
-                    @Override
-                    public void onLeaveApplication(IMBanner arg0) {
-                        DFMLogger.logMessage(TAG, "onLeaveApplication");
-                    }
-
-                    @Override
-                    public void onDismissBannerScreen(IMBanner arg0) {
-                        DFMLogger.logMessage(TAG, "onDismissBannerScreen");
-                    }
-
-                    @Override
-                    public void onBannerRequestSucceeded(IMBanner arg0) {
-                        DFMLogger.logMessage(TAG, "onBannerRequestSucceeded");
-
-                        bannerShown = true;
-                        fixMapPadding();
-                    }
-
-                    @Override
-                    public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
-                        DFMLogger.logMessage(TAG, "onBannerRequestFailed");
-                    }
-
-                    @Override
-                    public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
-                        DFMLogger.logMessage(TAG, "onBannerInteraction");
-
-                        DFMLogger.logEvent("Ad tapped");
-                    }
-                });
-                banner.loadBanner();
-            } else {
-                DFMLogger.logMessage(TAG, "onCreate banner null");
-            }
-
-            if (!isOnline(appContext)) {
-                showWifiAlertDialog();
-            }
-
-            googleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+        // InMobi Ads
+        InMobi.initialize(this, getString(R.string.inmobi_api_key));
+        if (banner != null) {
+            // Si no hay red el banner no carga ni aunque esté vacío
+            banner.setRefreshInterval(30);
+            banner.setIMBannerListener(new IMBannerListener() {
                 @Override
-                public void onMapLongClick(LatLng point) {
-                    DFMLogger.logMessage(TAG, "onMapLongClick");
+                public void onShowBannerScreen(IMBanner arg0) {
+                    DFMLogger.logMessage(TAG, "onShowBannerScreen");
+                }
 
+                @Override
+                public void onLeaveApplication(IMBanner arg0) {
+                    DFMLogger.logMessage(TAG, "onLeaveApplication");
+                }
+
+                @Override
+                public void onDismissBannerScreen(IMBanner arg0) {
+                    DFMLogger.logMessage(TAG, "onDismissBannerScreen");
+                }
+
+                @Override
+                public void onBannerRequestSucceeded(IMBanner arg0) {
+                    DFMLogger.logMessage(TAG, "onBannerRequestSucceeded");
+
+                    bannerShown = true;
+                    fixMapPadding();
+                }
+
+                @Override
+                public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
+                    DFMLogger.logMessage(TAG, "onBannerRequestFailed");
+                }
+
+                @Override
+                public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
+                    DFMLogger.logMessage(TAG, "onBannerInteraction");
+
+                    DFMLogger.logEvent("Ad tapped");
+                }
+            });
+            banner.loadBanner();
+        } else {
+            DFMLogger.logMessage(TAG, "onCreate banner null");
+        }
+
+        if (!isOnline(appContext)) {
+            showWifiAlertDialog();
+        }
+
+        // Iniciando la app
+        if (currentLocation == null) {
+            toastIt(getString(R.string.toast_loading_position), appContext);
+        }
+
+        handleIntents(getIntent());
+
+        nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_current_position:
+                        menuItem.setChecked(true);
+                        drawerLayout.closeDrawers();
+                        onStartingPointSelected();
+                        return true;
+                    case R.id.menu_any_position:
+                        menuItem.setChecked(true);
+                        drawerLayout.closeDrawers();
+                        onStartingPointSelected();
+                        return true;
+                    case R.id.menu_rate_app:
+                        drawerLayout.closeDrawers();
+                        showRateDialog();
+                        return true;
+                    case R.id.menu_legal_notices:
+                        drawerLayout.closeDrawers();
+                        showGooglePlayServiceLicenseDialog();
+                        return true;
+                    case R.id.menu_settings:
+                        drawerLayout.closeDrawers();
+                        openSettingsActivity();
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        // TODO: 23.08.15 check if this is still needed
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this,
+                                                          drawerLayout,
+                                                          R.string.progressdialog_search_position_message,
+                                                          R.string.progressdialog_search_position_message) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                DFMLogger.logMessage(TAG, "onDrawerOpened");
+
+                super.onDrawerOpened(drawerView);
+                supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                DFMLogger.logMessage(TAG, "onDrawerClosed");
+
+                super.onDrawerClosed(drawerView);
+                supportInvalidateOptionsMenu();
+            }
+        };
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap map) {
+        googleMap = map;
+
+        googleMap.setMyLocationEnabled(true);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        googleMap.setOnMapLongClickListener(this);
+        googleMap.setOnMapClickListener(this);
+        googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(this));
+
+        onStartingPointSelected();
+    }
+
+    @Override
+    public void onMapLongClick(LatLng point) {
+        DFMLogger.logMessage(TAG, "onMapLongClick");
+
+        calculatingDistance = true;
+
+        if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+            if (coordinates == null || coordinates.isEmpty()) {
+                toastIt(getString(R.string.toast_first_point_needed), appContext);
+            } else {
+                coordinates.add(point);
+                drawAndShowMultipleDistances(coordinates, "", false, true);
+            }
+        }
+        // Si no hemos encontrado la posición actual, no podremos
+        // calcular la distancia
+        else if (currentLocation != null) {
+            if ((getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
+                coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            }
+            coordinates.add(point);
+            drawAndShowMultipleDistances(coordinates, "", false, true);
+        }
+
+        calculatingDistance = false;
+    }
+
+    @Override
+    public void onMapClick(LatLng point) {
+        DFMLogger.logMessage(TAG, "onMapClick");
+
+        if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+            if (!calculatingDistance) {
+                coordinates.clear();
+            }
+
+            calculatingDistance = true;
+
+            if (coordinates.isEmpty()) {
+                googleMap.clear();
+            }
+            coordinates.add(point);
+            googleMap.addMarker(new MarkerOptions().position(point));
+        } else {
+            // Si no hemos encontrado la posición actual, no podremos
+            // calcular la distancia
+            if (currentLocation != null) {
+                if (coordinates != null) {
+                    if (!calculatingDistance) {
+                        coordinates.clear();
+                    }
                     calculatingDistance = true;
 
-                    if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-                        if (coordinates == null || coordinates.isEmpty()) {
-                            toastIt(getString(R.string.toast_first_point_needed), appContext);
-                        } else {
-                            coordinates.add(point);
-                            drawAndShowMultipleDistances(coordinates, "", false, true);
-                        }
+                    if (coordinates.isEmpty()) {
+                        googleMap.clear();
+                        coordinates.add(new LatLng(currentLocation.getLatitude(),
+                                                   currentLocation.getLongitude()));
                     }
-                    // Si no hemos encontrado la posición actual, no podremos
-                    // calcular la distancia
-                    else if (currentLocation != null) {
-                        if ((getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
-                            coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                        }
-                        coordinates.add(point);
-                        drawAndShowMultipleDistances(coordinates, "", false, true);
-                    }
+                    coordinates.add(point);
+                    googleMap.addMarker(new MarkerOptions().position(point));
+                } else {
+                    final IllegalStateException illegalStateException = new IllegalStateException("Empty coordinates list");
+                    DFMLogger.logException(illegalStateException);
 
-                    calculatingDistance = false;
+                    throw illegalStateException;
                 }
-            });
-
-            googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng point) {
-                    DFMLogger.logMessage(TAG, "onMapClick");
-
-                    if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-                        if (!calculatingDistance) {
-                            coordinates.clear();
-                        }
-
-                        calculatingDistance = true;
-
-                        if (coordinates.isEmpty()) {
-                            googleMap.clear();
-                        }
-                        coordinates.add(point);
-                        googleMap.addMarker(new MarkerOptions().position(point));
-                    } else {
-                        // Si no hemos encontrado la posición actual, no podremos
-                        // calcular la distancia
-                        if (currentLocation != null) {
-                            if (coordinates != null) {
-                                if (!calculatingDistance) {
-                                    coordinates.clear();
-                                }
-                                calculatingDistance = true;
-
-                                if (coordinates.isEmpty()) {
-                                    googleMap.clear();
-                                    coordinates.add(new LatLng(currentLocation.getLatitude(),
-                                                               currentLocation.getLongitude()));
-                                }
-                                coordinates.add(point);
-                                googleMap.addMarker(new MarkerOptions().position(point));
-                            } else {
-                                final IllegalStateException illegalStateException = new IllegalStateException("Empty coordinates list");
-                                DFMLogger.logException(illegalStateException);
-
-                                throw illegalStateException;
-                            }
-                        }
-                    }
-                }
-            });
-
-            googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    DFMLogger.logMessage(TAG, "onInfoWindowClick");
-
-                    final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
-
-                    showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
-                                                    Lists.newArrayList(coordinates));
-                    showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
-                    startActivity(showInfoActivityIntent);
-                }
-            });
-
-            googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(this));
-
-            // Iniciando la app
-            if (currentLocation == null) {
-                toastIt(getString(R.string.toast_loading_position), appContext);
             }
-
-            handleIntents(getIntent());
-
-            nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(MenuItem menuItem) {
-                    switch (menuItem.getItemId()) {
-                        case R.id.menu_current_position:
-                            menuItem.setChecked(true);
-                            drawerLayout.closeDrawers();
-                            onStartingPointSelected();
-                            return true;
-                        case R.id.menu_any_position:
-                            menuItem.setChecked(true);
-                            drawerLayout.closeDrawers();
-                            onStartingPointSelected();
-                            return true;
-                        case R.id.menu_rate_app:
-                            drawerLayout.closeDrawers();
-                            showRateDialog();
-                            return true;
-                        case R.id.menu_legal_notices:
-                            drawerLayout.closeDrawers();
-                            showGooglePlayServiceLicenseDialog();
-                            return true;
-                        case R.id.menu_settings:
-                            drawerLayout.closeDrawers();
-                            openSettingsActivity();
-                            return true;
-                    }
-                    return false;
-                }
-            });
-
-            // TODO: 23.08.15 check if this is still needed
-            actionBarDrawerToggle = new ActionBarDrawerToggle(this,
-                                                              drawerLayout,
-                                                              R.string.progressdialog_search_position_message,
-                                                              R.string.progressdialog_search_position_message) {
-                @Override
-                public void onDrawerOpened(View drawerView) {
-                    DFMLogger.logMessage(TAG, "onDrawerOpened");
-
-                    super.onDrawerOpened(drawerView);
-                    supportInvalidateOptionsMenu();
-                }
-
-                @Override
-                public void onDrawerClosed(View drawerView) {
-                    DFMLogger.logMessage(TAG, "onDrawerClosed");
-
-                    super.onDrawerClosed(drawerView);
-                    supportInvalidateOptionsMenu();
-                }
-            };
-            drawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-            if (savedInstanceState == null) {
-                DFMLogger.logMessage(TAG, "onCreate savedInstanceState == null");
-
-                onStartingPointSelected();
-            }
-        } else {
-            DFMLogger.logMessage(TAG, "onCreate mysteriously googleMap is null...");
         }
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        DFMLogger.logMessage(TAG, "onInfoWindowClick");
+
+        final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
+
+        showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
+                                        Lists.newArrayList(coordinates));
+        showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
+        startActivity(showInfoActivityIntent);
     }
 
     /**
