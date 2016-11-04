@@ -7,10 +7,10 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import gc.david.dfm.R;
 
-import static butterknife.ButterKnife.inject;
+import static butterknife.ButterKnife.bind;
 
 /**
  * MarkerInfoWindowAdapter controls the info window showed above the marker.
@@ -21,12 +21,12 @@ public class MarkerInfoWindowAdapter implements InfoWindowAdapter {
 
     private final View     view;
 
-    @InjectView(R.id.infowindow_address_textview)
+    @BindView(R.id.infowindow_address_textview)
     protected     TextView tvAddress;
 
     public MarkerInfoWindowAdapter(final Activity activity) {
         view = activity.getLayoutInflater().inflate(R.layout.custom_info, null);
-        inject(this, view);
+        bind(this, view);
     }
 
     @Override

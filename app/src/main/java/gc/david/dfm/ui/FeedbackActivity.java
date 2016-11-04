@@ -25,14 +25,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.QuestionExpandableListAdapter;
 import gc.david.dfm.logger.DFMLogger;
 
-import static butterknife.ButterKnife.inject;
+import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
 
@@ -64,17 +64,17 @@ public class FeedbackActivity extends BaseActivity {
         }
     };
 
-    @InjectView(R.id.problem_type_expandablelistview)
+    @BindView(R.id.problem_type_expandablelistview)
     protected ExpandableListView expandableListView;
-    @InjectView(R.id.problem_description_edittext)
+    @BindView(R.id.problem_description_edittext)
     protected EditText           etDetails;
-    @InjectView(R.id.problem_type_header_textview)
+    @BindView(R.id.problem_type_header_textview)
     protected TextView           tvQuestionTypeHeader;
-    @InjectView(R.id.problem_description_header_textview)
+    @BindView(R.id.problem_description_header_textview)
     protected TextView           tvQuestionDescriptionHeader;
-    @InjectView(R.id.send_feedback_button)
+    @BindView(R.id.send_feedback_button)
     protected Button             tvSendFeedback;
-    @InjectView(R.id.tbMain)
+    @BindView(R.id.tbMain)
     protected Toolbar            tbMain;
 
     @Inject
@@ -91,7 +91,7 @@ public class FeedbackActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
-        inject(this);
+        bind(this);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

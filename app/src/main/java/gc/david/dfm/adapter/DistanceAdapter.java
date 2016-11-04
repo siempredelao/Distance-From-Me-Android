@@ -9,11 +9,11 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import gc.david.dfm.R;
 import gc.david.dfm.model.Distance;
 
-import static butterknife.ButterKnife.inject;
+import static butterknife.ButterKnife.bind;
 import static org.apache.http.impl.cookie.DateUtils.formatDate;
 
 /**
@@ -62,15 +62,15 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
     }
 
     static class ViewHolder {
-        @InjectView(R.id.alias)
+        @BindView(R.id.alias)
         protected TextView title;
-        @InjectView(R.id.distancia)
+        @BindView(R.id.distancia)
         protected TextView distance;
-        @InjectView(R.id.fecha)
+        @BindView(R.id.fecha)
         protected TextView date;
 
         public ViewHolder(final View view) {
-            inject(this, view);
+            bind(this, view);
         }
     }
 }

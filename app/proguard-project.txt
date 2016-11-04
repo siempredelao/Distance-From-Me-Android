@@ -46,7 +46,7 @@
 
 -dontwarn butterknife.internal.**
 -keep class **$$ViewInjector { *; }
--keepnames class * { @butterknife.InjectView *;}
+-keepnames class * { @butterknife.BindView *;}
 
 -dontwarn com.google.common.**
 

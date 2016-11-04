@@ -79,7 +79,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
@@ -92,7 +92,7 @@ import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 
-import static butterknife.ButterKnife.inject;
+import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
@@ -109,17 +109,17 @@ public class MainActivity extends BaseActivity implements LocationListener,
     private static final String TAG                     = MainActivity.class.getSimpleName();
     private static final int    ELEVATION_SAMPLES       = 100;
 
-    @InjectView(R.id.elevationchart)
+    @BindView(R.id.elevationchart)
     protected RelativeLayout rlElevationChart;
-    @InjectView(R.id.closeChart)
+    @BindView(R.id.closeChart)
     protected ImageView      ivCloseElevationChart;
-    @InjectView(R.id.tbMain)
+    @BindView(R.id.tbMain)
     protected Toolbar        tbMain;
-    @InjectView(R.id.banner)
+    @BindView(R.id.banner)
     protected IMBanner       banner;
-    @InjectView(R.id.drawer_layout)
+    @BindView(R.id.drawer_layout)
     protected DrawerLayout   drawerLayout;
-    @InjectView(R.id.nvDrawer)
+    @BindView(R.id.nvDrawer)
     protected NavigationView nvDrawer;
 
     @Inject
@@ -156,7 +156,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        inject(this);
+        bind(this);
 
         setSupportActionBar(tbMain);
 

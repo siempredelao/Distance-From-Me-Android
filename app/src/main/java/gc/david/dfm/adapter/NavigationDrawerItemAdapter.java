@@ -10,10 +10,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import gc.david.dfm.R;
 
-import static butterknife.ButterKnife.inject;
+import static butterknife.ButterKnife.bind;
 
 /**
  * Created by David on 01/11/2014.
@@ -69,13 +69,13 @@ public class NavigationDrawerItemAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        @InjectView(R.id.navigation_drawer_item_icon)
+        @BindView(R.id.navigation_drawer_item_icon)
         protected ImageView ivIcon;
-        @InjectView(R.id.navigation_drawer_item_title)
+        @BindView(R.id.navigation_drawer_item_title)
         protected TextView  tvTitle;
 
         public ViewHolder(final View view) {
-            inject(this, view);
+            bind(this, view);
         }
     }
 }

@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.logger.DFMLogger;
@@ -42,7 +42,7 @@ import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 
-import static butterknife.ButterKnife.inject;
+import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.toastIt;
 
@@ -63,13 +63,13 @@ public class ShowInfoActivity extends BaseActivity {
     private final       String wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
     private final       String aliasHintKey                       = "aliasHint";
 
-    @InjectView(R.id.datos1)
+    @BindView(R.id.datos1)
     protected TextView tvOriginAddress;
-    @InjectView(R.id.datos2)
+    @BindView(R.id.datos2)
     protected TextView tvDestinationAddress;
-    @InjectView(R.id.distancia)
+    @BindView(R.id.distancia)
     protected TextView tvDistance;
-    @InjectView(R.id.tbMain)
+    @BindView(R.id.tbMain)
     protected Toolbar  tbMain;
 
     @Inject
@@ -94,7 +94,7 @@ public class ShowInfoActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
-        inject(this);
+        bind(this);
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
