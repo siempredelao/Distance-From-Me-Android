@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="gc.david.dfm"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:installLocation="preferExternal">
+<manifest package="gc.david.dfm"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:installLocation="preferExternal">
 
     <permission
         android:name="gc.david.dfm.permission.MAPS_RECEIVE"
@@ -113,6 +112,11 @@
         <service
             android:name="com.inmobi.commons.internal.ActivityRecognitionManager"
             android:enabled="true"/>
+
+        <service
+            android:name=".service.GeofencingService"
+            android:enabled="true"
+            android:exported="true"/>
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -6,9 +6,11 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -39,9 +41,6 @@ import android.widget.RelativeLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -91,6 +90,7 @@ import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
+import gc.david.dfm.service.GeofencingService;
 
 import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.isOnline;
@@ -102,9 +102,7 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class MainActivity extends BaseActivity implements LocationListener,
-                                                          GoogleApiClient.ConnectionCallbacks,
-                                                          GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG                     = MainActivity.class.getSimpleName();
     private static final int    ELEVATION_SAMPLES       = 100;
@@ -127,11 +125,19 @@ public class MainActivity extends BaseActivity implements LocationListener,
     @Inject
     protected Context    appContext;
 
+    private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final double latitude = intent.getDoubleExtra(GeofencingService.GEOFENCE_RECEIVER_LATITUDE_KEY, 0D);
+            final double longitude = intent.getDoubleExtra(GeofencingService.GEOFENCE_RECEIVER_LONGITUDE_KEY, 0D);
+            final Location location = new Location("");
+            location.setLatitude(latitude);
+            location.setLongitude(longitude);
+            onLocationChanged(location);
+        }
+    };
+
     private GoogleMap       googleMap                             = null;
-    // A request to connect to Location Services
-    private LocationRequest locationRequest                       = null;
-    // Stores the current instantiation of the location client in this object
-    private GoogleApiClient googleApiClient                       = null;
     private Location        currentLocation                       = null;
     // Moves to current position if app has just started
     private boolean         appHasJustStarted                     = true;
@@ -167,11 +173,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
         }
 
         DEVICE_DENSITY = getResources().getDisplayMetrics().density;
-
-        googleApiClient = new GoogleApiClient.Builder(this).addApi(LocationServices.API)
-                                                           .addConnectionCallbacks(this)
-                                                           .addOnConnectionFailedListener(this)
-                                                           .build();
 
         final SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         googleMap = fragment.getMap();
@@ -757,10 +758,9 @@ public class MainActivity extends BaseActivity implements LocationListener,
     public void onStop() {
         DFMLogger.logMessage(TAG, "onStop");
 
-        if (googleApiClient.isConnected()) {
-            stopPeriodicUpdates();
-        }
         super.onStop();
+        unregisterReceiver(locationReceiver);
+        stopService(new Intent(this, GeofencingService.class));
     }
 
     /**
@@ -771,11 +771,8 @@ public class MainActivity extends BaseActivity implements LocationListener,
         DFMLogger.logMessage(TAG, "onStart");
 
         super.onStart();
-        /*
-         * Connect the client. Don't re-start any requests here; instead, wait
-		 * for onResume()
-		 */
-        googleApiClient.connect();
+        registerReceiver(locationReceiver, new IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION));
+        startService(new Intent(this, GeofencingService.class));
     }
 
     /**
@@ -892,23 +889,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
     }
 
     /**
-     * Called by Location Services when the request to connect the client
-     * finishes successfully. At this point, you can request the current
-     * location or start periodic updates
-     */
-    @Override
-    public void onConnected(Bundle bundle) {
-        DFMLogger.logMessage(TAG, "onConnected");
-
-        startPeriodicUpdates();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        DFMLogger.logMessage(TAG, "onConnectionSuspended GoogleApiClient connection has been suspended");
-    }
-
-    /**
      * Called by Location Services if the attempt to Location Services fails.
      */
     @Override
@@ -943,11 +923,7 @@ public class MainActivity extends BaseActivity implements LocationListener,
         }
     }
 
-    /**
-     * Report location updates to the UI.
-     */
-    @Override
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(final Location location) {
         DFMLogger.logMessage(TAG, "onLocationChanged");
 
         if (currentLocation != null) {
@@ -975,33 +951,6 @@ public class MainActivity extends BaseActivity implements LocationListener,
             }
             appHasJustStarted = false;
         }
-    }
-
-    /**
-     * In response to a request to start updates, send a request to Location
-     * Services.
-     */
-    private void startPeriodicUpdates() {
-        DFMLogger.logMessage(TAG, "startPeriodicUpdates");
-
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
-        // Set the interval ceiling to one minute
-        locationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-    }
-
-    /**
-     * In response to a request to stop updates, send a request to Location
-     * Services.
-     */
-    private void stopPeriodicUpdates() {
-        DFMLogger.logMessage(TAG, "stopPeriodicUpdates");
-
-        // After disconnect() is called, the client is considered "dead".
-        googleApiClient.disconnect();
     }
 
     /**
