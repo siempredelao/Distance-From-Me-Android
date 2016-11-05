@@ -4,6 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.inmobi.ads"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
@@ -25,10 +26,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-            <com.inmobi.monetization.IMBanner
+            <com.inmobi.ads.InMobiBanner
                 android:id="@+id/banner"
-                adSize="11"
-                appId="9b61f509a1454023b5295d8aea4482c2"
+                ads:placementId="1431976172760598"
+                ads:refreshInterval="30"
                 android:layout_width="728dp"
                 android:layout_height="90dp"
                 android:layout_gravity="bottom"/>

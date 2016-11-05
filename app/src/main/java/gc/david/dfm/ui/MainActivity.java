@@ -53,10 +53,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.common.collect.Lists;
-import com.inmobi.commons.InMobi;
-import com.inmobi.monetization.IMBanner;
-import com.inmobi.monetization.IMBannerListener;
-import com.inmobi.monetization.IMErrorCode;
+import com.inmobi.ads.InMobiAdRequestStatus;
+import com.inmobi.ads.InMobiBanner;
+import com.inmobi.ads.InMobiBanner.BannerAdListener;
+import com.inmobi.sdk.InMobiSdk;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
@@ -81,6 +81,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.BuildConfig;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
@@ -120,7 +121,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     @BindView(R.id.tbMain)
     protected Toolbar        tbMain;
     @BindView(R.id.banner)
-    protected IMBanner       banner;
+    protected InMobiBanner   banner;
     @BindView(R.id.drawer_layout)
     protected DrawerLayout   drawerLayout;
     @BindView(R.id.nvDrawer)
@@ -167,6 +168,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
+        InMobiSdk.setLogLevel(BuildConfig.DEBUG ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.NONE);
+        InMobiSdk.init(this, getString(R.string.inmobi_api_key));
         setContentView(R.layout.activity_main);
         bind(this);
 
@@ -183,51 +186,48 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
 
-        // InMobi Ads
-        InMobi.initialize(this, getString(R.string.inmobi_api_key));
-        if (banner != null) {
-            // Si no hay red el banner no carga ni aunque esté vacío
-            banner.setRefreshInterval(30);
-            banner.setIMBannerListener(new IMBannerListener() {
-                @Override
-                public void onShowBannerScreen(IMBanner arg0) {
-                    DFMLogger.logMessage(TAG, "onShowBannerScreen");
-                }
+        banner.setListener(new BannerAdListener() {
+            @Override
+            public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
+                DFMLogger.logMessage(TAG, "onAdLoadSucceeded");
 
-                @Override
-                public void onLeaveApplication(IMBanner arg0) {
-                    DFMLogger.logMessage(TAG, "onLeaveApplication");
-                }
+                bannerShown = true;
+                fixMapPadding();
+            }
 
-                @Override
-                public void onDismissBannerScreen(IMBanner arg0) {
-                    DFMLogger.logMessage(TAG, "onDismissBannerScreen");
-                }
+            @Override
+            public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
+                DFMLogger.logMessage(TAG, "onAdLoadFailed");
+            }
 
-                @Override
-                public void onBannerRequestSucceeded(IMBanner arg0) {
-                    DFMLogger.logMessage(TAG, "onBannerRequestSucceeded");
+            @Override
+            public void onAdDisplayed(InMobiBanner inMobiBanner) {
+                DFMLogger.logMessage(TAG, "onAdDisplayed");
+            }
 
-                    bannerShown = true;
-                    fixMapPadding();
-                }
+            @Override
+            public void onAdDismissed(InMobiBanner inMobiBanner) {
+                DFMLogger.logMessage(TAG, "onAdDismissed");
+            }
 
-                @Override
-                public void onBannerRequestFailed(IMBanner arg0, IMErrorCode arg1) {
-                    DFMLogger.logMessage(TAG, "onBannerRequestFailed");
-                }
+            @Override
+            public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
+                DFMLogger.logMessage(TAG, "onAdInteraction");
 
-                @Override
-                public void onBannerInteraction(IMBanner arg0, Map<String, String> arg1) {
-                    DFMLogger.logMessage(TAG, "onBannerInteraction");
+                DFMLogger.logEvent("Ad tapped");
+            }
 
-                    DFMLogger.logEvent("Ad tapped");
-                }
-            });
-            banner.loadBanner();
-        } else {
-            DFMLogger.logMessage(TAG, "onCreate banner null");
-        }
+            @Override
+            public void onUserLeftApplication(InMobiBanner inMobiBanner) {
+                DFMLogger.logMessage(TAG, "onUserLeftApplication");
+            }
+
+            @Override
+            public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
+                DFMLogger.logMessage(TAG, "onAdRewardActionCompleted");
+            }
+        });
+        banner.load();
 
         if (!isOnline(appContext)) {
             showWifiAlertDialog();
