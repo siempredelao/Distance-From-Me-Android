@@ -12,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Address;
@@ -21,7 +20,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -82,6 +80,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import gc.david.dfm.BuildConfig;
+import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
@@ -1002,8 +1001,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         // Muestra el perfil de elevación si está en las preferencias
         // y si está conectado a internet
-        if (getSharedPreferences(appContext).getBoolean("elevation_chart", false) &&
-            isOnline(appContext)) {
+        if (DFMPreferences.shouldShowElevationChart(appContext) && isOnline(appContext)) {
             getElevation(coordinates);
         }
     }
@@ -1080,10 +1078,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         Locale defaultLocale = getResources().getConfiguration().locale;
 
-        final SharedPreferences preferences = getSharedPreferences("gc.david.dfm_preferences", Context.MODE_PRIVATE);
-        final String defaultUnit = preferences.getString("unit", null);
+        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit != null) {
-            if (getString(R.string.preference_unit_entry_value_US).equals(defaultUnit)) {
+            if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit)) {
                 defaultLocale = Locale.US;
             } else { // EU
                 defaultLocale = Locale.FRANCE;
@@ -1105,14 +1102,14 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         double centerLon = 0.0;
 
         // Diferenciamos según preferencias
-        final String centre = getSharedPreferences(getBaseContext()).getString("animation", "CEN");
-        if (centre.equals("CEN")) {
+        final String centre = DFMPreferences.getAnimationPreference(getBaseContext());
+        if (DFMPreferences.ANIMATION_CENTRE_VALUE.equals(centre)) {
             centerLat = (p1.latitude + p2.latitude) / 2;
             centerLon = (p1.longitude + p2.longitude) / 2;
-        } else if (centre.equals("DES")) {
+        } else if (DFMPreferences.ANIMATION_DESTINATION_VALUE.equals(centre)) {
             centerLat = p2.latitude;
             centerLon = p2.longitude;
-        } else if (centre.equals("NO")) {
+        } else if (centre.equals("NO")) { // NO? WTF!?
             return;
         }
 
@@ -1122,12 +1119,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         } else {
             googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(p2.latitude, p2.longitude)));
         }
-    }
-
-    private SharedPreferences getSharedPreferences(final Context context) {
-        DFMLogger.logMessage(TAG, "getSharedPreferences");
-
-        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     /**
@@ -1515,10 +1506,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             Locale defaultLocale = Locale.getDefault();
 
-            final SharedPreferences preferences = getSharedPreferences("gc.david.dfm_preferences", Context.MODE_PRIVATE);
-            final String defaultUnit = preferences.getString("unit", null);
+            final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
             if (defaultUnit != null) {
-                if (getString(R.string.preference_unit_entry_value_US).equals(defaultUnit)) {
+                if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit)) {
                     defaultLocale = Locale.US;
                 } else { // EU
                     defaultLocale = Locale.FRANCE;

@@ -1,7 +1,5 @@
 package gc.david.dfm.ui;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -10,6 +8,7 @@ import android.preference.PreferenceActivity;
 import java.util.Locale;
 
 import gc.david.dfm.DFMApplication;
+import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.R;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
@@ -22,7 +21,6 @@ public class SettingsActivity extends PreferenceActivity {
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         DFMLogger.logMessage(TAG, "onCreate");
@@ -46,11 +44,8 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         // Set default unit if not already set
-        final SharedPreferences preferences = getSharedPreferences("gc.david.dfm_preferences", Context.MODE_PRIVATE);
-        final String defaultUnit = preferences.getString("unit", null);
+        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit == null) {
-            final SharedPreferences.Editor editor = preferences.edit();
-
             final Locale locale = getResources().getConfiguration().locale;
             if (locale.equals(Locale.CANADA)
                 || locale.equals(Locale.CHINA)
@@ -59,11 +54,10 @@ public class SettingsActivity extends PreferenceActivity {
                 || locale.equals(Locale.TAIWAN)
                 || locale.equals(Locale.UK)
                 || locale.equals(Locale.US)) {
-                editor.putString("unit", getString(R.string.preference_unit_entry_value_US));
+                DFMPreferences.setMeasureUnitPreference(getBaseContext(), DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE);
             } else {
-                editor.putString("unit", getString(R.string.preference_unit_entry_value_EU));
+                DFMPreferences.setMeasureUnitPreference(getBaseContext(), DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
             }
-            editor.commit();
         }
     }
 
