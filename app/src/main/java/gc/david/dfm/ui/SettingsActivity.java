@@ -5,10 +5,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
-import java.util.Locale;
-
 import gc.david.dfm.DFMApplication;
-import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.R;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
@@ -42,23 +39,6 @@ public class SettingsActivity extends PreferenceActivity {
                 return false;
             }
         });
-
-        // Set default unit if not already set
-        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
-        if (defaultUnit == null) {
-            final Locale locale = getResources().getConfiguration().locale;
-            if (locale.equals(Locale.CANADA)
-                || locale.equals(Locale.CHINA)
-                || locale.equals(Locale.JAPAN)
-                || locale.equals(Locale.KOREA)
-                || locale.equals(Locale.TAIWAN)
-                || locale.equals(Locale.UK)
-                || locale.equals(Locale.US)) {
-                DFMPreferences.setMeasureUnitPreference(getBaseContext(), DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE);
-            } else {
-                DFMPreferences.setMeasureUnitPreference(getBaseContext(), DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
-            }
-        }
     }
 
     private DaoSession getApplicationDaoSession() {

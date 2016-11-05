@@ -1076,17 +1076,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         double distanceInMetres = Utils.calculateDistanceInMetres(coordinates);
 
-        Locale defaultLocale = getResources().getConfiguration().locale;
-
-        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
-        if (defaultUnit != null) {
-            if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit)) {
-                defaultLocale = Locale.US;
-            } else { // EU
-                defaultLocale = Locale.FRANCE;
-            }
-        }
-        return Haversine.normalizeDistance(distanceInMetres, defaultLocale);
+        return Haversine.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
     }
 
     /**
@@ -1504,30 +1494,21 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                                                                  (int) (3 * DEVICE_DENSITY)),
                                         new GraphView.GraphViewData[]{});
 
-            Locale defaultLocale = Locale.getDefault();
-
-            final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
-            if (defaultUnit != null) {
-                if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit)) {
-                    defaultLocale = Locale.US;
-                } else { // EU
-                    defaultLocale = Locale.FRANCE;
-                }
-            }
+            final Locale locale = getAmericanOrEuropeanLocale();
 
             for (int w = 0; w < array.length(); w++) {
                 series.appendData(new GraphView.GraphViewData(w,
                                                               Haversine.normalizeAltitudeByLocale(Double.valueOf(array.getJSONObject(w)
                                                                                                                       .get("elevation")
                                                                                                                       .toString()),
-                                                                                                  defaultLocale)),
+                                                                                                  locale)),
                                   false,
                                   array.length());
             }
 
             // Creates the line and add it to the chart
             graphView = new LineGraphView(appContext, getString(R.string.elevation_chart_title,
-                                                                Haversine.getAltitudeUnitByLocale(defaultLocale)));
+                                                                Haversine.getAltitudeUnitByLocale(locale)));
             graphView.addSeries(series);
             graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
             graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
@@ -1560,5 +1541,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                 });
             }
         }
+    }
+
+    private Locale getAmericanOrEuropeanLocale() {
+        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
+        return DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit) ? Locale.US : Locale.FRANCE;
     }
 }

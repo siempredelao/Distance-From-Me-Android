@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.crashlytics.android.Crashlytics;
 
+import java.util.Locale;
+
 import dagger.ObjectGraph;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.logger.DFMLogger;
@@ -20,7 +22,7 @@ public class DFMApplication extends Application {
 
     private static final String TAG = DFMApplication.class.getSimpleName();
 
-    private DaoSession daoSession;
+    private DaoSession  daoSession;
     private ObjectGraph objectGraph;
 
     @Override
@@ -34,12 +36,19 @@ public class DFMApplication extends Application {
         DFMLogger.logMessage(TAG, "onCreate");
 
         setupDatabase();
+        setupDefaultUnit();
 
         objectGraph = ObjectGraph.create(new RootModule(this));
     }
 
     public void inject(Object object) {
         objectGraph.inject(object);
+    }
+
+    public DaoSession getDaoSession() {
+        DFMLogger.logMessage(TAG, "getDaoSession");
+
+        return daoSession;
     }
 
     private void setupDatabase() {
@@ -51,9 +60,27 @@ public class DFMApplication extends Application {
         daoSession = daoMaster.newSession();
     }
 
-    public DaoSession getDaoSession() {
-        DFMLogger.logMessage(TAG, "getDaoSession");
+    private void setupDefaultUnit() {
+        DFMLogger.logMessage(TAG, "setupDefaultUnit");
 
-        return daoSession;
+        // Set default unit if not already set
+        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
+        if (defaultUnit == null) {
+            DFMPreferences.setMeasureUnitPreference(getBaseContext(),
+                                                    isAmericanLocale() ?
+                                                    DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE :
+                                                    DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
+        }
+    }
+
+    private boolean isAmericanLocale() {
+        final Locale locale = getResources().getConfiguration().locale;
+        return locale.equals(Locale.CANADA)
+               || locale.equals(Locale.CHINA)
+               || locale.equals(Locale.JAPAN)
+               || locale.equals(Locale.KOREA)
+               || locale.equals(Locale.TAIWAN)
+               || locale.equals(Locale.UK)
+               || locale.equals(Locale.US);
     }
 }
