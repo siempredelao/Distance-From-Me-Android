@@ -196,7 +196,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             @Override
             public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
-                DFMLogger.logMessage(TAG, "onAdLoadFailed");
+                DFMLogger.logMessage(TAG,
+                                     String.format("onAdLoadFailed %s %s",
+                                                   inMobiAdRequestStatus.getStatusCode(),
+                                                   inMobiAdRequestStatus.getMessage()));
             }
 
             @Override
@@ -211,7 +214,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             @Override
             public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-                DFMLogger.logMessage(TAG, "onAdInteraction");
+                DFMLogger.logMessage(TAG, String.format("onAdInteraction %s", map.toString()));
 
                 DFMLogger.logEvent("Ad tapped");
             }
@@ -223,10 +226,12 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             @Override
             public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-                DFMLogger.logMessage(TAG, "onAdRewardActionCompleted");
+                DFMLogger.logMessage(TAG, String.format("onAdRewardActionCompleted %s", map.toString()));
             }
         });
-        banner.load();
+        if (!BuildConfig.DEBUG) {
+            banner.load();
+        }
 
         if (!isOnline(appContext)) {
             showWifiAlertDialog();
