@@ -40,4 +40,8 @@
         <item name="popupMenuStyle">@style/PopupMenu.NewTheme</item>
         <item name="dropDownListViewStyle">@style/DropDownListView.NewTheme</item>
     </style>
+
+    <style name="CustomActionBarTheme.Onboard">
+        <item name="android:windowBackground">@drawable/ll_dfm_logo</item>
+    </style>
 </resources>
