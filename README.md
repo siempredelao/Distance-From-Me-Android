@@ -24,9 +24,10 @@
 * [Guava](https://github.com/google/guava)
 * [Crashlytics (Fabric)](https://get.fabric.io/crashlytics)
 
-## Current status
-At this moment, *Distance From Me* is being constantly updated, adding new features and languages.
+## Contributions
+Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 
 
+## Download
 [![Get it on Google Play]
     (https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)]
 (http://goo.gl/0IBHFN)
