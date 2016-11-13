@@ -1104,7 +1104,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         } else if (DFMPreferences.ANIMATION_DESTINATION_VALUE.equals(centre)) {
             centerLat = p2.latitude;
             centerLon = p2.longitude;
-        } else if (centre.equals("NO")) { // NO? WTF!?
+        } else if (centre.equals(DFMPreferences.NO_ANIMATION_DESTINATION_VALUE)) {
             return;
         }
 
