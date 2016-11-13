@@ -51,6 +51,7 @@ ext {
 
 dependencies {
 	compile "$supportLibraryGroup:design:$supportLibraryVersion"
+    compile "$supportLibraryGroup:preference-v7:$supportLibraryVersion"
 	compile "$playServicesGroup:play-services-maps:$playServicesVersion"
 	compile "$playServicesGroup:play-services-location:$playServicesVersion"
 	compile "com.jjoe64:graphview:$graphViewVersion"

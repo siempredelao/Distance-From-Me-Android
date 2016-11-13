@@ -12,6 +12,7 @@
         <!-- Light.DarkActionBar specific -->
         <!-- Con esto funciona el menú desplegable -->
         <item name="actionBarWidgetTheme">@style/NewTheme.Widget</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
 

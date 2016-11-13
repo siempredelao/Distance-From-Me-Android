@@ -11,9 +11,10 @@ import gc.david.dfm.DFMApplication;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.ui.FeedbackActivity;
 import gc.david.dfm.ui.MainActivity;
+import gc.david.dfm.ui.SettingsActivity;
 import gc.david.dfm.ui.ShowInfoActivity;
 
-@Module(injects = {MainActivity.class, ShowInfoActivity.class, FeedbackActivity.class})
+@Module(injects = {MainActivity.class, ShowInfoActivity.class, FeedbackActivity.class, SettingsActivity.class})
 public class RootModule {
 
     private final DFMApplication application;
