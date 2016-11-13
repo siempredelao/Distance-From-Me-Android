@@ -17,7 +17,7 @@ public class DFMPreferences {
     public static final  String ANIMATION_CENTRE_VALUE         = "CEN";
     public static final  String ANIMATION_DESTINATION_VALUE    = "DES";
     public static final  String NO_ANIMATION_DESTINATION_VALUE = "NO";
-    public static final  String CLEAR_DATABASE_KEY             = "ddbb";
+    public static final  String CLEAR_DATABASE_KEY             = "bbdd";
 
 
     public static String getMeasureUnitPreference(final Context context) {
