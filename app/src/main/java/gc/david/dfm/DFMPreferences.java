@@ -9,14 +9,15 @@ import android.preference.PreferenceManager;
  */
 public class DFMPreferences {
 
-    private static final String MEASURE_UNIT_KEY            = "unit";
-    public static final  String MEASURE_EUROPEAN_UNIT_VALUE = "EU";
-    public static final  String MEASURE_AMERICAN_UNIT_VALUE = "US";
-    private static final String ELEVATION_CHART_KEY         = "elevation_chart";
-    private static final String ANIMATION_KEY               = "animation";
-    public static final  String ANIMATION_CENTRE_VALUE      = "CEN";
-    public static final  String ANIMATION_DESTINATION_VALUE = "DES";
+    private static final String MEASURE_UNIT_KEY               = "unit";
+    public static final  String MEASURE_EUROPEAN_UNIT_VALUE    = "EU";
+    public static final  String MEASURE_AMERICAN_UNIT_VALUE    = "US";
+    private static final String ELEVATION_CHART_KEY            = "elevation_chart";
+    private static final String ANIMATION_KEY                  = "animation";
+    public static final  String ANIMATION_CENTRE_VALUE         = "CEN";
+    public static final  String ANIMATION_DESTINATION_VALUE    = "DES";
     public static final  String NO_ANIMATION_DESTINATION_VALUE = "NO";
+    public static final  String CLEAR_DATABASE_KEY             = "ddbb";
 
 
     public static String getMeasureUnitPreference(final Context context) {

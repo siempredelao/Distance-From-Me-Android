@@ -1,49 +1,35 @@
 package gc.david.dfm.ui;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
+import android.support.v7.widget.Toolbar;
 
-import gc.david.dfm.DFMApplication;
+import javax.inject.Inject;
+
+import butterknife.BindView;
 import gc.david.dfm.R;
-import gc.david.dfm.logger.DFMLogger;
-import gc.david.dfm.model.DaoSession;
-import gc.david.dfm.model.Distance;
-import gc.david.dfm.model.Position;
 
-import static gc.david.dfm.Utils.toastIt;
+import static butterknife.ButterKnife.bind;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends BaseActivity {
 
-    private static final String TAG = SettingsActivity.class.getSimpleName();
+    @Inject
+    protected Context appContext; // TODO: 13.11.16 remove this, it's stupid!
+
+    @BindView(R.id.tbMain)
+    protected Toolbar tbMain;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate");
-
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        bind(this);
 
-        addPreferencesFromResource(R.xml.settings);
+        setSupportActionBar(tbMain);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final Preference bbddPreference = findPreference("bbdd");
-        bbddPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                DFMLogger.logMessage(TAG, "onPreferenceClick delete entries");
-
-                // TODO hacerlo en segundo plano
-                getApplicationDaoSession().deleteAll(Distance.class);
-                getApplicationDaoSession().deleteAll(Position.class);
-                toastIt(getString(R.string.toast_distances_deleted), getApplicationContext());
-                return false;
-            }
-        });
-    }
-
-    private DaoSession getApplicationDaoSession() {
-        DFMLogger.logMessage(TAG, "getApplicationDaoSession");
-
-        return ((DFMApplication) getApplicationContext()).getDaoSession();
+        getSupportFragmentManager().beginTransaction()
+                                   .replace(R.id.settings_activity_container_framelayout, new SettingsFragment())
+                                   .commit();
     }
 }

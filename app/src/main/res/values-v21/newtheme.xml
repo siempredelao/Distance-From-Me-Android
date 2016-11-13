@@ -9,5 +9,6 @@
         <!--<item name="android:textColorPrimary">#FFFFFF</item>-->
 
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 </resources>
