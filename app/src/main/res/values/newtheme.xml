@@ -48,7 +48,7 @@
     <!--</style>-->
 
     <style name="CustomActionBarTheme.Onboard">
-        <item name="android:windowBackground">@drawable/ll_dfm_logo</item>
+        <item name="android:windowBackground">@drawable/ll_dfm_onboard</item>
     </style>
 
     <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
