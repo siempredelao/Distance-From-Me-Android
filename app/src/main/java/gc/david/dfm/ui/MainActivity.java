@@ -464,7 +464,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
      * @param intent The input intent.
      */
     private void handleIntents(final Intent intent) {
-        DFMLogger.logMessage(TAG, "handleIntents");
+        DFMLogger.logMessage(TAG, "handleIntents " + Utils.dumpIntentToString(intent));
 
         if (intent != null) {
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
