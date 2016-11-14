@@ -30,6 +30,12 @@ android {
 		versionName '3.0'
 		versionCode 21
 	}
+
+	buildTypes {
+		debug {
+			versionNameSuffix "-dev"
+		}
+	}
 }
 
 ext {
