@@ -38,7 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -747,7 +747,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     private void showGooglePlayServiceLicenseDialog() {
         DFMLogger.logMessage(TAG, "showGooglePlayServiceLicenseDialog");
 
-        final String LicenseInfo = GooglePlayServicesUtil.getOpenSourceSoftwareLicenseInfo(appContext);
+        final String LicenseInfo = GoogleApiAvailability.getInstance().getOpenSourceSoftwareLicenseInfo(appContext);
         final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
         LicenseDialog.setTitle(R.string.menu_legal_notices_title);
         LicenseDialog.setMessage(LicenseInfo);
@@ -868,8 +868,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     private boolean checkPlayServices() {
         DFMLogger.logMessage(TAG, "checkPlayServices");
 
+        final GoogleApiAvailability googleApiAvailabilityInstance = GoogleApiAvailability.getInstance();
         // Comprobamos que Google Play Services está disponible en el terminal
-        final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(appContext);
+        final int resultCode = googleApiAvailabilityInstance.isGooglePlayServicesAvailable(appContext);
 
         // Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
         // de error y devolvemos falso
@@ -878,11 +879,11 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             return true;
         } else {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+            if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
                 DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError");
 
                 final int RQS_GooglePlayServices = 1;
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this, RQS_GooglePlayServices).show();
+                googleApiAvailabilityInstance.getErrorDialog(this, resultCode, RQS_GooglePlayServices).show();
             } else {
                 DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing");
 
@@ -967,9 +968,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         DFMLogger.logMessage(TAG, "showErrorDialog errorCode=" + errorCode);
 
         // Get the error dialog from Google Play services
-        final Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
-                                                                         this,
-                                                                         LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+        final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this,
+                                                                                      errorCode,
+                                                                                      LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
         // If Google Play services can provide an error dialog
         if (errorDialog != null) {
