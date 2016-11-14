@@ -108,12 +108,11 @@ public class ShowInfoActivity extends BaseActivity {
             originAddress = savedInstanceState.getString(originAddressKey);
             destinationAddress = savedInstanceState.getString(destinationAddressKey);
 
-            tvOriginAddress.setText(String.format("%s\n\n(%f,%f)",
-                                                  originAddress, positionsList.get(0).latitude,
+            tvOriginAddress.setText(formatAddress(originAddress,
+                                                  positionsList.get(0).latitude,
                                                   positionsList.get(0).longitude));
 
-            tvDestinationAddress.setText(String.format("%s\n\n(%f,%f)",
-                                                       destinationAddress,
+            tvDestinationAddress.setText(formatAddress(destinationAddress,
                                                        positionsList.get(positionsList.size() - 1).latitude,
                                                        positionsList.get(positionsList.size() - 1).longitude));
 
@@ -133,7 +132,7 @@ public class ShowInfoActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         DFMLogger.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
-        
+
         super.onSaveInstanceState(outState);
 
         outState.putString(originAddressKey, originAddress);
@@ -154,7 +153,7 @@ public class ShowInfoActivity extends BaseActivity {
      */
     private void getIntentData() {
         DFMLogger.logMessage(TAG, "getIntentData");
-        
+
         final Intent inputDataIntent = getIntent();
         positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
         distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
@@ -165,19 +164,17 @@ public class ShowInfoActivity extends BaseActivity {
      */
     private void fillAddressesInfo() {
         DFMLogger.logMessage(TAG, "fillAddressesInfo");
-        
+
         try {
             originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
             destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
                                                               tvDestinationAddress).get();
 
             // Esto a lo mejor hay que ponerlo en el onPostExecute!
-            tvOriginAddress.setText(String.format("%s\n\n(%f,%f)",
-                                                  originAddress,
+            tvOriginAddress.setText(formatAddress(originAddress,
                                                   positionsList.get(0).latitude,
                                                   positionsList.get(0).longitude));
-            tvDestinationAddress.setText(String.format("%s\n\n(%f,%f)",
-                                                       destinationAddress,
+            tvDestinationAddress.setText(formatAddress(destinationAddress,
                                                        positionsList.get(positionsList.size() - 1).latitude,
                                                        positionsList.get(positionsList.size() - 1).longitude));
         } catch (final InterruptedException e) {
@@ -191,6 +188,10 @@ public class ShowInfoActivity extends BaseActivity {
             // No hay conexión, se cancela la búsqueda de las direcciones
             // No se hace nada aquí, ya lo hace el hilo
         }
+    }
+
+    private String formatAddress(final String address, final double latitude, final double longitude) {
+        return String.format(Locale.getDefault(), "%s\n\n(%f,%f)", address, latitude, longitude);
     }
 
     /**

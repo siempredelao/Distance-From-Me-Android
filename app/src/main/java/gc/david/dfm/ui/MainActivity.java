@@ -1366,7 +1366,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                 DFMLogger.logException(e);
                 return -1; // No encuentra una dirección, no puede conectar con el servidor
             } catch (final IllegalArgumentException e) {
-                final IllegalArgumentException illegalArgumentException = new IllegalArgumentException(String.format("Error en latitud=%f o longitud=%f.\n%s",
+                final IllegalArgumentException illegalArgumentException = new IllegalArgumentException(String.format(Locale.getDefault(),
+                                                                                                                     "Error en latitud=%f o longitud=%f.\n%s",
                                                                                                                      latLng.latitude,
                                                                                                                      latLng.longitude,
                                                                                                                      e.toString()));
