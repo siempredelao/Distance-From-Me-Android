@@ -295,7 +295,6 @@ public class ShowInfoActivity extends BaseActivity {
         builder.setMessage(getString(R.string.alias_dialog_message))
                .setTitle(getString(R.string.alias_dialog_title))
                .setView(etAlias)
-               .setInverseBackgroundForced(false)
                .setOnCancelListener(new OnCancelListener() {
                    @Override
                    public void onCancel(DialogInterface dialog) {
