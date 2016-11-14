@@ -57,7 +57,6 @@
     <string name="no_animation_item">Sin animación</string>
     <string name="navigation_drawer_starting_point_any_position_item">Cualquier posición</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posición actual</string>
-    <string name="navigation_drawer_starting_point_header">POSICIÓN INICIAL</string>
     <string name="dialog_connection_problems_title">Problema en la conexión</string>
     <string name="dialog_no_feedback_description_message">Por favor, redacte la descripción de su pregunta en este formulario de contacto.</string>
     <string name="dialog_no_feedback_description_title">Sin descripción</string>

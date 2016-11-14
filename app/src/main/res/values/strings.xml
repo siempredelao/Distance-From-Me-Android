@@ -30,7 +30,6 @@
     <string name="dialog_rate_app_positive_button">Go to Play Store</string>
     <string name="dialog_rate_app_negative_button">Contact us!</string>
 
-    <string name="navigation_drawer_starting_point_header">STARTING POINT</string>
     <string name="navigation_drawer_starting_point_current_position_item">Current position</string>
     <string name="navigation_drawer_starting_point_any_position_item">Any position</string>
 

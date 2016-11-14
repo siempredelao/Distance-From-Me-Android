@@ -58,7 +58,6 @@
     <string name="dialog_no_feedback_description_title">Keine Beschreibung</string>
     <string name="dialog_no_feedback_type_title">Keine Frage Typ</string>
     <string name="navigation_drawer_starting_point_current_position_item">Aktuelle Position</string>
-    <string name="navigation_drawer_starting_point_header">STARTPUNKT</string>
     <string name="no_animation_item">Keine Animation</string>
     <string name="problem_description_hint"> Schreiben Sie hier die Details! :)</string>
     <string name="problem_type_header">Fragetyp</string>

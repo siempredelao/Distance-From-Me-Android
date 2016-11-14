@@ -61,7 +61,6 @@
     <string name="expandable_item_feedback_type_suggestion">Sugestão</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualquer posição</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posição Atual</string>
-    <string name="navigation_drawer_starting_point_header">POSIÇÃO INICIAL</string>
     <string name="no_animation_item">Sem animação</string>
     <string name="problem_description_header">Detalhes de sua pergunta</string>
     <string name="problem_description_hint"> Introduza aqui os detalhes! :)</string>

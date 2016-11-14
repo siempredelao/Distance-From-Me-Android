@@ -61,7 +61,6 @@
     <string name="dialog_no_feedback_type_title">Senza tipo di domanda</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsiasi posizione</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posizione attuale</string>
-    <string name="navigation_drawer_starting_point_header">POSIZIONE INIZIALE</string>
     <string name="no_animation_item">Nessuna animazione</string>
     <string name="problem_description_header">Dettagli della vostra questione</string>
     <string name="problem_description_hint">Inserisci qui i dettagli! :)</string>

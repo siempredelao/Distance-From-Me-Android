@@ -57,7 +57,6 @@
     <string name="problem_description_hint">Écrivez ici les détails! :)</string>
     <string name="problem_description_header">Détails de votre demande</string>
     <string name="no_animation_item">Pas d\'animation</string>
-    <string name="navigation_drawer_starting_point_header">POSITION DE DÉPART</string>
     <string name="navigation_drawer_starting_point_current_position_item">Position actuelle</string>
     <string name="navigation_drawer_starting_point_any_position_item">N\'importe quelle position</string>
     <string name="expandable_item_feedback_type_suggestion">Suggestion</string>
