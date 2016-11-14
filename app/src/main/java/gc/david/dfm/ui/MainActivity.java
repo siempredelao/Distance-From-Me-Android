@@ -85,7 +85,7 @@ import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
-import gc.david.dfm.dialog.AddressSugestionsDialogFragment;
+import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
@@ -1258,16 +1258,16 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                             processSelectedAddress(0);
                             handleSelectedAddress();
                         } else {
-                            final AddressSugestionsDialogFragment addressSugestionsDialogFragment = new AddressSugestionsDialogFragment();
-                            addressSugestionsDialogFragment.setAddressList(addressList);
-                            addressSugestionsDialogFragment.setOnDialogActionListener(new AddressSugestionsDialogFragment.OnDialogActionListener() {
+                            final AddressSuggestionsDialogFragment addressSuggestionsDialogFragment = new AddressSuggestionsDialogFragment();
+                            addressSuggestionsDialogFragment.setAddressList(addressList);
+                            addressSuggestionsDialogFragment.setOnDialogActionListener(new AddressSuggestionsDialogFragment.OnDialogActionListener() {
                                 @Override
                                 public void onItemClick(int position) {
                                     processSelectedAddress(position);
                                     handleSelectedAddress();
                                 }
                             });
-                            addressSugestionsDialogFragment.show(getSupportFragmentManager(), null);
+                            addressSuggestionsDialogFragment.show(getSupportFragmentManager(), null);
                         }
                     }
                     break;

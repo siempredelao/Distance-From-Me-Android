@@ -20,7 +20,7 @@ public abstract class MigrationImpl implements Migration {
     protected void prepareMigration(final SQLiteDatabase db, final int currentVersion) {
         checkNotNull(db, "Database cannot be null");
         if (currentVersion < 1) {
-            throw new IllegalArgumentException("Lowest suported schema version is 1, unable to prepare for migration" +
+            throw new IllegalArgumentException("Lowest supported schema version is 1, unable to prepare for migration" +
                                                " from version: "
                                                + currentVersion);
         }

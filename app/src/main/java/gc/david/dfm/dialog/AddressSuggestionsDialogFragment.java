@@ -18,9 +18,9 @@ import gc.david.dfm.logger.DFMLogger;
 /**
  * Created by david on 07.02.16.
  */
-public class AddressSugestionsDialogFragment extends DialogFragment {
+public class AddressSuggestionsDialogFragment extends DialogFragment {
 
-    private static final String TAG = AddressSugestionsDialogFragment.class.getSimpleName();
+    private static final String TAG = AddressSuggestionsDialogFragment.class.getSimpleName();
 
     private List<Address> addressList;
     private OnDialogActionListener onDialogActionListener;

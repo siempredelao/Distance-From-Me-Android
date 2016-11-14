@@ -221,12 +221,12 @@ public class Utils {
     public static List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
         DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
 
-        final Function<Position, LatLng> positionToLatlng = new Function<Position, LatLng>() {
+        final Function<Position, LatLng> positionToLatLng = new Function<Position, LatLng>() {
             @Override
             public LatLng apply(Position input) {
                 return new LatLng(input.getLatitude(), input.getLongitude());
             }
         };
-        return Lists.transform(positionList, positionToLatlng);
+        return Lists.transform(positionList, positionToLatLng);
     }
 }
