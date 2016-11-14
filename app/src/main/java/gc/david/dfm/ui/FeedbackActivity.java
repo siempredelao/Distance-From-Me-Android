@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -59,7 +60,8 @@ public class FeedbackActivity extends BaseActivity {
             DFMLogger.logMessage(TAG, "afterTextChanged");
 
             if (etDetails.getText().length() != 0) {
-                tvQuestionDescriptionHeader.setTextColor(getResources().getColor(R.color.item_background));
+                tvQuestionDescriptionHeader.setTextColor(ContextCompat.getColor(getApplicationContext(),
+                                                                                R.color.item_background));
             }
         }
     };
@@ -111,7 +113,8 @@ public class FeedbackActivity extends BaseActivity {
                 DFMLogger.logMessage(TAG, "onChildClick selected=" + questionExpandableListAdapter.getChild(0, childCount));
                 expandableListView.collapseGroup(0);
                 questionExpandableListAdapter.setGroup((String) questionExpandableListAdapter.getChild(0, childCount));
-                tvQuestionTypeHeader.setTextColor(getResources().getColor(R.color.item_background));
+                tvQuestionTypeHeader.setTextColor(ContextCompat.getColor(getApplicationContext(),
+                                                                         R.color.item_background));
                 return true;
             }
         });

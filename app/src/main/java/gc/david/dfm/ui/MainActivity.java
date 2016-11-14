@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -1496,7 +1497,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             // Creates the serie and adds data to it
             final GraphViewSeries series =
                     new GraphViewSeries(null,
-                                        new GraphViewSeriesStyle(getResources().getColor(R.color.elevation_chart_line),
+                                        new GraphViewSeriesStyle(ContextCompat.getColor(getApplicationContext(),
+                                                                                        R.color.elevation_chart_line),
                                                                  (int) (3 * DEVICE_DENSITY)),
                                         new GraphView.GraphViewData[]{});
 
@@ -1530,7 +1532,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             if (graphView != null) {
                 rlElevationChart.setVisibility(LinearLayout.VISIBLE);
-                rlElevationChart.setBackgroundColor(getResources().getColor(R.color.elevation_chart_background));
+                rlElevationChart.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),
+                                                                           R.color.elevation_chart_background));
                 rlElevationChart.addView(graphView);
                 elevationChartShown = true;
                 fixMapPadding();
