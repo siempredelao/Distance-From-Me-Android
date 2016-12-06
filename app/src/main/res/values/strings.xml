@@ -9,6 +9,7 @@
     <string name="menu_load_title">Load distance</string>
     <string name="menu_rate_app_title">Rate app</string>
     <string name="menu_settings_title">Settings</string>
+    <string name="menu_help_feedback_title">Help &amp; feedback</string>
 
     <string name="progressdialog_search_position_title">Searching</string>
     <string name="progressdialog_search_position_message">Please wait\u2026</string>

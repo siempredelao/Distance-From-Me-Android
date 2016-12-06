@@ -272,6 +272,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                         drawerLayout.closeDrawers();
                         openSettingsActivity();
                         return true;
+                    case R.id.menu_help_feedback:
+                        drawerLayout.closeDrawers();
+//                        openHelpAndFeedbackActivity();
+                        return true;
                 }
                 return false;
             }
