@@ -93,6 +93,7 @@ public class FeedbackActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
+        getRootComponent().inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);

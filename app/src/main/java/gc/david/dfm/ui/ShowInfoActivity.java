@@ -94,6 +94,7 @@ public class ShowInfoActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
+        getRootComponent().inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);

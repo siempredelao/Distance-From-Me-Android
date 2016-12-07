@@ -171,6 +171,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         InMobiSdk.setLogLevel(BuildConfig.DEBUG ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.NONE);
         InMobiSdk.init(this, getString(R.string.inmobi_api_key));
         setContentView(R.layout.activity_main);
+        getRootComponent().inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
