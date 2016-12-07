@@ -1,7 +1,6 @@
 package gc.david.dfm.dagger;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
 
 import javax.inject.Singleton;
@@ -9,9 +8,11 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import gc.david.dfm.DFMApplication;
+import gc.david.dfm.DefaultPackageManager;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.DeviceInfoApi16Decorator;
 import gc.david.dfm.DeviceInfoBase;
+import gc.david.dfm.PackageManager;
 import gc.david.dfm.model.DaoSession;
 
 @Module
@@ -43,14 +44,14 @@ public class RootModule {
 
     @Provides
     @Singleton
-    PackageManager getPackageManager(DFMApplication application) {
-        return application.getPackageManager();
+    PackageManager getPackageManager(Context context) {
+        return new DefaultPackageManager(context);
     }
 
     @Provides
     @Singleton
-    DeviceInfo getDeviceInfo(Context context) {
-        final DeviceInfoBase deviceInfoBase = new DeviceInfoBase(context);
+    DeviceInfo getDeviceInfo(Context context, PackageManager packageManager) {
+        final DeviceInfoBase deviceInfoBase = new DeviceInfoBase(context, packageManager);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             return deviceInfoBase;
         } else {

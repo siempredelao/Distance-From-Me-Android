@@ -2,13 +2,10 @@ package gc.david.dfm.feedback;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
-import java.util.List;
-
 import gc.david.dfm.DeviceInfo;
+import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.logger.DFMLogger;
 
@@ -45,10 +42,10 @@ public class FeedbackPresenter implements Feedback.Presenter {
                                                 Uri.encode(emailBody)));
         mailtoIntent.setData(uri);
 
-        final List<ResolveInfo> appsAbleToSendEmails = packageManager.queryIntentActivities(mailtoIntent, 0);
+        final boolean existsAnyActivityForIntent = packageManager.isThereAnyActivityForIntent(mailtoIntent);
 
         // Emulators may not like this check...
-        if (!appsAbleToSendEmails.isEmpty()) {
+        if (existsAnyActivityForIntent) {
             feedbackView.showEmailClient(mailtoIntent);
         } else {
             // Nothing resolves mailto, so fallback to send...

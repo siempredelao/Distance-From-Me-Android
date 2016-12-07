@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -35,6 +33,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.logger.DFMLogger;
@@ -215,7 +214,7 @@ public class ShowInfoActivity extends BaseActivity {
         final MenuItem shareItem = menu.findItem(R.id.action_social_share);
         final ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
         final Intent shareDistanceIntent = createDefaultShareIntent();
-        if (verifyAppReceiveIntent(shareDistanceIntent)) {
+        if (packageManager.isThereAnyActivityForIntent(shareDistanceIntent)) {
             mShareActionProvider.setShareIntent(shareDistanceIntent);
         }
         // else mostrar un Toast
@@ -243,19 +242,6 @@ public class ShowInfoActivity extends BaseActivity {
                                                 distance);
         shareIntent.putExtra(Intent.EXTRA_TEXT, extra_text);
         return shareIntent;
-    }
-
-    /**
-     * Verify if there are applications that can handle the intent.
-     *
-     * @param intent The intent to verify.
-     * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
-     */
-    private boolean verifyAppReceiveIntent(final Intent intent) {
-        DFMLogger.logMessage(TAG, "verifyAppReceiveIntent");
-
-        final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        return activities.size() > 0;
     }
 
     @Override
