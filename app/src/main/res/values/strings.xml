@@ -100,6 +100,9 @@
 
     <!-- ACTIVITY FEEDBACK -->
     <string name="toast_send_feedback_error">There are no email clients installed</string>
+    <string name="feedback_device_info_comments">%s\n\nYour comments:\n</string>
+    <string name="feedback_email_subject">[Distance From Me] Feedback</string>
+
     <string name="problem_type_header">Type of question</string>
     <string name="problem_type_listview_title">Select your question</string>
 

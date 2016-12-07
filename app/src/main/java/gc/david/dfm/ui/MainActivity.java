@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Address;
@@ -80,13 +81,17 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import dagger.Lazy;
 import gc.david.dfm.BuildConfig;
 import gc.david.dfm.DFMPreferences;
+import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
 import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.feedback.Feedback;
+import gc.david.dfm.feedback.FeedbackPresenter;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
@@ -128,9 +133,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     protected NavigationView nvDrawer;
 
     @Inject
-    protected DaoSession daoSession;
+    protected DaoSession           daoSession;
     @Inject
-    protected Context    appContext;
+    protected Context              appContext;
+    @Inject
+    protected Lazy<PackageManager> packageManager;
+    @Inject
+    protected Lazy<DeviceInfo>     deviceInfo;
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -742,8 +751,22 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     private void openFeedbackActivity() {
         DFMLogger.logMessage(TAG, "openFeedbackActivity");
 
-        final Intent openFeedbackActivityIntent = new Intent(MainActivity.this, FeedbackActivity.class);
-        startActivity(openFeedbackActivityIntent);
+        new FeedbackPresenter(new Feedback.View() {
+            @Override
+            public void showError() {
+                toastIt(getString(R.string.toast_send_feedback_error), appContext);
+            }
+
+            @Override
+            public void showEmailClient(final Intent intent) {
+                startActivity(intent);
+            }
+
+            @Override
+            public Context context() {
+                return appContext;
+            }
+        }, packageManager.get(), deviceInfo.get()).start();
     }
 
     /**
