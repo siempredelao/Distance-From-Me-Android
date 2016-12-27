@@ -27,6 +27,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -82,12 +83,15 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import dagger.Lazy;
 import gc.david.dfm.BuildConfig;
+import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
+import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
 import gc.david.dfm.feedback.Feedback;
@@ -110,11 +114,11 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener,
-                                                          OnMapReadyCallback,
-                                                          OnMapLongClickListener,
-                                                          OnMapClickListener,
-                                                          OnInfoWindowClickListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
+                                                               OnMapReadyCallback,
+                                                               OnMapLongClickListener,
+                                                               OnMapClickListener,
+                                                               OnInfoWindowClickListener {
 
     private static final String TAG                     = MainActivity.class.getSimpleName();
     private static final int    ELEVATION_SAMPLES       = 100;
@@ -180,7 +184,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         InMobiSdk.setLogLevel(BuildConfig.DEBUG ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.NONE);
         InMobiSdk.init(this, getString(R.string.inmobi_api_key));
         setContentView(R.layout.activity_main);
-        getRootComponent().inject(this);
+        DaggerRootComponent.builder()
+                           .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .build()
+                           .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
@@ -283,7 +290,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                         return true;
                     case R.id.menu_help_feedback:
                         drawerLayout.closeDrawers();
-//                        openHelpAndFeedbackActivity();
+                        startActivity(new Intent(MainActivity.this, HelpAndFeedbackActivity.class));
                         return true;
                 }
                 return false;

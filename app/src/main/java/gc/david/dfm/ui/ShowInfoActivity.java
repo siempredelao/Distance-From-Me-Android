@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -33,9 +34,12 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.DFMApplication;
 import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
+import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
@@ -50,7 +54,7 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class ShowInfoActivity extends BaseActivity {
+public class ShowInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
@@ -93,7 +97,10 @@ public class ShowInfoActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
-        getRootComponent().inject(this);
+        DaggerRootComponent.builder()
+                           .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .build()
+                           .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
