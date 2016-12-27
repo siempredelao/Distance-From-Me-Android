@@ -103,20 +103,6 @@
     <string name="feedback_device_info_comments">%s\n\nYour comments:\n</string>
     <string name="feedback_email_subject">[Distance From Me] Feedback</string>
 
-    <string name="problem_type_header">Type of question</string>
-    <string name="problem_type_listview_title">Select your question</string>
-
-    <string name="problem_description_header">Detail of your question</string>
-    <string name="problem_description_hint">Write here the details! :)</string>
-
-    <string name="expandable_item_feedback_type_suggestion">Suggestion</string>
-    <string name="expandable_item_feedback_type_complaint">Complaint</string>
-    <string name="expandable_item_feedback_type_other">Other</string>
-
-    <string name="dialog_no_feedback_type_title">No type of question</string>
-    <string name="dialog_no_feedback_type_message">Please, provide a type of question in this contact form.</string>
-    <string name="dialog_no_feedback_description_title">No description</string>
-    <string name="dialog_no_feedback_description_message">Please, provide a description of your question in this contact form.</string>
     <string name="doubt_not_answered_send_feedback_action">Didn\'t find an answer to your question in this section? Contact us!</string>
     <string name="faq_error_message">Unable to get questions, try again later.</string>
 
