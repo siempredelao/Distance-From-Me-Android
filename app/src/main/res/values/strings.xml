@@ -117,5 +117,7 @@
     <string name="dialog_no_feedback_type_message">Please, provide a type of question in this contact form.</string>
     <string name="dialog_no_feedback_description_title">No description</string>
     <string name="dialog_no_feedback_description_message">Please, provide a description of your question in this contact form.</string>
+    <string name="doubt_not_answered_send_feedback_action">Didn\'t find an answer to your question in this section? Contact us!</string>
+    <string name="faq_error_message">Unable to get questions, try again later.</string>
 
 </resources>

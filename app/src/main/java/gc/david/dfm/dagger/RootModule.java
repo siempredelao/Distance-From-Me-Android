@@ -13,6 +13,10 @@ import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.DeviceInfoApi16Decorator;
 import gc.david.dfm.DeviceInfoBase;
 import gc.david.dfm.PackageManager;
+import gc.david.dfm.executor.Executor;
+import gc.david.dfm.executor.MainThread;
+import gc.david.dfm.executor.MainThreadBase;
+import gc.david.dfm.executor.ThreadExecutor;
 import gc.david.dfm.model.DaoSession;
 
 @Module
@@ -58,4 +62,17 @@ public class RootModule {
             return new DeviceInfoApi16Decorator(context, deviceInfoBase);
         }
     }
+
+    @Provides
+    @Singleton
+    MainThread provideMainThread() {
+        return new MainThreadBase();
+    }
+
+    @Provides
+    @Singleton
+    Executor provideExecutor() {
+        return new ThreadExecutor();
+    }
+
 }
