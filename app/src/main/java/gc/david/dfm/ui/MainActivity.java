@@ -166,9 +166,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @SuppressWarnings("rawtypes")
     private AsyncTask       showingElevationTask                  = null;
     private GraphView       graphView                             = null;
+    private List<LatLng>    coordinates                           = Lists.newArrayList();
     private float                 DEVICE_DENSITY;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private List<LatLng>          coordinates;
     private boolean               calculatingDistance;
 
     @Override
@@ -338,14 +338,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         calculatingDistance = true;
 
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-            if (coordinates == null || coordinates.isEmpty()) {
+            if (coordinates.isEmpty()) {
                 toastIt(getString(R.string.toast_first_point_needed), appContext);
             } else {
                 coordinates.add(point);
                 drawAndShowMultipleDistances(coordinates, "", false, true);
             }
         } else if (currentLocation != null) { // Without current location, we cannot calculate any distance
-            if ((getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
+            if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT && coordinates.isEmpty()) {
                 coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
             coordinates.add(point);
@@ -374,25 +374,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         } else {
             // Without current location, we cannot calculate any distance
             if (currentLocation != null) {
-                if (coordinates != null) {
-                    if (!calculatingDistance) {
-                        coordinates.clear();
-                    }
-                    calculatingDistance = true;
-
-                    if (coordinates.isEmpty()) {
-                        googleMap.clear();
-                        coordinates.add(new LatLng(currentLocation.getLatitude(),
-                                                   currentLocation.getLongitude()));
-                    }
-                    coordinates.add(point);
-                    googleMap.addMarker(new MarkerOptions().position(point));
-                } else {
-                    final IllegalStateException illegalStateException = new IllegalStateException("Empty coordinates list");
-                    DFMLogger.logException(illegalStateException);
-
-                    throw illegalStateException;
+                if (!calculatingDistance) {
+                    coordinates.clear();
                 }
+                calculatingDistance = true;
+
+                if (coordinates.isEmpty()) {
+                    googleMap.clear();
+                    coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                }
+                coordinates.add(point);
+                googleMap.addMarker(new MarkerOptions().position(point));
             }
         }
     }
@@ -418,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         calculatingDistance = false;
 
-        coordinates = Lists.newArrayList();
+        coordinates.clear();
         googleMap.clear();
         if (showingElevationTask != null) {
             DFMLogger.logMessage(TAG, "onStartingPointSelected cancelling elevation task");
@@ -1327,10 +1319,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 if (!appHasJustStarted) {
                     DFMLogger.logMessage(TAG, "handleSelectedAddress appHasJustStarted");
 
-                    if (coordinates == null || coordinates.isEmpty()) {
+                    if (coordinates.isEmpty()) {
                         DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
 
-                        coordinates = Lists.newArrayList();
                         coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                     }
                     coordinates.add(selectedPosition);
