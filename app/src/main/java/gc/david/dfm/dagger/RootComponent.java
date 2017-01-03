@@ -3,7 +3,7 @@ package gc.david.dfm.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import gc.david.dfm.ui.FeedbackActivity;
+import gc.david.dfm.ui.HelpAndFeedbackActivity;
 import gc.david.dfm.ui.MainActivity;
 import gc.david.dfm.ui.ShowInfoActivity;
 
@@ -17,7 +17,5 @@ public interface RootComponent {
     void inject(MainActivity mainActivity);
 
     void inject(ShowInfoActivity showInfoActivity);
-
-    void inject(FeedbackActivity feedbackActivity);
 
 }

@@ -7,14 +7,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -35,8 +34,12 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.DFMApplication;
+import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
+import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
@@ -51,7 +54,7 @@ import static gc.david.dfm.Utils.toastIt;
  *
  * @author David
  */
-public class ShowInfoActivity extends BaseActivity {
+public class ShowInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
@@ -94,7 +97,10 @@ public class ShowInfoActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
-        getRootComponent().inject(this);
+        DaggerRootComponent.builder()
+                           .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .build()
+                           .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
@@ -215,7 +221,7 @@ public class ShowInfoActivity extends BaseActivity {
         final MenuItem shareItem = menu.findItem(R.id.action_social_share);
         final ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
         final Intent shareDistanceIntent = createDefaultShareIntent();
-        if (verifyAppReceiveIntent(shareDistanceIntent)) {
+        if (packageManager.isThereAnyActivityForIntent(shareDistanceIntent)) {
             mShareActionProvider.setShareIntent(shareDistanceIntent);
         }
         // else mostrar un Toast
@@ -243,19 +249,6 @@ public class ShowInfoActivity extends BaseActivity {
                                                 distance);
         shareIntent.putExtra(Intent.EXTRA_TEXT, extra_text);
         return shareIntent;
-    }
-
-    /**
-     * Verify if there are applications that can handle the intent.
-     *
-     * @param intent The intent to verify.
-     * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
-     */
-    private boolean verifyAppReceiveIntent(final Intent intent) {
-        DFMLogger.logMessage(TAG, "verifyAppReceiveIntent");
-
-        final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        return activities.size() > 0;
     }
 
     @Override

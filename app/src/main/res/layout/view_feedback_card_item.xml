@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:animateLayoutChanges="true"
+              android:background="@drawable/feedback_card_background"
+              android:orientation="vertical"
+              android:padding="10dp"
+              tools:showIn="@layout/activity_help_and_feedback">
+
+    <TextView
+        android:id="@+id/feedback_card_item_view_title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        tools:text="How can I reset my distance?"/>
+
+    <LinearLayout
+        android:id="@+id/feedback_card_item_view_hidden_content_linearlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/item_background"/>
+
+        <TextView
+            android:id="@+id/feedback_card_item_view_content_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Just open the side bar and select the mode you want to use for the next distance to measure."/>
+
+    </LinearLayout>
+
+</LinearLayout>

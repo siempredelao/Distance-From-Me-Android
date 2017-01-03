@@ -7,9 +7,6 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.Locale;
 
-import gc.david.dfm.dagger.DaggerRootComponent;
-import gc.david.dfm.dagger.RootComponent;
-import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.migration.UpgradeHelper;
 import gc.david.dfm.model.DaoMaster;
@@ -24,7 +21,6 @@ public class DFMApplication extends Application {
     private static final String TAG = DFMApplication.class.getSimpleName();
 
     private DaoSession  daoSession;
-    private RootComponent rootComponent;
 
     @Override
     public void onCreate() {
@@ -38,8 +34,6 @@ public class DFMApplication extends Application {
 
         setupDatabase();
         setupDefaultUnit();
-
-        rootComponent = DaggerRootComponent.builder().rootModule(new RootModule(this)).build();
     }
 
     public DaoSession getDaoSession() {
@@ -81,7 +75,4 @@ public class DFMApplication extends Application {
                || locale.equals(Locale.US);
     }
 
-    public RootComponent getRootComponent() {
-        return rootComponent;
-    }
 }
