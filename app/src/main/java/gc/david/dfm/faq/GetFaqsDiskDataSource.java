@@ -15,9 +15,21 @@ public class GetFaqsDiskDataSource implements GetFaqsRepository {
     public GetFaqsDiskDataSource() {
         questionsAndAnswers = new HashSet<>();
         // TODO: 21.12.16 get questions from Firebase and cache them
-        // TODO: 21.12.16 add provisional questions here!
-        questionsAndAnswers.add(new Faq("This is a question1", "This is a short answer"));
-        questionsAndAnswers.add(new Faq("This is a question2", "This is a super hiper mega eeeeeeeeeeeeeeeeeeeextra long answer"));
+        questionsAndAnswers.add(new Faq("How can I get a distance?", "Just do a long press in the map :)"));
+        questionsAndAnswers.add(new Faq("How can I get a distance from my current position to any position in the map?",
+                                        "In the side bar, select \"Current position\" item and then perform a long press in the desired place in the map."));
+        questionsAndAnswers.add(new Faq("How can I get a distance from any position to another position in the map?",
+                                        "In the side bar, select \"Any position\" item ant then perform a long press in the desired place in the map."));
+        questionsAndAnswers.add(new Faq("Do I need to grant \"Location\" permission to get distances from current point?",
+                                        "Yes."));
+        questionsAndAnswers.add(new Faq("Do I need to grant \"Location\" permission to get distances from any point?",
+                                        "No."));
+        questionsAndAnswers.add(new Faq("How can I create a multiple points distance?",
+                                        "Perform single clicks in the desired points and a long click in the last one."));
+        questionsAndAnswers.add(new Faq("How can I reset the status of the map?",
+                                        "Select any position mode in the side bar."));
+        questionsAndAnswers.add(new Faq("Why my GPS position is not accurate?",
+                                        "This issue could be related to your device GPS sensor."));
     }
 
     @Override
