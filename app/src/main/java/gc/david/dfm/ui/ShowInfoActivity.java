@@ -1,5 +1,6 @@
 package gc.david.dfm.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.util.Date;
@@ -155,7 +157,7 @@ public class ShowInfoActivity extends AppCompatActivity {
         DFMLogger.logMessage(TAG, "getIntentData");
 
         final Intent inputDataIntent = getIntent();
-        positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
+        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
         distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
     }
 
@@ -397,5 +399,13 @@ public class ShowInfoActivity extends AppCompatActivity {
                 MenuItemCompat.setActionView(refreshMenuItem, null);
             }
         }
+    }
+
+    public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {
+        final Intent showInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
+        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME,
+                                                           Lists.newArrayList(coordinates));
+        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY_NAME, distanceAsText);
+        activity.startActivity(showInfoActivityIntent);
     }
 }

@@ -393,12 +393,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onInfoWindowClick(Marker marker) {
         DFMLogger.logMessage(TAG, "onInfoWindowClick");
 
-        final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
-
-        showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
-                                        Lists.newArrayList(coordinates));
-        showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
-        startActivity(showInfoActivityIntent);
+        ShowInfoActivity.open(this, coordinates, distanceMeasuredAsText);
     }
 
     private void onStartingPointSelected() {
