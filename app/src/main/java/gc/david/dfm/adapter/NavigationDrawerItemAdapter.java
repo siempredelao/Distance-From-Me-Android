@@ -74,7 +74,7 @@ public class NavigationDrawerItemAdapter extends BaseAdapter {
         @BindView(R.id.navigation_drawer_item_title)
         protected TextView  tvTitle;
 
-        public ViewHolder(final View view) {
+        ViewHolder(final View view) {
             bind(this, view);
         }
     }

@@ -50,13 +50,7 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    /**
-     * Extract a list of address from a list of Address objects.
-     *
-     * @param addressList An Address's list.
-     * @return A string list with only addresses in text.
-     */
-    protected List<String> groupAddresses(final List<Address> addressList) {
+    private List<String> groupAddresses(final List<Address> addressList) {
         DFMLogger.logMessage(TAG, "groupAddresses");
 
         final List<String> result = Lists.newArrayList();

@@ -16,12 +16,6 @@ import gc.david.dfm.model.Distance;
 import static butterknife.ButterKnife.bind;
 import static org.apache.http.impl.cookie.DateUtils.formatDate;
 
-/**
- * Sets an adapter for distance entries from the database to show to the user to
- * choose a distance.
- *
- * @author David
- */
 public class DistanceAdapter extends ArrayAdapter<Distance> {
 
     private final Activity       activity;
@@ -33,13 +27,8 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
         this.distanceList = distanceList;
     }
 
-    public List<Distance> getDistanceList() {
-        return distanceList;
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         View item = convertView;
         final ViewHolder holder;
 
@@ -69,7 +58,7 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
         @BindView(R.id.fecha)
         protected TextView date;
 
-        public ViewHolder(final View view) {
+        ViewHolder(final View view) {
             bind(this, view);
         }
     }

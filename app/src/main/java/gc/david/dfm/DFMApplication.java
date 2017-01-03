@@ -8,6 +8,7 @@ import com.crashlytics.android.Crashlytics;
 import java.util.Locale;
 
 import gc.david.dfm.logger.DFMLogger;
+import gc.david.dfm.map.Haversine;
 import gc.david.dfm.migration.UpgradeHelper;
 import gc.david.dfm.model.DaoMaster;
 import gc.david.dfm.model.DaoSession;
@@ -20,7 +21,7 @@ public class DFMApplication extends Application {
 
     private static final String TAG = DFMApplication.class.getSimpleName();
 
-    private DaoSession  daoSession;
+    private DaoSession daoSession;
 
     @Override
     public void onCreate() {
@@ -54,7 +55,6 @@ public class DFMApplication extends Application {
     private void setupDefaultUnit() {
         DFMLogger.logMessage(TAG, "setupDefaultUnit");
 
-        // Set default unit if not already set
         final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit == null) {
             DFMPreferences.setMeasureUnitPreference(getBaseContext(),
@@ -65,14 +65,7 @@ public class DFMApplication extends Application {
     }
 
     private boolean isAmericanLocale() {
-        final Locale locale = getResources().getConfiguration().locale;
-        return locale.equals(Locale.CANADA)
-               || locale.equals(Locale.CHINA)
-               || locale.equals(Locale.JAPAN)
-               || locale.equals(Locale.KOREA)
-               || locale.equals(Locale.TAIWAN)
-               || locale.equals(Locale.UK)
-               || locale.equals(Locale.US);
+        return Haversine.isAmericanLocale(Locale.getDefault());
     }
 
 }

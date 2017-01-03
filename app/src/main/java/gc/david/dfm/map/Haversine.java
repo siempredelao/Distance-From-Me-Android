@@ -17,11 +17,12 @@ public final class Haversine {
 
     private static final String TAG = Haversine.class.getSimpleName();
 
-    private static final double EARTH_RADIUS_IN_METRES = 6371000;
-    private static final double MILE_IN_METRES         = 1609.344;
-    private static final double KILOMETRE_IN_METRES    = 1000.0;
-    private static final double YARD_IN_METRES         = 1.093613298337708;
-    private static final double FEAT_IN_METRES         = 0.3048;
+    private static final double        EARTH_RADIUS_IN_METRES = 6371000;
+    private static final double        MILE_IN_METRES         = 1609.344;
+    private static final double        KILOMETRE_IN_METRES    = 1000.0;
+    private static final double        YARD_IN_METRES         = 1.093613298337708;
+    private static final double        FEET_IN_METRES         = 0.3048;
+    private static final DecimalFormat DISTANCE_FORMAT        = new DecimalFormat("##,##0.00");
 
     /**
      * Calculates distance between two positions in metres.
@@ -71,39 +72,28 @@ public final class Haversine {
                                   " with locale " +
                                   locale.toString());
 
-        final String normalizedDistance;
         final String measureUnit;
         final double distanceByLocale;
-        // Uso del formatter para dar con mayor precisión que Math.round
-        // aunque gaste más, pero es una única medida la que se normalizará
-        final DecimalFormat decimalFormat = new DecimalFormat("##,##0.00");
 
-        if (locale.equals(Locale.CANADA)
-            || locale.equals(Locale.CHINA)
-            || locale.equals(Locale.JAPAN)
-            || locale.equals(Locale.KOREA)
-            || locale.equals(Locale.TAIWAN)
-            || locale.equals(Locale.UK)
-            || locale.equals(Locale.US)) {
+        if (isAmericanLocale(locale)) {
 
-            if (distanceInMetres >= MILE_IN_METRES) { // Hay al menos una milla
+            if (distanceInMetres >= MILE_IN_METRES) {
                 measureUnit = "mi";
                 distanceByLocale = distanceInMetres / MILE_IN_METRES;
-            } else { // No llega a una milla, medimos en yardas
+            } else {
                 measureUnit = "yd";
                 distanceByLocale = distanceInMetres * YARD_IN_METRES;
             }
         } else {
-            if (distanceInMetres >= KILOMETRE_IN_METRES) { // Hay al menos un kilómetro
+            if (distanceInMetres >= KILOMETRE_IN_METRES) {
                 measureUnit = "km";
                 distanceByLocale = distanceInMetres / KILOMETRE_IN_METRES;
-            } else { // No llega a un kilómetro, medimos en metros
+            } else {
                 measureUnit = "m";
                 distanceByLocale = distanceInMetres;
             }
         }
-        normalizedDistance = decimalFormat.format(distanceByLocale);
-        return normalizedDistance + " " + measureUnit;
+        return String.format("%s %s", DISTANCE_FORMAT.format(distanceByLocale), measureUnit);
     }
 
     /**
@@ -122,10 +112,8 @@ public final class Haversine {
 
         final double measure;
 
-        if (locale.equals(Locale.CANADA)
-            || locale.equals(Locale.UK)
-            || locale.equals(Locale.US)) {
-            measure = altitude / FEAT_IN_METRES;
+        if (isEnglishLocale(locale)) {
+            measure = altitude / FEET_IN_METRES;
         } else {
             measure = altitude;
         }
@@ -142,12 +130,20 @@ public final class Haversine {
     public static String getAltitudeUnitByLocale(final Locale locale) {
         DFMLogger.logMessage(TAG, "getAltitudeUnitByLocale " + locale.toString());
 
-        if (locale.equals(Locale.CANADA)
-            || locale.equals(Locale.UK)
-            || locale.equals(Locale.US)) {
-            return "ft";
-        } else {
-            return "m";
-        }
+        return isEnglishLocale(locale) ? "ft" : "m";
+    }
+
+    private static boolean isEnglishLocale(final Locale locale) {
+        return locale.equals(Locale.CANADA) || locale.equals(Locale.UK) || locale.equals(Locale.US);
+    }
+
+    public static boolean isAmericanLocale(final Locale locale) {
+        return locale.equals(Locale.CANADA)
+               || locale.equals(Locale.CHINA)
+               || locale.equals(Locale.JAPAN)
+               || locale.equals(Locale.KOREA)
+               || locale.equals(Locale.TAIWAN)
+               || locale.equals(Locale.UK)
+               || locale.equals(Locale.US);
     }
 }

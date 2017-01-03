@@ -109,11 +109,6 @@ import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
 
-/**
- * Implements the app main Activity.
- *
- * @author David
- */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
                                                                OnMapReadyCallback,
                                                                OnMapLongClickListener,
@@ -252,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         if (!isOnline(appContext)) {
-            showWifiAlertDialog();
+            showConnectionProblemsDialog();
         }
 
         // Iniciando la app
@@ -349,10 +344,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 coordinates.add(point);
                 drawAndShowMultipleDistances(coordinates, "", false, true);
             }
-        }
-        // Si no hemos encontrado la posición actual, no podremos
-        // calcular la distancia
-        else if (currentLocation != null) {
+        } else if (currentLocation != null) { // Without current location, we cannot calculate any distance
             if ((getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
                 coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
@@ -380,8 +372,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             coordinates.add(point);
             googleMap.addMarker(new MarkerOptions().position(point));
         } else {
-            // Si no hemos encontrado la posición actual, no podremos
-            // calcular la distancia
+            // Without current location, we cannot calculate any distance
             if (currentLocation != null) {
                 if (coordinates != null) {
                     if (!calculatingDistance) {
@@ -418,9 +409,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         startActivity(showInfoActivityIntent);
     }
 
-    /**
-     * Swaps starting point in the main content view
-     */
     private void onStartingPointSelected() {
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
             DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from current point");
@@ -492,12 +480,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 handleSearchIntent(intent);
             } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-                try {
-                    handleViewPositionIntent(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    DFMLogger.logException(e);
-                }
+                handleViewPositionIntent(intent);
             }
         }
     }
@@ -526,59 +509,66 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      *
      * @param intent Input intent with position data.
      */
-    private void handleViewPositionIntent(final Intent intent) throws Exception {
+    private void handleViewPositionIntent(final Intent intent) {
         DFMLogger.logMessage(TAG, "handleViewPositionIntent");
         final Uri uri = intent.getData();
         DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=" + uri.toString());
 
         final String uriScheme = uri.getScheme();
         if (uriScheme.equals("geo")) {
-            final String schemeSpecificPart = uri.getSchemeSpecificPart();
-            final Matcher matcher = getMatcherForUri(schemeSpecificPart);
-            if (matcher.find()) {
-                if (matcher.group(1).equals("0") && matcher.group(2).equals("0")) {
-                    if (matcher.find()) { // Manage geo:0,0?q=lat,lng(label)
-                        setDestinationPosition(matcher);
-                    } else { // Manage geo:0,0?q=my+street+address
-                        String destination = Uri.decode(uri.getQuery()).replace('+', ' ');
-                        destination = destination.replace("q=", "");
+            handleGeoSchemeIntent(uri);
+        } else if ((uriScheme.equals("http") || uriScheme.equals("https"))
+                   && (uri.getHost().equals("maps.google.com"))) { // Manage maps.google.com?q=latitude,longitude
+            handleMapsHostIntent(uri);
+        } else {
+            final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
+            DFMLogger.logException(exception);
+            toastIt("Unable to parse address", this);
+        }
+    }
 
-                        // TODO check this ugly workaround
-                        new SearchPositionByName().execute(destination);
-                        mustShowPositionWhenComingFromOutside = true;
-                    }
-                } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
+    private void handleGeoSchemeIntent(final Uri uri) {
+        final String schemeSpecificPart = uri.getSchemeSpecificPart();
+        final Matcher matcher = getMatcherForUri(schemeSpecificPart);
+        if (matcher.find()) {
+            if (matcher.group(1).equals("0") && matcher.group(2).equals("0")) {
+                if (matcher.find()) { // Manage geo:0,0?q=lat,lng(label)
                     setDestinationPosition(matcher);
+                } else { // Manage geo:0,0?q=my+street+address
+                    String destination = Uri.decode(uri.getQuery()).replace('+', ' ');
+                    destination = destination.replace("q=", "");
+
+                    // TODO check this ugly workaround
+                    new SearchPositionByName().execute(destination);
+                    mustShowPositionWhenComingFromOutside = true;
                 }
+            } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
+                setDestinationPosition(matcher);
+            }
+        } else {
+            final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
+                                                                                       matcher.toString());
+            DFMLogger.logException(noSuchFieldException);
+            toastIt("Unable to parse address", this);
+        }
+    }
+
+    private void handleMapsHostIntent(final Uri uri) {
+        final String queryParameter = uri.getQueryParameter("q");
+        if (queryParameter != null) {
+            final Matcher matcher = getMatcherForUri(queryParameter);
+            if (matcher.find()) {
+                setDestinationPosition(matcher);
             } else {
                 final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                            matcher.toString());
                 DFMLogger.logException(noSuchFieldException);
-                throw noSuchFieldException;
-            }
-        } else if ((uriScheme.equals("http") || uriScheme.equals("https"))
-                   && (uri.getHost().equals("maps.google.com"))) { // Manage maps.google.com?q=latitude,longitude
-
-            final String queryParameter = uri.getQueryParameter("q");
-            if (queryParameter != null) {
-                final Matcher matcher = getMatcherForUri(queryParameter);
-                if (matcher.find()) {
-                    setDestinationPosition(matcher);
-                } else {
-                    final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
-                                                                                               matcher.toString());
-                    DFMLogger.logException(noSuchFieldException);
-                    throw noSuchFieldException;
-                }
-            } else {
-                final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
-                DFMLogger.logException(noSuchFieldException);
-                throw noSuchFieldException;
+                toastIt("Unable to parse address", this);
             }
         } else {
-            final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
-            DFMLogger.logException(exception);
-            throw exception;
+            final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
+            DFMLogger.logException(noSuchFieldException);
+            toastIt("Unable to parse address", this);
         }
     }
 
@@ -599,15 +589,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return pattern.matcher(schemeSpecificPart);
     }
 
-    /**
-     * Shows the wireless centralized settings in API<11, otherwise shows general settings
-     */
-    private void showWifiAlertDialog() {
-        DFMLogger.logMessage(TAG, "showWifiAlertDialog");
+    private void showConnectionProblemsDialog() {
+        DFMLogger.logMessage(TAG, "showConnectionProblemsDialog");
 
-        showAlertDialog((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
-                         android.provider.Settings.ACTION_WIRELESS_SETTINGS :
-                         android.provider.Settings.ACTION_SETTINGS),
+        showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
                         getString(R.string.dialog_connection_problems_title),
                         getString(R.string.dialog_connection_problems_message),
                         getString(R.string.dialog_connection_problems_positive_button),
@@ -635,10 +620,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         searchView.setIconifiedByDefault(true);
 
         // Muestra el item de menú de cargar si hay elementos en la BD
-        final MenuItem loadItem = menu.findItem(R.id.action_load);
         // TODO hacerlo en segundo plano
         final List<Distance> allDistances = daoSession.loadAll(Distance.class);
-        if (allDistances.size() == 0) {
+        if (allDistances.isEmpty()) {
+            final MenuItem loadItem = menu.findItem(R.id.action_load);
             loadItem.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -688,7 +673,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // TODO hacer esto en segundo plano
         final List<Distance> allDistances = daoSession.loadAll(Distance.class);
 
-        if (allDistances != null && allDistances.size() > 0) {
+        if (allDistances != null && !allDistances.isEmpty()) {
             final DistanceSelectionDialogFragment distanceSelectionDialogFragment = new DistanceSelectionDialogFragment();
             distanceSelectionDialogFragment.setDistanceList(allDistances);
             distanceSelectionDialogFragment.setOnDialogActionListener(new DistanceSelectionDialogFragment.OnDialogActionListener() {
@@ -823,9 +808,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         DFMLogger.logMessage(TAG, "onResume");
 
         super.onResume();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            invalidateOptionsMenu();
-        }
+        invalidateOptionsMenu();
         checkPlayServices();
     }
 
@@ -1222,9 +1205,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         DISTANCE_FROM_ANY_POINT
     }
 
-    /**
-     * A subclass of AsyncTask that calls getFromLocationName() in the background.
-     */
     private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
 
         private final String TAG = SearchPositionByName.class.getSimpleName();
@@ -1244,7 +1224,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             // Comprobamos que haya conexión con internet (WiFi o Datos)
             if (!isOnline(appContext)) {
-                showWifiAlertDialog();
+                showConnectionProblemsDialog();
 
                 // Restauramos el menú y que vuelva a empezar de nuevo
                 MenuItemCompat.collapseActionView(searchMenuItem);
@@ -1287,7 +1267,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             switch (result) {
                 case 0:
-                    if (addressList != null && addressList.size() > 0) {
+                    if (addressList != null && !addressList.isEmpty()) {
                         // Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
                         if (addressList.size() == 1) {
                             processSelectedAddress(0);
@@ -1364,12 +1344,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         }
 
-        /**
-         * Processes the address selected by the user and sets the new destination
-         * position.
-         *
-         * @param item The item index in the AlertDialog.
-         */
         protected void processSelectedAddress(final int item) {
             DFMLogger.logMessage(TAG, "processSelectedAddress item=" + item);
 
@@ -1382,9 +1356,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    /**
-     * A subclass of SearchPositionByName to get position by coordinates.
-     */
     private class SearchPositionByCoordinates extends SearchPositionByName {
 
         private final String TAG = SearchPositionByCoordinates.class.getSimpleName();
@@ -1449,12 +1420,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
-    /**
-     * A subclass of AsyncTask that gets elevation points from coordinates in
-     * background and shows an elevation chart.
-     *
-     * @author David
-     */
     private class GetAltitude extends AsyncTask<String, Void, Double> {
 
         private final String TAG = GetAltitude.class.getSimpleName();
@@ -1560,9 +1525,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
         }
 
-        /**
-         * Shows the elevation profile chart.
-         */
         private void showElevationProfileChart() {
             DFMLogger.logMessage(TAG, "showElevationProfileChart");
 
