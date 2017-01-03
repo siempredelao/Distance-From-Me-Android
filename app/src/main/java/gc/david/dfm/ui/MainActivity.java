@@ -20,6 +20,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -259,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_current_position:
                         menuItem.setChecked(true);
@@ -902,7 +903,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * Called by Location Services if the attempt to Location Services fails.
      */
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         DFMLogger.logMessage(TAG, "onConnectionFailed");
 
         /*

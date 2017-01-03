@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.location.Address;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import com.google.common.collect.Lists;
@@ -33,6 +34,7 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
         this.onDialogActionListener = onDialogActionListener;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         DFMLogger.logMessage(TAG, "onCreateDialog bundle=" + Utils.dumpBundleToString(savedInstanceState));

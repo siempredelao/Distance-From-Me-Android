@@ -1,6 +1,7 @@
 package gc.david.dfm.adapter;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +28,9 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
         this.distanceList = distanceList;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View item = convertView;
         final ViewHolder holder;
 
