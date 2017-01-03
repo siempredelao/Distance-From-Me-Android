@@ -18,9 +18,6 @@ package gc.david.dfm.executor;
 import android.os.Handler;
 import android.os.Looper;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
  * MainThread implementation based on a Handler instantiated over the main looper obtained from
  * Looper class.

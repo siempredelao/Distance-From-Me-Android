@@ -3,7 +3,6 @@ package gc.david.dfm.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import gc.david.dfm.ui.HelpAndFeedbackActivity;
 import gc.david.dfm.ui.MainActivity;
 import gc.david.dfm.ui.ShowInfoActivity;
 

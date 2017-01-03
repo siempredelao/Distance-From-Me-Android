@@ -20,9 +20,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
  * Executor implementation based on ThreadPoolExecutor. ThreadPoolExecutorConfig:
  * <p>
