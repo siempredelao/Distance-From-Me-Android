@@ -9,7 +9,7 @@
     <string name="menu_load_title">Load distance</string>
     <string name="menu_rate_app_title">Rate app</string>
     <string name="menu_settings_title">Settings</string>
-    <string name="menu_help_feedback_title">Help &amp; feedback</string>
+    <string name="menu_help_feedback_title" translatable="false">Help &amp; feedback</string>
 
     <string name="progressdialog_search_position_title">Searching</string>
     <string name="progressdialog_search_position_message">Please wait\u2026</string>
@@ -100,10 +100,10 @@
 
     <!-- ACTIVITY FEEDBACK -->
     <string name="toast_send_feedback_error">There are no email clients installed</string>
-    <string name="feedback_device_info_comments">%s\n\nYour comments:\n</string>
-    <string name="feedback_email_subject">[Distance From Me] Feedback</string>
+    <string name="feedback_device_info_comments" translatable="false">%s\n\nYour comments:\n</string>
+    <string name="feedback_email_subject" translatable="false">[Distance From Me] Feedback</string>
 
-    <string name="doubt_not_answered_send_feedback_action">Didn\'t find an answer to your question in this section? Contact us!</string>
-    <string name="faq_error_message">Unable to get questions, try again later.</string>
+    <string name="doubt_not_answered_send_feedback_action" translatable="false">Didn\'t find an answer to your question in this section? Contact us!</string>
+    <string name="faq_error_message" translatable="false">Unable to get questions, try again later.</string>
 
 </resources>
