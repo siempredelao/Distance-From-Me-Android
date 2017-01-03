@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 supportInvalidateOptionsMenu();
             }
         };
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
     @Override
