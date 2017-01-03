@@ -54,17 +54,6 @@
     <string name="navigation_drawer_starting_point_any_position_item">Qualsevol posició</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posició actual</string>
     <string name="no_animation_item">Sense animació</string>
-    <string name="problem_description_header">Detalls de la seva pregunta</string>
-    <string name="problem_description_hint">Escriga ací els detalls! :)</string>
-    <string name="problem_type_listview_title">Seleccioni tipus</string>
-    <string name="problem_type_header">Tipus de pregunta</string>
-    <string name="dialog_no_feedback_description_message">Si us plau, redacti la descripció de la seva pregunta en aquest formulari de contacte.</string>
-    <string name="dialog_no_feedback_description_title">Sense descripció</string>
-    <string name="dialog_no_feedback_type_message">Si us plau, triï el tipus de la seva pregunta en aquest formulari de contacte.</string>
-    <string name="dialog_no_feedback_type_title">Sense tipus de pregunta</string>
-    <string name="expandable_item_feedback_type_complaint">Queixa</string>
-    <string name="expandable_item_feedback_type_other">Altre</string>
-    <string name="expandable_item_feedback_type_suggestion">Suggerència</string>
     <string name="dialog_connection_problems_title">Problema en la connexió</string>
     <string name="toast_first_point_needed">Si us plau, assenyale un punt inicial.</string>
     <string name="category_unit_title">Unitat de mesura</string>

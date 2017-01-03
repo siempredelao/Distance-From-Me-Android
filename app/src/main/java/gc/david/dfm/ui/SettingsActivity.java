@@ -1,20 +1,15 @@
 package gc.david.dfm.ui;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import gc.david.dfm.R;
 
 import static butterknife.ButterKnife.bind;
 
-public class SettingsActivity extends BaseActivity {
-
-    @Inject
-    protected Context appContext; // TODO: 13.11.16 remove this, it's stupid!
+public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.tbMain)
     protected Toolbar tbMain;

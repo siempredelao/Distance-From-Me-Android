@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.location.Address;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import com.google.common.collect.Lists;
@@ -33,6 +34,7 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
         this.onDialogActionListener = onDialogActionListener;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         DFMLogger.logMessage(TAG, "onCreateDialog bundle=" + Utils.dumpBundleToString(savedInstanceState));
@@ -50,13 +52,7 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    /**
-     * Extract a list of address from a list of Address objects.
-     *
-     * @param addressList An Address's list.
-     * @return A string list with only addresses in text.
-     */
-    protected List<String> groupAddresses(final List<Address> addressList) {
+    private List<String> groupAddresses(final List<Address> addressList) {
         DFMLogger.logMessage(TAG, "groupAddresses");
 
         final List<String> result = Lists.newArrayList();

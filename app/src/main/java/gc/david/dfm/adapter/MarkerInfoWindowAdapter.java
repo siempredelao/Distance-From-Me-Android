@@ -12,11 +12,6 @@ import gc.david.dfm.R;
 
 import static butterknife.ButterKnife.bind;
 
-/**
- * MarkerInfoWindowAdapter controls the info window showed above the marker.
- *
- * @author David
- */
 public class MarkerInfoWindowAdapter implements InfoWindowAdapter {
 
     private final View     view;

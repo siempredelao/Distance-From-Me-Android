@@ -1,5 +1,6 @@
 package gc.david.dfm.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -7,14 +8,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.util.Date;
@@ -35,8 +36,12 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.DFMApplication;
+import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
+import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
@@ -46,22 +51,17 @@ import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.toastIt;
 
-/**
- * ShowInfoActivity shows information about the distance to the user.
- *
- * @author David
- */
-public class ShowInfoActivity extends BaseActivity {
+public class ShowInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
-    public static final String POSITIONS_LIST_EXTRA_KEY_NAME      = "positionsList";
-    public static final String DISTANCE_EXTRA_KEY_NAME            = "distancia";
-    private final       String originAddressKey                   = "originAddress";
-    private final       String destinationAddressKey              = "destinationAddress";
-    private final       String distanceKey                        = "distance";
-    private final       String wasSavingWhenOrientationChangedKey = "wasSavingWhenOrientationChanged";
-    private final       String aliasHintKey                       = "aliasHint";
+    public static final  String POSITIONS_LIST_EXTRA_KEY_NAME           = "positionsList";
+    public static final  String DISTANCE_EXTRA_KEY_NAME                 = "distancia";
+    private static final String ORIGIN_ADDRESS_KEY                      = "originAddress";
+    private static final String DESTINATION_ADDRESS_KEY                 = "destinationAddress";
+    private static final String DISTANCE_KEY                            = "distance";
+    private static final String WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY = "wasSavingWhenOrientationChanged";
+    private static final String ALIAS_HINT_KEY                          = "aliasHint";
 
     @BindView(R.id.datos1)
     protected TextView tvOriginAddress;
@@ -79,14 +79,15 @@ public class ShowInfoActivity extends BaseActivity {
     @Inject
     protected PackageManager packageManager;
 
-    private MenuItem     menuItem                        = null;
-    private List<LatLng> positionsList                   = null;
-    private String       originAddress                   = "";
-    private String       destinationAddress              = "";
-    private String       distance                        = null;
-    private boolean      wasSavingWhenOrientationChanged = false;
-    private Dialog       savingInDBDialog                = null;
-    private EditText     etAlias                         = null;
+    private MenuItem     refreshMenuItem;
+    private List<LatLng> positionsList;
+    private String       distance;
+    private Dialog       savingInDBDialog;
+    private EditText     etAlias;
+
+    private String  originAddress                   = "";
+    private String  destinationAddress              = "";
+    private boolean wasSavingWhenOrientationChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +95,10 @@ public class ShowInfoActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
+        DaggerRootComponent.builder()
+                           .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .build()
+                           .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
@@ -105,8 +110,8 @@ public class ShowInfoActivity extends BaseActivity {
             DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
             fillAddressesInfo();
         } else {
-            originAddress = savedInstanceState.getString(originAddressKey);
-            destinationAddress = savedInstanceState.getString(destinationAddressKey);
+            originAddress = savedInstanceState.getString(ORIGIN_ADDRESS_KEY);
+            destinationAddress = savedInstanceState.getString(DESTINATION_ADDRESS_KEY);
 
             tvOriginAddress.setText(formatAddress(originAddress,
                                                   positionsList.get(0).latitude,
@@ -117,11 +122,11 @@ public class ShowInfoActivity extends BaseActivity {
                                                        positionsList.get(positionsList.size() - 1).longitude));
 
             // Este se modifica dos veces...
-            distance = savedInstanceState.getString(distanceKey);
+            distance = savedInstanceState.getString(DISTANCE_KEY);
 
-            wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(wasSavingWhenOrientationChangedKey);
+            wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY);
             if (wasSavingWhenOrientationChanged) {
-                final String aliasHint = savedInstanceState.getString(aliasHintKey);
+                final String aliasHint = savedInstanceState.getString(ALIAS_HINT_KEY);
                 saveDataToDB(aliasHint);
             }
         }
@@ -135,12 +140,12 @@ public class ShowInfoActivity extends BaseActivity {
 
         super.onSaveInstanceState(outState);
 
-        outState.putString(originAddressKey, originAddress);
-        outState.putString(destinationAddressKey, destinationAddress);
-        outState.putString(distanceKey, distance);
-        outState.putBoolean(wasSavingWhenOrientationChangedKey, wasSavingWhenOrientationChanged);
+        outState.putString(ORIGIN_ADDRESS_KEY, originAddress);
+        outState.putString(DESTINATION_ADDRESS_KEY, destinationAddress);
+        outState.putString(DISTANCE_KEY, distance);
+        outState.putBoolean(WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY, wasSavingWhenOrientationChanged);
         if (wasSavingWhenOrientationChanged) {
-            outState.putString(aliasHintKey, etAlias.getText().toString());
+            outState.putString(ALIAS_HINT_KEY, etAlias.getText().toString());
             if (savingInDBDialog != null) {
                 savingInDBDialog.dismiss();
                 savingInDBDialog = null;
@@ -148,20 +153,14 @@ public class ShowInfoActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Get data form the Intent.
-     */
     private void getIntentData() {
         DFMLogger.logMessage(TAG, "getIntentData");
 
         final Intent inputDataIntent = getIntent();
-        positionsList = (List<LatLng>) inputDataIntent.getSerializableExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
+        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
         distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
     }
 
-    /**
-     * Get the addresses associated to LatLng points and fill the Textviews.
-     */
     private void fillAddressesInfo() {
         DFMLogger.logMessage(TAG, "fillAddressesInfo");
 
@@ -170,17 +169,13 @@ public class ShowInfoActivity extends BaseActivity {
             destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
                                                               tvDestinationAddress).get();
 
-            // Esto a lo mejor hay que ponerlo en el onPostExecute!
             tvOriginAddress.setText(formatAddress(originAddress,
                                                   positionsList.get(0).latitude,
                                                   positionsList.get(0).longitude));
             tvDestinationAddress.setText(formatAddress(destinationAddress,
                                                        positionsList.get(positionsList.size() - 1).latitude,
                                                        positionsList.get(positionsList.size() - 1).longitude));
-        } catch (final InterruptedException e) {
-            e.printStackTrace();
-            DFMLogger.logException(e);
-        } catch (final ExecutionException e) {
+        } catch (final InterruptedException | ExecutionException e) {
             e.printStackTrace();
             DFMLogger.logException(e);
         } catch (final CancellationException e) {
@@ -194,9 +189,6 @@ public class ShowInfoActivity extends BaseActivity {
         return String.format(Locale.getDefault(), "%s\n\n(%f,%f)", address, latitude, longitude);
     }
 
-    /**
-     * Fill Textview tvDistance.
-     */
     private void fillDistanceInfo() {
         DFMLogger.logMessage(TAG, "fillDistanceInfo");
 
@@ -207,25 +199,18 @@ public class ShowInfoActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         DFMLogger.logMessage(TAG, "onCreateOptionsMenu");
 
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.show_info, menu);
 
-        // Establecer el menu Compartir
         final MenuItem shareItem = menu.findItem(R.id.action_social_share);
-        final ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        final ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
         final Intent shareDistanceIntent = createDefaultShareIntent();
-        if (verifyAppReceiveIntent(shareDistanceIntent)) {
-            mShareActionProvider.setShareIntent(shareDistanceIntent);
+        if (packageManager.isThereAnyActivityForIntent(shareDistanceIntent)) {
+            shareActionProvider.setShareIntent(shareDistanceIntent);
         }
-        // else mostrar un Toast
+        refreshMenuItem = menu.findItem(R.id.refresh);
         return true;
     }
 
-    /**
-     * Creates an Intent to share data.
-     *
-     * @return A new Intent to show different options to share data.
-     */
     private Intent createDefaultShareIntent() {
         DFMLogger.logMessage(TAG, "createDefaultShareIntent");
 
@@ -233,28 +218,15 @@ public class ShowInfoActivity extends BaseActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
 
-        final String extra_text = String.format("\nDistance From Me (http://goo.gl/0IBHFN)\n%s\n%s\n\n%s\n%s\n\n%s\n%s",
-                                                getString(R.string.share_distance_from_message),
-                                                originAddress,
-                                                getString(R.string.share_distance_to_message),
-                                                destinationAddress,
-                                                getString(R.string.share_distance_there_are_message),
-                                                distance);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, extra_text);
+        final String extraText = String.format("\nDistance From Me (http://goo.gl/0IBHFN)\n%s\n%s\n\n%s\n%s\n\n%s\n%s",
+                                               getString(R.string.share_distance_from_message),
+                                               originAddress,
+                                               getString(R.string.share_distance_to_message),
+                                               destinationAddress,
+                                               getString(R.string.share_distance_there_are_message),
+                                               distance);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
         return shareIntent;
-    }
-
-    /**
-     * Verify if there are applications that can handle the intent.
-     *
-     * @param intent The intent to verify.
-     * @return Returns <code>true</code> if there are applications; <code>false</code>, otherwise.
-     */
-    private boolean verifyAppReceiveIntent(final Intent intent) {
-        DFMLogger.logMessage(TAG, "verifyAppReceiveIntent");
-
-        final List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        return activities.size() > 0;
     }
 
     @Override
@@ -265,7 +237,6 @@ public class ShowInfoActivity extends BaseActivity {
             case R.id.action_social_share:
                 return true;
             case R.id.refresh:
-                menuItem = item;
                 fillAddressesInfo();
                 return true;
             case R.id.menu_save:
@@ -276,11 +247,6 @@ public class ShowInfoActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Saves the current data into the database.
-     *
-     * @param defaultText String text when orientation changes.
-     */
     private void saveDataToDB(final String defaultText) {
         DFMLogger.logMessage(TAG, "saveDataToDB defaultText=" + defaultText);
 
@@ -308,12 +274,6 @@ public class ShowInfoActivity extends BaseActivity {
                        wasSavingWhenOrientationChanged = false;
                    }
 
-                   /**
-                    * Adds a new distance to the database with the current
-                    * data and shows the user a message.
-                    *
-                    * @param alias Alias written by the user.
-                    */
                    private void insertDataIntoDatabase(final String alias) {
                        DFMLogger.logMessage(TAG, "insertDataIntoDatabase");
 
@@ -344,9 +304,6 @@ public class ShowInfoActivity extends BaseActivity {
         (savingInDBDialog = builder.create()).show();
     }
 
-    /**
-     * A subclass of AsyncTask that calls getFromLocation() in the background.
-     */
     private class GetAddressTask extends AsyncTask<Object, Void, String> {
 
         private final String TAG = GetAddressTask.class.getSimpleName();
@@ -357,15 +314,14 @@ public class ShowInfoActivity extends BaseActivity {
         protected void onPreExecute() {
             DFMLogger.logMessage(TAG, "onPreExecute");
 
-            super.onPreExecute();
             this.context = appContext;
 
-            startUpdate();
+            showRefreshSpinner();
 
             if (!isOnline(context)) {
                 toastIt(getString(R.string.toast_network_problems), context);
 
-                endUpdate();
+                hideRefreshSpinner();
                 cancel(false);
             }
         }
@@ -396,7 +352,7 @@ public class ShowInfoActivity extends BaseActivity {
                 return errorString;
             }
             // If the reverse geocode returned an address
-            if (addresses != null && addresses.size() > 0) {
+            if (addresses != null && !addresses.isEmpty()) {
                 // Get the first address
                 final Address address = addresses.get(0);
                 // Format the first line of address (if available), city, and
@@ -423,33 +379,33 @@ public class ShowInfoActivity extends BaseActivity {
         protected void onPostExecute(String result) {
             DFMLogger.logMessage(TAG, "onPostExecute");
 
-            endUpdate();
-
-            super.onPostExecute(result);
+            hideRefreshSpinner();
         }
 
-        /**
-         * Change the appearance of the refresh button to a ProgressBar.
-         */
-        private void startUpdate() {
-            DFMLogger.logMessage(TAG, "startUpdate");
+        private void showRefreshSpinner() {
+            DFMLogger.logMessage(TAG, "showRefreshSpinner");
 
-            if (menuItem != null) {
-                MenuItemCompat.setActionView(menuItem, R.layout.actionbar_indeterminate_progress);
-                MenuItemCompat.expandActionView(menuItem);
+            if (refreshMenuItem != null) {
+                MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
+                MenuItemCompat.expandActionView(refreshMenuItem);
             }
         }
 
-        /**
-         * Restore the refresh button to his normal appearance.
-         */
-        private void endUpdate() {
-            DFMLogger.logMessage(TAG, "endUpdate");
+        private void hideRefreshSpinner() {
+            DFMLogger.logMessage(TAG, "hideRefreshSpinner");
 
-            if (menuItem != null) {
-                MenuItemCompat.collapseActionView(menuItem);
-                MenuItemCompat.setActionView(menuItem, null);
+            if (refreshMenuItem != null) {
+                MenuItemCompat.collapseActionView(refreshMenuItem);
+                MenuItemCompat.setActionView(refreshMenuItem, null);
             }
         }
+    }
+
+    public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {
+        final Intent showInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
+        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME,
+                                                           Lists.newArrayList(coordinates));
+        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY_NAME, distanceAsText);
+        activity.startActivity(showInfoActivityIntent);
     }
 }

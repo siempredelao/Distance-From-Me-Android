@@ -23,6 +23,7 @@
 * [GreenDAO](http://greendao-orm.com)
 * [Guava](https://github.com/google/guava)
 * [Crashlytics (Fabric)](https://get.fabric.io/crashlytics)
+* [Dagger](http://google.github.io/dagger/)
 
 ## Contributions
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 

@@ -87,14 +87,15 @@ public class Utils {
                                           final Intent optionsIntent = new Intent(action);
                                           activity.startActivity(optionsIntent);
                                       }
-                                  });
-        builder.setNegativeButton(negativeButton,
+                                  })
+               .setNegativeButton(negativeButton,
                                   new DialogInterface.OnClickListener() {
                                       public void onClick(DialogInterface dialog, int id) {
                                           dialog.cancel();
                                       }
-                                  });
-        builder.create().show();
+                                  })
+               .create()
+               .show();
     }
 
     public static String dumpIntentToString(final Intent intent) {

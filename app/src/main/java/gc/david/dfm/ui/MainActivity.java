@@ -20,6 +20,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +28,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -80,13 +82,21 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import dagger.Lazy;
 import gc.david.dfm.BuildConfig;
+import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
+import gc.david.dfm.DeviceInfo;
+import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
+import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.feedback.Feedback;
+import gc.david.dfm.feedback.FeedbackPresenter;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
@@ -100,16 +110,11 @@ import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
 
-/**
- * Implements the app main Activity.
- *
- * @author David
- */
-public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener,
-                                                          OnMapReadyCallback,
-                                                          OnMapLongClickListener,
-                                                          OnMapClickListener,
-                                                          OnInfoWindowClickListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
+                                                               OnMapReadyCallback,
+                                                               OnMapLongClickListener,
+                                                               OnMapClickListener,
+                                                               OnInfoWindowClickListener {
 
     private static final String TAG                     = MainActivity.class.getSimpleName();
     private static final int    ELEVATION_SAMPLES       = 100;
@@ -128,9 +133,13 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     protected NavigationView nvDrawer;
 
     @Inject
-    protected DaoSession daoSession;
+    protected DaoSession           daoSession;
     @Inject
-    protected Context    appContext;
+    protected Context              appContext;
+    @Inject
+    protected Lazy<PackageManager> packageManager;
+    @Inject
+    protected Lazy<DeviceInfo>     deviceInfo;
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -158,9 +167,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     @SuppressWarnings("rawtypes")
     private AsyncTask       showingElevationTask                  = null;
     private GraphView       graphView                             = null;
+    private List<LatLng>    coordinates                           = Lists.newArrayList();
     private float                 DEVICE_DENSITY;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private List<LatLng>          coordinates;
     private boolean               calculatingDistance;
 
     @Override
@@ -171,6 +180,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         InMobiSdk.setLogLevel(BuildConfig.DEBUG ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.NONE);
         InMobiSdk.init(this, getString(R.string.inmobi_api_key));
         setContentView(R.layout.activity_main);
+        DaggerRootComponent.builder()
+                           .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .build()
+                           .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
@@ -235,7 +248,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
 
         if (!isOnline(appContext)) {
-            showWifiAlertDialog();
+            showConnectionProblemsDialog();
         }
 
         // Iniciando la app
@@ -247,7 +260,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_current_position:
                         menuItem.setChecked(true);
@@ -270,6 +283,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                     case R.id.menu_settings:
                         drawerLayout.closeDrawers();
                         openSettingsActivity();
+                        return true;
+                    case R.id.menu_help_feedback:
+                        drawerLayout.closeDrawers();
+                        startActivity(new Intent(MainActivity.this, HelpAndFeedbackActivity.class));
                         return true;
                 }
                 return false;
@@ -297,7 +314,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                 supportInvalidateOptionsMenu();
             }
         };
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
     @Override
@@ -322,17 +339,14 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         calculatingDistance = true;
 
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-            if (coordinates == null || coordinates.isEmpty()) {
+            if (coordinates.isEmpty()) {
                 toastIt(getString(R.string.toast_first_point_needed), appContext);
             } else {
                 coordinates.add(point);
                 drawAndShowMultipleDistances(coordinates, "", false, true);
             }
-        }
-        // Si no hemos encontrado la posición actual, no podremos
-        // calcular la distancia
-        else if (currentLocation != null) {
-            if ((getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) && (coordinates.isEmpty())) {
+        } else if (currentLocation != null) { // Without current location, we cannot calculate any distance
+            if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT && coordinates.isEmpty()) {
                 coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
             coordinates.add(point);
@@ -359,28 +373,19 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             coordinates.add(point);
             googleMap.addMarker(new MarkerOptions().position(point));
         } else {
-            // Si no hemos encontrado la posición actual, no podremos
-            // calcular la distancia
+            // Without current location, we cannot calculate any distance
             if (currentLocation != null) {
-                if (coordinates != null) {
-                    if (!calculatingDistance) {
-                        coordinates.clear();
-                    }
-                    calculatingDistance = true;
-
-                    if (coordinates.isEmpty()) {
-                        googleMap.clear();
-                        coordinates.add(new LatLng(currentLocation.getLatitude(),
-                                                   currentLocation.getLongitude()));
-                    }
-                    coordinates.add(point);
-                    googleMap.addMarker(new MarkerOptions().position(point));
-                } else {
-                    final IllegalStateException illegalStateException = new IllegalStateException("Empty coordinates list");
-                    DFMLogger.logException(illegalStateException);
-
-                    throw illegalStateException;
+                if (!calculatingDistance) {
+                    coordinates.clear();
                 }
+                calculatingDistance = true;
+
+                if (coordinates.isEmpty()) {
+                    googleMap.clear();
+                    coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                }
+                coordinates.add(point);
+                googleMap.addMarker(new MarkerOptions().position(point));
             }
         }
     }
@@ -389,17 +394,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     public void onInfoWindowClick(Marker marker) {
         DFMLogger.logMessage(TAG, "onInfoWindowClick");
 
-        final Intent showInfoActivityIntent = new Intent(MainActivity.this, ShowInfoActivity.class);
-
-        showInfoActivityIntent.putExtra(ShowInfoActivity.POSITIONS_LIST_EXTRA_KEY_NAME,
-                                        Lists.newArrayList(coordinates));
-        showInfoActivityIntent.putExtra(ShowInfoActivity.DISTANCE_EXTRA_KEY_NAME, distanceMeasuredAsText);
-        startActivity(showInfoActivityIntent);
+        ShowInfoActivity.open(this, coordinates, distanceMeasuredAsText);
     }
 
-    /**
-     * Swaps starting point in the main content view
-     */
     private void onStartingPointSelected() {
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
             DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from current point");
@@ -409,7 +406,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
         calculatingDistance = false;
 
-        coordinates = Lists.newArrayList();
+        coordinates.clear();
         googleMap.clear();
         if (showingElevationTask != null) {
             DFMLogger.logMessage(TAG, "onStartingPointSelected cancelling elevation task");
@@ -471,12 +468,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 handleSearchIntent(intent);
             } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-                try {
-                    handleViewPositionIntent(intent);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    DFMLogger.logException(e);
-                }
+                handleViewPositionIntent(intent);
             }
         }
     }
@@ -505,59 +497,66 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
      *
      * @param intent Input intent with position data.
      */
-    private void handleViewPositionIntent(final Intent intent) throws Exception {
+    private void handleViewPositionIntent(final Intent intent) {
         DFMLogger.logMessage(TAG, "handleViewPositionIntent");
         final Uri uri = intent.getData();
         DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=" + uri.toString());
 
         final String uriScheme = uri.getScheme();
         if (uriScheme.equals("geo")) {
-            final String schemeSpecificPart = uri.getSchemeSpecificPart();
-            final Matcher matcher = getMatcherForUri(schemeSpecificPart);
-            if (matcher.find()) {
-                if (matcher.group(1).equals("0") && matcher.group(2).equals("0")) {
-                    if (matcher.find()) { // Manage geo:0,0?q=lat,lng(label)
-                        setDestinationPosition(matcher);
-                    } else { // Manage geo:0,0?q=my+street+address
-                        String destination = Uri.decode(uri.getQuery()).replace('+', ' ');
-                        destination = destination.replace("q=", "");
+            handleGeoSchemeIntent(uri);
+        } else if ((uriScheme.equals("http") || uriScheme.equals("https"))
+                   && (uri.getHost().equals("maps.google.com"))) { // Manage maps.google.com?q=latitude,longitude
+            handleMapsHostIntent(uri);
+        } else {
+            final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
+            DFMLogger.logException(exception);
+            toastIt("Unable to parse address", this);
+        }
+    }
 
-                        // TODO check this ugly workaround
-                        new SearchPositionByName().execute(destination);
-                        mustShowPositionWhenComingFromOutside = true;
-                    }
-                } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
+    private void handleGeoSchemeIntent(final Uri uri) {
+        final String schemeSpecificPart = uri.getSchemeSpecificPart();
+        final Matcher matcher = getMatcherForUri(schemeSpecificPart);
+        if (matcher.find()) {
+            if (matcher.group(1).equals("0") && matcher.group(2).equals("0")) {
+                if (matcher.find()) { // Manage geo:0,0?q=lat,lng(label)
                     setDestinationPosition(matcher);
+                } else { // Manage geo:0,0?q=my+street+address
+                    String destination = Uri.decode(uri.getQuery()).replace('+', ' ');
+                    destination = destination.replace("q=", "");
+
+                    // TODO check this ugly workaround
+                    new SearchPositionByName().execute(destination);
+                    mustShowPositionWhenComingFromOutside = true;
                 }
+            } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
+                setDestinationPosition(matcher);
+            }
+        } else {
+            final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
+                                                                                       matcher.toString());
+            DFMLogger.logException(noSuchFieldException);
+            toastIt("Unable to parse address", this);
+        }
+    }
+
+    private void handleMapsHostIntent(final Uri uri) {
+        final String queryParameter = uri.getQueryParameter("q");
+        if (queryParameter != null) {
+            final Matcher matcher = getMatcherForUri(queryParameter);
+            if (matcher.find()) {
+                setDestinationPosition(matcher);
             } else {
                 final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                            matcher.toString());
                 DFMLogger.logException(noSuchFieldException);
-                throw noSuchFieldException;
-            }
-        } else if ((uriScheme.equals("http") || uriScheme.equals("https"))
-                   && (uri.getHost().equals("maps.google.com"))) { // Manage maps.google.com?q=latitude,longitude
-
-            final String queryParameter = uri.getQueryParameter("q");
-            if (queryParameter != null) {
-                final Matcher matcher = getMatcherForUri(queryParameter);
-                if (matcher.find()) {
-                    setDestinationPosition(matcher);
-                } else {
-                    final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
-                                                                                               matcher.toString());
-                    DFMLogger.logException(noSuchFieldException);
-                    throw noSuchFieldException;
-                }
-            } else {
-                final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
-                DFMLogger.logException(noSuchFieldException);
-                throw noSuchFieldException;
+                toastIt("Unable to parse address", this);
             }
         } else {
-            final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
-            DFMLogger.logException(exception);
-            throw exception;
+            final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
+            DFMLogger.logException(noSuchFieldException);
+            toastIt("Unable to parse address", this);
         }
     }
 
@@ -578,15 +577,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         return pattern.matcher(schemeSpecificPart);
     }
 
-    /**
-     * Shows the wireless centralized settings in API<11, otherwise shows general settings
-     */
-    private void showWifiAlertDialog() {
-        DFMLogger.logMessage(TAG, "showWifiAlertDialog");
+    private void showConnectionProblemsDialog() {
+        DFMLogger.logMessage(TAG, "showConnectionProblemsDialog");
 
-        showAlertDialog((android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB ?
-                         android.provider.Settings.ACTION_WIRELESS_SETTINGS :
-                         android.provider.Settings.ACTION_SETTINGS),
+        showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
                         getString(R.string.dialog_connection_problems_title),
                         getString(R.string.dialog_connection_problems_message),
                         getString(R.string.dialog_connection_problems_positive_button),
@@ -614,10 +608,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         searchView.setIconifiedByDefault(true);
 
         // Muestra el item de menú de cargar si hay elementos en la BD
-        final MenuItem loadItem = menu.findItem(R.id.action_load);
         // TODO hacerlo en segundo plano
         final List<Distance> allDistances = daoSession.loadAll(Distance.class);
-        if (allDistances.size() == 0) {
+        if (allDistances.isEmpty()) {
+            final MenuItem loadItem = menu.findItem(R.id.action_load);
             loadItem.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -667,7 +661,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         // TODO hacer esto en segundo plano
         final List<Distance> allDistances = daoSession.loadAll(Distance.class);
 
-        if (allDistances != null && allDistances.size() > 0) {
+        if (allDistances != null && !allDistances.isEmpty()) {
             final DistanceSelectionDialogFragment distanceSelectionDialogFragment = new DistanceSelectionDialogFragment();
             distanceSelectionDialogFragment.setDistanceList(allDistances);
             distanceSelectionDialogFragment.setOnDialogActionListener(new DistanceSelectionDialogFragment.OnDialogActionListener() {
@@ -737,8 +731,22 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     private void openFeedbackActivity() {
         DFMLogger.logMessage(TAG, "openFeedbackActivity");
 
-        final Intent openFeedbackActivityIntent = new Intent(MainActivity.this, FeedbackActivity.class);
-        startActivity(openFeedbackActivityIntent);
+        new FeedbackPresenter(new Feedback.View() {
+            @Override
+            public void showError() {
+                toastIt(getString(R.string.toast_send_feedback_error), appContext);
+            }
+
+            @Override
+            public void showEmailClient(final Intent intent) {
+                startActivity(intent);
+            }
+
+            @Override
+            public Context context() {
+                return appContext;
+            }
+        }, packageManager.get(), deviceInfo.get()).start();
     }
 
     /**
@@ -788,9 +796,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         DFMLogger.logMessage(TAG, "onResume");
 
         super.onResume();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            invalidateOptionsMenu();
-        }
+        invalidateOptionsMenu();
         checkPlayServices();
     }
 
@@ -897,7 +903,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
      * Called by Location Services if the attempt to Location Services fails.
      */
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         DFMLogger.logMessage(TAG, "onConnectionFailed");
 
         /*
@@ -1187,9 +1193,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         DISTANCE_FROM_ANY_POINT
     }
 
-    /**
-     * A subclass of AsyncTask that calls getFromLocationName() in the background.
-     */
     private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
 
         private final String TAG = SearchPositionByName.class.getSimpleName();
@@ -1209,7 +1212,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             // Comprobamos que haya conexión con internet (WiFi o Datos)
             if (!isOnline(appContext)) {
-                showWifiAlertDialog();
+                showConnectionProblemsDialog();
 
                 // Restauramos el menú y que vuelva a empezar de nuevo
                 MenuItemCompat.collapseActionView(searchMenuItem);
@@ -1252,7 +1255,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
             switch (result) {
                 case 0:
-                    if (addressList != null && addressList.size() > 0) {
+                    if (addressList != null && !addressList.isEmpty()) {
                         // Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
                         if (addressList.size() == 1) {
                             processSelectedAddress(0);
@@ -1312,10 +1315,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                 if (!appHasJustStarted) {
                     DFMLogger.logMessage(TAG, "handleSelectedAddress appHasJustStarted");
 
-                    if (coordinates == null || coordinates.isEmpty()) {
+                    if (coordinates.isEmpty()) {
                         DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
 
-                        coordinates = Lists.newArrayList();
                         coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                     }
                     coordinates.add(selectedPosition);
@@ -1329,12 +1331,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             }
         }
 
-        /**
-         * Processes the address selected by the user and sets the new destination
-         * position.
-         *
-         * @param item The item index in the AlertDialog.
-         */
         protected void processSelectedAddress(final int item) {
             DFMLogger.logMessage(TAG, "processSelectedAddress item=" + item);
 
@@ -1347,9 +1343,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
     }
 
-    /**
-     * A subclass of SearchPositionByName to get position by coordinates.
-     */
     private class SearchPositionByCoordinates extends SearchPositionByName {
 
         private final String TAG = SearchPositionByCoordinates.class.getSimpleName();
@@ -1414,12 +1407,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
 
     }
 
-    /**
-     * A subclass of AsyncTask that gets elevation points from coordinates in
-     * background and shows an elevation chart.
-     *
-     * @author David
-     */
     private class GetAltitude extends AsyncTask<String, Void, Double> {
 
         private final String TAG = GetAltitude.class.getSimpleName();
@@ -1525,9 +1512,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
         }
 
-        /**
-         * Shows the elevation profile chart.
-         */
         private void showElevationProfileChart() {
             DFMLogger.logMessage(TAG, "showElevationProfileChart");
 
