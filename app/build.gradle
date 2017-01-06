@@ -53,6 +53,8 @@ ext {
 	guavaVersion = '18.0'
 	crashlyticsVersion = '2.6.5'
 	daggerVersion = '2.8'
+	okhttpVersion = '3.5.0'
+	gsonVersion = '2.8.0'
 }
 
 dependencies {
@@ -71,5 +73,7 @@ dependencies {
 	}
 	compile "$daggerGroup:dagger:$daggerVersion"
 	annotationProcessor "$daggerGroup:dagger-compiler:$daggerVersion"
+	compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
+	compile "com.google.code.gson:gson:$gsonVersion"
 }
 
