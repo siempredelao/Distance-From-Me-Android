@@ -41,7 +41,8 @@
                 android:layout_height="100dp"
                 android:layout_margin="2dp"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone"
+                android:background="@color/elevation_chart_background">
 
                 <ImageView
                     android:id="@+id/closeChart"
@@ -51,8 +52,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:contentDescription="Close elevation chart"
-                    android:src="@drawable/close_pop"
-                    android:visibility="invisible"/>
+                    android:src="@drawable/close_pop"/>
 
             </RelativeLayout>
         </FrameLayout>
