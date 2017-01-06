@@ -1115,16 +1115,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    /**
-     * Calculates elevation points in background and shows elevation chart.
-     *
-     * @param coordinates Positions list.
-     */
-    private void getElevation(final List<LatLng> coordinates) {
-        DFMLogger.logMessage(TAG, "getElevation");
-
-    }
-
     private void fixMapPadding() {
         if (bannerShown) {
             DFMLogger.logMessage(TAG, "fixMapPadding bannerShown");

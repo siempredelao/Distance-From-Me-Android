@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -15,9 +17,10 @@ import gc.david.dfm.R;
 import gc.david.dfm.model.Distance;
 
 import static butterknife.ButterKnife.bind;
-import static org.apache.http.impl.cookie.DateUtils.formatDate;
 
 public class DistanceAdapter extends ArrayAdapter<Distance> {
+
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private final Activity       activity;
     private final List<Distance> distanceList;
@@ -47,7 +50,7 @@ public class DistanceAdapter extends ArrayAdapter<Distance> {
 
         holder.title.setText(distanceList.get(position).getName());
         holder.distance.setText(distanceList.get(position).getDistance());
-        holder.date.setText(formatDate(distanceList.get(position).getDate(), "yyyy-MM-dd"));
+        holder.date.setText(DATE_FORMAT.format(distanceList.get(position).getDate()));
 
         return item;
     }

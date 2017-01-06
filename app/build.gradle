@@ -21,7 +21,6 @@ repositories {
 android {
 	compileSdkVersion 25
 	buildToolsVersion '25.0.0'
-	useLibrary 'org.apache.http.legacy' // remove!
 
 	defaultConfig {
 		applicationId 'gc.david.dfm'
