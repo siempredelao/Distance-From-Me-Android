@@ -84,8 +84,8 @@
 
         <com.inmobi.ads.InMobiBanner
             android:id="@+id/banner"
-            android:layout_width="320dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/banner_width"
+            android:layout_height="@dimen/banner_height"
             ads:placementId="1431976172760598"
             ads:refreshInterval="30"
             android:visibility="gone"
