@@ -74,5 +74,6 @@ dependencies {
 	annotationProcessor "$daggerGroup:dagger-compiler:$daggerVersion"
 	compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
 	compile "com.google.code.gson:gson:$gsonVersion"
+	compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 }
 
