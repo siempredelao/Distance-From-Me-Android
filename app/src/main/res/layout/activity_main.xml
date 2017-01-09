@@ -44,8 +44,8 @@
 
             <ImageView
                 android:id="@+id/closeChart"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="@dimen/elevation_chart_hide_button_size"
+                android:layout_height="@dimen/elevation_chart_hide_button_size"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:contentDescription="Close elevation chart"
@@ -62,7 +62,7 @@
             android:clickable="true"
             android:src="@drawable/ic_show_chart_white_24dp"
             android:visibility="invisible"
-            app:elevation="7dp"
+            app:elevation="@dimen/elevation"
             app:fabSize="normal"
             app:layout_constraintBottom_toTopOf="@+id/main_activity_mylocation_floatingactionbutton"
             app:layout_constraintRight_toRightOf="@+id/map"
@@ -77,7 +77,7 @@
             android:layout_marginRight="16dp"
             android:clickable="true"
             android:src="@drawable/ic_my_location_white_24dp"
-            app:elevation="7dp"
+            app:elevation="@dimen/elevation"
             app:fabSize="normal"
             app:layout_constraintBottom_toTopOf="@+id/banner"
             app:layout_constraintRight_toRightOf="@+id/map"/>
@@ -86,9 +86,9 @@
             android:id="@+id/banner"
             android:layout_width="@dimen/banner_width"
             android:layout_height="@dimen/banner_height"
+            android:visibility="gone"
             ads:placementId="1431976172760598"
             ads:refreshInterval="30"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/map"
             app:layout_constraintLeft_toLeftOf="@+id/map"/>
 

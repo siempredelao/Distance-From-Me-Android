@@ -49,7 +49,6 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -62,6 +61,7 @@ import com.inmobi.sdk.InMobiSdk;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
 import java.io.IOException;
@@ -168,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean         bannerShown                           = false;
     private GraphView       graphView                             = null;
     private List<LatLng>    coordinates                           = Lists.newArrayList();
-    private float                 DEVICE_DENSITY; // TODO: 09.01.17 get rid of this field
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private boolean               calculatingDistance;
 
@@ -198,8 +197,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         elevationPresenter = new ElevationPresenter(this, elevationUseCase);
-
-        DEVICE_DENSITY = getResources().getDisplayMetrics().density;
 
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
@@ -1182,10 +1179,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             graphView = new LineGraphView(appContext,
                                           getString(R.string.elevation_chart_title,
                                                     Haversine.getAltitudeUnitByLocale(locale)));
-            graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
-            graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Not working with zero?
-            graphView.getGraphViewStyle().setTextSize(15 * DEVICE_DENSITY);
-            graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
+            final GraphViewStyle graphViewStyle = graphView.getGraphViewStyle();
+            graphViewStyle.setGridColor(Color.TRANSPARENT);
+            graphViewStyle.setNumHorizontalLabels(1); // Not working with zero?
+            graphViewStyle.setTextSize(getResources().getDimension(R.dimen.elevation_chart_text_size));
+            graphViewStyle.setVerticalLabelsWidth(getResources().getDimensionPixelSize(R.dimen.elevation_chart_vertical_label_width));
             rlElevationChart.addView(graphView);
 
             ivCloseElevationChart.setOnClickListener(new View.OnClickListener() {
@@ -1205,7 +1203,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GraphViewSeries buildGraphViewSeries(final List<Double> elevationList, final Locale locale) {
         final GraphViewSeriesStyle style = new GraphViewSeriesStyle(ContextCompat.getColor(getApplicationContext(),
                                                                                            R.color.elevation_chart_line),
-                                                                    (int) (3 * DEVICE_DENSITY));
+                                                                    getResources().getDimensionPixelSize(R.dimen.elevation_chart_line_size));
         final GraphViewSeries series = new GraphViewSeries(null, style, new GraphView.GraphViewData[]{});
 
         for (int w = 0; w < elevationList.size(); w++) {
