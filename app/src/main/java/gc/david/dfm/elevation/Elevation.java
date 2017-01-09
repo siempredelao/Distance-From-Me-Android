@@ -14,15 +14,23 @@ public interface Elevation {
 
         void hideChart();
 
-        void showChart(List<Double> elevationList);
+        void showChart();
+
+        void buildChart(List<Double> elevationList);
 
         void animateHideChart();
 
         void animateShowChart();
+
+        boolean isMinimiseButtonShown();
     }
 
     interface Presenter {
         void buildChart(List<LatLng> coordinates);
+
+        void onChartBuilt();
+
+        void onOpenChart();
 
         void onCloseChart();
 

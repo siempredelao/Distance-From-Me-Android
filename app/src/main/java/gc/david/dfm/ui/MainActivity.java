@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -48,6 +49,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -72,6 +74,7 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import dagger.Lazy;
 import gc.david.dfm.BuildConfig;
 import gc.david.dfm.DFMApplication;
@@ -114,17 +117,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.elevationchart)
-    protected RelativeLayout rlElevationChart;
+    protected RelativeLayout       rlElevationChart;
     @BindView(R.id.closeChart)
-    protected ImageView      ivCloseElevationChart;
+    protected ImageView            ivCloseElevationChart;
     @BindView(R.id.tbMain)
-    protected Toolbar        tbMain;
+    protected Toolbar              tbMain;
     @BindView(R.id.banner)
-    protected InMobiBanner   banner;
+    protected InMobiBanner         banner;
     @BindView(R.id.drawer_layout)
-    protected DrawerLayout   drawerLayout;
+    protected DrawerLayout         drawerLayout;
     @BindView(R.id.nvDrawer)
-    protected NavigationView nvDrawer;
+    protected NavigationView       nvDrawer;
+    @BindView(R.id.main_activity_showchart_floatingactionbutton)
+    protected FloatingActionButton fabShowChart;
+    @BindView(R.id.main_activity_mylocation_floatingactionbutton)
+    protected FloatingActionButton fabMyLocation;
 
     @Inject
     protected DaoSession           daoSession;
@@ -161,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean         bannerShown                           = false;
     private GraphView       graphView                             = null;
     private List<LatLng>    coordinates                           = Lists.newArrayList();
-    private float                 DEVICE_DENSITY;
+    private float                 DEVICE_DENSITY; // TODO: 09.01.17 get rid of this field
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private boolean               calculatingDistance;
 
@@ -202,7 +209,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
                 DFMLogger.logMessage(TAG, "onAdLoadSucceeded");
 
-                bannerShown = true;
+                banner.setVisibility(View.VISIBLE);
+                bannerShown = true; // TODO: 06.01.17 remove this field then...
                 fixMapPadding();
             }
 
@@ -318,6 +326,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onMapReady(final GoogleMap map) {
         googleMap = map;
+
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         googleMap.setMyLocationEnabled(true);
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -783,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /**
      * Called when the system detects that this Activity is now visible.
      */
-    @SuppressLint("NewApi")
+    @SuppressLint("NewApi") // TODO: 09.01.17 remove
     @Override
     public void onResume() {
         DFMLogger.logMessage(TAG, "onResume");
@@ -1150,12 +1160,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void hideChart() {
-        rlElevationChart.setVisibility(View.GONE);
+        rlElevationChart.setVisibility(View.INVISIBLE);
+        fabShowChart.setVisibility(View.INVISIBLE);
         fixMapPadding();
     }
 
     @Override
-    public void showChart(final List<Double> elevationList) {
+    public void showChart() {
+        rlElevationChart.setVisibility(View.VISIBLE);
+        fixMapPadding();
+    }
+
+    @Override
+    public void buildChart(final List<Double> elevationList) {
         final Locale locale = getAmericanOrEuropeanLocale();
 
         // Creates the series and adds data to it
@@ -1166,7 +1183,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                           getString(R.string.elevation_chart_title,
                                                     Haversine.getAltitudeUnitByLocale(locale)));
             graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
-            graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
+            graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Not working with zero?
             graphView.getGraphViewStyle().setTextSize(15 * DEVICE_DENSITY);
             graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
             rlElevationChart.addView(graphView);
@@ -1181,8 +1198,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         graphView.removeAllSeries();
         graphView.addSeries(series);
 
-        rlElevationChart.setVisibility(View.VISIBLE);
-        fixMapPadding();
+        elevationPresenter.onChartBuilt();
     }
 
     @NonNull
@@ -1204,12 +1220,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void animateHideChart() {
-        // TODO: 06.01.17 animates hiding chart into a floating action button?
+        AnimatorUtil.replaceViews(rlElevationChart, fabShowChart);
     }
 
     @Override
     public void animateShowChart() {
-        // TODO: 06.01.17 animates showing chart from a floating action button?
+        AnimatorUtil.replaceViews(fabShowChart, rlElevationChart);
+    }
+
+    @Override
+    public boolean isMinimiseButtonShown() {
+        return fabShowChart.isShown();
+    }
+
+    @OnClick(R.id.main_activity_showchart_floatingactionbutton)
+    void onShowChartClick() {
+        elevationPresenter.onOpenChart();
     }
 
     private enum DistanceMode {

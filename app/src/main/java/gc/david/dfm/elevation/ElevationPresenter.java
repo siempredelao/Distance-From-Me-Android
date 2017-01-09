@@ -24,13 +24,11 @@ public class ElevationPresenter implements Elevation.Presenter {
     public void buildChart(final List<LatLng> coordinates) {
         stopPendingUseCase = false;
 
-        elevationView.hideChart();
-
         elevationUseCase.execute(coordinates, new ElevationUseCase.Callback() {
             @Override
             public void onElevationLoaded(List<Double> elevationList) {
                 if (!stopPendingUseCase) {
-                    elevationView.showChart(elevationList);
+                    elevationView.buildChart(elevationList);
                 }
             }
 
@@ -42,8 +40,20 @@ public class ElevationPresenter implements Elevation.Presenter {
     }
 
     @Override
+    public void onChartBuilt() {
+        if (!elevationView.isMinimiseButtonShown()) {
+            elevationView.showChart();
+        }
+    }
+
+    @Override
+    public void onOpenChart() {
+        elevationView.animateShowChart();
+    }
+
+    @Override
     public void onCloseChart() {
-        elevationView.hideChart();
+        elevationView.animateHideChart();
     }
 
     @Override
