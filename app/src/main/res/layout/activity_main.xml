@@ -88,6 +88,7 @@
             android:layout_height="50dp"
             ads:placementId="1431976172760598"
             ads:refreshInterval="30"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/map"
             app:layout_constraintLeft_toLeftOf="@+id/map"/>
 
