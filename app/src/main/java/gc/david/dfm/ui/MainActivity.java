@@ -1238,6 +1238,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         elevationPresenter.onOpenChart();
     }
 
+    @OnClick(R.id.main_activity_mylocation_floatingactionbutton)
+    void onMyLocationClick() {
+        if (currentLocation != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(),
+                                                                             currentLocation.getLongitude())));
+        }
+    }
+
     private enum DistanceMode {
         DISTANCE_FROM_CURRENT_POINT,
         DISTANCE_FROM_ANY_POINT
