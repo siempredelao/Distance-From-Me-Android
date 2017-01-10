@@ -1,6 +1,5 @@
 package gc.david.dfm.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -790,7 +789,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /**
      * Called when the system detects that this Activity is now visible.
      */
-    @SuppressLint("NewApi") // TODO: 09.01.17 remove
     @Override
     public void onResume() {
         DFMLogger.logMessage(TAG, "onResume");
