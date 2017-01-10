@@ -9,7 +9,7 @@ import android.view.animation.DecelerateInterpolator;
  */
 class AnimatorUtil {
 
-    private static final long ANIMATION_DURATION = 1000L;
+    private static final long ANIMATION_DURATION = 500L;
 
     static void replaceViews(final View view1, final View view2) {
         final int[] elevationChartLocation = new int[2];
