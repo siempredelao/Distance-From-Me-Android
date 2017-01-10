@@ -11,13 +11,12 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -216,12 +215,10 @@ public class Utils {
     public static List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
         DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
 
-        final Function<Position, LatLng> positionToLatLng = new Function<Position, LatLng>() {
-            @Override
-            public LatLng apply(Position input) {
-                return new LatLng(input.getLatitude(), input.getLongitude());
-            }
-        };
-        return Lists.transform(positionList, positionToLatLng);
+        final List<LatLng> result = new ArrayList<>();
+        for (final Position position : positionList) {
+            result.add(new LatLng(position.getLatitude(), position.getLongitude()));
+        }
+        return result;
     }
 }

@@ -3,9 +3,8 @@ package gc.david.dfm.elevation;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import gc.david.dfm.elevation.model.ElevationModel;
@@ -109,11 +108,10 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
     }
 
     private List<Double> getElevationListFromModel(final ElevationModel elevationModel) {
-        return Lists.transform(elevationModel.getResults(), new Function<Result, Double>() {
-            @Override
-            public Double apply(final Result result) {
-                return result.getElevation();
-            }
-        });
+        final List<Double> elevationList = new ArrayList<>();
+        for (Result result : elevationModel.getResults()) {
+            elevationList.add(result.getElevation());
+        }
+        return elevationList;
     }
 }

@@ -53,7 +53,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.common.collect.Lists;
 import com.inmobi.ads.InMobiAdRequestStatus;
 import com.inmobi.ads.InMobiBanner;
 import com.inmobi.ads.InMobiBanner.BannerAdListener;
@@ -65,6 +64,8 @@ import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean         mustShowPositionWhenComingFromOutside = false;
     private LatLng          sendDestinationPosition               = null;
     private GraphView       graphView                             = null;
-    private List<LatLng>    coordinates                           = Lists.newArrayList();
+    private List<LatLng>    coordinates                           = Collections.emptyList();
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private boolean               calculatingDistance;
 
@@ -1355,7 +1356,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     marker.showInfoWindow();
                     // moveCamera
                     moveCameraZoom(selectedPosition, selectedPosition, false);
-                    distanceMeasuredAsText = calculateDistance(Lists.newArrayList(selectedPosition, selectedPosition));
+                    distanceMeasuredAsText = calculateDistance(Arrays.asList(selectedPosition, selectedPosition));
                     // That means we are looking for a first position, so we want to calculate a distance starting
                     // from here
                     calculatingDistance = true;
@@ -1436,10 +1437,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             switch (result) {
                 case 0:
                     processSelectedAddress(0);
-                    drawAndShowMultipleDistances(Lists.newArrayList(new LatLng(currentLocation.getLatitude(),
-                                                                               currentLocation.getLongitude()),
-                                                                    selectedPosition),
-                                                 fullAddress.toString(),
+                    drawAndShowMultipleDistances(Arrays.asList(new LatLng(currentLocation.getLatitude(),
+                                                                          currentLocation.getLongitude()),
+                                                               selectedPosition), fullAddress.toString(),
                                                  false,
                                                  true);
                     break;

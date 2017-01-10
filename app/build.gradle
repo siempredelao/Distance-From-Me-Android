@@ -49,7 +49,6 @@ ext {
 	inmobiVersion = '6.0.3'
 	butterKnifeVersion = '8.4.0'
 	greenDaoVersion = '1.3.1'
-	guavaVersion = '18.0'
 	crashlyticsVersion = '2.6.5'
 	daggerVersion = '2.8'
 	okhttpVersion = '3.5.0'
@@ -70,7 +69,6 @@ dependencies {
 	compile "$butterKnifeGroup:butterknife:$butterKnifeVersion"
 	annotationProcessor "$butterKnifeGroup:butterknife-compiler:$butterKnifeVersion"
 	compile "de.greenrobot:greendao:$greenDaoVersion"
-	compile "com.google.guava:guava:$guavaVersion"
 	compile("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar") {
 		transitive = true;
 	}
