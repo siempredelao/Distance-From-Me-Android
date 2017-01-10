@@ -44,36 +44,39 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
 
     @Override
     public void run() {
-        final String coordinatesPath = getCoordinatesPath(coordinateList);
+        if (coordinateList.isEmpty()) {
+            notifyError();
+        } else {
+            final String coordinatesPath = getCoordinatesPath(coordinateList);
 
-        try {
-            final ElevationModel elevationModel = repository.getElevation(coordinatesPath);
+            try {
+                final ElevationModel elevationModel = repository.getElevation(coordinatesPath);
 
-            if ("OK".equals(elevationModel.getStatus())) {
-                final List<Double> elevationList = getElevationListFromModel(elevationModel);
+                if ("OK".equals(elevationModel.getStatus())) {
+                    final List<Double> elevationList = getElevationListFromModel(elevationModel);
 
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onElevationLoaded(elevationList);
-                    }
-                });
-            } else {
-                mainThread.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onError();
-                    }
-                });
-            }
-        } catch (Exception exception) {
-            mainThread.post(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onError();
+                    mainThread.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onElevationLoaded(elevationList);
+                        }
+                    });
+                } else {
+                    notifyError();
                 }
-            });
+            } catch (Exception exception) {
+                notifyError();
+            }
         }
+    }
+
+    private void notifyError() {
+        mainThread.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onError();
+            }
+        });
     }
 
     private String getCoordinatesPath(final List<LatLng> coordinateList) {
