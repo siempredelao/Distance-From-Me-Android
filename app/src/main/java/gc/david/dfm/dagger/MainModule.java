@@ -1,9 +1,15 @@
 package gc.david.dfm.dagger;
 
+import android.content.Context;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import gc.david.dfm.ConnectionManager;
+import gc.david.dfm.DefaultConnectionManager;
+import gc.david.dfm.DefaultPreferencesProvider;
+import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.elevation.ElevationInteractor;
 import gc.david.dfm.elevation.ElevationRemoteDataSource;
 import gc.david.dfm.elevation.ElevationRepository;
@@ -30,4 +36,18 @@ public class MainModule {
                                              ElevationRepository elevationRepository) {
         return new ElevationInteractor(executor, mainThread, elevationRepository);
     }
+
+    @Provides
+    @Singleton
+    ConnectionManager provideConnectionManager(Context context) {
+        return new DefaultConnectionManager(context);
+    }
+
+    @Provides
+    @Singleton
+    PreferencesProvider providePreferencesProvider(Context context) {
+        return new DefaultPreferencesProvider(context);
+    }
+
+
 }

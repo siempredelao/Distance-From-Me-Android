@@ -4,19 +4,29 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import gc.david.dfm.ConnectionManager;
+import gc.david.dfm.PreferencesProvider;
+
 /**
  * Created by david on 06.01.17.
  */
 public class ElevationPresenter implements Elevation.Presenter {
 
-    private final Elevation.View   elevationView;
-    private final ElevationUseCase elevationUseCase;
+    private final Elevation.View      elevationView;
+    private final ElevationUseCase    elevationUseCase;
+    private final ConnectionManager   connectionManager;
+    private final PreferencesProvider preferencesProvider;
 
     private boolean stopPendingUseCase = false;
 
-    public ElevationPresenter(final Elevation.View elevationView, final ElevationUseCase elevationUseCase) {
+    public ElevationPresenter(final Elevation.View elevationView,
+                              final ElevationUseCase elevationUseCase,
+                              final ConnectionManager connectionManager,
+                              final PreferencesProvider preferencesProvider) {
         this.elevationView = elevationView;
         this.elevationUseCase = elevationUseCase;
+        this.connectionManager = connectionManager;
+        this.preferencesProvider = preferencesProvider;
         this.elevationView.setPresenter(this);
     }
 
@@ -24,19 +34,23 @@ public class ElevationPresenter implements Elevation.Presenter {
     public void buildChart(final List<LatLng> coordinates) {
         stopPendingUseCase = false;
 
-        elevationUseCase.execute(coordinates, new ElevationUseCase.Callback() {
-            @Override
-            public void onElevationLoaded(List<Double> elevationList) {
-                if (!stopPendingUseCase) {
-                    elevationView.buildChart(elevationList);
+        if (preferencesProvider.shouldShowElevationChart() && connectionManager.isOnline()) {
+            elevationUseCase.execute(coordinates, new ElevationUseCase.Callback() {
+                @Override
+                public void onElevationLoaded(List<Double> elevationList) {
+                    if (!stopPendingUseCase) {
+                        elevationView.buildChart(elevationList);
+                    }
                 }
-            }
 
-            @Override
-            public void onError() {
-                // TODO: 06.01.17 handle error
-            }
-        });
+                @Override
+                public void onError() {
+                    // TODO: 06.01.17 handle error
+                }
+            });
+        } else {
+            elevationView.hideChart();
+        }
     }
 
     @Override

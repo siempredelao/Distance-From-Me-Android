@@ -76,10 +76,12 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import dagger.Lazy;
 import gc.david.dfm.BuildConfig;
+import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.PackageManager;
+import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
@@ -102,7 +104,6 @@ import gc.david.dfm.model.Position;
 import gc.david.dfm.service.GeofencingService;
 
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
 
@@ -142,6 +143,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected Lazy<DeviceInfo>     deviceInfo;
     @Inject
     protected ElevationUseCase     elevationUseCase;
+    @Inject
+    protected ConnectionManager    connectionManager;
+    @Inject
+    protected PreferencesProvider  preferencesProvider;
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -195,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             supportActionBar.setHomeButtonEnabled(true);
         }
 
-        elevationPresenter = new ElevationPresenter(this, elevationUseCase);
+        elevationPresenter = new ElevationPresenter(this, elevationUseCase, connectionManager, preferencesProvider);
 
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
@@ -249,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             banner.load();
         }
 
-        if (!isOnline(appContext)) {
+        if (!connectionManager.isOnline()) {
             showConnectionProblemsDialog();
         }
 
@@ -1007,12 +1012,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // Aquí hacer la animación de la cámara
         moveCameraZoom(coordinates.get(0), coordinates.get(coordinates.size() - 1), mustApplyZoomIfNeeded);
 
-        // Muestra el perfil de elevación si está en las preferencias
-        // y si está conectado a internet
-        // TODO: 06.01.17 move this decision to ElevationPresenter
-        if (DFMPreferences.shouldShowElevationChart(appContext) && isOnline(appContext)) {
-            elevationPresenter.buildChart(coordinates);
-        }
+        elevationPresenter.buildChart(coordinates);
     }
 
     /**
@@ -1265,7 +1265,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             selectedPosition = null;
 
             // Comprobamos que haya conexión con internet (WiFi o Datos)
-            if (!isOnline(appContext)) {
+            if (!connectionManager.isOnline()) {
                 showConnectionProblemsDialog();
 
                 // Restauramos el menú y que vuelva a empezar de nuevo
