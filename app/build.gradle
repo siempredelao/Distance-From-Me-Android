@@ -28,6 +28,7 @@ android {
 		targetSdkVersion 21
 		versionName '3.1'
 		versionCode 22
+		resConfigs "en", "ca", "de", "es", "fr", "it", "pt"
 	}
 
 	buildTypes {
