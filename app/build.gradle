@@ -61,12 +61,22 @@ ext {
 
 dependencies {
 	compile "$supportLibraryGroup:design:$supportLibraryVersion"
-    compile "$supportLibraryGroup:preference-v7:$supportLibraryVersion"
-	compile "$playServicesGroup:play-services-maps:$playServicesVersion"
-	compile "$playServicesGroup:play-services-location:$playServicesVersion"
-	compile "com.jjoe64:graphview:$graphViewVersion"
+	compile("$supportLibraryGroup:preference-v7:$supportLibraryVersion") {
+		transitive = false;
+	}
+	compile("$playServicesGroup:play-services-maps:$playServicesVersion") {
+		exclude group: "com.android.support", module: "support-v4"
+	}
+	compile("$playServicesGroup:play-services-location:$playServicesVersion") {
+		transitive = false;
+	}
+	compile("com.jjoe64:graphview:$graphViewVersion") {
+		transitive = false;
+	}
 	compile "com.inmobi.monetization:inmobi-ads:$inmobiVersion"
-	compile "$butterKnifeGroup:butterknife:$butterKnifeVersion"
+	compile("$butterKnifeGroup:butterknife:$butterKnifeVersion") {
+		exclude group: "com.android.support", module: "support-annotations"
+	}
 	annotationProcessor "$butterKnifeGroup:butterknife-compiler:$butterKnifeVersion"
 	compile "de.greenrobot:greendao:$greenDaoVersion"
 	compile("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar") {
