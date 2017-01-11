@@ -64,8 +64,8 @@ import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean         mustShowPositionWhenComingFromOutside = false;
     private LatLng          sendDestinationPosition               = null;
     private GraphView       graphView                             = null;
-    private List<LatLng>    coordinates                           = Collections.emptyList();
+    private List<LatLng>    coordinates                           = new ArrayList<>();
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private boolean               calculatingDistance;
 

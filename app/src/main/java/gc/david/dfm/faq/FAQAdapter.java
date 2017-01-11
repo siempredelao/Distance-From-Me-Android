@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +27,7 @@ public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
     private List<Faq> faqList;
 
     public FAQAdapter() {
-        this.faqList = Collections.emptyList();
+        this.faqList = new ArrayList<>();
     }
 
     @Override
