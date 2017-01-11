@@ -38,12 +38,14 @@ android {
 			// Uncomment this to test ProGuard before release
 //			minifyEnabled true
 //			shrinkResources true
-//			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//			proguardFiles getDefaultProguardFile('proguard-android.txt')
+//			proguardFiles fileTree(dir: "proguard", include: ["*.pro"]).asList().toArray()
 		}
 		release {
 			minifyEnabled true
 			shrinkResources true
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+			proguardFiles getDefaultProguardFile('proguard-android.txt')
+			proguardFiles fileTree(dir: "proguard", include: ["*.pro"]).asList().toArray()
 		}
 	}
 }
