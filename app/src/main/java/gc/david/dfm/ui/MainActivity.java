@@ -35,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -169,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Show position if we come from other app (p.e. Whatsapp)
     private boolean         mustShowPositionWhenComingFromOutside = false;
     private LatLng          sendDestinationPosition               = null;
-    private boolean         bannerShown                           = false;
     private GraphView       graphView                             = null;
     private List<LatLng>    coordinates                           = Lists.newArrayList();
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -205,13 +205,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
 
+        // FIXME: 11.01.17 workaround: InMobi SDK v6.0.3 stops fetching ads if banner is not visible
+        // and when it is visible, it checks if height is valid (not zero)
+        banner.setVisibility(View.VISIBLE);
+        final ViewGroup.LayoutParams newLayoutParams = banner.getLayoutParams();
+        newLayoutParams.height = 1;
+        banner.setLayoutParams(newLayoutParams);
+
         banner.setListener(new BannerAdListener() {
             @Override
             public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
                 DFMLogger.logMessage(TAG, "onAdLoadSucceeded");
 
-                banner.setVisibility(View.VISIBLE);
-                bannerShown = true; // TODO: 06.01.17 remove this field then...
+                final ViewGroup.LayoutParams newLayoutParams = banner.getLayoutParams();
+                newLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.banner_height);
+                banner.setLayoutParams(newLayoutParams);
+
                 fixMapPadding();
             }
 
@@ -1120,32 +1129,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+    // FIXME: 11.01.17 workaround
+    private boolean isBannerShown() {
+        return banner.getLayoutParams().height > 1;
+    }
+
     private void fixMapPadding() {
-        if (bannerShown) {
-            DFMLogger.logMessage(TAG, "fixMapPadding bannerShown");
-
-            if (rlElevationChart.isShown()) {
-                DFMLogger.logMessage(TAG, "fixMapPadding elevationChartShown");
-
-                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
-            } else {
-                DFMLogger.logMessage(TAG, "fixMapPadding NOT elevationChartShown");
-
-                googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
-            }
-        } else {
-            DFMLogger.logMessage(TAG, "fixMapPadding NOT bannerShown");
-
-            if (rlElevationChart.isShown()) {
-                DFMLogger.logMessage(TAG, "fixMapPadding elevationChartShown");
-
-                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
-            } else {
-                DFMLogger.logMessage(TAG, "fixMapPadding NOT elevationChartShown");
-
-                googleMap.setPadding(0, 0, 0, 0);
-            }
-        }
+        DFMLogger.logMessage(TAG,
+                             String.format("fixMapPadding bannerShown %s elevationChartShown %s",
+                                           isBannerShown(),
+                                           rlElevationChart.isShown()));
+        googleMap.setPadding(0,
+                             rlElevationChart.isShown() ? rlElevationChart.getHeight() : 0,
+                             0,
+                             isBannerShown() ? banner.getLayoutParams().height : 0);
     }
 
     @Override
