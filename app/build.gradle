@@ -54,6 +54,10 @@ ext {
 	daggerVersion = '2.8'
 	okhttpVersion = '3.5.0'
 	gsonVersion = '2.8.0'
+	constraintLayoutVersion = '1.0.0-beta4'
+
+	junitVersion = '4.12'
+	mockitoVersion = '2.3.0'
 }
 
 dependencies {
@@ -74,6 +78,9 @@ dependencies {
 	annotationProcessor "$daggerGroup:dagger-compiler:$daggerVersion"
 	compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
 	compile "com.google.code.gson:gson:$gsonVersion"
-	compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+	compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+
+	testCompile "junit:junit:$junitVersion"
+	testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
 
