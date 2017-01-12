@@ -15,6 +15,12 @@ public class ElevationModel {
     @Expose
     private String       status;
 
+    private ElevationModel(Builder builder) {
+        errorMessage = builder.errorMessage;
+        results = builder.results;
+        status = builder.status;
+    }
+
     public String getErrorMessage() {
         return errorMessage;
     }
@@ -25,5 +31,33 @@ public class ElevationModel {
 
     public String getStatus() {
         return status;
+    }
+
+    public static final class Builder {
+        private String       errorMessage;
+        private List<Result> results;
+        private String       status;
+
+        public Builder() {
+        }
+
+        public Builder withErrorMessage(String val) {
+            errorMessage = val;
+            return this;
+        }
+
+        public Builder withResults(List<Result> val) {
+            results = val;
+            return this;
+        }
+
+        public Builder withStatus(String val) {
+            status = val;
+            return this;
+        }
+
+        public ElevationModel build() {
+            return new ElevationModel(this);
+        }
     }
 }

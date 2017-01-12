@@ -1,5 +1,7 @@
 package gc.david.dfm.elevation;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -12,10 +14,23 @@ import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
 
+import static android.support.annotation.VisibleForTesting.PRIVATE;
+
 /**
  * Created by david on 05.01.17.
  */
 public class ElevationInteractor implements Interactor, ElevationUseCase {
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final String STATUS_OK               = "OK";
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final String STATUS_INVALID_REQUEST  = "INVALID_REQUEST";
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final String STATUS_OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final String STATUS_REQUEST_DENIED   = "REQUEST_DENIED";
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final String STATUS_UNKNOWN_ERROR    = "UNKNOWN_ERROR";
 
     private final Executor            executor;
     private final MainThread          mainThread;
@@ -52,7 +67,7 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
             try {
                 final ElevationModel elevationModel = repository.getElevation(coordinatesPath);
 
-                if ("OK".equals(elevationModel.getStatus())) {
+                if (STATUS_OK.equals(elevationModel.getStatus())) {
                     final List<Double> elevationList = getElevationListFromModel(elevationModel);
 
                     mainThread.post(new Runnable() {
