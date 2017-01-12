@@ -23,7 +23,7 @@ public class ElevationRemoteDataSource implements ElevationRepository {
     @Override
     public ElevationModel getElevation(final String coordinatesPath) {
         final Request request = new Request.Builder().url(String.format(Locale.getDefault(),
-                                                                        "http://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d",
+                                                                        "https://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d",
                                                                         coordinatesPath,
                                                                         ELEVATION_SAMPLES))
                                                      .header("content-type", "application/json")
@@ -32,7 +32,7 @@ public class ElevationRemoteDataSource implements ElevationRepository {
             final Response response = client.newCall(request).execute();
             final ElevationModel elevationModel = gson.fromJson(response.body().charStream(), ElevationModel.class);
             return elevationModel;
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
