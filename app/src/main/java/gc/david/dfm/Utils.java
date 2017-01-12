@@ -44,13 +44,7 @@ public class Utils {
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
     }
 
-
-    /**
-     * Function to know the current network status.
-     *
-     * @return Returns <code>true</code> if the device is connected to a network;
-     * otherwise, returns <code>false</code>.
-     */
+    // TODO: 10.01.17 move to DefaultConnectionManager class
     public static boolean isOnline(final Context context) {
         DFMLogger.logMessage(TAG, "isOnline");
 

@@ -1,6 +1,5 @@
 package gc.david.dfm.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -35,8 +35,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -61,18 +61,10 @@ import com.inmobi.sdk.InMobiSdk;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
+import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -82,19 +74,26 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import dagger.Lazy;
 import gc.david.dfm.BuildConfig;
+import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.PackageManager;
+import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
-import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.DaggerMainComponent;
+import gc.david.dfm.dagger.MainModule;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.elevation.Elevation;
+import gc.david.dfm.elevation.ElevationPresenter;
+import gc.david.dfm.elevation.ElevationUseCase;
 import gc.david.dfm.feedback.Feedback;
 import gc.david.dfm.feedback.FeedbackPresenter;
 import gc.david.dfm.logger.DFMLogger;
@@ -106,7 +105,6 @@ import gc.david.dfm.model.Position;
 import gc.david.dfm.service.GeofencingService;
 
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
 
@@ -114,23 +112,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                                OnMapReadyCallback,
                                                                OnMapLongClickListener,
                                                                OnMapClickListener,
-                                                               OnInfoWindowClickListener {
+                                                               OnInfoWindowClickListener,
+                                                               Elevation.View {
 
-    private static final String TAG                     = MainActivity.class.getSimpleName();
-    private static final int    ELEVATION_SAMPLES       = 100;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.elevationchart)
-    protected RelativeLayout rlElevationChart;
+    protected RelativeLayout       rlElevationChart;
     @BindView(R.id.closeChart)
-    protected ImageView      ivCloseElevationChart;
+    protected ImageView            ivCloseElevationChart;
     @BindView(R.id.tbMain)
-    protected Toolbar        tbMain;
+    protected Toolbar              tbMain;
     @BindView(R.id.banner)
-    protected InMobiBanner   banner;
+    protected InMobiBanner         banner;
     @BindView(R.id.drawer_layout)
-    protected DrawerLayout   drawerLayout;
+    protected DrawerLayout         drawerLayout;
     @BindView(R.id.nvDrawer)
-    protected NavigationView nvDrawer;
+    protected NavigationView       nvDrawer;
+    @BindView(R.id.main_activity_showchart_floatingactionbutton)
+    protected FloatingActionButton fabShowChart;
+    @BindView(R.id.main_activity_mylocation_floatingactionbutton)
+    protected FloatingActionButton fabMyLocation;
 
     @Inject
     protected DaoSession           daoSession;
@@ -140,6 +142,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected Lazy<PackageManager> packageManager;
     @Inject
     protected Lazy<DeviceInfo>     deviceInfo;
+    @Inject
+    protected ElevationUseCase     elevationUseCase;
+    @Inject
+    protected ConnectionManager    connectionManager;
+    @Inject
+    protected PreferencesProvider  preferencesProvider;
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -162,15 +170,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Show position if we come from other app (p.e. Whatsapp)
     private boolean         mustShowPositionWhenComingFromOutside = false;
     private LatLng          sendDestinationPosition               = null;
-    private boolean         bannerShown                           = false;
-    private boolean         elevationChartShown                   = false;
-    @SuppressWarnings("rawtypes")
-    private AsyncTask       showingElevationTask                  = null;
     private GraphView       graphView                             = null;
     private List<LatLng>    coordinates                           = Lists.newArrayList();
-    private float                 DEVICE_DENSITY;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private boolean               calculatingDistance;
+
+    private Elevation.Presenter elevationPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,8 +185,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         InMobiSdk.setLogLevel(BuildConfig.DEBUG ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.NONE);
         InMobiSdk.init(this, getString(R.string.inmobi_api_key));
         setContentView(R.layout.activity_main);
-        DaggerRootComponent.builder()
+        DaggerMainComponent.builder()
                            .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .mainModule(new MainModule())
                            .build()
                            .inject(this);
         bind(this);
@@ -194,17 +200,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             supportActionBar.setHomeButtonEnabled(true);
         }
 
-        DEVICE_DENSITY = getResources().getDisplayMetrics().density;
+        elevationPresenter = new ElevationPresenter(this, elevationUseCase, connectionManager, preferencesProvider);
 
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
+
+        // FIXME: 11.01.17 workaround: InMobi SDK v6.0.3 stops fetching ads if banner is not visible
+        // and when it is visible, it checks if height is valid (not zero)
+        banner.setVisibility(View.VISIBLE);
+        final ViewGroup.LayoutParams newLayoutParams = banner.getLayoutParams();
+        newLayoutParams.height = 1;
+        banner.setLayoutParams(newLayoutParams);
 
         banner.setListener(new BannerAdListener() {
             @Override
             public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
                 DFMLogger.logMessage(TAG, "onAdLoadSucceeded");
 
-                bannerShown = true;
+                final ViewGroup.LayoutParams newLayoutParams = banner.getLayoutParams();
+                newLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.banner_height);
+                banner.setLayoutParams(newLayoutParams);
+
                 fixMapPadding();
             }
 
@@ -247,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             banner.load();
         }
 
-        if (!isOnline(appContext)) {
+        if (!connectionManager.isOnline()) {
             showConnectionProblemsDialog();
         }
 
@@ -320,6 +336,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onMapReady(final GoogleMap map) {
         googleMap = map;
+
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
         googleMap.setMyLocationEnabled(true);
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -408,13 +426,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         coordinates.clear();
         googleMap.clear();
-        if (showingElevationTask != null) {
-            DFMLogger.logMessage(TAG, "onStartingPointSelected cancelling elevation task");
-            showingElevationTask.cancel(true);
-        }
-        rlElevationChart.setVisibility(View.INVISIBLE);
-        elevationChartShown = false;
-        fixMapPadding();
+
+        elevationPresenter.onReset();
     }
 
     private DistanceMode getSelectedDistanceMode() {
@@ -790,7 +803,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /**
      * Called when the system detects that this Activity is now visible.
      */
-    @SuppressLint("NewApi")
     @Override
     public void onResume() {
         DFMLogger.logMessage(TAG, "onResume");
@@ -804,10 +816,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onDestroy() {
         DFMLogger.logMessage(TAG, "onDestroy");
 
-        if (showingElevationTask != null) {
-            DFMLogger.logMessage(TAG, "onDestroy cancelling showing elevation task before destroying app");
-            showingElevationTask.cancel(true);
-        }
+        elevationPresenter.onReset();
         super.onDestroy();
     }
 
@@ -1012,11 +1021,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // Aquí hacer la animación de la cámara
         moveCameraZoom(coordinates.get(0), coordinates.get(coordinates.size() - 1), mustApplyZoomIfNeeded);
 
-        // Muestra el perfil de elevación si está en las preferencias
-        // y si está conectado a internet
-        if (DFMPreferences.shouldShowElevationChart(appContext) && isOnline(appContext)) {
-            getElevation(coordinates);
-        }
+        elevationPresenter.buildChart(coordinates);
     }
 
     /**
@@ -1124,67 +1129,113 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    /**
-     * Calculates elevation points in background and shows elevation chart.
-     *
-     * @param coordinates Positions list.
-     */
-    private void getElevation(final List<LatLng> coordinates) {
-        DFMLogger.logMessage(TAG, "getElevation");
-
-        String positionListUrlParameter = "";
-        for (int i = 0; i < coordinates.size(); i++) {
-            final LatLng coordinate = coordinates.get(i);
-            positionListUrlParameter += String.valueOf(coordinate.latitude) +
-                                        "," +
-                                        String.valueOf(coordinate.longitude);
-            if (i != coordinates.size() - 1) {
-                positionListUrlParameter += "|";
-            }
-        }
-        if (positionListUrlParameter.isEmpty()) {
-            final IllegalStateException illegalStateException = new IllegalStateException("Coordinates list empty");
-            DFMLogger.logException(illegalStateException);
-            throw illegalStateException;
-        }
-
-        if (showingElevationTask != null) {
-            DFMLogger.logMessage(TAG, "getElevation cancelling previous elevation asynctask");
-            showingElevationTask.cancel(true);
-        }
-        showingElevationTask = new GetAltitude().execute(positionListUrlParameter);
+    // FIXME: 11.01.17 workaround
+    private boolean isBannerShown() {
+        return banner.getLayoutParams().height > 1;
     }
 
-    /**
-     * Sets map attending to the action which is performed.
-     */
     private void fixMapPadding() {
-        DFMLogger.logMessage(TAG, "fixMapPadding");
+        DFMLogger.logMessage(TAG,
+                             String.format("fixMapPadding bannerShown %s elevationChartShown %s",
+                                           isBannerShown(),
+                                           rlElevationChart.isShown()));
+        googleMap.setPadding(0,
+                             rlElevationChart.isShown() ? rlElevationChart.getHeight() : 0,
+                             0,
+                             isBannerShown() ? banner.getLayoutParams().height : 0);
+    }
 
-        if (bannerShown) {
-            DFMLogger.logMessage(TAG, "fixMapPadding bannerShown");
+    @Override
+    public void setPresenter(final Elevation.Presenter presenter) {
+        this.elevationPresenter = presenter;
+    }
 
-            if (elevationChartShown) {
-                DFMLogger.logMessage(TAG, "fixMapPadding elevationChartShown");
+    @Override
+    public void hideChart() {
+        rlElevationChart.setVisibility(View.INVISIBLE);
+        fabShowChart.setVisibility(View.INVISIBLE);
+        fixMapPadding();
+    }
 
-                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, banner.getLayoutParams().height);
-            } else {
-                DFMLogger.logMessage(TAG, "fixMapPadding NOT elevationChartShown");
+    @Override
+    public void showChart() {
+        rlElevationChart.setVisibility(View.VISIBLE);
+        fixMapPadding();
+    }
 
-                googleMap.setPadding(0, 0, 0, banner.getLayoutParams().height);
-            }
-        } else {
-            DFMLogger.logMessage(TAG, "fixMapPadding NOT bannerShown");
+    @Override
+    public void buildChart(final List<Double> elevationList) {
+        final Locale locale = getAmericanOrEuropeanLocale();
 
-            if (elevationChartShown) {
-                DFMLogger.logMessage(TAG, "fixMapPadding elevationChartShown");
+        // Creates the series and adds data to it
+        final GraphViewSeries series = buildGraphViewSeries(elevationList, locale);
 
-                googleMap.setPadding(0, rlElevationChart.getHeight(), 0, 0);
-            } else {
-                DFMLogger.logMessage(TAG, "fixMapPadding NOT elevationChartShown");
+        if (graphView == null) {
+            graphView = new LineGraphView(appContext,
+                                          getString(R.string.elevation_chart_title,
+                                                    Haversine.getAltitudeUnitByLocale(locale)));
+            final GraphViewStyle graphViewStyle = graphView.getGraphViewStyle();
+            graphViewStyle.setGridColor(Color.TRANSPARENT);
+            graphViewStyle.setNumHorizontalLabels(1); // Not working with zero?
+            graphViewStyle.setTextSize(getResources().getDimension(R.dimen.elevation_chart_text_size));
+            graphViewStyle.setVerticalLabelsWidth(getResources().getDimensionPixelSize(R.dimen.elevation_chart_vertical_label_width));
+            rlElevationChart.addView(graphView);
 
-                googleMap.setPadding(0, 0, 0, 0);
-            }
+            ivCloseElevationChart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    elevationPresenter.onCloseChart();
+                }
+            });
+        }
+        graphView.removeAllSeries();
+        graphView.addSeries(series);
+
+        elevationPresenter.onChartBuilt();
+    }
+
+    @NonNull
+    private GraphViewSeries buildGraphViewSeries(final List<Double> elevationList, final Locale locale) {
+        final GraphViewSeriesStyle style = new GraphViewSeriesStyle(ContextCompat.getColor(getApplicationContext(),
+                                                                                           R.color.elevation_chart_line),
+                                                                    getResources().getDimensionPixelSize(R.dimen.elevation_chart_line_size));
+        final GraphViewSeries series = new GraphViewSeries(null, style, new GraphView.GraphViewData[]{});
+
+        for (int w = 0; w < elevationList.size(); w++) {
+            series.appendData(new GraphView.GraphViewData(w,
+                                                          Haversine.normalizeAltitudeByLocale(elevationList.get(w),
+                                                                                              locale)),
+                              false,
+                              elevationList.size());
+        }
+        return series;
+    }
+
+    @Override
+    public void animateHideChart() {
+        AnimatorUtil.replaceViews(rlElevationChart, fabShowChart);
+    }
+
+    @Override
+    public void animateShowChart() {
+        AnimatorUtil.replaceViews(fabShowChart, rlElevationChart);
+    }
+
+    @Override
+    public boolean isMinimiseButtonShown() {
+        return fabShowChart.isShown();
+    }
+
+    @OnClick(R.id.main_activity_showchart_floatingactionbutton)
+    void onShowChartClick() {
+        elevationPresenter.onOpenChart();
+    }
+
+    @OnClick(R.id.main_activity_mylocation_floatingactionbutton)
+    void onMyLocationClick() {
+        if (currentLocation != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(),
+                                                                             currentLocation.getLongitude())));
         }
     }
 
@@ -1211,7 +1262,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             selectedPosition = null;
 
             // Comprobamos que haya conexión con internet (WiFi o Datos)
-            if (!isOnline(appContext)) {
+            if (!connectionManager.isOnline()) {
                 showConnectionProblemsDialog();
 
                 // Restauramos el menú y que vuelva a empezar de nuevo
@@ -1405,136 +1456,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             progressDialog.dismiss();
         }
 
-    }
-
-    private class GetAltitude extends AsyncTask<String, Void, Double> {
-
-        private final String TAG = GetAltitude.class.getSimpleName();
-
-        private HttpClient httpClient = null;
-        private HttpGet    httpGet    = null;
-        private HttpResponse httpResponse;
-        private String       responseAsString;
-        private InputStream inputStream = null;
-        private JSONObject responseJSON;
-
-        @Override
-        protected void onPreExecute() {
-            DFMLogger.logMessage(TAG, "onPreExecute");
-
-            httpClient = new DefaultHttpClient();
-            responseAsString = null;
-
-            // Delete elevation chart if exists
-            if (graphView != null) {
-                rlElevationChart.removeView(graphView);
-            }
-            rlElevationChart.setVisibility(View.INVISIBLE);
-            graphView = null;
-            elevationChartShown = false;
-            fixMapPadding();
-        }
-
-        @Override
-        protected Double doInBackground(String... params) {
-            DFMLogger.logMessage(TAG, "doInBackground");
-
-            httpGet = new HttpGet("http://maps.googleapis.com/maps/api/elevation/json?sensor=true"
-                                  + "&path=" + Uri.encode(params[0])
-                                  + "&samples=" + ELEVATION_SAMPLES);
-            httpGet.setHeader("content-type", "application/json");
-            try {
-                httpResponse = httpClient.execute(httpGet);
-                inputStream = httpResponse.getEntity().getContent();
-                if (inputStream != null) {
-                    responseAsString = Utils.convertInputStreamToString(inputStream);
-                    responseJSON = new JSONObject(responseAsString);
-                    if (responseJSON.get("status").equals("OK")) {
-                        buildElevationChart(responseJSON.getJSONArray("results"));
-                    }
-                }
-                // TODO merge this catches!
-            } catch (IllegalStateException | IOException | JSONException e) {
-                e.printStackTrace();
-                DFMLogger.logException(e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Double result) {
-            DFMLogger.logMessage(TAG, "onPostExecute result=" + result);
-
-            showElevationProfileChart();
-            // When HttpClient instance is no longer needed
-            // shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            httpClient.getConnectionManager().shutdown();
-        }
-
-        /**
-         * Builds the information about the elevation profile chart. Use this in
-         * a background task.
-         *
-         * @param array JSON array with the response data.
-         * @throws JSONException
-         */
-        private void buildElevationChart(final JSONArray array) throws JSONException {
-            DFMLogger.logMessage(TAG, "buildElevationChart");
-
-            // Creates the serie and adds data to it
-            final GraphViewSeries series =
-                    new GraphViewSeries(null,
-                                        new GraphViewSeriesStyle(ContextCompat.getColor(getApplicationContext(),
-                                                                                        R.color.elevation_chart_line),
-                                                                 (int) (3 * DEVICE_DENSITY)),
-                                        new GraphView.GraphViewData[]{});
-
-            final Locale locale = getAmericanOrEuropeanLocale();
-
-            for (int w = 0; w < array.length(); w++) {
-                series.appendData(new GraphView.GraphViewData(w,
-                                                              Haversine.normalizeAltitudeByLocale(Double.valueOf(array.getJSONObject(w)
-                                                                                                                      .get("elevation")
-                                                                                                                      .toString()),
-                                                                                                  locale)),
-                                  false,
-                                  array.length());
-            }
-
-            // Creates the line and add it to the chart
-            graphView = new LineGraphView(appContext, getString(R.string.elevation_chart_title,
-                                                                Haversine.getAltitudeUnitByLocale(locale)));
-            graphView.addSeries(series);
-            graphView.getGraphViewStyle().setGridColor(Color.TRANSPARENT);
-            graphView.getGraphViewStyle().setNumHorizontalLabels(1); // Con cero no va
-            graphView.getGraphViewStyle().setTextSize(15 * DEVICE_DENSITY);
-            graphView.getGraphViewStyle().setVerticalLabelsWidth((int) (50 * DEVICE_DENSITY));
-        }
-
-        private void showElevationProfileChart() {
-            DFMLogger.logMessage(TAG, "showElevationProfileChart");
-
-            if (graphView != null) {
-                rlElevationChart.setVisibility(LinearLayout.VISIBLE);
-                rlElevationChart.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),
-                                                                           R.color.elevation_chart_background));
-                rlElevationChart.addView(graphView);
-                elevationChartShown = true;
-                fixMapPadding();
-
-                ivCloseElevationChart.setVisibility(View.VISIBLE);
-                ivCloseElevationChart.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        rlElevationChart.removeView(graphView);
-                        rlElevationChart.setVisibility(View.INVISIBLE);
-                        elevationChartShown = false;
-                        fixMapPadding();
-                    }
-                });
-            }
-        }
     }
 
     private Locale getAmericanOrEuropeanLocale() {

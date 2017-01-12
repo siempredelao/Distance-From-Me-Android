@@ -21,7 +21,6 @@ repositories {
 android {
 	compileSdkVersion 25
 	buildToolsVersion '25.0.0'
-	useLibrary 'org.apache.http.legacy' // remove!
 
 	defaultConfig {
 		applicationId 'gc.david.dfm'
@@ -53,6 +52,12 @@ ext {
 	guavaVersion = '18.0'
 	crashlyticsVersion = '2.6.5'
 	daggerVersion = '2.8'
+	okhttpVersion = '3.5.0'
+	gsonVersion = '2.8.0'
+	constraintLayoutVersion = '1.0.0-beta4'
+
+	junitVersion = '4.12'
+	mockitoVersion = '2.3.0'
 }
 
 dependencies {
@@ -71,5 +76,11 @@ dependencies {
 	}
 	compile "$daggerGroup:dagger:$daggerVersion"
 	annotationProcessor "$daggerGroup:dagger-compiler:$daggerVersion"
+	compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
+	compile "com.google.code.gson:gson:$gsonVersion"
+	compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+
+	testCompile "junit:junit:$junitVersion"
+	testCompile "org.mockito:mockito-core:$mockitoVersion"
 }
 
