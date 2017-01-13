@@ -1,6 +1,5 @@
 package gc.david.dfm.elevation.data.model;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -8,11 +7,8 @@ import java.util.List;
 public class ElevationEntity {
 
     @SerializedName("error_message")
-    @Expose
     private String       errorMessage;
-    @Expose
     private List<Result> results;
-    @Expose
     private String       status;
 
     private ElevationEntity(Builder builder) {
