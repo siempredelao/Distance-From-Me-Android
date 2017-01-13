@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gc.david.dfm.elevation.data.ElevationRepository;
+import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper;
 import gc.david.dfm.elevation.data.model.ElevationEntity;
 import gc.david.dfm.elevation.data.model.Result;
-import gc.david.dfm.elevation.domain.ElevationInteractor;
-import gc.david.dfm.elevation.domain.ElevationUseCase;
+import gc.david.dfm.elevation.domain.model.Elevation;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
@@ -24,6 +24,7 @@ import gc.david.dfm.executor.MainThread;
 import static gc.david.dfm.elevation.domain.ElevationInteractor.STATUS_OK;
 import static gc.david.dfm.elevation.domain.ElevationInteractor.STATUS_UNKNOWN_ERROR;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,8 @@ public class ElevationInteractorTest {
     @Mock
     MainThread                mainThread;
     @Mock
+    ElevationEntityDataMapper elevationEntityDataMapper;
+    @Mock
     ElevationRepository       repository;
     @Mock
     ElevationUseCase.Callback callback;
@@ -49,7 +52,7 @@ public class ElevationInteractorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        elevationInteractor = new ElevationInteractor(executor, mainThread, repository);
+        elevationInteractor = new ElevationInteractor(executor, mainThread, elevationEntityDataMapper, repository);
 
         doAnswer(new Answer() {
             @Override
@@ -73,7 +76,7 @@ public class ElevationInteractorTest {
         List<LatLng> coordinateList = new ArrayList<>();
 
         // When
-        elevationInteractor.execute(coordinateList, callback);
+        elevationInteractor.execute(coordinateList, anyInt(), callback);
 
         // Then
         verify(callback).onError();
@@ -87,16 +90,20 @@ public class ElevationInteractorTest {
         List<Result> results = new ArrayList<>();
         double elevation = 1D;
         results.add(new Result.Builder().withElevation(elevation).build());
-        ElevationEntity elevationEntity = new ElevationEntity.Builder().withStatus(STATUS_OK).withResults(results).build();
-        when(repository.getElevation(anyString())).thenReturn(elevationEntity);
-        List<Double> elevationList = new ArrayList<>();
-        elevationList.add(elevation);
+        ElevationEntity elevationEntity = new ElevationEntity.Builder().withStatus(STATUS_OK)
+                                                                       .withResults(results)
+                                                                       .build();
+        when(repository.getElevation(anyString(), anyInt())).thenReturn(elevationEntity);
+        List<Double> elevationResults = new ArrayList<>();
+        elevationResults.add(elevation);
+        Elevation elevation1 = new Elevation(elevationResults);
+        when(elevationEntityDataMapper.transform(elevationEntity)).thenReturn(elevation1);
 
         // When
-        elevationInteractor.execute(coordinateList, callback);
+        elevationInteractor.execute(coordinateList, anyInt(), callback);
 
         // Then
-        verify(callback).onElevationLoaded(elevationList);
+        verify(callback).onElevationLoaded(elevation1);
     }
 
     @Test
@@ -105,10 +112,10 @@ public class ElevationInteractorTest {
         List<LatLng> coordinateList = new ArrayList<>();
         coordinateList.add(new LatLng(0D, 0D));
         ElevationEntity elevationEntity = new ElevationEntity.Builder().withStatus(STATUS_UNKNOWN_ERROR).build();
-        when(repository.getElevation(anyString())).thenReturn(elevationEntity);
+        when(repository.getElevation(anyString(), anyInt())).thenReturn(elevationEntity);
 
         // When
-        elevationInteractor.execute(coordinateList, callback);
+        elevationInteractor.execute(coordinateList, anyInt(), callback);
 
         // Then
         verify(callback).onError();
@@ -120,12 +127,13 @@ public class ElevationInteractorTest {
         List<LatLng> coordinateList = new ArrayList<>();
         coordinateList.add(new LatLng(0D, 0D));
         String coordinatesPath = "0.0,0.0";
+        int maxSamples = 1;
 
         // When
-        elevationInteractor.execute(coordinateList, callback);
+        elevationInteractor.execute(coordinateList, maxSamples, callback);
 
         // Then
-        verify(repository).getElevation(coordinatesPath);
+        verify(repository).getElevation(coordinatesPath, maxSamples);
     }
 
     @Test
@@ -135,11 +143,12 @@ public class ElevationInteractorTest {
         coordinateList.add(new LatLng(0D, 0D));
         coordinateList.add(new LatLng(1D, 1D));
         String coordinatesPath = "0.0,0.0|1.0,1.0";
+        int maxSamples = 1;
 
         // When
-        elevationInteractor.execute(coordinateList, callback);
+        elevationInteractor.execute(coordinateList, maxSamples, callback);
 
         // Then
-        verify(repository).getElevation(coordinatesPath);
+        verify(repository).getElevation(coordinatesPath, maxSamples);
     }
 }

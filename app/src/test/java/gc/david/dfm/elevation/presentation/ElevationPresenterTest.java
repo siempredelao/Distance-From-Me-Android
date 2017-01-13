@@ -16,10 +16,9 @@ import java.util.List;
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.elevation.domain.ElevationUseCase;
-import gc.david.dfm.elevation.presentation.Elevation;
-import gc.david.dfm.elevation.presentation.ElevationPresenter;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -90,7 +89,7 @@ public class ElevationPresenterTest {
         elevationPresenter.buildChart(coordinateList);
 
         // Then
-        verify(elevationUseCase).execute(eq(coordinateList), any(ElevationUseCase.Callback.class));
+        verify(elevationUseCase).execute(eq(coordinateList), anyInt(), any(ElevationUseCase.Callback.class));
     }
 
     @Test
@@ -99,20 +98,20 @@ public class ElevationPresenterTest {
         List<LatLng> coordinateList = new ArrayList<>();
         when(preferencesProvider.shouldShowElevationChart()).thenReturn(true);
         when(connectionManager.isOnline()).thenReturn(true);
-        final List<Double> interactorResultMock = new ArrayList<>();
+        final gc.david.dfm.elevation.domain.model.Elevation elevation = new gc.david.dfm.elevation.domain.model.Elevation(new ArrayList<Double>());
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((ElevationUseCase.Callback) invocation.getArguments()[1]).onElevationLoaded(interactorResultMock);
+                ((ElevationUseCase.Callback) invocation.getArguments()[2]).onElevationLoaded(elevation);
                 return null;
             }
-        }).when(elevationUseCase).execute(eq(coordinateList), any(ElevationUseCase.Callback.class));
+        }).when(elevationUseCase).execute(eq(coordinateList), anyInt(), any(ElevationUseCase.Callback.class));
 
         // When
         elevationPresenter.buildChart(coordinateList);
 
         // Then
-        verify(elevationView).buildChart(interactorResultMock);
+        verify(elevationView).buildChart(elevation.getResults());
     }
 
     @Test
@@ -121,21 +120,21 @@ public class ElevationPresenterTest {
         List<LatLng> coordinateList = new ArrayList<>();
         when(preferencesProvider.shouldShowElevationChart()).thenReturn(true);
         when(connectionManager.isOnline()).thenReturn(true);
-        final List<Double> interactorResultMock = new ArrayList<>();
+        final gc.david.dfm.elevation.domain.model.Elevation elevation = new gc.david.dfm.elevation.domain.model.Elevation(new ArrayList<Double>());
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 elevationPresenter.onReset(); // reset called before thread finishes
-                ((ElevationUseCase.Callback) invocation.getArguments()[1]).onElevationLoaded(interactorResultMock);
+                ((ElevationUseCase.Callback) invocation.getArguments()[2]).onElevationLoaded(elevation);
                 return null;
             }
-        }).when(elevationUseCase).execute(eq(coordinateList), any(ElevationUseCase.Callback.class));
+        }).when(elevationUseCase).execute(eq(coordinateList), anyInt(), any(ElevationUseCase.Callback.class));
 
         // When
         elevationPresenter.buildChart(coordinateList);
 
         // Then
-        verify(elevationView, never()).buildChart(interactorResultMock);
+        verify(elevationView, never()).buildChart(elevation.getResults());
     }
 
     @Test
@@ -151,7 +150,7 @@ public class ElevationPresenterTest {
                 ((ElevationUseCase.Callback) invocation.getArguments()[1]).onError();
                 return null;
             }
-        }).when(elevationUseCase).execute(eq(coordinateList), any(ElevationUseCase.Callback.class));
+        }).when(elevationUseCase).execute(eq(coordinateList), anyInt(), any(ElevationUseCase.Callback.class));
 
         // When
         elevationPresenter.buildChart(coordinateList);

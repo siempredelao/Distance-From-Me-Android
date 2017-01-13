@@ -32,10 +32,10 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
     @VisibleForTesting(otherwise = PRIVATE)
     static final String STATUS_UNKNOWN_ERROR    = "UNKNOWN_ERROR";
 
-    private final Executor            executor;
-    private final MainThread          mainThread;
+    private final Executor                  executor;
+    private final MainThread                mainThread;
     private final ElevationEntityDataMapper elevationEntityDataMapper;
-    private final ElevationRepository repository;
+    private final ElevationRepository       repository;
 
     private Callback     callback;
     private List<LatLng> coordinateList;
