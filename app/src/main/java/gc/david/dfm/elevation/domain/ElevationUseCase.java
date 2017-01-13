@@ -1,4 +1,4 @@
-package gc.david.dfm.elevation;
+package gc.david.dfm.elevation.domain;
 
 import com.google.android.gms.maps.model.LatLng;
 

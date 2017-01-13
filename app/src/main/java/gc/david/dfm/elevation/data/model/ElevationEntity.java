@@ -1,11 +1,11 @@
-package gc.david.dfm.elevation.model;
+package gc.david.dfm.elevation.data.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ElevationModel {
+public class ElevationEntity {
 
     @SerializedName("error_message")
     @Expose
@@ -15,7 +15,7 @@ public class ElevationModel {
     @Expose
     private String       status;
 
-    private ElevationModel(Builder builder) {
+    private ElevationEntity(Builder builder) {
         errorMessage = builder.errorMessage;
         results = builder.results;
         status = builder.status;
@@ -56,8 +56,8 @@ public class ElevationModel {
             return this;
         }
 
-        public ElevationModel build() {
-            return new ElevationModel(this);
+        public ElevationEntity build() {
+            return new ElevationEntity(this);
         }
     }
 }

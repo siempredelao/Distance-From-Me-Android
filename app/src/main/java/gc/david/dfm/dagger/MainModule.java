@@ -10,10 +10,10 @@ import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DefaultConnectionManager;
 import gc.david.dfm.DefaultPreferencesProvider;
 import gc.david.dfm.PreferencesProvider;
-import gc.david.dfm.elevation.ElevationInteractor;
-import gc.david.dfm.elevation.ElevationRemoteDataSource;
-import gc.david.dfm.elevation.ElevationRepository;
-import gc.david.dfm.elevation.ElevationUseCase;
+import gc.david.dfm.elevation.domain.ElevationInteractor;
+import gc.david.dfm.elevation.data.ElevationRemoteDataSource;
+import gc.david.dfm.elevation.data.ElevationRepository;
+import gc.david.dfm.elevation.domain.ElevationUseCase;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.MainThread;
 

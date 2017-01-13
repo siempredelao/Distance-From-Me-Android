@@ -1,11 +1,11 @@
-package gc.david.dfm.elevation;
+package gc.david.dfm.elevation.data;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Locale;
 
-import gc.david.dfm.elevation.model.ElevationModel;
+import gc.david.dfm.elevation.data.model.ElevationEntity;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -21,7 +21,7 @@ public class ElevationRemoteDataSource implements ElevationRepository {
     private final Gson         gson   = new Gson();
 
     @Override
-    public ElevationModel getElevation(final String coordinatesPath) {
+    public ElevationEntity getElevation(final String coordinatesPath) {
         final Request request = new Request.Builder().url(String.format(Locale.getDefault(),
                                                                         "https://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d",
                                                                         coordinatesPath,
@@ -30,8 +30,8 @@ public class ElevationRemoteDataSource implements ElevationRepository {
                                                      .build();
         try {
             final Response response = client.newCall(request).execute();
-            final ElevationModel elevationModel = gson.fromJson(response.body().charStream(), ElevationModel.class);
-            return elevationModel;
+            final ElevationEntity elevationEntity = gson.fromJson(response.body().charStream(), ElevationEntity.class);
+            return elevationEntity;
         } catch (IOException e) {
             e.printStackTrace();
         }

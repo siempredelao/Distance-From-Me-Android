@@ -1,4 +1,4 @@
-package gc.david.dfm.elevation;
+package gc.david.dfm.elevation.presentation;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -6,6 +6,7 @@ import java.util.List;
 
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.PreferencesProvider;
+import gc.david.dfm.elevation.domain.ElevationUseCase;
 
 /**
  * Created by david on 06.01.17.

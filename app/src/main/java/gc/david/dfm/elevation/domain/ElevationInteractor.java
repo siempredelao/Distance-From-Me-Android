@@ -1,4 +1,4 @@
-package gc.david.dfm.elevation;
+package gc.david.dfm.elevation.domain;
 
 import android.support.annotation.VisibleForTesting;
 
@@ -7,8 +7,9 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-import gc.david.dfm.elevation.model.ElevationModel;
-import gc.david.dfm.elevation.model.Result;
+import gc.david.dfm.elevation.data.ElevationRepository;
+import gc.david.dfm.elevation.data.model.ElevationEntity;
+import gc.david.dfm.elevation.data.model.Result;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
@@ -64,10 +65,10 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
             final String coordinatesPath = getCoordinatesPath(coordinateList);
 
             try {
-                final ElevationModel elevationModel = repository.getElevation(coordinatesPath);
+                final ElevationEntity elevationEntity = repository.getElevation(coordinatesPath);
 
-                if (STATUS_OK.equals(elevationModel.getStatus())) {
-                    final List<Double> elevationList = getElevationListFromModel(elevationModel);
+                if (STATUS_OK.equals(elevationEntity.getStatus())) {
+                    final List<Double> elevationList = getElevationListFromEntity(elevationEntity);
 
                     mainThread.post(new Runnable() {
                         @Override
@@ -107,9 +108,9 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
         return positionListUrlParameter;
     }
 
-    private List<Double> getElevationListFromModel(final ElevationModel elevationModel) {
+    private List<Double> getElevationListFromEntity(final ElevationEntity elevationEntity) {
         final List<Double> elevationList = new ArrayList<>();
-        for (Result result : elevationModel.getResults()) {
+        for (Result result : elevationEntity.getResults()) {
             elevationList.add(result.getElevation());
         }
         return elevationList;

@@ -1,4 +1,4 @@
-package gc.david.dfm.elevation;
+package gc.david.dfm.elevation.presentation;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -15,6 +15,9 @@ import java.util.List;
 
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.PreferencesProvider;
+import gc.david.dfm.elevation.domain.ElevationUseCase;
+import gc.david.dfm.elevation.presentation.Elevation;
+import gc.david.dfm.elevation.presentation.ElevationPresenter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

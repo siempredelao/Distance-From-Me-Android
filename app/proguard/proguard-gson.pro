@@ -12,7 +12,7 @@
 #-keep class com.google.gson.stream.** { *; }
 
 # Distance From Me application classes that will be serialized/deserialized over Gson
--keep class gc.david.dfm.elevation.model.** { *; }
+-keep class gc.david.dfm.elevation.data.model.** { *; }
 
 # Prevent proguard from stripping interface information from TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
