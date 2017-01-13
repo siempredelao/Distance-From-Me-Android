@@ -8,8 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import gc.david.dfm.R;
@@ -55,7 +54,7 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
     private List<String> groupAddresses(final List<Address> addressList) {
         DFMLogger.logMessage(TAG, "groupAddresses");
 
-        final List<String> result = Lists.newArrayList();
+        final List<String> result = new ArrayList<>();
         StringBuilder stringBuilder;
         for (final Address l : addressList) {
             stringBuilder = new StringBuilder();

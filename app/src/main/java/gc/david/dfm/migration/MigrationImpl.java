@@ -2,7 +2,7 @@ package gc.david.dfm.migration;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static dagger.internal.Preconditions.checkNotNull;
 
 /**
  * An abstract base class with the basic implementation to promote reuse.

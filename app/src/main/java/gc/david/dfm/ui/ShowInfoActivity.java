@@ -13,6 +13,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
@@ -24,9 +25,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -404,7 +405,7 @@ public class ShowInfoActivity extends AppCompatActivity {
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {
         final Intent showInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
         showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME,
-                                                           Lists.newArrayList(coordinates));
+                                                           new ArrayList<Parcelable>(coordinates));
         showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY_NAME, distanceAsText);
         activity.startActivity(showInfoActivityIntent);
     }
