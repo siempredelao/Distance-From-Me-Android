@@ -15,17 +15,15 @@ import okhttp3.Response;
  */
 public class ElevationRemoteDataSource implements ElevationRepository {
 
-    private static final int ELEVATION_SAMPLES = 100;
-
     private final OkHttpClient client = new OkHttpClient();
     private final Gson         gson   = new Gson();
 
     @Override
-    public ElevationEntity getElevation(final String coordinatesPath) {
+    public ElevationEntity getElevation(final String coordinatesPath, final int maxSamples) {
         final Request request = new Request.Builder().url(String.format(Locale.getDefault(),
                                                                         "https://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d",
                                                                         coordinatesPath,
-                                                                        ELEVATION_SAMPLES))
+                                                                        maxSamples))
                                                      .header("content-type", "application/json")
                                                      .build();
         try {

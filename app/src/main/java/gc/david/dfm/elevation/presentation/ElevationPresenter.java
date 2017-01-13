@@ -13,6 +13,8 @@ import gc.david.dfm.elevation.domain.ElevationUseCase;
  */
 public class ElevationPresenter implements Elevation.Presenter {
 
+    private static final int ELEVATION_SAMPLES = 100;
+
     private final Elevation.View      elevationView;
     private final ElevationUseCase    elevationUseCase;
     private final ConnectionManager   connectionManager;
@@ -36,7 +38,7 @@ public class ElevationPresenter implements Elevation.Presenter {
         stopPendingUseCase = false;
 
         if (preferencesProvider.shouldShowElevationChart() && connectionManager.isOnline()) {
-            elevationUseCase.execute(coordinates, new ElevationUseCase.Callback() {
+            elevationUseCase.execute(coordinates, ELEVATION_SAMPLES, new ElevationUseCase.Callback() {
                 @Override
                 public void onElevationLoaded(gc.david.dfm.elevation.domain.model.Elevation elevationList) {
                     if (!stopPendingUseCase) {

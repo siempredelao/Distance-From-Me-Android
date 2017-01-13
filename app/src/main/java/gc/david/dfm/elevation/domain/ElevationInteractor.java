@@ -34,25 +34,30 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
 
     private final Executor            executor;
     private final MainThread          mainThread;
+    private final ElevationEntityDataMapper elevationEntityDataMapper;
     private final ElevationRepository repository;
 
     private Callback     callback;
     private List<LatLng> coordinateList;
+    private int          maxSamples;
 
     public ElevationInteractor(final Executor executor,
                                final MainThread mainThread,
+                               final ElevationEntityDataMapper elevationEntityDataMapper,
                                final ElevationRepository repository) {
         this.executor = executor;
         this.mainThread = mainThread;
+        this.elevationEntityDataMapper = elevationEntityDataMapper;
         this.repository = repository;
     }
 
     @Override
-    public void execute(final List<LatLng> coordinateList, final Callback callback) {
+    public void execute(final List<LatLng> coordinateList, final int maxSamples, final Callback callback) {
         if (callback == null) {
             throw new IllegalArgumentException("Callback can't be null, the client of this interactor needs to get the response in the callback");
         }
         this.coordinateList = coordinateList;
+        this.maxSamples = maxSamples;
         this.callback = callback;
         this.executor.run(this);
     }
@@ -65,15 +70,15 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
             final String coordinatesPath = getCoordinatesPath(coordinateList);
 
             try {
-                final ElevationEntity elevationEntity = repository.getElevation(coordinatesPath);
+                final ElevationEntity elevationEntity = repository.getElevation(coordinatesPath, maxSamples);
 
                 if (STATUS_OK.equals(elevationEntity.getStatus())) {
-                    final Elevation elevationList = ElevationEntityDataMapper.transform(elevationEntity);
+                    final Elevation elevation = elevationEntityDataMapper.transform(elevationEntity);
 
                     mainThread.post(new Runnable() {
                         @Override
                         public void run() {
-                            callback.onElevationLoaded(elevationList);
+                            callback.onElevationLoaded(elevation);
                         }
                     });
                 } else {

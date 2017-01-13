@@ -13,11 +13,11 @@ public interface ElevationUseCase {
 
     interface Callback {
 
-        void onElevationLoaded(final Elevation elevationList);
+        void onElevationLoaded(final Elevation elevation);
 
         void onError();
 
     }
 
-    void execute(List<LatLng> coordinateList, Callback callback);
+    void execute(List<LatLng> coordinateList, int maxSamples, Callback callback);
 }

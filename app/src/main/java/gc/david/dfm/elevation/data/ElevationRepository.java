@@ -7,6 +7,5 @@ import gc.david.dfm.elevation.data.model.ElevationEntity;
  */
 public interface ElevationRepository {
 
-    ElevationEntity getElevation(String coordinatesPath);
-
+    ElevationEntity getElevation(String coordinatesPath, int maxSamples);
 }
