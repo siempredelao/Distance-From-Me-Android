@@ -4,12 +4,12 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import gc.david.dfm.elevation.data.ElevationRepository;
+import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper;
 import gc.david.dfm.elevation.data.model.ElevationEntity;
-import gc.david.dfm.elevation.data.model.Result;
+import gc.david.dfm.elevation.domain.model.Elevation;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
@@ -68,7 +68,7 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
                 final ElevationEntity elevationEntity = repository.getElevation(coordinatesPath);
 
                 if (STATUS_OK.equals(elevationEntity.getStatus())) {
-                    final List<Double> elevationList = getElevationListFromEntity(elevationEntity);
+                    final Elevation elevationList = ElevationEntityDataMapper.transform(elevationEntity);
 
                     mainThread.post(new Runnable() {
                         @Override
@@ -106,13 +106,5 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
             }
         }
         return positionListUrlParameter;
-    }
-
-    private List<Double> getElevationListFromEntity(final ElevationEntity elevationEntity) {
-        final List<Double> elevationList = new ArrayList<>();
-        for (Result result : elevationEntity.getResults()) {
-            elevationList.add(result.getElevation());
-        }
-        return elevationList;
     }
 }

@@ -38,9 +38,9 @@ public class ElevationPresenter implements Elevation.Presenter {
         if (preferencesProvider.shouldShowElevationChart() && connectionManager.isOnline()) {
             elevationUseCase.execute(coordinates, new ElevationUseCase.Callback() {
                 @Override
-                public void onElevationLoaded(List<Double> elevationList) {
+                public void onElevationLoaded(gc.david.dfm.elevation.domain.model.Elevation elevationList) {
                     if (!stopPendingUseCase) {
-                        elevationView.buildChart(elevationList);
+                        elevationView.buildChart(elevationList.getResults());
                     }
                 }
 
