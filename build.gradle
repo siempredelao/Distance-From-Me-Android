@@ -13,5 +13,10 @@ allprojects {
     repositories {
         jcenter()
     }
+
+    // Log unit test execution events into console
+    tasks.matching { it instanceof Test }.all {
+        testLogging.events = ["failed", "passed", "skipped"]
+    }
 }
 
