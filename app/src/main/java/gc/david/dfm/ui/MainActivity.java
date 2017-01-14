@@ -1227,6 +1227,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return fabShowChart.isShown();
     }
 
+    @Override
+    public void logError(final String errorMessage) {
+        DFMLogger.logException(new Exception(errorMessage));
+    }
+
     @OnClick(R.id.main_activity_showchart_floatingactionbutton)
     void onShowChartClick() {
         elevationPresenter.onOpenChart();

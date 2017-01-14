@@ -3,7 +3,6 @@ package gc.david.dfm.elevation.presentation;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -138,16 +137,16 @@ public class ElevationPresenterTest {
     }
 
     @Test
-    @Ignore
     public void showsErrorWhenUseCaseReturnsError() {
         // Given
         List<LatLng> coordinateList = new ArrayList<>();
         when(preferencesProvider.shouldShowElevationChart()).thenReturn(true);
         when(connectionManager.isOnline()).thenReturn(true);
+        final String errorMessage = "fake error message";
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((ElevationUseCase.Callback) invocation.getArguments()[1]).onError();
+                ((ElevationUseCase.Callback) invocation.getArguments()[2]).onError(errorMessage);
                 return null;
             }
         }).when(elevationUseCase).execute(eq(coordinateList), anyInt(), any(ElevationUseCase.Callback.class));
@@ -156,7 +155,7 @@ public class ElevationPresenterTest {
         elevationPresenter.buildChart(coordinateList);
 
         // Then
-        // verify(elevationView).showError();
+        verify(elevationView).logError(errorMessage);
     }
 
     @Test

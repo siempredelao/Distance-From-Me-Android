@@ -22,10 +22,10 @@ import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
 
 import static gc.david.dfm.elevation.domain.ElevationInteractor.STATUS_OK;
-import static gc.david.dfm.elevation.domain.ElevationInteractor.STATUS_UNKNOWN_ERROR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,7 +79,7 @@ public class ElevationInteractorTest {
         elevationInteractor.execute(coordinateList, anyInt(), callback);
 
         // Then
-        verify(callback).onError();
+        verify(callback).onError("Empty coordinates list");
     }
 
     @Test
@@ -90,10 +90,17 @@ public class ElevationInteractorTest {
         List<Result> results = new ArrayList<>();
         double elevation = 1D;
         results.add(new Result.Builder().withElevation(elevation).build());
-        ElevationEntity elevationEntity = new ElevationEntity.Builder().withStatus(STATUS_OK)
-                                                                       .withResults(results)
-                                                                       .build();
-        when(repository.getElevation(anyString(), anyInt())).thenReturn(elevationEntity);
+        final ElevationEntity elevationEntity = new ElevationEntity.Builder().withStatus(STATUS_OK)
+                                                                             .withResults(results)
+                                                                             .build();
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((ElevationRepository.Callback) invocation.getArguments()[2]).onSuccess(elevationEntity);
+                return null;
+            }
+        }).when(repository).getElevation(anyString(), anyInt(), any(ElevationRepository.Callback.class));
+
         List<Double> elevationResults = new ArrayList<>();
         elevationResults.add(elevation);
         Elevation elevation1 = new Elevation(elevationResults);
@@ -103,7 +110,7 @@ public class ElevationInteractorTest {
         elevationInteractor.execute(coordinateList, anyInt(), callback);
 
         // Then
-        verify(callback).onElevationLoaded(elevation1);
+        verify(callback).onElevationLoaded(any(Elevation.class));
     }
 
     @Test
@@ -111,14 +118,20 @@ public class ElevationInteractorTest {
         // Given
         List<LatLng> coordinateList = new ArrayList<>();
         coordinateList.add(new LatLng(0D, 0D));
-        ElevationEntity elevationEntity = new ElevationEntity.Builder().withStatus(STATUS_UNKNOWN_ERROR).build();
-        when(repository.getElevation(anyString(), anyInt())).thenReturn(elevationEntity);
+        final String errorMessage = "fake error message";
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((ElevationRepository.Callback) invocation.getArguments()[2]).onError(errorMessage);
+                return null;
+            }
+        }).when(repository).getElevation(anyString(), anyInt(), any(ElevationRepository.Callback.class));
 
         // When
         elevationInteractor.execute(coordinateList, anyInt(), callback);
 
         // Then
-        verify(callback).onError();
+        verify(callback).onError(errorMessage);
     }
 
     @Test
@@ -133,7 +146,7 @@ public class ElevationInteractorTest {
         elevationInteractor.execute(coordinateList, maxSamples, callback);
 
         // Then
-        verify(repository).getElevation(coordinatesPath, maxSamples);
+        verify(repository).getElevation(eq(coordinatesPath), eq(maxSamples), any(ElevationRepository.Callback.class));
     }
 
     @Test
@@ -149,6 +162,6 @@ public class ElevationInteractorTest {
         elevationInteractor.execute(coordinateList, maxSamples, callback);
 
         // Then
-        verify(repository).getElevation(coordinatesPath, maxSamples);
+        verify(repository).getElevation(eq(coordinatesPath), eq(maxSamples), any(ElevationRepository.Callback.class));
     }
 }

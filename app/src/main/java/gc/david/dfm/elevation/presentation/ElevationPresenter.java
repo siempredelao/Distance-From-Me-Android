@@ -40,15 +40,15 @@ public class ElevationPresenter implements Elevation.Presenter {
         if (preferencesProvider.shouldShowElevationChart() && connectionManager.isOnline()) {
             elevationUseCase.execute(coordinates, ELEVATION_SAMPLES, new ElevationUseCase.Callback() {
                 @Override
-                public void onElevationLoaded(gc.david.dfm.elevation.domain.model.Elevation elevationList) {
+                public void onElevationLoaded(final gc.david.dfm.elevation.domain.model.Elevation elevationList) {
                     if (!stopPendingUseCase) {
                         elevationView.buildChart(elevationList.getResults());
                     }
                 }
 
                 @Override
-                public void onError() {
-                    // TODO: 06.01.17 handle error
+                public void onError(final String errorMessage) {
+                    elevationView.logError(errorMessage);
                 }
             });
         } else {

@@ -65,36 +65,40 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
     @Override
     public void run() {
         if (coordinateList.isEmpty()) {
-            notifyError();
+            notifyError("Empty coordinates list");
         } else {
             final String coordinatesPath = getCoordinatesPath(coordinateList);
 
-            try {
-                final ElevationEntity elevationEntity = repository.getElevation(coordinatesPath, maxSamples);
+            repository.getElevation(coordinatesPath, maxSamples, new ElevationRepository.Callback() {
+                @Override
+                public void onSuccess(final ElevationEntity elevationEntity) {
+                    if (STATUS_OK.equals(elevationEntity.getStatus())) {
+                        final Elevation elevation = elevationEntityDataMapper.transform(elevationEntity);
 
-                if (STATUS_OK.equals(elevationEntity.getStatus())) {
-                    final Elevation elevation = elevationEntityDataMapper.transform(elevationEntity);
-
-                    mainThread.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onElevationLoaded(elevation);
-                        }
-                    });
-                } else {
-                    notifyError();
+                        mainThread.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onElevationLoaded(elevation);
+                            }
+                        });
+                    } else {
+                        notifyError(elevationEntity.getStatus());
+                    }
                 }
-            } catch (Exception exception) {
-                notifyError();
-            }
+
+                @Override
+                public void onError(final String errorMessage) {
+                    notifyError(errorMessage);
+                }
+            });
         }
     }
 
-    private void notifyError() {
+    private void notifyError(final String errorMessage) {
         mainThread.post(new Runnable() {
             @Override
             public void run() {
-                callback.onError();
+                callback.onError(errorMessage);
             }
         });
     }

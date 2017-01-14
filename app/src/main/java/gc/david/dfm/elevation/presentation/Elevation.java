@@ -23,6 +23,8 @@ public interface Elevation {
         void animateShowChart();
 
         boolean isMinimiseButtonShown();
+
+        void logError(String errorMessage);
     }
 
     interface Presenter {

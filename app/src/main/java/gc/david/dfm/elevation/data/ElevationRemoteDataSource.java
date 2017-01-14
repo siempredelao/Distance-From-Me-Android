@@ -19,7 +19,7 @@ public class ElevationRemoteDataSource implements ElevationRepository {
     private final Gson         gson   = new Gson();
 
     @Override
-    public ElevationEntity getElevation(final String coordinatesPath, final int maxSamples) {
+    public void getElevation(final String coordinatesPath, final int maxSamples, final Callback callback) {
         final Request request = new Request.Builder().url(String.format(Locale.getDefault(),
                                                                         "https://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d",
                                                                         coordinatesPath,
@@ -29,10 +29,9 @@ public class ElevationRemoteDataSource implements ElevationRepository {
         try {
             final Response response = client.newCall(request).execute();
             final ElevationEntity elevationEntity = gson.fromJson(response.body().charStream(), ElevationEntity.class);
-            return elevationEntity;
-        } catch (IOException e) {
-            e.printStackTrace();
+            callback.onSuccess(elevationEntity);
+        } catch (IOException exception) {
+            callback.onError(exception.getMessage());
         }
-        return null;
     }
 }

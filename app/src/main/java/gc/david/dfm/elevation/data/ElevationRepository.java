@@ -7,5 +7,13 @@ import gc.david.dfm.elevation.data.model.ElevationEntity;
  */
 public interface ElevationRepository {
 
-    ElevationEntity getElevation(String coordinatesPath, int maxSamples);
+    interface Callback {
+
+        void onSuccess(final ElevationEntity elevationEntity);
+
+        void onError(String message);
+
+    }
+
+    void getElevation(String coordinatesPath, int maxSamples, Callback callback);
 }

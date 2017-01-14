@@ -13,9 +13,9 @@ public interface ElevationUseCase {
 
     interface Callback {
 
-        void onElevationLoaded(final Elevation elevation);
+        void onElevationLoaded(Elevation elevation);
 
-        void onError();
+        void onError(String errorMessage);
 
     }
 
