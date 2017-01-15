@@ -2,7 +2,6 @@ package gc.david.dfm.address.domain;
 
 import gc.david.dfm.address.data.AddressRepository;
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper;
-import gc.david.dfm.address.data.model.AddressCollectionEntity;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.MainThread;
 
@@ -19,7 +18,7 @@ public class GetAddressCoordinatesByNameInteractor extends GetAddressAbstractInt
     }
 
     @Override
-    protected AddressCollectionEntity repositoryCall(final String locationName) {
-        return repository.getCoordinatesByName(locationName);
+    protected void repositoryCall(final String locationName, final AddressRepository.Callback callback) {
+        repository.getCoordinatesByName(locationName, callback);
     }
 }

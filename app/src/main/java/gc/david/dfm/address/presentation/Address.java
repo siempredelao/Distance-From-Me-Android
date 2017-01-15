@@ -26,7 +26,7 @@ public interface Address {
 
         void hideProgressDialog();
 
-        void showCallError(); // TODO: 13.01.17 find a better name
+        void showCallError(String errorMessage); // TODO: 13.01.17 find a better name
 
         void showNoMatchesMessage();
 

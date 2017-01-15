@@ -31,27 +31,26 @@ public class AddressRemoteDataSource implements AddressRepository {
     }
 
     @Override
-    public AddressCollectionEntity getNameByCoordinates(final LatLng coordinates) {
-        return executeRequest(getNameByCoordinatesUrl(coordinates));
+    public void getNameByCoordinates(final LatLng coordinates, final Callback callback) {
+        executeRequest(getNameByCoordinatesUrl(coordinates), callback);
     }
 
     @Override
-    public AddressCollectionEntity getCoordinatesByName(final String name) {
-        return executeRequest(getCoordinatesByNameUrl(name));
+    public void getCoordinatesByName(final String name, final Callback callback) {
+        executeRequest(getCoordinatesByNameUrl(name), callback);
     }
 
     @Nullable
-    private AddressCollectionEntity executeRequest(final String url) {
+    private void executeRequest(final String url, final Callback callback) {
         final Request request = new Request.Builder().url(url).header("content-type", "application/json").build();
 
         try {
             final Response response = client.newCall(request).execute();
             final AddressCollectionEntity addressCollectionEntity = gson.fromJson(response.body().charStream(),
                                                                                   AddressCollectionEntity.class);
-            return addressCollectionEntity;
+            callback.onSuccess(addressCollectionEntity);
         } catch (IOException exception) {
-            exception.printStackTrace();
-            return null;
+            callback.onError(exception.getMessage());
         }
     }
 

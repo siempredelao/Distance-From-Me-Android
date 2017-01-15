@@ -52,10 +52,10 @@ public class AddressPresenter implements Address.Presenter {
                 }
 
                 @Override
-                public void onError() {
+                public void onError(final String errorMessage) {
                     addressView.hideProgressDialog();
 
-                    addressView.showCallError();
+                    addressView.showCallError(errorMessage);
                 }
             });
         }
@@ -86,10 +86,10 @@ public class AddressPresenter implements Address.Presenter {
                 }
 
                 @Override
-                public void onError() {
+                public void onError(final String errorMessage) {
                     addressView.hideProgressDialog();
 
-                    addressView.showCallError();
+                    addressView.showCallError(errorMessage);
                 }
             });
         }

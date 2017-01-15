@@ -9,9 +9,9 @@ public interface GetAddressUseCase<T> {
 
     interface Callback {
 
-        void onAddressLoaded(final AddressCollection addressCollection);
+        void onAddressLoaded(AddressCollection addressCollection);
 
-        void onError();
+        void onError(String errorMessage);
 
     }
 

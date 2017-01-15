@@ -9,8 +9,16 @@ import gc.david.dfm.address.data.model.AddressCollectionEntity;
  */
 public interface AddressRepository {
 
-    AddressCollectionEntity getNameByCoordinates(LatLng latLng);
+    interface Callback {
 
-    AddressCollectionEntity getCoordinatesByName(String name);
+        void onSuccess(AddressCollectionEntity addressCollectionEntity);
+
+        void onError(String message);
+
+    }
+
+    void getNameByCoordinates(LatLng latLng, Callback callback);
+
+    void getCoordinatesByName(String name, Callback callback);
 
 }

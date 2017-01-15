@@ -65,27 +65,39 @@ abstract class GetAddressAbstractInteractor<T> implements Interactor, GetAddress
 
     @Override
     public void run() {
-        final AddressCollectionEntity addressCollectionEntity = repositoryCall(t);
+        repositoryCall(t, new AddressRepository.Callback() {
+            @Override
+            public void onSuccess(final AddressCollectionEntity addressCollectionEntity) {
+                if (STATUS_OK.equals(addressCollectionEntity.getStatus()) ||
+                    STATUS_ZERO_RESULTS.equals(addressCollectionEntity.getStatus())) {
+                    final AddressCollection addressCollection = addressCollectionEntityDataMapper.transform(
+                            addressCollectionEntity);
+                    final AddressCollection limitedAddressCollection = limitAddress(addressCollection);
+                    mainThread.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onAddressLoaded(limitedAddressCollection);
+                        }
+                    });
+                } else {
+                    notifyError(addressCollectionEntity.getStatus());
+                }
+            }
 
-        if (STATUS_OK.equals(addressCollectionEntity.getStatus()) ||
-            STATUS_ZERO_RESULTS.equals(addressCollectionEntity.getStatus())) {
-            final AddressCollection addressCollection = addressCollectionEntityDataMapper.transform(
-                    addressCollectionEntity);
-            final AddressCollection limitedAddressCollection = limitAddress(addressCollection);
-            mainThread.post(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onAddressLoaded(limitedAddressCollection);
-                }
-            });
-        } else {
-            mainThread.post(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onError();
-                }
-            });
-        }
+            @Override
+            public void onError(final String message) {
+                notifyError(message);
+            }
+        });
+    }
+
+    private void notifyError(final String message) {
+        mainThread.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onError(message);
+            }
+        });
     }
 
     private AddressCollection limitAddress(final AddressCollection addressCollection) {
@@ -96,5 +108,5 @@ abstract class GetAddressAbstractInteractor<T> implements Interactor, GetAddress
         return addressCollection;
     }
 
-    protected abstract AddressCollectionEntity repositoryCall(T t);
+    protected abstract void repositoryCall(T t, AddressRepository.Callback callback);
 }

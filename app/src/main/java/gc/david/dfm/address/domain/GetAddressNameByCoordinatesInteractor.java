@@ -4,7 +4,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import gc.david.dfm.address.data.AddressRepository;
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper;
-import gc.david.dfm.address.data.model.AddressCollectionEntity;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.MainThread;
 
@@ -21,7 +20,7 @@ public class GetAddressNameByCoordinatesInteractor extends GetAddressAbstractInt
     }
 
     @Override
-    protected AddressCollectionEntity repositoryCall(final LatLng coordinates) {
-        return repository.getNameByCoordinates(coordinates);
+    protected void repositoryCall(final LatLng coordinates, final AddressRepository.Callback callback) {
+        repository.getNameByCoordinates(coordinates, callback);
     }
 }

@@ -1283,7 +1283,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     @Override
-    public void showCallError() {
+    public void showCallError(final String errorMessage) {
+        logError(errorMessage);
         toastIt(getString(R.string.toast_no_find_address), appContext);
     }
 
