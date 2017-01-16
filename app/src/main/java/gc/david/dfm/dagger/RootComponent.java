@@ -3,6 +3,7 @@ package gc.david.dfm.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import gc.david.dfm.ui.SettingsFragment;
 import gc.david.dfm.ui.ShowInfoActivity;
 
 /**
@@ -13,5 +14,6 @@ import gc.david.dfm.ui.ShowInfoActivity;
 public interface RootComponent {
 
     void inject(ShowInfoActivity showInfoActivity);
+    void inject(SettingsFragment settingsFragment);
 
 }

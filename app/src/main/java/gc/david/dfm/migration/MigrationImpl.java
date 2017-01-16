@@ -2,6 +2,8 @@ package gc.david.dfm.migration;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import org.greenrobot.greendao.database.Database;
+
 import static dagger.internal.Preconditions.checkNotNull;
 
 /**
@@ -17,7 +19,7 @@ public abstract class MigrationImpl implements Migration {
      * @param db             Database.
      * @param currentVersion Version before migration.
      */
-    protected void prepareMigration(final SQLiteDatabase db, final int currentVersion) {
+    protected void prepareMigration(final Database db, final int currentVersion) {
         checkNotNull(db, "Database cannot be null");
         if (currentVersion < 1) {
             throw new IllegalArgumentException("Lowest supported schema version is 1, unable to prepare for migration" +

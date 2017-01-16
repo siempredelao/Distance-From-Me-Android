@@ -1,6 +1,6 @@
 package gc.david.dfm.migration;
 
-import android.database.sqlite.SQLiteDatabase;
+import org.greenrobot.greendao.database.Database;
 
 /**
  * Migration abstraction designed to be a chain of responsibility pattern.
@@ -23,7 +23,7 @@ public interface Migration {
      * @param currentVersion the current version before migration
      * @return the version after migration has been applied
      */
-    int applyMigration(SQLiteDatabase db, int currentVersion);
+    int applyMigration(Database db, int currentVersion);
 
     /**
      * @return instance of the previous Migration required if the current
