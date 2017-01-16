@@ -17,6 +17,7 @@ package gc.david.dfm.executor;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -28,8 +29,10 @@ import java.util.concurrent.TimeUnit;
  * Keep alive time: 120.
  * Time unit: seconds.
  * Work queue: LinkedBlockingQueue.
+ * Thread factory: adds "android_" suffix to threads.
  *
  * @author Pedro Vicente Gómez Sánchez
+ * @author Fernando Cejas
  */
 public class ThreadExecutor implements Executor {
 
@@ -38,6 +41,7 @@ public class ThreadExecutor implements Executor {
     private static final int                     KEEP_ALIVE_TIME = 120;
     private static final TimeUnit                TIME_UNIT       = TimeUnit.SECONDS;
     private static final BlockingQueue<Runnable> WORK_QUEUE      = new LinkedBlockingQueue<>();
+    private static final ThreadFactory           THREAD_FACTORY  = new JobThreadFactory();
 
     private ThreadPoolExecutor threadPoolExecutor;
 
@@ -46,7 +50,8 @@ public class ThreadExecutor implements Executor {
                                                     MAX_POOL_SIZE,
                                                     KEEP_ALIVE_TIME,
                                                     TIME_UNIT,
-                                                    WORK_QUEUE);
+                                                    WORK_QUEUE,
+                                                    THREAD_FACTORY);
     }
 
     @Override
@@ -60,5 +65,15 @@ public class ThreadExecutor implements Executor {
                 interactor.run();
             }
         });
+    }
+
+    private static class JobThreadFactory implements ThreadFactory {
+        private static final String THREAD_NAME = "android_";
+        private              int    counter     = 0;
+
+        @Override
+        public Thread newThread(Runnable runnable) {
+            return new Thread(runnable, THREAD_NAME + counter++);
+        }
     }
 }
