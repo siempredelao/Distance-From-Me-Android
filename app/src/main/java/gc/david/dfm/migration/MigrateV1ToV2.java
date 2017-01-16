@@ -27,13 +27,13 @@ public class MigrateV1ToV2 extends MigrationImpl {
         final gc.david.dfm.model.v2.DistanceDao newDistanceDao = newDaoSession.getDistanceDao();
         final gc.david.dfm.model.v2.PositionDao newPositionDao = newDaoSession.getPositionDao();
 
-        final List<gc.david.dfm.model.v1.Entry> previousEntrys = previousEntryDao.loadAll();
+        final List<gc.david.dfm.model.v1.Entry> previousEntries = previousEntryDao.loadAll();
 
         // WTF?!
         gc.david.dfm.model.v2.DistanceDao.createTable(db, true);
         gc.david.dfm.model.v2.PositionDao.createTable(db, true);
 
-        for (final gc.david.dfm.model.v1.Entry previousEntry : previousEntrys) {
+        for (final gc.david.dfm.model.v1.Entry previousEntry : previousEntries) {
             final gc.david.dfm.model.v2.Distance newDistance = new gc.david.dfm.model.v2.Distance();
             newDistance.setName(previousEntry.getNombre());
             newDistance.setDistance(previousEntry.getDistancia());
