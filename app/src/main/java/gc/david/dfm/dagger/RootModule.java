@@ -1,6 +1,7 @@
 package gc.david.dfm.dagger;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
 import javax.inject.Singleton;
@@ -19,6 +20,8 @@ import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.MainThread;
 import gc.david.dfm.executor.MainThreadBase;
 import gc.david.dfm.executor.ThreadExecutor;
+import gc.david.dfm.migration.UpgradeHelper;
+import gc.david.dfm.model.DaoMaster;
 import gc.david.dfm.model.DaoSession;
 
 @Module
@@ -44,8 +47,11 @@ public class RootModule {
 
     @Provides
     @Singleton
-    DaoSession getDaoSession(DFMApplication application) {
-        return application.getDaoSession();
+    DaoSession getDaoSession(Context context) {
+        final UpgradeHelper helper = new UpgradeHelper(context, "DistanciasDB.db", null);
+        final SQLiteDatabase db = helper.getWritableDatabase();
+        final DaoMaster daoMaster = new DaoMaster(db);
+        return daoMaster.newSession();
     }
 
     @Provides
