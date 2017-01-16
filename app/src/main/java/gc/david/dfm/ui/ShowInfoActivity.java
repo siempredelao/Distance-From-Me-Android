@@ -37,6 +37,7 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
@@ -49,7 +50,6 @@ import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.toastIt;
 
 public class ShowInfoActivity extends AppCompatActivity {
@@ -74,11 +74,13 @@ public class ShowInfoActivity extends AppCompatActivity {
     protected Toolbar  tbMain;
 
     @Inject
-    protected DaoSession     daoSession;
+    protected DaoSession        daoSession;
     @Inject
-    protected Context        appContext;
+    protected Context           appContext;
     @Inject
-    protected PackageManager packageManager;
+    protected PackageManager    packageManager;
+    @Inject
+    protected ConnectionManager connectionManager;
 
     private MenuItem     refreshMenuItem;
     private List<LatLng> positionsList;
@@ -319,7 +321,7 @@ public class ShowInfoActivity extends AppCompatActivity {
 
             showRefreshSpinner();
 
-            if (!isOnline(context)) {
+            if (!connectionManager.isOnline()) {
                 toastIt(getString(R.string.toast_network_problems), context);
 
                 hideRefreshSpinner();

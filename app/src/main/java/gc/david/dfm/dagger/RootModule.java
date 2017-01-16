@@ -7,7 +7,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
+import gc.david.dfm.DefaultConnectionManager;
 import gc.david.dfm.DefaultPackageManager;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.DeviceInfoApi16Decorator;
@@ -75,4 +77,9 @@ public class RootModule {
         return new ThreadExecutor();
     }
 
+    @Provides
+    @Singleton
+    ConnectionManager provideConnectionManager(Context context) {
+        return new DefaultConnectionManager(context);
+    }
 }

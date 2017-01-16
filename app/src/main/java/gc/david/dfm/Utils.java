@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -41,15 +39,6 @@ public class Utils {
         DFMLogger.logMessage(TAG, "toastIt message=" + charSequence);
 
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
-    }
-
-    // TODO: 10.01.17 move to DefaultConnectionManager class
-    public static boolean isOnline(final Context context) {
-        DFMLogger.logMessage(TAG, "isOnline");
-
-        final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnected();
     }
 
     /**
