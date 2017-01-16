@@ -13,11 +13,8 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -63,7 +60,6 @@ import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,6 +69,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -87,6 +84,9 @@ import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
+import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.address.presentation.Address;
+import gc.david.dfm.address.presentation.AddressPresenter;
 import gc.david.dfm.dagger.DaggerMainComponent;
 import gc.david.dfm.dagger.MainModule;
 import gc.david.dfm.dagger.RootModule;
@@ -114,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                                OnMapLongClickListener,
                                                                OnMapClickListener,
                                                                OnInfoWindowClickListener,
-                                                               Elevation.View {
+                                                               Elevation.View,
+                                                               Address.View {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -149,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected ConnectionManager    connectionManager;
     @Inject
     protected PreferencesProvider  preferencesProvider;
+    @Inject @Named("CoordinatesByName")
+    protected GetAddressUseCase getAddressCoordinatesByNameUseCase;
+    @Inject @Named("NameByCoordinates")
+    protected GetAddressUseCase getAddressNameByCoordinatesUseCase;
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -162,12 +167,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     };
 
-    private GoogleMap       googleMap                             = null;
-    private Location        currentLocation                       = null;
+    private GoogleMap    googleMap                             = null;
+    private Location     currentLocation                       = null;
     // Moves to current position if app has just started
-    private boolean         appHasJustStarted                     = true;
-    private String          distanceMeasuredAsText                = "";
-    private MenuItem        searchMenuItem                        = null;
+    private boolean      appHasJustStarted                     = true;
+    private String       distanceMeasuredAsText                = "";
+    private MenuItem     searchMenuItem                        = null;
     // Show position if we come from other app (p.e. Whatsapp)
     private boolean         mustShowPositionWhenComingFromOutside = false;
     private LatLng          sendDestinationPosition               = null;
@@ -175,8 +180,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private List<LatLng>    coordinates                           = new ArrayList<>();
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private boolean               calculatingDistance;
+    private ProgressDialog        progressDialog;
 
     private Elevation.Presenter elevationPresenter;
+    private Address.Presenter   addressPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +209,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         elevationPresenter = new ElevationPresenter(this, elevationUseCase, connectionManager, preferencesProvider);
+        addressPresenter = new AddressPresenter(this,
+                                                getAddressCoordinatesByNameUseCase,
+                                                getAddressNameByCoordinatesUseCase,
+                                                connectionManager);
 
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
@@ -499,7 +510,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // busquemos nos inicie una nueva instancia de la aplicación
         final String query = intent.getStringExtra(SearchManager.QUERY);
         if (currentLocation != null) {
-            new SearchPositionByName().execute(query);
+            addressPresenter.searchPositionByName(query);
+            MenuItemCompat.collapseActionView(searchMenuItem);
         }
         if (searchMenuItem != null) {
             MenuItemCompat.collapseActionView(searchMenuItem);
@@ -541,7 +553,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     destination = destination.replace("q=", "");
 
                     // TODO check this ugly workaround
-                    new SearchPositionByName().execute(destination);
+                    addressPresenter.searchPositionByName(destination);
+                    MenuItemCompat.collapseActionView(searchMenuItem);
                     mustShowPositionWhenComingFromOutside = true;
                 }
             } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
@@ -589,17 +602,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         final String regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)";
         final Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(schemeSpecificPart);
-    }
-
-    private void showConnectionProblemsDialog() {
-        DFMLogger.logMessage(TAG, "showConnectionProblemsDialog");
-
-        showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
-                        getString(R.string.dialog_connection_problems_title),
-                        getString(R.string.dialog_connection_problems_message),
-                        getString(R.string.dialog_connection_problems_positive_button),
-                        getString(R.string.dialog_connection_problems_negative_button),
-                        MainActivity.this);
     }
 
     @Override
@@ -960,7 +962,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 DFMLogger.logMessage(TAG, "onLocationChanged mustShowPositionWhenComingFromOutside");
 
                 if (currentLocation != null && sendDestinationPosition != null) {
-                    new SearchPositionByCoordinates().execute(sendDestinationPosition);
+                    addressPresenter.searchPositionByCoordinates(sendDestinationPosition);
+
                     mustShowPositionWhenComingFromOutside = false;
                 }
             } else {
@@ -1245,222 +1248,120 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    private enum DistanceMode {
-        DISTANCE_FROM_CURRENT_POINT,
-        DISTANCE_FROM_ANY_POINT
+    @Override
+    public void setPresenter(final Address.Presenter presenter) {
+        this.addressPresenter = presenter;
     }
 
-    private class SearchPositionByName extends AsyncTask<Object, Void, Integer> {
+    @Override
+    public void showConnectionProblemsDialog() {
+        DFMLogger.logMessage(TAG, "showConnectionProblemsDialog");
 
-        private final String TAG = SearchPositionByName.class.getSimpleName();
+        showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
+                        getString(R.string.dialog_connection_problems_title),
+                        getString(R.string.dialog_connection_problems_message),
+                        getString(R.string.dialog_connection_problems_positive_button),
+                        getString(R.string.dialog_connection_problems_negative_button),
+                        MainActivity.this);
+    }
 
-        protected List<Address>  addressList;
-        protected StringBuilder  fullAddress;
-        protected LatLng         selectedPosition;
-        protected ProgressDialog progressDialog;
+    @Override
+    public void showProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle(R.string.progressdialog_search_position_title);
+        progressDialog.setMessage(getString(R.string.progressdialog_search_position_message));
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+    }
 
-        @Override
-        protected void onPreExecute() {
-            DFMLogger.logMessage(TAG, "onPreExecute");
-
-            addressList = null;
-            fullAddress = new StringBuilder();
-            selectedPosition = null;
-
-            // Comprobamos que haya conexión con internet (WiFi o Datos)
-            if (!connectionManager.isOnline()) {
-                showConnectionProblemsDialog();
-
-                // Restauramos el menú y que vuelva a empezar de nuevo
-                MenuItemCompat.collapseActionView(searchMenuItem);
-                cancel(false);
-            } else {
-                progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setTitle(R.string.progressdialog_search_position_title);
-                progressDialog.setMessage(getString(R.string.progressdialog_search_position_message));
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
-            }
-        }
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-            DFMLogger.logMessage(TAG, "doInBackground");
-
-            /* get latitude and longitude from the addressList */
-            final Geocoder geoCoder = new Geocoder(appContext, Locale.getDefault());
-            try {
-                addressList = geoCoder.getFromLocationName((String) params[0], 5);
-            } catch (IOException e) {
-                e.printStackTrace();
-                DFMLogger.logException(e);
-                return -1; // Network is unavailable or any other I/O problem occurs
-            }
-            if (addressList == null) {
-                return -3; // No backend service available
-            } else if (addressList.isEmpty()) {
-                return -2; // No matches were found
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            DFMLogger.logMessage(TAG, "onPostExecute result=" + result);
-
-            switch (result) {
-                case 0:
-                    if (addressList != null && !addressList.isEmpty()) {
-                        // Si hay varios, elegimos uno. Si solo hay uno, mostramos ese
-                        if (addressList.size() == 1) {
-                            processSelectedAddress(0);
-                            handleSelectedAddress();
-                        } else {
-                            final AddressSuggestionsDialogFragment addressSuggestionsDialogFragment = new AddressSuggestionsDialogFragment();
-                            addressSuggestionsDialogFragment.setAddressList(addressList);
-                            addressSuggestionsDialogFragment.setOnDialogActionListener(new AddressSuggestionsDialogFragment.OnDialogActionListener() {
-                                @Override
-                                public void onItemClick(int position) {
-                                    processSelectedAddress(position);
-                                    handleSelectedAddress();
-                                }
-                            });
-                            addressSuggestionsDialogFragment.show(getSupportFragmentManager(), null);
-                        }
-                    }
-                    break;
-                case -1:
-                    toastIt(getString(R.string.toast_no_find_address), appContext);
-                    break;
-                case -2:
-                    toastIt(getString(R.string.toast_no_results), appContext);
-                    break;
-                case -3:
-                    toastIt(getString(R.string.toast_no_find_address), appContext);
-                    break;
-            }
+    @Override
+    public void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
-            if (searchMenuItem != null) {
-                MenuItemCompat.collapseActionView(searchMenuItem);
-            }
         }
+    }
 
-        private void handleSelectedAddress() {
-            DFMLogger.logMessage(TAG, "handleSelectedAddress" + getSelectedDistanceMode());
+    @Override
+    public void showCallError(final String errorMessage) {
+        logError(errorMessage);
+        toastIt(getString(R.string.toast_no_find_address), appContext);
+    }
 
-            if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-                coordinates.add(selectedPosition);
+    @Override
+    public void showNoMatchesMessage() {
+        toastIt(getString(R.string.toast_no_results), appContext);
+    }
+
+    @Override
+    public void showAddressSelectionDialog(final List<gc.david.dfm.address.domain.model.Address> addressList) {
+        final AddressSuggestionsDialogFragment addressSuggestionsDialogFragment = new AddressSuggestionsDialogFragment();
+        addressSuggestionsDialogFragment.setAddressList(addressList);
+        addressSuggestionsDialogFragment.setOnDialogActionListener(new AddressSuggestionsDialogFragment.OnDialogActionListener() {
+            @Override
+            public void onItemClick(final int position) {
+                addressPresenter.selectAddressInDialog(addressList.get(position));
+            }
+        });
+        addressSuggestionsDialogFragment.show(getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public void showPositionByName(final gc.david.dfm.address.domain.model.Address address) {
+        DFMLogger.logMessage(TAG, "showPositionByName " + getSelectedDistanceMode());
+
+        if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
+            coordinates.add(address.getCoordinates());
+            if (coordinates.isEmpty()) {
+                DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
+
+                // add marker
+                final Marker marker = addMarker(address.getCoordinates());
+                marker.setTitle(address.getFormattedAddress());
+                marker.showInfoWindow();
+                // moveCamera
+                moveCameraZoom(address.getCoordinates(), address.getCoordinates(), false);
+                distanceMeasuredAsText = calculateDistance(Arrays.asList(address.getCoordinates(),
+                                                                         address.getCoordinates()));
+                // That means we are looking for a first position, so we want to calculate a distance starting
+                // from here
+                calculatingDistance = true;
+            } else {
+                drawAndShowMultipleDistances(coordinates, address.getFormattedAddress() + "\n", false, true);
+            }
+        } else {
+            if (!appHasJustStarted) {
+                DFMLogger.logMessage(TAG, "handleSelectedAddress appHasJustStarted");
+
                 if (coordinates.isEmpty()) {
                     DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
 
-                    // add marker
-                    final Marker marker = addMarker(selectedPosition);
-                    marker.setTitle(fullAddress.toString());
-                    marker.showInfoWindow();
-                    // moveCamera
-                    moveCameraZoom(selectedPosition, selectedPosition, false);
-                    distanceMeasuredAsText = calculateDistance(Arrays.asList(selectedPosition, selectedPosition));
-                    // That means we are looking for a first position, so we want to calculate a distance starting
-                    // from here
-                    calculatingDistance = true;
-                } else {
-                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
+                    coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 }
+                coordinates.add(address.getCoordinates());
+                drawAndShowMultipleDistances(coordinates, address.getFormattedAddress() + "\n", false, true);
             } else {
-                if (!appHasJustStarted) {
-                    DFMLogger.logMessage(TAG, "handleSelectedAddress appHasJustStarted");
+                DFMLogger.logMessage(TAG, "handleSelectedAddress NOT appHasJustStarted");
 
-                    if (coordinates.isEmpty()) {
-                        DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
-
-                        coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-                    }
-                    coordinates.add(selectedPosition);
-                    drawAndShowMultipleDistances(coordinates, fullAddress.toString(), false, true);
-                } else {
-                    DFMLogger.logMessage(TAG, "handleSelectedAddress NOT appHasJustStarted");
-
-                    // Coming from View Action Intent
-                    sendDestinationPosition = selectedPosition;
-                }
+                // Coming from View Action Intent
+                sendDestinationPosition = address.getCoordinates();
             }
-        }
-
-        protected void processSelectedAddress(final int item) {
-            DFMLogger.logMessage(TAG, "processSelectedAddress item=" + item);
-
-            // Fill address info to show in the marker info window
-            final Address address = addressList.get(item);
-            for (int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                fullAddress.append(address.getAddressLine(i)).append("\n");
-            }
-            selectedPosition = new LatLng(address.getLatitude(), address.getLongitude());
         }
     }
 
-    private class SearchPositionByCoordinates extends SearchPositionByName {
+    @Override
+    public void showPositionByCoordinates(final gc.david.dfm.address.domain.model.Address address) {
+        drawAndShowMultipleDistances(Arrays.asList(new LatLng(currentLocation.getLatitude(),
+                                                              currentLocation.getLongitude()),
+                                                   address.getCoordinates()),
+                                     address.getFormattedAddress() + "\n",
+                                     false,
+                                     true);
+    }
 
-        private final String TAG = SearchPositionByCoordinates.class.getSimpleName();
-
-        @Override
-        protected Integer doInBackground(Object... params) {
-            DFMLogger.logMessage(TAG, "doInBackground");
-
-            /* get latitude and longitude from the addressList */
-            final Geocoder geoCoder = new Geocoder(appContext, Locale.getDefault());
-            final LatLng latLng = (LatLng) params[0];
-            try {
-                addressList = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-            } catch (final IOException e) {
-                e.printStackTrace();
-                DFMLogger.logException(e);
-                return -1; // No encuentra una dirección, no puede conectar con el servidor
-            } catch (final IllegalArgumentException e) {
-                final IllegalArgumentException illegalArgumentException = new IllegalArgumentException(String.format(Locale.getDefault(),
-                                                                                                                     "Error en latitud=%f o longitud=%f.\n%s",
-                                                                                                                     latLng.latitude,
-                                                                                                                     latLng.longitude,
-                                                                                                                     e.toString()));
-                DFMLogger.logException(illegalArgumentException);
-                throw illegalArgumentException;
-            }
-            if (addressList == null) {
-                return -3; // empty list if there is no backend service available
-            } else if (addressList.size() > 0) {
-                return 0;
-            } else {
-                return -2; // null if no matches were found // Cuando no hay conexión que sirva
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            DFMLogger.logMessage(TAG, "onPostExecute result=" + result);
-
-            switch (result) {
-                case 0:
-                    processSelectedAddress(0);
-                    drawAndShowMultipleDistances(Arrays.asList(new LatLng(currentLocation.getLatitude(),
-                                                                          currentLocation.getLongitude()),
-                                                               selectedPosition), fullAddress.toString(),
-                                                 false,
-                                                 true);
-                    break;
-                case -1:
-                    toastIt(getString(R.string.toast_no_find_address), appContext);
-                    break;
-                case -2:
-                    toastIt(getString(R.string.toast_no_results), appContext);
-                    break;
-                case -3:
-                    toastIt(getString(R.string.toast_no_find_address), appContext);
-                    break;
-            }
-            progressDialog.dismiss();
-        }
-
+    private enum DistanceMode {
+        DISTANCE_FROM_CURRENT_POINT,
+        DISTANCE_FROM_ANY_POINT
     }
 
     private Locale getAmericanOrEuropeanLocale() {

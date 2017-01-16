@@ -51,6 +51,7 @@ public class Utils {
      * @param negativeButton Negative button text.
      * @param activity       Activity which runs this method.
      */
+    // TODO: 13.01.17 change String to ID resources
     public static void showAlertDialog(final String action,
                                        final String title,
                                        final String message,

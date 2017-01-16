@@ -3,7 +3,6 @@ package gc.david.dfm.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.location.Address;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -13,16 +12,18 @@ import java.util.List;
 
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
+import gc.david.dfm.address.domain.model.Address;
 import gc.david.dfm.logger.DFMLogger;
 
 /**
  * Created by david on 07.02.16.
  */
+// TODO: 13.01.17 move to address.presentation package
 public class AddressSuggestionsDialogFragment extends DialogFragment {
 
     private static final String TAG = AddressSuggestionsDialogFragment.class.getSimpleName();
 
-    private List<Address> addressList;
+    private List<Address>          addressList;
     private OnDialogActionListener onDialogActionListener;
 
     public void setAddressList(final List<Address> addressList) {
@@ -51,17 +52,11 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
         return builder.create();
     }
 
+    // TODO: 13.01.17 improve this formatting, probably text will run out of space
     private List<String> groupAddresses(final List<Address> addressList) {
-        DFMLogger.logMessage(TAG, "groupAddresses");
-
         final List<String> result = new ArrayList<>();
-        StringBuilder stringBuilder;
-        for (final Address l : addressList) {
-            stringBuilder = new StringBuilder();
-            for (int j = 0; j < l.getMaxAddressLineIndex() + 1; j++) {
-                stringBuilder.append(l.getAddressLine(j)).append("\n");
-            }
-            result.add(stringBuilder.toString());
+        for (final Address address : addressList) {
+            result.add(address.getFormattedAddress());
         }
         return result;
     }

@@ -9,7 +9,7 @@ public interface ElevationRepository {
 
     interface Callback {
 
-        void onSuccess(final ElevationEntity elevationEntity);
+        void onSuccess(ElevationEntity elevationEntity);
 
         void onError(String message);
 
