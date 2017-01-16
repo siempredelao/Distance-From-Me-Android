@@ -442,7 +442,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         calculatingDistance = false;
 
         coordinates.clear();
-        googleMap.clear();
+
+        if (googleMap != null) {
+            googleMap.clear();
+        }
 
         elevationPresenter.onReset();
     }
