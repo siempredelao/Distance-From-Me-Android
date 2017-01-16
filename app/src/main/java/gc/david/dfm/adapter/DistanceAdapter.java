@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import gc.david.dfm.R;
@@ -20,7 +21,7 @@ import static butterknife.ButterKnife.bind;
 
 public class DistanceAdapter extends ArrayAdapter<Distance> {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     private final Activity       activity;
     private final List<Distance> distanceList;

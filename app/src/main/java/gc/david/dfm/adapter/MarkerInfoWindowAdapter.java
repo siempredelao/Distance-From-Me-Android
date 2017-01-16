@@ -1,5 +1,6 @@
 package gc.david.dfm.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ public class MarkerInfoWindowAdapter implements InfoWindowAdapter {
     @BindView(R.id.infowindow_address_textview)
     protected     TextView tvAddress;
 
+    @SuppressLint("InflateParams")
     public MarkerInfoWindowAdapter(final Activity activity) {
         view = activity.getLayoutInflater().inflate(R.layout.custom_info, null);
         bind(this, view);
