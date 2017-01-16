@@ -12,8 +12,4 @@ import gc.david.dfm.ui.ShowInfoActivity;
 @Singleton
 @Component(modules = RootModule.class)
 public interface RootComponent {
-
-    void inject(ShowInfoActivity showInfoActivity);
-    void inject(SettingsFragment settingsFragment);
-
 }

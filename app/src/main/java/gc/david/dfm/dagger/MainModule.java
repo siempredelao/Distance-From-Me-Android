@@ -15,6 +15,12 @@ import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper;
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor;
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
 import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.distance.data.DistanceLocalDataSource;
+import gc.david.dfm.distance.data.DistanceRepository;
+import gc.david.dfm.distance.domain.GetPositionListInteractor;
+import gc.david.dfm.distance.domain.GetPositionListUseCase;
+import gc.david.dfm.distance.domain.LoadDistancesInteractor;
+import gc.david.dfm.distance.domain.LoadDistancesUseCase;
 import gc.david.dfm.elevation.data.ElevationRemoteDataSource;
 import gc.david.dfm.elevation.data.ElevationRepository;
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper;
@@ -22,6 +28,7 @@ import gc.david.dfm.elevation.domain.ElevationInteractor;
 import gc.david.dfm.elevation.domain.ElevationUseCase;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.MainThread;
+import gc.david.dfm.model.DaoSession;
 
 /**
  * Created by david on 27.12.16.
@@ -80,5 +87,27 @@ public class MainModule {
                                                          mainThread,
                                                          addressCollectionEntityDataMapper,
                                                          elevationRepository);
+    }
+
+    @Provides
+    @Singleton
+    DistanceRepository provideDistanceRepository(DaoSession daoSession) {
+        return new DistanceLocalDataSource(daoSession);
+    }
+
+    @Provides
+    @Singleton
+    LoadDistancesUseCase provideLoadDistancesUseCase(Executor executor,
+                                                     MainThread mainThread,
+                                                     DistanceRepository elevationRepository) {
+        return new LoadDistancesInteractor(executor, mainThread, elevationRepository);
+    }
+
+    @Provides
+    @Singleton
+    GetPositionListUseCase provideGetPositionListUseCase(Executor executor,
+                                                       MainThread mainThread,
+                                                       DistanceRepository elevationRepository) {
+        return new GetPositionListInteractor(executor, mainThread, elevationRepository);
     }
 }

@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -42,10 +43,12 @@ import gc.david.dfm.DFMApplication;
 import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
-import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.DaggerShowInfoComponent;
 import gc.david.dfm.dagger.RootModule;
+import gc.david.dfm.dagger.ShowInfoModule;
+import gc.david.dfm.dagger.StorageModule;
+import gc.david.dfm.distance.domain.InsertDistanceUseCase;
 import gc.david.dfm.logger.DFMLogger;
-import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 
@@ -74,13 +77,13 @@ public class ShowInfoActivity extends AppCompatActivity {
     protected Toolbar  tbMain;
 
     @Inject
-    protected DaoSession        daoSession;
-    @Inject
     protected Context           appContext;
     @Inject
     protected PackageManager    packageManager;
     @Inject
     protected ConnectionManager connectionManager;
+    @Inject
+    protected InsertDistanceUseCase insertDistanceUseCase;
 
     private MenuItem     refreshMenuItem;
     private List<LatLng> positionsList;
@@ -98,10 +101,12 @@ public class ShowInfoActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
-        DaggerRootComponent.builder()
-                           .rootModule(new RootModule((DFMApplication) getApplication()))
-                           .build()
-                           .inject(this);
+        DaggerShowInfoComponent.builder()
+                               .rootModule(new RootModule((DFMApplication) getApplication()))
+                               .storageModule(new StorageModule())
+                               .showInfoModule(new ShowInfoModule())
+                               .build()
+                               .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
@@ -280,28 +285,36 @@ public class ShowInfoActivity extends AppCompatActivity {
                    private void insertDataIntoDatabase(final String alias) {
                        DFMLogger.logMessage(TAG, "insertDataIntoDatabase");
 
-                       String aliasToSave = "";
-                       if (alias.compareTo("") != 0) {
-                           aliasToSave = alias;
-                       }
-                       // TODO hacer esto en segundo plano
-                       final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
-                       final long distanceId = daoSession.insert(distance1);
+                       // TODO: 16.01.17 move this to presenter
+                       final Distance distance1 = new Distance();
+                       distance1.setName(alias);
+                       distance1.setDistance(distance);
+                       distance1.setDate(new Date());
 
-                       for (LatLng positionAsLatLng : positionsList) {
-                           final Position position = new Position(null,
-                                                                  positionAsLatLng.latitude,
-                                                                  positionAsLatLng.longitude,
-                                                                  distanceId);
-                           daoSession.insert(position);
+                       final List<Position> positionList = new ArrayList<>();
+                       for (final LatLng positionLatLng : positionsList) {
+                           final Position position = new Position();
+                           position.setLatitude(positionLatLng.latitude);
+                           position.setLongitude(positionLatLng.longitude);
+                           positionList.add(position);
                        }
 
-                       // Mostrar un mensaje de que se ha guardado correctamente
-                       if (!aliasToSave.equals("")) {
-                           toastIt(getString(R.string.alias_dialog_with_name_toast, aliasToSave), appContext);
-                       } else {
-                           toastIt(getString(R.string.alias_dialog_no_name_toast), appContext);
-                       }
+                       insertDistanceUseCase.execute(distance1, positionList, new InsertDistanceUseCase.Callback() {
+                           @Override
+                           public void onInsert() {
+                               if (!TextUtils.isEmpty(alias)) {
+                                   toastIt(getString(R.string.alias_dialog_with_name_toast, alias), appContext);
+                               } else {
+                                   toastIt(getString(R.string.alias_dialog_no_name_toast), appContext);
+                               }
+                           }
+
+                           @Override
+                           public void onError() {
+                               toastIt("Unable to save distance. Try again later.", appContext);
+                               DFMLogger.logException(new Exception("Unable to insert distance into database."));
+                           }
+                       });
                    }
                });
         (savingInDBDialog = builder.create()).show();

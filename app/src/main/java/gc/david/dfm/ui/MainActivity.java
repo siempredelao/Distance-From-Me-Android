@@ -90,17 +90,19 @@ import gc.david.dfm.address.presentation.AddressPresenter;
 import gc.david.dfm.dagger.DaggerMainComponent;
 import gc.david.dfm.dagger.MainModule;
 import gc.david.dfm.dagger.RootModule;
+import gc.david.dfm.dagger.StorageModule;
 import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.distance.domain.GetPositionListUseCase;
+import gc.david.dfm.distance.domain.LoadDistancesUseCase;
+import gc.david.dfm.elevation.domain.ElevationUseCase;
 import gc.david.dfm.elevation.presentation.Elevation;
 import gc.david.dfm.elevation.presentation.ElevationPresenter;
-import gc.david.dfm.elevation.domain.ElevationUseCase;
 import gc.david.dfm.feedback.Feedback;
 import gc.david.dfm.feedback.FeedbackPresenter;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
 import gc.david.dfm.map.LocationUtils;
-import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 import gc.david.dfm.service.GeofencingService;
@@ -137,23 +139,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected FloatingActionButton fabMyLocation;
 
     @Inject
-    protected DaoSession           daoSession;
+    protected Context                appContext;
     @Inject
-    protected Context              appContext;
+    protected Lazy<PackageManager>   packageManager;
     @Inject
-    protected Lazy<PackageManager> packageManager;
+    protected Lazy<DeviceInfo>       deviceInfo;
     @Inject
-    protected Lazy<DeviceInfo>     deviceInfo;
+    protected ElevationUseCase       elevationUseCase;
     @Inject
-    protected ElevationUseCase     elevationUseCase;
+    protected ConnectionManager      connectionManager;
     @Inject
-    protected ConnectionManager    connectionManager;
-    @Inject
-    protected PreferencesProvider  preferencesProvider;
+    protected PreferencesProvider    preferencesProvider;
     @Inject @Named("CoordinatesByName")
-    protected GetAddressUseCase getAddressCoordinatesByNameUseCase;
+    protected GetAddressUseCase      getAddressCoordinatesByNameUseCase;
     @Inject @Named("NameByCoordinates")
-    protected GetAddressUseCase getAddressNameByCoordinatesUseCase;
+    protected GetAddressUseCase      getAddressNameByCoordinatesUseCase;
+    @Inject
+    protected LoadDistancesUseCase   loadDistancesUseCase;
+    @Inject
+    protected GetPositionListUseCase getPositionListUseCase;
 
     private final BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -195,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         setContentView(R.layout.activity_main);
         DaggerMainComponent.builder()
                            .rootModule(new RootModule((DFMApplication) getApplication()))
+                           .storageModule(new StorageModule())
                            .mainModule(new MainModule())
                            .build()
                            .inject(this);
@@ -623,13 +628,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         searchView.setQueryRefinementEnabled(true);
         searchView.setIconifiedByDefault(true);
 
-        // Muestra el item de menú de cargar si hay elementos en la BD
-        // TODO hacerlo en segundo plano
-        final List<Distance> allDistances = daoSession.loadAll(Distance.class);
-        if (allDistances.isEmpty()) {
-            final MenuItem loadItem = menu.findItem(R.id.action_load);
-            loadItem.setVisible(false);
-        }
+        // TODO: 16.01.17 move this to presenter
+        final MenuItem loadItem = menu.findItem(R.id.action_load);
+        loadDistancesUseCase.execute(new LoadDistancesUseCase.Callback() {
+            @Override
+            public void onDistanceListLoaded(final List<Distance> distanceList) {
+                if (distanceList.isEmpty()) {
+                    loadItem.setVisible(false);
+                }
+            }
+
+            @Override
+            public void onError() {
+                loadItem.setVisible(false);
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -674,26 +687,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void loadDistancesFromDB() {
         DFMLogger.logMessage(TAG, "loadDistancesFromDB");
 
-        // TODO hacer esto en segundo plano
-        final List<Distance> allDistances = daoSession.loadAll(Distance.class);
+        // TODO: 16.01.17 move this to presenter
+        loadDistancesUseCase.execute(new LoadDistancesUseCase.Callback() {
+            @Override
+            public void onDistanceListLoaded(final List<Distance> distanceList) {
+                if (!distanceList.isEmpty()) {
+                    final DistanceSelectionDialogFragment distanceSelectionDialogFragment = new DistanceSelectionDialogFragment();
+                    distanceSelectionDialogFragment.setDistanceList(distanceList);
+                    distanceSelectionDialogFragment.setOnDialogActionListener(new DistanceSelectionDialogFragment.OnDialogActionListener() {
+                        @Override
+                        public void onItemClick(int position) {
+                            final Distance distance = distanceList.get(position);
+                            getPositionListUseCase.execute(distance.getId(), new GetPositionListUseCase.Callback() {
+                                @Override
+                                public void onPositionListLoaded(final List<Position> positionList) {
+                                    coordinates.clear();
+                                    coordinates.addAll(Utils.convertPositionListToLatLngList(positionList));
 
-        if (allDistances != null && !allDistances.isEmpty()) {
-            final DistanceSelectionDialogFragment distanceSelectionDialogFragment = new DistanceSelectionDialogFragment();
-            distanceSelectionDialogFragment.setDistanceList(allDistances);
-            distanceSelectionDialogFragment.setOnDialogActionListener(new DistanceSelectionDialogFragment.OnDialogActionListener() {
-                @Override
-                public void onItemClick(int position) {
-                    final Distance distance = allDistances.get(position);
-                    final List<Position> positionList = daoSession.getPositionDao()
-                                                                  ._queryDistance_PositionList(distance.getId());
-                    coordinates.clear();
-                    coordinates.addAll(Utils.convertPositionListToLatLngList(positionList));
+                                    drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
+                                }
 
-                    drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
+                                @Override
+                                public void onError() {
+                                    DFMLogger.logException(new Exception("Unable to get position by id."));
+                                }
+                            });
+                        }
+                    });
+                    distanceSelectionDialogFragment.show(getSupportFragmentManager(), null);
                 }
-            });
-            distanceSelectionDialogFragment.show(getSupportFragmentManager(), null);
-        }
+            }
+
+            @Override
+            public void onError() {
+                DFMLogger.logException(new Exception("Unable to load distances."));
+            }
+        });
     }
 
     /**

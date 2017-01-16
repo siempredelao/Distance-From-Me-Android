@@ -9,12 +9,12 @@ import javax.inject.Inject;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.R;
-import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.DaggerSettingsComponent;
 import gc.david.dfm.dagger.RootModule;
+import gc.david.dfm.dagger.SettingsModule;
+import gc.david.dfm.dagger.StorageModule;
+import gc.david.dfm.distance.domain.ClearDistancesUseCase;
 import gc.david.dfm.logger.DFMLogger;
-import gc.david.dfm.model.DaoSession;
-import gc.david.dfm.model.Distance;
-import gc.david.dfm.model.Position;
 
 import static gc.david.dfm.Utils.toastIt;
 
@@ -23,16 +23,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     @Inject
-    protected DaoSession daoSession;
+    protected ClearDistancesUseCase clearDistancesUseCase;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings);
 
-        DaggerRootComponent.builder()
-                           .rootModule(new RootModule((DFMApplication) getActivity().getApplication()))
-                           .build()
-                           .inject(this);
+        DaggerSettingsComponent.builder()
+                               .rootModule(new RootModule((DFMApplication) getActivity().getApplication()))
+                               .storageModule(new StorageModule())
+                               .settingsModule(new SettingsModule())
+                               .build()
+                               .inject(this);
 
         final Preference bbddPreference = findPreference(DFMPreferences.CLEAR_DATABASE_KEY);
         bbddPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -40,10 +42,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 DFMLogger.logMessage(TAG, "onPreferenceClick delete entries");
 
-                // TODO hacerlo en segundo plano
-                daoSession.deleteAll(Distance.class);
-                daoSession.deleteAll(Position.class);
-                toastIt(getString(R.string.toast_distances_deleted), getActivity().getApplicationContext());
+                // TODO: 16.01.17 move this to presenter
+                clearDistancesUseCase.execute(new ClearDistancesUseCase.Callback() {
+                    @Override
+                    public void onClear() {
+                        toastIt(getString(R.string.toast_distances_deleted), getActivity().getApplicationContext());
+                    }
+
+                    @Override
+                    public void onError() {
+                        DFMLogger.logException(new Exception("Unable to clear database."));
+                    }
+                });
                 return false;
             }
         });
