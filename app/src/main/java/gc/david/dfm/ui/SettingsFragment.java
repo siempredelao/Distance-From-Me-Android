@@ -46,7 +46,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 clearDistancesUseCase.execute(new ClearDistancesUseCase.Callback() {
                     @Override
                     public void onClear() {
-                        toastIt(getString(R.string.toast_distances_deleted), getActivity().getApplicationContext());
+                        toastIt(R.string.toast_distances_deleted, getContext());
                     }
 
                     @Override

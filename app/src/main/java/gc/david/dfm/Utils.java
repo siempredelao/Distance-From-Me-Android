@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -29,34 +30,23 @@ public class Utils {
 
     private static final String TAG = Utils.class.getSimpleName();
 
-    /**
-     * Makes toasting easy!
-     *
-     * @param charSequence The string to show.
-     * @param context      Activity context.
-     */
     public static void toastIt(final String charSequence, final Context context) {
         DFMLogger.logMessage(TAG, "toastIt message=" + charSequence);
 
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * Shows an AlertDialog with a message, positive and negative button, and
-     * executes an action if needed.
-     *
-     * @param action         Action to execute.
-     * @param message        Message to show to the user.
-     * @param positiveButton Positive button text.
-     * @param negativeButton Negative button text.
-     * @param activity       Activity which runs this method.
-     */
-    // TODO: 13.01.17 change String to ID resources
+    public static void toastIt(final @StringRes int stringRes, final Context context) {
+        DFMLogger.logMessage(TAG, "toastIt message=" + context.getString(stringRes));
+
+        Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show();
+    }
+
     public static void showAlertDialog(final String action,
-                                       final String title,
-                                       final String message,
-                                       final String positiveButton,
-                                       final String negativeButton,
+                                       final @StringRes int title,
+                                       final @StringRes int message,
+                                       final @StringRes int positiveButton,
+                                       final @StringRes int negativeButton,
                                        final Activity activity) {
         DFMLogger.logMessage(TAG, "showAlertDialog");
 

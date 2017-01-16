@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // Iniciando la app
         if (currentLocation == null) {
-            toastIt(getString(R.string.toast_loading_position), appContext);
+            toastIt(R.string.toast_loading_position, appContext);
         }
 
         handleIntents(getIntent());
@@ -375,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             if (coordinates.isEmpty()) {
-                toastIt(getString(R.string.toast_first_point_needed), appContext);
+                toastIt(R.string.toast_first_point_needed, appContext);
             } else {
                 coordinates.add(point);
                 drawAndShowMultipleDistances(coordinates, "", false, true);
@@ -779,7 +779,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         new FeedbackPresenter(new Feedback.View() {
             @Override
             public void showError() {
-                toastIt(getString(R.string.toast_send_feedback_error), appContext);
+                toastIt(R.string.toast_send_feedback_error, appContext);
             }
 
             @Override
@@ -1287,11 +1287,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         DFMLogger.logMessage(TAG, "showConnectionProblemsDialog");
 
         showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
-                        getString(R.string.dialog_connection_problems_title),
-                        getString(R.string.dialog_connection_problems_message),
-                        getString(R.string.dialog_connection_problems_positive_button),
-                        getString(R.string.dialog_connection_problems_negative_button),
-                        MainActivity.this);
+                        R.string.dialog_connection_problems_title,
+                        R.string.dialog_connection_problems_message,
+                        R.string.dialog_connection_problems_positive_button,
+                        R.string.dialog_connection_problems_negative_button,
+                        this);
     }
 
     @Override
@@ -1314,12 +1314,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void showCallError(final String errorMessage) {
         logError(errorMessage);
-        toastIt(getString(R.string.toast_no_find_address), appContext);
+        toastIt(R.string.toast_no_find_address, appContext);
     }
 
     @Override
     public void showNoMatchesMessage() {
-        toastIt(getString(R.string.toast_no_results), appContext);
+        toastIt(R.string.toast_no_results, appContext);
     }
 
     @Override

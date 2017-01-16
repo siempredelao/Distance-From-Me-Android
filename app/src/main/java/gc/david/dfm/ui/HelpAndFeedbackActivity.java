@@ -79,7 +79,7 @@ public class HelpAndFeedbackActivity extends AppCompatActivity implements Faqs.V
         new FeedbackPresenter(new Feedback.View() {
             @Override
             public void showError() {
-                toastIt(getString(R.string.toast_send_feedback_error), getApplicationContext());
+                toastIt(R.string.toast_send_feedback_error, getApplicationContext());
             }
 
             @Override

@@ -305,7 +305,7 @@ public class ShowInfoActivity extends AppCompatActivity {
                                if (!TextUtils.isEmpty(alias)) {
                                    toastIt(getString(R.string.alias_dialog_with_name_toast, alias), appContext);
                                } else {
-                                   toastIt(getString(R.string.alias_dialog_no_name_toast), appContext);
+                                   toastIt(R.string.alias_dialog_no_name_toast, appContext);
                                }
                            }
 
@@ -335,7 +335,7 @@ public class ShowInfoActivity extends AppCompatActivity {
             showRefreshSpinner();
 
             if (!connectionManager.isOnline()) {
-                toastIt(getString(R.string.toast_network_problems), context);
+                toastIt(R.string.toast_network_problems, context);
 
                 hideRefreshSpinner();
                 cancel(false);
