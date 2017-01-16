@@ -11,10 +11,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -99,38 +95,7 @@ public class Utils {
         return bundle.toString();
     }
 
-    /**
-     * Converts the InputStream with the retrieved data to String.
-     *
-     * @param inputStream The input stream.
-     * @return The InputStream converted to String.
-     * @throws IOException
-     */
-    public static String convertInputStreamToString(final InputStream inputStream) throws IOException {
-        DFMLogger.logMessage(TAG, "convertInputStreamToString");
-
-        final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        StringBuilder result = new StringBuilder();
-        while ((line = bufferedReader.readLine()) != null) {
-            result.append(line);
-        }
-
-        inputStream.close();
-        bufferedReader.close();
-        return result.toString();
-    }
-
-    /**
-     * Returns the distance between start and end positions normalized by device
-     * locale.
-     *
-     * @param coordinates position list.
-     * @return The distance in metres.
-     */
     public static double calculateDistanceInMetres(final List<LatLng> coordinates) {
-        DFMLogger.logMessage(TAG, "calculateDistance");
-
         double distanceInMetres = 0D;
         for (int i = 0; i < coordinates.size() - 1; i++) {
             distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
@@ -142,8 +107,6 @@ public class Utils {
     }
 
     public static List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
-        DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
-
         final List<LatLng> result = new ArrayList<>();
         for (final Position position : positionList) {
             result.add(new LatLng(position.getLatitude(), position.getLongitude()));

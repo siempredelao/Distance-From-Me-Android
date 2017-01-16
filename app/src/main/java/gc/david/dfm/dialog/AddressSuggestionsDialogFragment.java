@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gc.david.dfm.R;
-import gc.david.dfm.Utils;
 import gc.david.dfm.address.domain.model.Address;
-import gc.david.dfm.logger.DFMLogger;
 
 /**
  * Created by david on 07.02.16.
@@ -37,8 +35,6 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreateDialog bundle=" + Utils.dumpBundleToString(savedInstanceState));
-
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.dialog_select_address_title));
         builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),

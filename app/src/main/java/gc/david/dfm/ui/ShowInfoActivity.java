@@ -59,8 +59,8 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
-    public static final  String POSITIONS_LIST_EXTRA_KEY_NAME           = "positionsList";
-    public static final  String DISTANCE_EXTRA_KEY_NAME                 = "distancia";
+    private static final String POSITIONS_LIST_EXTRA_KEY                = "positionsList";
+    private static final String DISTANCE_EXTRA_KEY                      = "distancia";
     private static final String ORIGIN_ADDRESS_KEY                      = "originAddress";
     private static final String DESTINATION_ADDRESS_KEY                 = "destinationAddress";
     private static final String DISTANCE_KEY                            = "distance";
@@ -77,11 +77,11 @@ public class ShowInfoActivity extends AppCompatActivity {
     protected Toolbar  tbMain;
 
     @Inject
-    protected Context           appContext;
+    protected Context               appContext;
     @Inject
-    protected PackageManager    packageManager;
+    protected PackageManager        packageManager;
     @Inject
-    protected ConnectionManager connectionManager;
+    protected ConnectionManager     connectionManager;
     @Inject
     protected InsertDistanceUseCase insertDistanceUseCase;
 
@@ -165,8 +165,8 @@ public class ShowInfoActivity extends AppCompatActivity {
         DFMLogger.logMessage(TAG, "getIntentData");
 
         final Intent inputDataIntent = getIntent();
-        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
-        distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
+        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY);
+        distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY);
     }
 
     private void fillAddressesInfo() {
@@ -205,8 +205,6 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        DFMLogger.logMessage(TAG, "onCreateOptionsMenu");
-
         getMenuInflater().inflate(R.menu.show_info, menu);
 
         final MenuItem shareItem = menu.findItem(R.id.action_social_share);
@@ -220,8 +218,6 @@ public class ShowInfoActivity extends AppCompatActivity {
     }
 
     private Intent createDefaultShareIntent() {
-        DFMLogger.logMessage(TAG, "createDefaultShareIntent");
-
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
@@ -239,8 +235,6 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DFMLogger.logMessage(TAG, "onOptionsItemSelected item=" + item.getItemId());
-
         switch (item.getItemId()) {
             case R.id.action_social_share:
                 return true;
@@ -328,8 +322,6 @@ public class ShowInfoActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            DFMLogger.logMessage(TAG, "onPreExecute");
-
             this.context = appContext;
 
             showRefreshSpinner();
@@ -347,9 +339,7 @@ public class ShowInfoActivity extends AppCompatActivity {
             DFMLogger.logMessage(TAG, "doInBackground");
 
             final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            // Get the current location from the input parameter list
             final LatLng currentLocation = (LatLng) params[0];
-            // Create a list to contain the result address
             List<Address> addresses;
             try {
                 addresses = geocoder.getFromLocation(currentLocation.latitude,
@@ -359,7 +349,6 @@ public class ShowInfoActivity extends AppCompatActivity {
                 DFMLogger.logException(e1);
                 return (getString(R.string.toast_no_location_found));
             } catch (final IllegalArgumentException e2) {
-                // Error message to post in the log
                 final String errorString = String.format("Illegal arguments %s.%s passed to address service",
                                                          Double.toString(currentLocation.latitude),
                                                          Double.toString(currentLocation.longitude));
@@ -367,40 +356,24 @@ public class ShowInfoActivity extends AppCompatActivity {
                 DFMLogger.logException(e2);
                 return errorString;
             }
-            // If the reverse geocode returned an address
             if (addresses != null && !addresses.isEmpty()) {
-                // Get the first address
                 final Address address = addresses.get(0);
-                // Format the first line of address (if available), city, and
-                // country name.
                 return String.format("%s%s%s%s",
-                                     // If there's a street address, add it
-                                     address.getMaxAddressLineIndex() > 0 ?
-                                     address.getAddressLine(0) + "\n" : "",
-                                     // Añadimos también el código postal
-                                     address.getPostalCode() != null ?
-                                     address.getPostalCode() + " " : "",
-                                     // Locality is usually a city
-                                     address.getLocality() != null ?
-                                     address.getLocality() + "\n" : "",
-                                     // The country of the address
+                                     address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) + "\n" : "",
+                                     address.getPostalCode() != null ? address.getPostalCode() + " " : "",
+                                     address.getLocality() != null ? address.getLocality() + "\n" : "",
                                      address.getCountryName());
             } else {
-                // If there aren't any addresses, post a message
                 return getString(R.string.error_no_address_found_message);
             }
         }
 
         @Override
         protected void onPostExecute(String result) {
-            DFMLogger.logMessage(TAG, "onPostExecute");
-
             hideRefreshSpinner();
         }
 
         private void showRefreshSpinner() {
-            DFMLogger.logMessage(TAG, "showRefreshSpinner");
-
             if (refreshMenuItem != null) {
                 MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
                 MenuItemCompat.expandActionView(refreshMenuItem);
@@ -408,8 +381,6 @@ public class ShowInfoActivity extends AppCompatActivity {
         }
 
         private void hideRefreshSpinner() {
-            DFMLogger.logMessage(TAG, "hideRefreshSpinner");
-
             if (refreshMenuItem != null) {
                 MenuItemCompat.collapseActionView(refreshMenuItem);
                 MenuItemCompat.setActionView(refreshMenuItem, null);
@@ -419,9 +390,9 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {
         final Intent showInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
-        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME,
+        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY,
                                                            new ArrayList<Parcelable>(coordinates));
-        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY_NAME, distanceAsText);
+        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText);
         activity.startActivity(showInfoActivityIntent);
     }
 }

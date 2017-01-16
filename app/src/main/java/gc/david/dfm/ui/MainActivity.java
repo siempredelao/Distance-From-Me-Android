@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -295,32 +296,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                drawerLayout.closeDrawers();
                 switch (menuItem.getItemId()) {
                     case R.id.menu_current_position:
                         menuItem.setChecked(true);
-                        drawerLayout.closeDrawers();
                         onStartingPointSelected();
                         return true;
                     case R.id.menu_any_position:
                         menuItem.setChecked(true);
-                        drawerLayout.closeDrawers();
                         onStartingPointSelected();
                         return true;
                     case R.id.menu_rate_app:
-                        drawerLayout.closeDrawers();
                         showRateDialog();
                         return true;
                     case R.id.menu_legal_notices:
-                        drawerLayout.closeDrawers();
                         showGooglePlayServiceLicenseDialog();
                         return true;
                     case R.id.menu_settings:
-                        drawerLayout.closeDrawers();
-                        openSettingsActivity();
+                        SettingsActivity.open(MainActivity.this);
                         return true;
                     case R.id.menu_help_feedback:
-                        drawerLayout.closeDrawers();
-                        startActivity(new Intent(MainActivity.this, HelpAndFeedbackActivity.class));
+                        HelpAndFeedbackActivity.open(MainActivity.this);
                         return true;
                 }
                 return false;
@@ -334,16 +330,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                           R.string.progressdialog_search_position_message) {
             @Override
             public void onDrawerOpened(View drawerView) {
-                DFMLogger.logMessage(TAG, "onDrawerOpened");
-
                 super.onDrawerOpened(drawerView);
                 supportInvalidateOptionsMenu();
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                DFMLogger.logMessage(TAG, "onDrawerClosed");
-
                 super.onDrawerClosed(drawerView);
                 supportInvalidateOptionsMenu();
             }
@@ -436,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void onStartingPointSelected() {
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
             DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from current point");
-        } else{
+        } else {
             DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from any point");
         }
 
@@ -490,14 +482,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         handleIntents(intent);
     }
 
-    /**
-     * Handles all Intent types.
-     *
-     * @param intent The input intent.
-     */
     private void handleIntents(final Intent intent) {
-        DFMLogger.logMessage(TAG, "handleIntents " + Utils.dumpIntentToString(intent));
-
         if (intent != null) {
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 handleSearchIntent(intent);
@@ -507,11 +492,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    /**
-     * Handles a search intent.
-     *
-     * @param intent Input intent.
-     */
     private void handleSearchIntent(final Intent intent) {
         DFMLogger.logMessage(TAG, "handleSearchIntent");
 
@@ -527,13 +507,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    /**
-     * Handles a send intent with position data.
-     *
-     * @param intent Input intent with position data.
-     */
     private void handleViewPositionIntent(final Intent intent) {
-        DFMLogger.logMessage(TAG, "handleViewPositionIntent");
         final Uri uri = intent.getData();
         DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=" + uri.toString());
 
@@ -606,8 +580,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private Matcher getMatcherForUri(final String schemeSpecificPart) {
         DFMLogger.logMessage(TAG, "getMatcherForUri scheme=" + schemeSpecificPart);
 
-        // http://regex101.com/
-        // http://www.regexplanet.com/advanced/java/index.html
         final String regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)";
         final Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(schemeSpecificPart);
@@ -615,16 +587,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        DFMLogger.logMessage(TAG, "onCreateOptionsMenu");
+        getMenuInflater().inflate(R.menu.main, menu);
 
-        // Inflate the options menu from XML
-        final MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-
-        // Expandir el EditText de la búsqueda a lo largo del ActionBar
         searchMenuItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
-        // Configure the search info and add any event listeners
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         // Indicamos que la activity actual sea la buscadora
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -652,20 +618,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DFMLogger.logMessage(TAG, "onOptionsItemSelected item=" + item.getItemId());
-
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
         if (actionBarDrawerToggle != null && actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            DFMLogger.logMessage(TAG, "onOptionsItemSelected ActionBar home button click");
-
             return true;
         }
 
         switch (item.getItemId()) {
             case R.id.action_search:
+                DFMLogger.logMessage(TAG, "onOptionsItemSelected search");
                 return true;
             case R.id.action_load:
+                DFMLogger.logMessage(TAG, "onOptionsItemSelected load distances from ddbb");
                 loadDistancesFromDB();
                 return true;
             default:
@@ -675,8 +637,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onBackPressed() {
-        DFMLogger.logMessage(TAG, "onBackPressed");
-
         if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
@@ -684,13 +644,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    /**
-     * Loads all entries stored in the database and show them to the user in a
-     * dialog.
-     */
     private void loadDistancesFromDB() {
-        DFMLogger.logMessage(TAG, "loadDistancesFromDB");
-
         // TODO: 16.01.17 move this to presenter
         loadDistancesUseCase.execute(new LoadDistancesUseCase.Callback() {
             @Override
@@ -729,18 +683,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    /**
-     * Shows settings activity.
-     */
-    private void openSettingsActivity() {
-        DFMLogger.logMessage(TAG, "openSettingsActivity");
-
-        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-    }
-
-    /**
-     * Shows rate dialog.
-     */
     private void showRateDialog() {
         DFMLogger.logMessage(TAG, "showRateDialog");
 
@@ -765,18 +707,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                   }).create().show();
     }
 
-    /**
-     * Opens Google Play Store, in Distance From Me page
-     */
     private void openPlayStoreAppPage() {
         DFMLogger.logMessage(TAG, "openPlayStoreAppPage");
 
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
+        } catch (ActivityNotFoundException e) {
+            DFMLogger.logException(new Exception("Unable to open Play Store, rooted device?"));
+        }
     }
 
-    /**
-     * Opens the feedback activity.
-     */
     private void openFeedbackActivity() {
         DFMLogger.logMessage(TAG, "openFeedbackActivity");
 
@@ -856,75 +796,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onDestroy();
     }
 
-    /**
-     * Handle results returned to this Activity by other Activities started with
-     * startActivityForResult(). In particular, the method onConnectionFailed()
-     * in LocationUpdateRemover and LocationUpdateRequester may call
-     * startResolutionForResult() to start an Activity that handles Google Play
-     * services problems. The result of this call returns here, to
-     * onActivityResult.
-     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        DFMLogger.logMessage(TAG, "onActivityResult requestCode=" + requestCode + ", " +
-                                  "resultCode=" + resultCode + "intent=" + Utils.dumpIntentToString(intent));
+        DFMLogger.logMessage(TAG,
+                             String.format(Locale.getDefault(),
+                                           "onActivityResult requestCode=%d, resultCode=%d, intent=%s",
+                                           requestCode,
+                                           resultCode,
+                                           Utils.dumpIntentToString(intent)));
 
-        // Choose what to do based on the request code
-        switch (requestCode) {
+        if (requestCode == LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST) {
+            if (resultCode == Activity.RESULT_OK) {
+                // Log the result
+                // Log.d(LocationUtils.APPTAG, getString(R.string.resolved));
 
-            // If the request code matches the code sent in onConnectionFailed
-            case LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST:
-
-                switch (resultCode) {
-                    // If Google Play services resolved the problem
-                    case Activity.RESULT_OK:
-
-                        // Log the result
-                        // Log.d(LocationUtils.APPTAG, getString(R.string.resolved));
-
-                        // Display the result
-                        // mConnectionState.setText(R.string.connected);
-                        // mConnectionStatus.setText(R.string.resolved);
-                        break;
-
-                    // If any other result was returned by Google Play services
-                    default:
-                        // Log the result
-                        // Log.d(LocationUtils.APPTAG,
-                        // getString(R.string.no_resolution));
-
-                        // Display the result
-                        // mConnectionState.setText(R.string.disconnected);
-                        // mConnectionStatus.setText(R.string.no_resolution);
-
-                        break;
-                }
-
-                // If any other request code was received
-            default:
-                // Report that this Activity received an unknown requestCode
+                // Display the result
+                // mConnectionState.setText(R.string.connected);
+                // mConnectionStatus.setText(R.string.resolved);
+            } else { // If any other result was returned by Google Play services
+                // Log the result
                 // Log.d(LocationUtils.APPTAG,
-                // getString(R.string.unknown_activity_request_code, requestCode));
+                // getString(R.string.no_resolution));
 
-                break;
+                // Display the result
+                // mConnectionState.setText(R.string.disconnected);
+                // mConnectionStatus.setText(R.string.no_resolution);
+            }
         }
     }
 
-    /**
-     * Checks if Google Play Services is available on the device.
-     *
-     * @return Returns <code>true</code> if available; <code>false</code>
-     * otherwise.
-     */
     private boolean checkPlayServices() {
-        DFMLogger.logMessage(TAG, "checkPlayServices");
-
         final GoogleApiAvailability googleApiAvailabilityInstance = GoogleApiAvailability.getInstance();
-        // Comprobamos que Google Play Services está disponible en el terminal
         final int resultCode = googleApiAvailabilityInstance.isGooglePlayServicesAvailable(appContext);
 
-        // Si está disponible, devolvemos verdadero. Si no, mostramos un mensaje
-        // de error y devolvemos falso
         if (resultCode == ConnectionResult.SUCCESS) {
             DFMLogger.logMessage(TAG, "checkPlayServices success");
 
@@ -1019,20 +923,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void showErrorDialog(final int errorCode) {
         DFMLogger.logMessage(TAG, "showErrorDialog errorCode=" + errorCode);
 
-        // Get the error dialog from Google Play services
         final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this,
                                                                                       errorCode,
                                                                                       LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
         // If Google Play services can provide an error dialog
         if (errorDialog != null) {
-            // Create a new DialogFragment in which to show the error dialog
             final ErrorDialogFragment errorFragment = new ErrorDialogFragment();
-
-            // Set the dialog in the DialogFragment
             errorFragment.setDialog(errorDialog);
-
-            // Show the error dialog in the DialogFragment
             errorFragment.show(getSupportFragmentManager(), "Geofence detection");
         }
     }
@@ -1294,7 +1192,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             coordinates.add(addressCoordinates);
             if (coordinates.isEmpty()) {
-                DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
+                DFMLogger.logMessage(TAG, "showPositionByName empty coordinates list");
 
                 // add marker
                 final Marker marker = addMarker(addressCoordinates);
@@ -1312,17 +1210,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         } else {
             if (!appHasJustStarted) {
-                DFMLogger.logMessage(TAG, "handleSelectedAddress appHasJustStarted");
+                DFMLogger.logMessage(TAG, "showPositionByName appHasJustStarted");
 
                 if (coordinates.isEmpty()) {
-                    DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
+                    DFMLogger.logMessage(TAG, "showPositionByName empty coordinates list");
 
                     coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 }
                 coordinates.add(addressCoordinates);
                 drawAndShowMultipleDistances(this.coordinates, address.getFormattedAddress() + "\n", false);
             } else {
-                DFMLogger.logMessage(TAG, "handleSelectedAddress NOT appHasJustStarted");
+                DFMLogger.logMessage(TAG, "showPositionByName NOT appHasJustStarted");
 
                 // Coming from View Action Intent
                 sendDestinationPosition = addressCoordinates;

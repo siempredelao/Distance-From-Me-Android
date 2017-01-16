@@ -37,9 +37,6 @@ public final class Haversine {
                                      final double longitudeA,
                                      final double latitudeB,
                                      final double longitudeB) {
-        DFMLogger.logMessage(TAG, "getDistance (" + latitudeA + "," + longitudeA
-                                  + ")-(" + latitudeB + "," + longitudeB + ")");
-
         final double latitudeAInRadians = Math.toRadians(latitudeA);
         final double longitudeAInRadians = Math.toRadians(longitudeA);
         final double latitudeBInRadians = Math.toRadians(latitudeB);
@@ -67,11 +64,6 @@ public final class Haversine {
      * @return A String with the amount and the unit.
      */
     public static String normalizeDistance(final double distanceInMetres, final Locale locale) {
-        DFMLogger.logMessage(TAG, "normalizeDistance " +
-                                  distanceInMetres +
-                                  " with locale " +
-                                  locale.toString());
-
         final String measureUnit;
         final double distanceByLocale;
 
@@ -105,11 +97,6 @@ public final class Haversine {
      * @return A double with only the normalized amount.
      */
     public static double normalizeAltitudeByLocale(final double altitude, final Locale locale) {
-        DFMLogger.logMessage(TAG, "normalizeAltitudeByLocale " +
-                                  altitude +
-                                  " with locale " +
-                                  locale.toString());
-
         final double measure;
 
         if (isEnglishLocale(locale)) {
@@ -128,8 +115,6 @@ public final class Haversine {
      * @return String with altitude unit.
      */
     public static String getAltitudeUnitByLocale(final Locale locale) {
-        DFMLogger.logMessage(TAG, "getAltitudeUnitByLocale " + locale.toString());
-
         return isEnglishLocale(locale) ? "ft" : "m";
     }
 

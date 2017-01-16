@@ -1,5 +1,6 @@
 package gc.david.dfm.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -128,5 +129,10 @@ public class HelpAndFeedbackActivity extends AppCompatActivity implements Faqs.V
         recyclerview.getItemAnimator().setAddDuration(1000);
         faqAdapter = new FAQAdapter();
         recyclerview.setAdapter(faqAdapter);
+    }
+
+    public static void open(final Activity activity) {
+        final Intent showInfoActivityIntent = new Intent(activity, HelpAndFeedbackActivity.class);
+        activity.startActivity(showInfoActivityIntent);
     }
 }
