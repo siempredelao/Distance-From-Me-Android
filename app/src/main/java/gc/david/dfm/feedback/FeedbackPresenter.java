@@ -57,7 +57,6 @@ public class FeedbackPresenter implements Feedback.Presenter {
             try {
                 feedbackView.showEmailClient(sendtoIntent);
             } catch (ActivityNotFoundException e) {
-                DFMLogger.logException(e);
                 feedbackView.showError();
             }
         }
