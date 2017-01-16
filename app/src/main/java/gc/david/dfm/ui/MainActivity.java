@@ -47,6 +47,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -378,14 +379,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 toastIt(R.string.toast_first_point_needed, appContext);
             } else {
                 coordinates.add(point);
-                drawAndShowMultipleDistances(coordinates, "", false, true);
+                drawAndShowMultipleDistances(coordinates, "", false);
             }
         } else if (currentLocation != null) { // Without current location, we cannot calculate any distance
             if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT && coordinates.isEmpty()) {
                 coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
             coordinates.add(point);
-            drawAndShowMultipleDistances(coordinates, "", false, true);
+            drawAndShowMultipleDistances(coordinates, "", false);
         }
 
         calculatingDistance = false;
@@ -707,7 +708,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     coordinates.clear();
                                     coordinates.addAll(Utils.convertPositionListToLatLngList(positionList));
 
-                                    drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true, true);
+                                    drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true);
                                 }
 
                                 @Override
@@ -1038,43 +1039,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void drawAndShowMultipleDistances(final List<LatLng> coordinates,
                                               final String message,
-                                              final boolean isLoadingFromDB,
-                                              final boolean mustApplyZoomIfNeeded) {
+                                              final boolean isLoadingFromDB) {
         DFMLogger.logMessage(TAG, "drawAndShowMultipleDistances");
 
-        // Borramos los antiguos marcadores y lineas
         googleMap.clear();
 
-        // Calculamos la distancia
         distanceMeasuredAsText = calculateDistance(coordinates);
 
-        // Pintar todos menos el primero si es desde la posición actual
         addMarkers(coordinates, distanceMeasuredAsText, message, isLoadingFromDB);
 
-        // Añadimos las líneas
         addLines(coordinates, isLoadingFromDB);
 
-        // Aquí hacer la animación de la cámara
-        moveCameraZoom(coordinates.get(0), coordinates.get(coordinates.size() - 1), mustApplyZoomIfNeeded);
+        moveCameraZoom(coordinates);
 
         elevationPresenter.buildChart(coordinates);
     }
 
-    /**
-     * Adds a marker to the map in a specified position and shows its info
-     * window.
-     *
-     * @param coordinates     Positions list.
-     * @param distance        Distance to destination.
-     * @param message         Destination address (if needed).
-     * @param isLoadingFromDB Indicates whether we are loading data from database.
-     */
     private void addMarkers(final List<LatLng> coordinates,
                             final String distance,
                             final String message,
                             final boolean isLoadingFromDB) {
-        DFMLogger.logMessage(TAG, "addMarkers");
-
         for (int i = 0; i < coordinates.size(); i++) {
             if ((i == 0 && (isLoadingFromDB || getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT)) ||
                 (i == coordinates.size() - 1)) {
@@ -1090,78 +1074,42 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private Marker addMarker(final LatLng coordinate) {
-        DFMLogger.logMessage(TAG, "addMarker");
-
         return googleMap.addMarker(new MarkerOptions().position(coordinate));
     }
 
     private void addLines(final List<LatLng> coordinates, final boolean isLoadingFromDB) {
-        DFMLogger.logMessage(TAG, "addLines");
-
         for (int i = 0; i < coordinates.size() - 1; i++) {
             addLine(coordinates.get(i), coordinates.get(i + 1), isLoadingFromDB);
         }
     }
 
-    /**
-     * Adds a line between start and end positions.
-     *
-     * @param start Start position.
-     * @param end   Destination position.
-     */
     private void addLine(final LatLng start, final LatLng end, final boolean isLoadingFromDB) {
-        DFMLogger.logMessage(TAG, "addLine");
-
         final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
         lineOptions.width(3 * getResources().getDisplayMetrics().density);
         lineOptions.color(isLoadingFromDB ? Color.YELLOW : Color.GREEN);
         googleMap.addPolyline(lineOptions);
     }
 
-    /**
-     * Returns the distance between start and end positions normalized by device
-     * locale.
-     *
-     * @param coordinates position list.
-     * @return The normalized distance.
-     */
     private String calculateDistance(final List<LatLng> coordinates) {
-        DFMLogger.logMessage(TAG, "calculateDistance");
-
         double distanceInMetres = Utils.calculateDistanceInMetres(coordinates);
 
         return Haversine.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
     }
 
-    /**
-     * Moves camera position and applies zoom if needed.
-     *
-     * @param p1 Start position.
-     * @param p2 Destination position.
-     */
-    private void moveCameraZoom(final LatLng p1, final LatLng p2, final boolean mustApplyZoomIfNeeded) {
-        DFMLogger.logMessage(TAG, "moveCameraZoom");
-
-        double centerLat = 0.0;
-        double centerLon = 0.0;
-
-        // Diferenciamos según preferencias
+    private void moveCameraZoom(final List<LatLng> coordinatesList) {
         final String centre = DFMPreferences.getAnimationPreference(getBaseContext());
         if (DFMPreferences.ANIMATION_CENTRE_VALUE.equals(centre)) {
-            centerLat = (p1.latitude + p2.latitude) / 2;
-            centerLon = (p1.longitude + p2.longitude) / 2;
+            final LatLngBounds.Builder latLngBoundsBuilder = new LatLngBounds.Builder();
+            for (LatLng latLng : coordinatesList) {
+                latLngBoundsBuilder.include(latLng);
+            }
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 100));
         } else if (DFMPreferences.ANIMATION_DESTINATION_VALUE.equals(centre)) {
-            centerLat = p2.latitude;
-            centerLon = p2.longitude;
-        } else if (centre.equals(DFMPreferences.NO_ANIMATION_DESTINATION_VALUE)) {
-            return;
-        }
-
-        if (mustApplyZoomIfNeeded) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(centerLat, centerLon),
-                                                                      Utils.calculateZoom(p1, p2)));
-        } else {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(p2.latitude, p2.longitude)));
+            final LatLng lastCoordinates = coordinatesList.get(coordinatesList.size() - 1);
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastCoordinates.latitude,
+                                                                             lastCoordinates.longitude)));
+        } else if (DFMPreferences.NO_ANIMATION_DESTINATION_VALUE.equals(centre)) {
+            // nothing
         }
     }
 
@@ -1342,24 +1290,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void showPositionByName(final gc.david.dfm.address.domain.model.Address address) {
         DFMLogger.logMessage(TAG, "showPositionByName " + getSelectedDistanceMode());
 
+        final LatLng addressCoordinates = address.getCoordinates();
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-            coordinates.add(address.getCoordinates());
+            coordinates.add(addressCoordinates);
             if (coordinates.isEmpty()) {
                 DFMLogger.logMessage(TAG, "handleSelectedAddress empty coordinates list");
 
                 // add marker
-                final Marker marker = addMarker(address.getCoordinates());
+                final Marker marker = addMarker(addressCoordinates);
                 marker.setTitle(address.getFormattedAddress());
                 marker.showInfoWindow();
                 // moveCamera
-                moveCameraZoom(address.getCoordinates(), address.getCoordinates(), false);
-                distanceMeasuredAsText = calculateDistance(Arrays.asList(address.getCoordinates(),
-                                                                         address.getCoordinates()));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(addressCoordinates.latitude,
+                                                                                 addressCoordinates.longitude)));
+                distanceMeasuredAsText = "";
                 // That means we are looking for a first position, so we want to calculate a distance starting
                 // from here
                 calculatingDistance = true;
             } else {
-                drawAndShowMultipleDistances(coordinates, address.getFormattedAddress() + "\n", false, true);
+                drawAndShowMultipleDistances(coordinates, address.getFormattedAddress() + "\n", false);
             }
         } else {
             if (!appHasJustStarted) {
@@ -1370,13 +1319,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                     coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 }
-                coordinates.add(address.getCoordinates());
-                drawAndShowMultipleDistances(coordinates, address.getFormattedAddress() + "\n", false, true);
+                coordinates.add(addressCoordinates);
+                drawAndShowMultipleDistances(this.coordinates, address.getFormattedAddress() + "\n", false);
             } else {
                 DFMLogger.logMessage(TAG, "handleSelectedAddress NOT appHasJustStarted");
 
                 // Coming from View Action Intent
-                sendDestinationPosition = address.getCoordinates();
+                sendDestinationPosition = addressCoordinates;
             }
         }
     }
@@ -1387,8 +1336,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                               currentLocation.getLongitude()),
                                                    address.getCoordinates()),
                                      address.getFormattedAddress() + "\n",
-                                     false,
-                                     true);
+                                     false);
     }
 
     private enum DistanceMode {

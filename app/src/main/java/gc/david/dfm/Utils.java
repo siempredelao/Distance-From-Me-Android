@@ -141,57 +141,6 @@ public class Utils {
         return distanceInMetres;
     }
 
-    /**
-     * Calculates zoom level to make possible current and destination positions
-     * appear in the device.
-     *
-     * @param origin      Current position.
-     * @param destination Destination position.
-     * @return Zoom level.
-     */
-    public static float calculateZoom(final LatLng origin, final LatLng destination) {
-        DFMLogger.logMessage(TAG, "calculateZoom");
-
-        double distanceInMetres = Haversine.getDistance(origin.latitude,
-                                                        origin.longitude,
-                                                        destination.latitude,
-                                                        destination.longitude);
-        double kms = distanceInMetres / 1000;
-
-        if (kms > 2700) {
-            return 3;
-        } else if (kms > 1300) {
-            return 4;
-        } else if (kms > 650) {
-            return 5;
-        } else if (kms > 325) {
-            return 6;
-        } else if (kms > 160) {
-            return 7;
-        } else if (kms > 80) {
-            return 8;
-        } else if (kms > 40) {
-            return 9;
-        } else if (kms > 20) {
-            return 10;
-        } else if (kms > 10) {
-            return 11;
-        } else if (kms > 5) {
-            return 12;
-        } else if (kms > 2.5) {
-            return 13;
-        } else if (kms > 1.25) {
-            return 14;
-        } else if (kms > 0.6) {
-            return 15;
-        } else if (kms > 0.3) {
-            return 16;
-        } else if (kms > 0.15) {
-            return 17;
-        }
-        return 18;
-    }
-
     public static List<LatLng> convertPositionListToLatLngList(final List<Position> positionList) {
         DFMLogger.logMessage(TAG, "convertPositionListToLatLngList");
 
