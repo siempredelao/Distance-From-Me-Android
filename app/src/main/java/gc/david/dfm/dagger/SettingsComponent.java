@@ -20,7 +20,6 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import gc.david.dfm.ui.SettingsFragment;
-import gc.david.dfm.ui.ShowInfoActivity;
 
 /**
  * Created by david on 16.01.17.

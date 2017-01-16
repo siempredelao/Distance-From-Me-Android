@@ -1,7 +1,5 @@
 package gc.david.dfm.migration;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import org.greenrobot.greendao.database.Database;
 
 import static dagger.internal.Preconditions.checkNotNull;

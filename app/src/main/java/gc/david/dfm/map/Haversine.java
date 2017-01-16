@@ -3,8 +3,6 @@ package gc.david.dfm.map;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
-import gc.david.dfm.logger.DFMLogger;
-
 /**
  * Haversine class implements static methods to calculate distances between two
  * points on a sphere, in this case, the Earth, from their longitudes and

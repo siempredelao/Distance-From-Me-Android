@@ -7,7 +7,6 @@ import android.net.Uri;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
-import gc.david.dfm.logger.DFMLogger;
 
 /**
  * Created by david on 07.12.16.
