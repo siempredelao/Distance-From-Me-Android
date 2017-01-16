@@ -25,9 +25,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
@@ -35,7 +32,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -43,35 +39,33 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import butterknife.BindView;
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
-import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
+import gc.david.dfm.address.domain.GetAddressUseCase;
 import gc.david.dfm.dagger.DaggerShowInfoComponent;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.ShowInfoModule;
 import gc.david.dfm.dagger.StorageModule;
+import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.distance.domain.InsertDistanceUseCase;
 import gc.david.dfm.logger.DFMLogger;
-import gc.david.dfm.model.Distance;
-import gc.david.dfm.model.Position;
+import gc.david.dfm.showinfo.presentation.ShowInfo;
+import gc.david.dfm.showinfo.presentation.ShowInfoPresenter;
 
 import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.toastIt;
 
-public class ShowInfoActivity extends AppCompatActivity {
+public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
@@ -100,12 +94,16 @@ public class ShowInfoActivity extends AppCompatActivity {
     protected ConnectionManager     connectionManager;
     @Inject
     protected InsertDistanceUseCase insertDistanceUseCase;
+    @Inject
+    @Named("NameByCoordinates")
+    protected GetAddressUseCase     getAddressNameByCoordinatesUseCase;
 
-    private MenuItem     refreshMenuItem;
-    private List<LatLng> positionsList;
-    private String       distance;
-    private Dialog       savingInDBDialog;
-    private EditText     etAlias;
+    private MenuItem           refreshMenuItem;
+    private List<LatLng>       positionsList;
+    private String             distance;
+    private Dialog             savingInDBDialog;
+    private EditText           etAlias;
+    private ShowInfo.Presenter showInfoPresenter;
 
     private String  originAddress                   = "";
     private String  destinationAddress              = "";
@@ -127,6 +125,11 @@ public class ShowInfoActivity extends AppCompatActivity {
 
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        showInfoPresenter = new ShowInfoPresenter(this,
+                                                  getAddressNameByCoordinatesUseCase,
+                                                  insertDistanceUseCase,
+                                                  connectionManager);
 
         getIntentData();
 
@@ -188,25 +191,7 @@ public class ShowInfoActivity extends AppCompatActivity {
     private void fillAddressesInfo() {
         DFMLogger.logMessage(TAG, "fillAddressesInfo");
 
-        try {
-            originAddress = new GetAddressTask().execute(positionsList.get(0), tvOriginAddress).get();
-            destinationAddress = new GetAddressTask().execute(positionsList.get(positionsList.size() - 1),
-                                                              tvDestinationAddress).get();
-
-            tvOriginAddress.setText(formatAddress(originAddress,
-                                                  positionsList.get(0).latitude,
-                                                  positionsList.get(0).longitude));
-            tvDestinationAddress.setText(formatAddress(destinationAddress,
-                                                       positionsList.get(positionsList.size() - 1).latitude,
-                                                       positionsList.get(positionsList.size() - 1).longitude));
-        } catch (final InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            DFMLogger.logException(e);
-        } catch (final CancellationException e) {
-            DFMLogger.logException(e);
-            // No hay conexión, se cancela la búsqueda de las direcciones
-            // No se hace nada aquí, ya lo hace el hilo
-        }
+        showInfoPresenter.searchPositionByCoordinates(positionsList.get(0), true);
     }
 
     private String formatAddress(final String address, final double latitude, final double longitude) {
@@ -266,10 +251,8 @@ public class ShowInfoActivity extends AppCompatActivity {
     }
 
     private void saveDataToDB(final String defaultText) {
-        DFMLogger.logMessage(TAG, "saveDataToDB defaultText=" + defaultText);
-
         wasSavingWhenOrientationChanged = true;
-        // Pedir al usuario que introduzca un texto descriptivo
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(ShowInfoActivity.this);
         etAlias = new EditText(appContext);
         etAlias.setTextColor(Color.BLACK);
@@ -288,120 +271,90 @@ public class ShowInfoActivity extends AppCompatActivity {
                .setPositiveButton(getString(R.string.alias_dialog_accept), new OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       insertDataIntoDatabase(etAlias.getText().toString());
+                       showInfoPresenter.saveDistance(etAlias.getText().toString(), distance, positionsList);
                        wasSavingWhenOrientationChanged = false;
-                   }
-
-                   private void insertDataIntoDatabase(final String alias) {
-                       DFMLogger.logMessage(TAG, "insertDataIntoDatabase");
-
-                       // TODO: 16.01.17 move this to presenter
-                       final Distance distance1 = new Distance();
-                       distance1.setName(alias);
-                       distance1.setDistance(distance);
-                       distance1.setDate(new Date());
-
-                       final List<Position> positionList = new ArrayList<>();
-                       for (final LatLng positionLatLng : positionsList) {
-                           final Position position = new Position();
-                           position.setLatitude(positionLatLng.latitude);
-                           position.setLongitude(positionLatLng.longitude);
-                           positionList.add(position);
-                       }
-
-                       insertDistanceUseCase.execute(distance1, positionList, new InsertDistanceUseCase.Callback() {
-                           @Override
-                           public void onInsert() {
-                               if (!TextUtils.isEmpty(alias)) {
-                                   toastIt(getString(R.string.alias_dialog_with_name_toast, alias), appContext);
-                               } else {
-                                   toastIt(R.string.alias_dialog_no_name_toast, appContext);
-                               }
-                           }
-
-                           @Override
-                           public void onError() {
-                               toastIt("Unable to save distance. Try again later.", appContext);
-                               DFMLogger.logException(new Exception("Unable to insert distance into database."));
-                           }
-                       });
                    }
                });
         (savingInDBDialog = builder.create()).show();
     }
 
-    private class GetAddressTask extends AsyncTask<Object, Void, String> {
+    @Override
+    public void setPresenter(final ShowInfo.Presenter presenter) {
+        this.showInfoPresenter = presenter;
+    }
 
-        private final String TAG = GetAddressTask.class.getSimpleName();
+    @Override
+    public void showNoInternetError() {
+        toastIt(getString(R.string.toast_network_problems), getApplicationContext());
+    }
 
-        private Context context;
-
-        @Override
-        protected void onPreExecute() {
-            this.context = appContext;
-
-            showRefreshSpinner();
-
-            if (!connectionManager.isOnline()) {
-                toastIt(R.string.toast_network_problems, context);
-
-                hideRefreshSpinner();
-                cancel(false);
-            }
+    @Override
+    public void showProgress() {
+        if (refreshMenuItem != null) {
+            MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
+            MenuItemCompat.expandActionView(refreshMenuItem);
         }
+    }
 
-        @Override
-        protected String doInBackground(Object... params) {
-            DFMLogger.logMessage(TAG, "doInBackground");
-
-            final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            final LatLng currentLocation = (LatLng) params[0];
-            List<Address> addresses;
-            try {
-                addresses = geocoder.getFromLocation(currentLocation.latitude,
-                                                     currentLocation.longitude, 1);
-            } catch (final IOException e1) {
-                e1.printStackTrace();
-                DFMLogger.logException(e1);
-                return (getString(R.string.toast_no_location_found));
-            } catch (final IllegalArgumentException e2) {
-                final String errorString = String.format("Illegal arguments %s.%s passed to address service",
-                                                         Double.toString(currentLocation.latitude),
-                                                         Double.toString(currentLocation.longitude));
-                e2.printStackTrace();
-                DFMLogger.logException(e2);
-                return errorString;
-            }
-            if (addresses != null && !addresses.isEmpty()) {
-                final Address address = addresses.get(0);
-                return String.format("%s%s%s%s",
-                                     address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) + "\n" : "",
-                                     address.getPostalCode() != null ? address.getPostalCode() + " " : "",
-                                     address.getLocality() != null ? address.getLocality() + "\n" : "",
-                                     address.getCountryName());
-            } else {
-                return getString(R.string.error_no_address_found_message);
-            }
+    @Override
+    public void hideProgress() {
+        if (refreshMenuItem != null) {
+            MenuItemCompat.collapseActionView(refreshMenuItem);
+            MenuItemCompat.setActionView(refreshMenuItem, null);
         }
+    }
 
-        @Override
-        protected void onPostExecute(String result) {
-            hideRefreshSpinner();
+    @Override
+    public void setAddress(final String address, final boolean isOrigin) {
+        if (isOrigin) {
+            originAddress = address;
+            tvOriginAddress.setText(formatAddress(originAddress,
+                                                  positionsList.get(0).latitude,
+                                                  positionsList.get(0).longitude));
+            showInfoPresenter.searchPositionByCoordinates(positionsList.get(positionsList.size() - 1), false);
+        } else {
+            destinationAddress = address;
+            tvDestinationAddress.setText(formatAddress(destinationAddress,
+                                                       positionsList.get(positionsList.size() - 1).latitude,
+                                                       positionsList.get(positionsList.size() - 1).longitude));
         }
+    }
 
-        private void showRefreshSpinner() {
-            if (refreshMenuItem != null) {
-                MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
-                MenuItemCompat.expandActionView(refreshMenuItem);
-            }
+    @Override
+    public void showNoMatchesMessage(final boolean isOrigin) {
+        if (isOrigin) {
+            tvOriginAddress.setText(R.string.error_no_address_found_message);
+            showInfoPresenter.searchPositionByCoordinates(positionsList.get(positionsList.size() - 1), false);
+        } else {
+            tvDestinationAddress.setText(R.string.error_no_address_found_message);
         }
+    }
 
-        private void hideRefreshSpinner() {
-            if (refreshMenuItem != null) {
-                MenuItemCompat.collapseActionView(refreshMenuItem);
-                MenuItemCompat.setActionView(refreshMenuItem, null);
-            }
+    @Override
+    public void showError(final String errorMessage, final boolean isOrigin) {
+        if (isOrigin) {
+            tvOriginAddress.setText(R.string.toast_no_location_found);
+            showInfoPresenter.searchPositionByCoordinates(positionsList.get(positionsList.size() - 1), false);
+        } else {
+            tvDestinationAddress.setText(R.string.toast_no_location_found);
         }
+        DFMLogger.logException(new Exception(errorMessage));
+    }
+
+    @Override
+    public void showSuccessfulSave() {
+        toastIt(R.string.alias_dialog_no_name_toast, appContext);
+    }
+
+    @Override
+    public void showSuccessfulSaveWithName(final String distanceName) {
+        toastIt(getString(R.string.alias_dialog_with_name_toast, distanceName), appContext);
+    }
+
+    @Override
+    public void showFailedSave() {
+        toastIt("Unable to save distance. Try again later.", appContext);
+        DFMLogger.logException(new Exception("Unable to insert distance into database."));
     }
 
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {

@@ -85,11 +85,11 @@ public class MainModule {
     GetAddressUseCase provideGetAddressCoordinatesByNameUseCase(Executor executor,
                                                                 MainThread mainThread,
                                                                 AddressCollectionEntityDataMapper addressCollectionEntityDataMapper,
-                                                                AddressRepository elevationRepository) {
+                                                                AddressRepository addressRepository) {
         return new GetAddressCoordinatesByNameInteractor(executor,
                                                          mainThread,
                                                          addressCollectionEntityDataMapper,
-                                                         elevationRepository);
+                                                         addressRepository);
     }
 
     @Provides
@@ -98,11 +98,11 @@ public class MainModule {
     GetAddressUseCase provideGetAddressNameByCoordinatesUseCase(Executor executor,
                                                                 MainThread mainThread,
                                                                 AddressCollectionEntityDataMapper addressCollectionEntityDataMapper,
-                                                                AddressRepository elevationRepository) {
+                                                                AddressRepository addressRepository) {
         return new GetAddressNameByCoordinatesInteractor(executor,
                                                          mainThread,
                                                          addressCollectionEntityDataMapper,
-                                                         elevationRepository);
+                                                         addressRepository);
     }
 
     @Provides
