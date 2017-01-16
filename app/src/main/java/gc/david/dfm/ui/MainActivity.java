@@ -327,19 +327,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         actionBarDrawerToggle = new ActionBarDrawerToggle(this,
                                                           drawerLayout,
                                                           R.string.progressdialog_search_position_message,
-                                                          R.string.progressdialog_search_position_message) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                supportInvalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                supportInvalidateOptionsMenu();
-            }
-        };
+                                                          R.string.progressdialog_search_position_message);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
