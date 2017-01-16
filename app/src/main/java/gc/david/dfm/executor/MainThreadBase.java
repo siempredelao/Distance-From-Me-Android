@@ -26,7 +26,7 @@ import android.os.Looper;
  */
 public class MainThreadBase implements MainThread {
 
-    private Handler handler;
+    private final Handler handler;
 
     public MainThreadBase() {
         this.handler = new Handler(Looper.getMainLooper());

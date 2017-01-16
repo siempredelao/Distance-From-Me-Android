@@ -1,7 +1,6 @@
 package gc.david.dfm;
 
 import android.app.Application;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -9,9 +8,6 @@ import java.util.Locale;
 
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.map.Haversine;
-import gc.david.dfm.migration.UpgradeHelper;
-import gc.david.dfm.model.DaoMaster;
-import gc.david.dfm.model.DaoSession;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -21,8 +17,6 @@ public class DFMApplication extends Application {
 
     private static final String TAG = DFMApplication.class.getSimpleName();
 
-    private DaoSession daoSession;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,26 +24,9 @@ public class DFMApplication extends Application {
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
-
         DFMLogger.logMessage(TAG, "onCreate");
 
-        setupDatabase();
         setupDefaultUnit();
-    }
-
-    public DaoSession getDaoSession() {
-        DFMLogger.logMessage(TAG, "getDaoSession");
-
-        return daoSession;
-    }
-
-    private void setupDatabase() {
-        DFMLogger.logMessage(TAG, "setupDatabase");
-
-        final UpgradeHelper helper = new UpgradeHelper(this, "DistanciasDB.db", null);
-        final SQLiteDatabase db = helper.getWritableDatabase();
-        final DaoMaster daoMaster = new DaoMaster(db);
-        daoSession = daoMaster.newSession();
     }
 
     private void setupDefaultUnit() {
@@ -58,9 +35,9 @@ public class DFMApplication extends Application {
         final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit == null) {
             DFMPreferences.setMeasureUnitPreference(getBaseContext(),
-                                                    isAmericanLocale() ?
-                                                    DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE :
-                                                    DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
+                                                    isAmericanLocale()
+                                                    ? DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
+                                                    : DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
         }
     }
 

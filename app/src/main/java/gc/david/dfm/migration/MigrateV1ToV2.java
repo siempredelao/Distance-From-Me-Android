@@ -1,6 +1,6 @@
 package gc.david.dfm.migration;
 
-import android.database.sqlite.SQLiteDatabase;
+import org.greenrobot.greendao.database.Database;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +15,7 @@ import java.util.List;
 public class MigrateV1ToV2 extends MigrationImpl {
 
     @Override
-    public int applyMigration(final SQLiteDatabase db, final int currentVersion) {
+    public int applyMigration(final Database db, final int currentVersion) {
         prepareMigration(db, currentVersion);
 
         final gc.david.dfm.model.v1.DaoMaster previousDaoMaster = new gc.david.dfm.model.v1.DaoMaster(db);
@@ -27,13 +27,13 @@ public class MigrateV1ToV2 extends MigrationImpl {
         final gc.david.dfm.model.v2.DistanceDao newDistanceDao = newDaoSession.getDistanceDao();
         final gc.david.dfm.model.v2.PositionDao newPositionDao = newDaoSession.getPositionDao();
 
-        final List<gc.david.dfm.model.v1.Entry> previousEntrys = previousEntryDao.loadAll();
+        final List<gc.david.dfm.model.v1.Entry> previousEntries = previousEntryDao.loadAll();
 
         // WTF?!
         gc.david.dfm.model.v2.DistanceDao.createTable(db, true);
         gc.david.dfm.model.v2.PositionDao.createTable(db, true);
 
-        for (final gc.david.dfm.model.v1.Entry previousEntry : previousEntrys) {
+        for (final gc.david.dfm.model.v1.Entry previousEntry : previousEntries) {
             final gc.david.dfm.model.v2.Distance newDistance = new gc.david.dfm.model.v2.Distance();
             newDistance.setName(previousEntry.getNombre());
             newDistance.setDistance(previousEntry.getDistancia());

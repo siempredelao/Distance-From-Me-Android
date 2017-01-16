@@ -13,20 +13,22 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -36,27 +38,29 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
-import gc.david.dfm.dagger.DaggerRootComponent;
+import gc.david.dfm.dagger.DaggerShowInfoComponent;
 import gc.david.dfm.dagger.RootModule;
+import gc.david.dfm.dagger.ShowInfoModule;
+import gc.david.dfm.dagger.StorageModule;
+import gc.david.dfm.distance.domain.InsertDistanceUseCase;
 import gc.david.dfm.logger.DFMLogger;
-import gc.david.dfm.model.DaoSession;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.isOnline;
 import static gc.david.dfm.Utils.toastIt;
 
 public class ShowInfoActivity extends AppCompatActivity {
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
-    public static final  String POSITIONS_LIST_EXTRA_KEY_NAME           = "positionsList";
-    public static final  String DISTANCE_EXTRA_KEY_NAME                 = "distancia";
+    private static final String POSITIONS_LIST_EXTRA_KEY                = "positionsList";
+    private static final String DISTANCE_EXTRA_KEY                      = "distancia";
     private static final String ORIGIN_ADDRESS_KEY                      = "originAddress";
     private static final String DESTINATION_ADDRESS_KEY                 = "destinationAddress";
     private static final String DISTANCE_KEY                            = "distance";
@@ -73,11 +77,13 @@ public class ShowInfoActivity extends AppCompatActivity {
     protected Toolbar  tbMain;
 
     @Inject
-    protected DaoSession     daoSession;
+    protected Context               appContext;
     @Inject
-    protected Context        appContext;
+    protected PackageManager        packageManager;
     @Inject
-    protected PackageManager packageManager;
+    protected ConnectionManager     connectionManager;
+    @Inject
+    protected InsertDistanceUseCase insertDistanceUseCase;
 
     private MenuItem     refreshMenuItem;
     private List<LatLng> positionsList;
@@ -95,10 +101,12 @@ public class ShowInfoActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
-        DaggerRootComponent.builder()
-                           .rootModule(new RootModule((DFMApplication) getApplication()))
-                           .build()
-                           .inject(this);
+        DaggerShowInfoComponent.builder()
+                               .rootModule(new RootModule((DFMApplication) getApplication()))
+                               .storageModule(new StorageModule())
+                               .showInfoModule(new ShowInfoModule())
+                               .build()
+                               .inject(this);
         bind(this);
 
         setSupportActionBar(tbMain);
@@ -157,8 +165,8 @@ public class ShowInfoActivity extends AppCompatActivity {
         DFMLogger.logMessage(TAG, "getIntentData");
 
         final Intent inputDataIntent = getIntent();
-        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME);
-        distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY_NAME);
+        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY);
+        distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY);
     }
 
     private void fillAddressesInfo() {
@@ -197,8 +205,6 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        DFMLogger.logMessage(TAG, "onCreateOptionsMenu");
-
         getMenuInflater().inflate(R.menu.show_info, menu);
 
         final MenuItem shareItem = menu.findItem(R.id.action_social_share);
@@ -212,8 +218,6 @@ public class ShowInfoActivity extends AppCompatActivity {
     }
 
     private Intent createDefaultShareIntent() {
-        DFMLogger.logMessage(TAG, "createDefaultShareIntent");
-
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)");
@@ -231,8 +235,6 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DFMLogger.logMessage(TAG, "onOptionsItemSelected item=" + item.getItemId());
-
         switch (item.getItemId()) {
             case R.id.action_social_share:
                 return true;
@@ -277,28 +279,36 @@ public class ShowInfoActivity extends AppCompatActivity {
                    private void insertDataIntoDatabase(final String alias) {
                        DFMLogger.logMessage(TAG, "insertDataIntoDatabase");
 
-                       String aliasToSave = "";
-                       if (alias.compareTo("") != 0) {
-                           aliasToSave = alias;
-                       }
-                       // TODO hacer esto en segundo plano
-                       final Distance distance1 = new Distance(null, aliasToSave, distance, new Date());
-                       final long distanceId = daoSession.insert(distance1);
+                       // TODO: 16.01.17 move this to presenter
+                       final Distance distance1 = new Distance();
+                       distance1.setName(alias);
+                       distance1.setDistance(distance);
+                       distance1.setDate(new Date());
 
-                       for (LatLng positionAsLatLng : positionsList) {
-                           final Position position = new Position(null,
-                                                                  positionAsLatLng.latitude,
-                                                                  positionAsLatLng.longitude,
-                                                                  distanceId);
-                           daoSession.insert(position);
+                       final List<Position> positionList = new ArrayList<>();
+                       for (final LatLng positionLatLng : positionsList) {
+                           final Position position = new Position();
+                           position.setLatitude(positionLatLng.latitude);
+                           position.setLongitude(positionLatLng.longitude);
+                           positionList.add(position);
                        }
 
-                       // Mostrar un mensaje de que se ha guardado correctamente
-                       if (!aliasToSave.equals("")) {
-                           toastIt(getString(R.string.alias_dialog_with_name_toast, aliasToSave), appContext);
-                       } else {
-                           toastIt(getString(R.string.alias_dialog_no_name_toast), appContext);
-                       }
+                       insertDistanceUseCase.execute(distance1, positionList, new InsertDistanceUseCase.Callback() {
+                           @Override
+                           public void onInsert() {
+                               if (!TextUtils.isEmpty(alias)) {
+                                   toastIt(getString(R.string.alias_dialog_with_name_toast, alias), appContext);
+                               } else {
+                                   toastIt(R.string.alias_dialog_no_name_toast, appContext);
+                               }
+                           }
+
+                           @Override
+                           public void onError() {
+                               toastIt("Unable to save distance. Try again later.", appContext);
+                               DFMLogger.logException(new Exception("Unable to insert distance into database."));
+                           }
+                       });
                    }
                });
         (savingInDBDialog = builder.create()).show();
@@ -312,14 +322,12 @@ public class ShowInfoActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            DFMLogger.logMessage(TAG, "onPreExecute");
-
             this.context = appContext;
 
             showRefreshSpinner();
 
-            if (!isOnline(context)) {
-                toastIt(getString(R.string.toast_network_problems), context);
+            if (!connectionManager.isOnline()) {
+                toastIt(R.string.toast_network_problems, context);
 
                 hideRefreshSpinner();
                 cancel(false);
@@ -331,9 +339,7 @@ public class ShowInfoActivity extends AppCompatActivity {
             DFMLogger.logMessage(TAG, "doInBackground");
 
             final Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-            // Get the current location from the input parameter list
             final LatLng currentLocation = (LatLng) params[0];
-            // Create a list to contain the result address
             List<Address> addresses;
             try {
                 addresses = geocoder.getFromLocation(currentLocation.latitude,
@@ -343,7 +349,6 @@ public class ShowInfoActivity extends AppCompatActivity {
                 DFMLogger.logException(e1);
                 return (getString(R.string.toast_no_location_found));
             } catch (final IllegalArgumentException e2) {
-                // Error message to post in the log
                 final String errorString = String.format("Illegal arguments %s.%s passed to address service",
                                                          Double.toString(currentLocation.latitude),
                                                          Double.toString(currentLocation.longitude));
@@ -351,40 +356,24 @@ public class ShowInfoActivity extends AppCompatActivity {
                 DFMLogger.logException(e2);
                 return errorString;
             }
-            // If the reverse geocode returned an address
             if (addresses != null && !addresses.isEmpty()) {
-                // Get the first address
                 final Address address = addresses.get(0);
-                // Format the first line of address (if available), city, and
-                // country name.
                 return String.format("%s%s%s%s",
-                                     // If there's a street address, add it
-                                     address.getMaxAddressLineIndex() > 0 ?
-                                     address.getAddressLine(0) + "\n" : "",
-                                     // Añadimos también el código postal
-                                     address.getPostalCode() != null ?
-                                     address.getPostalCode() + " " : "",
-                                     // Locality is usually a city
-                                     address.getLocality() != null ?
-                                     address.getLocality() + "\n" : "",
-                                     // The country of the address
+                                     address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) + "\n" : "",
+                                     address.getPostalCode() != null ? address.getPostalCode() + " " : "",
+                                     address.getLocality() != null ? address.getLocality() + "\n" : "",
                                      address.getCountryName());
             } else {
-                // If there aren't any addresses, post a message
                 return getString(R.string.error_no_address_found_message);
             }
         }
 
         @Override
         protected void onPostExecute(String result) {
-            DFMLogger.logMessage(TAG, "onPostExecute");
-
             hideRefreshSpinner();
         }
 
         private void showRefreshSpinner() {
-            DFMLogger.logMessage(TAG, "showRefreshSpinner");
-
             if (refreshMenuItem != null) {
                 MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
                 MenuItemCompat.expandActionView(refreshMenuItem);
@@ -392,8 +381,6 @@ public class ShowInfoActivity extends AppCompatActivity {
         }
 
         private void hideRefreshSpinner() {
-            DFMLogger.logMessage(TAG, "hideRefreshSpinner");
-
             if (refreshMenuItem != null) {
                 MenuItemCompat.collapseActionView(refreshMenuItem);
                 MenuItemCompat.setActionView(refreshMenuItem, null);
@@ -403,9 +390,9 @@ public class ShowInfoActivity extends AppCompatActivity {
 
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {
         final Intent showInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
-        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY_NAME,
-                                                           Lists.newArrayList(coordinates));
-        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY_NAME, distanceAsText);
+        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY,
+                                                           new ArrayList<Parcelable>(coordinates));
+        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText);
         activity.startActivity(showInfoActivityIntent);
     }
 }

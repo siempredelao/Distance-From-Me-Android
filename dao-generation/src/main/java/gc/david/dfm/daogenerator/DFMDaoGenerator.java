@@ -1,17 +1,16 @@
 package gc.david.dfm.daogenerator;
 
+import org.greenrobot.greendao.generator.DaoGenerator;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.greenrobot.daogenerator.DaoGenerator;
-
 public class DFMDaoGenerator {
 
-    private static final String SCHEMA_OUTPUT_DIR      = "../app/src/main/java";
-    private static final String SCHEMA_TEST_OUTPUT_DIR = "../app/src/androidTest/java";
+    private static final String SCHEMA_OUTPUT_DIR = "app/src/main/java";
 
     /**
      * Generator main application which builds all of the schema versions
@@ -23,9 +22,9 @@ public class DFMDaoGenerator {
      * @throws Exception
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException, Exception {
+    public static void main(String[] args) throws Exception {
 
-        final List<SchemaVersion> versions = new ArrayList<SchemaVersion>();
+        final List<SchemaVersion> versions = new ArrayList<>();
         versions.add(new Version1(false));
         versions.add(new Version2(false));
         // Workaround to have each version with its version number and final version outside
@@ -37,7 +36,7 @@ public class DFMDaoGenerator {
             // NB: Test output creates stubs, we have an established testing
             // standard which should be followed in preference to generating
             // these stubs.
-            new DaoGenerator().generateAll(version.getSchema(), SCHEMA_OUTPUT_DIR, SCHEMA_TEST_OUTPUT_DIR);
+            new DaoGenerator().generateAll(version.getSchema(), SCHEMA_OUTPUT_DIR);
         }
     }
 
@@ -49,7 +48,7 @@ public class DFMDaoGenerator {
      */
     public static void validateSchemas(final List<SchemaVersion> versions) throws IllegalArgumentException {
         int numCurrent = 0;
-        final Set<Integer> versionNumbers = new HashSet<Integer>();
+        final Set<Integer> versionNumbers = new HashSet<>();
 
         for (final SchemaVersion version : versions) {
             if (version.isCurrent()) {

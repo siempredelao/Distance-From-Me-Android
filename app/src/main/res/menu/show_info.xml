@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/action_social_share"
-        android:icon="@drawable/ic_action_social_share"
+        android:icon="@drawable/ic_share_white_24dp"
         android:orderInCategory="1"
         android:title="@string/action_bar_item_social_share_title"
         actual:actionProviderClass="android.support.v7.widget.ShareActionProvider"
@@ -11,13 +11,13 @@
     <item
         android:id="@+id/refresh"
         android:alphabeticShortcut="r"
-        android:icon="@drawable/ic_action_navigation_refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="2"
         android:title="@string/action_bar_item_refresh_title"
         actual:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_save"
-        android:icon="@android:drawable/ic_menu_save"
+        android:icon="@drawable/ic_save_white_24dp"
         android:orderInCategory="3"
         android:title="@string/action_bar_item_save_title"
         actual:showAsAction="ifRoom|withText"/>

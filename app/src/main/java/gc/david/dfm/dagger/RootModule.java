@@ -7,7 +7,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
+import gc.david.dfm.DefaultConnectionManager;
 import gc.david.dfm.DefaultPackageManager;
 import gc.david.dfm.DeviceInfo;
 import gc.david.dfm.DeviceInfoApi16Decorator;
@@ -17,7 +19,6 @@ import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.MainThread;
 import gc.david.dfm.executor.MainThreadBase;
 import gc.david.dfm.executor.ThreadExecutor;
-import gc.david.dfm.model.DaoSession;
 
 @Module
 public class RootModule {
@@ -38,12 +39,6 @@ public class RootModule {
     @Singleton
     Context getContext() {
         return application.getApplicationContext();
-    }
-
-    @Provides
-    @Singleton
-    DaoSession getDaoSession(DFMApplication application) {
-        return application.getDaoSession();
     }
 
     @Provides
@@ -75,4 +70,9 @@ public class RootModule {
         return new ThreadExecutor();
     }
 
+    @Provides
+    @Singleton
+    ConnectionManager provideConnectionManager(Context context) {
+        return new DefaultConnectionManager(context);
+    }
 }
