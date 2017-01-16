@@ -9,7 +9,7 @@ import android.net.NetworkInfo;
  */
 public class DefaultConnectionManager implements ConnectionManager {
 
-    private Context context;
+    private final Context context;
 
     public DefaultConnectionManager(final Context context) {
         this.context = context;

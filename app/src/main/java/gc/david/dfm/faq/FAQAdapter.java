@@ -24,7 +24,7 @@ import static android.view.View.VISIBLE;
  */
 public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
 
-    private List<Faq> faqList;
+    private final List<Faq> faqList;
 
     public FAQAdapter() {
         this.faqList = new ArrayList<>();

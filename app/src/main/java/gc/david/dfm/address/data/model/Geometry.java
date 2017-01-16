@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Geometry {
 
-    private Location location;
+    private final Location location;
     @SerializedName("location_type")
-    private String   locationType;
-    private Viewport viewport;
+    private final String   locationType;
+    private final Viewport viewport;
 
     private Geometry(Builder builder) {
         location = builder.location;

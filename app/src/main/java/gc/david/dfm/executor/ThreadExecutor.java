@@ -43,7 +43,7 @@ public class ThreadExecutor implements Executor {
     private static final BlockingQueue<Runnable> WORK_QUEUE      = new LinkedBlockingQueue<>();
     private static final ThreadFactory           THREAD_FACTORY  = new JobThreadFactory();
 
-    private ThreadPoolExecutor threadPoolExecutor;
+    private final ThreadPoolExecutor threadPoolExecutor;
 
     public ThreadExecutor() {
         threadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,

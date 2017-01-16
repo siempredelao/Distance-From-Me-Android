@@ -7,13 +7,13 @@ import java.util.List;
 public class Result {
 
     @SerializedName("address_components")
-    private List<AddressComponent> addressComponents;
+    private final List<AddressComponent> addressComponents;
     @SerializedName("formatted_address")
-    private String                 formattedAddress;
-    private Geometry               geometry;
+    private final String                 formattedAddress;
+    private final Geometry               geometry;
     @SerializedName("place_id")
-    private String                 placeId;
-    private List<String>           types;
+    private final String                 placeId;
+    private final List<String>           types;
 
     private Result(Builder builder) {
         addressComponents = builder.addressComponents;

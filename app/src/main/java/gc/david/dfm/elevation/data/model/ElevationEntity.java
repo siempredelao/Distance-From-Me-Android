@@ -7,9 +7,9 @@ import java.util.List;
 public class ElevationEntity {
 
     @SerializedName("error_message")
-    private String       errorMessage;
-    private List<Result> results;
-    private String       status;
+    private final String       errorMessage;
+    private final List<Result> results;
+    private final String       status;
 
     private ElevationEntity(Builder builder) {
         errorMessage = builder.errorMessage;

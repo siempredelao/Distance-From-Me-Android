@@ -4,8 +4,8 @@ import java.util.List;
 
 public class AddressCollectionEntity {
 
-    private List<Result> results;
-    private String       status;
+    private final List<Result> results;
+    private final String       status;
 
     private AddressCollectionEntity(Builder builder) {
         results = builder.results;

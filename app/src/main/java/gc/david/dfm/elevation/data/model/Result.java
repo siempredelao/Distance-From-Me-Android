@@ -2,9 +2,9 @@ package gc.david.dfm.elevation.data.model;
 
 public class Result {
 
-    private double   elevation;
-    private Location location;
-    private double   resolution;
+    private final double   elevation;
+    private final Location location;
+    private final double   resolution;
 
     private Result(Builder builder) {
         elevation = builder.elevation;
