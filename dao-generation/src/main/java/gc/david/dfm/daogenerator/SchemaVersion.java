@@ -1,8 +1,8 @@
 package gc.david.dfm.daogenerator;
 
-import de.greenrobot.daogenerator.Entity;
-import de.greenrobot.daogenerator.Property;
-import de.greenrobot.daogenerator.Schema;
+import org.greenrobot.greendao.generator.Entity;
+import org.greenrobot.greendao.generator.Property;
+import org.greenrobot.greendao.generator.Schema;
 
 /**
  * A Version of the Schema.

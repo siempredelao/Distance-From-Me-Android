@@ -3,6 +3,8 @@ package gc.david.dfm.migration;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.greenrobot.greendao.database.Database;
+
 import gc.david.dfm.model.DaoMaster;
 
 /**
@@ -21,7 +23,7 @@ public class UpgradeHelper extends DaoMaster.OpenHelper {
      * Apply the appropriate migrations to update the database.
      */
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(Database db, int oldVersion, int newVersion) {
         switch (newVersion) {
             case 2:
                 new MigrateV1ToV2().applyMigration(db, oldVersion);

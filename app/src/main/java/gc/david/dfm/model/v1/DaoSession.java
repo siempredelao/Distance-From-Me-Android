@@ -1,13 +1,12 @@
 package gc.david.dfm.model.v1;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import java.util.Map;
 
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.AbstractDaoSession;
-import de.greenrobot.dao.identityscope.IdentityScopeType;
-import de.greenrobot.dao.internal.DaoConfig;
+import org.greenrobot.greendao.AbstractDao;
+import org.greenrobot.greendao.AbstractDaoSession;
+import org.greenrobot.greendao.database.Database;
+import org.greenrobot.greendao.identityscope.IdentityScopeType;
+import org.greenrobot.greendao.internal.DaoConfig;
 
 import gc.david.dfm.model.v1.Entry;
 
@@ -18,7 +17,7 @@ import gc.david.dfm.model.v1.EntryDao;
 /**
  * {@inheritDoc}
  * 
- * @see de.greenrobot.dao.AbstractDaoSession
+ * @see org.greenrobot.greendao.AbstractDaoSession
  */
 public class DaoSession extends AbstractDaoSession {
 
@@ -26,7 +25,7 @@ public class DaoSession extends AbstractDaoSession {
 
     private final EntryDao entryDao;
 
-    public DaoSession(SQLiteDatabase db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
+    public DaoSession(Database db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
         super(db);
 
@@ -39,7 +38,7 @@ public class DaoSession extends AbstractDaoSession {
     }
     
     public void clear() {
-        entryDaoConfig.getIdentityScope().clear();
+        entryDaoConfig.clearIdentityScope();
     }
 
     public EntryDao getEntryDao() {

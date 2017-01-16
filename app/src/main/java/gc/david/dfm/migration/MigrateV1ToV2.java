@@ -1,6 +1,6 @@
 package gc.david.dfm.migration;
 
-import android.database.sqlite.SQLiteDatabase;
+import org.greenrobot.greendao.database.Database;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,7 +15,7 @@ import java.util.List;
 public class MigrateV1ToV2 extends MigrationImpl {
 
     @Override
-    public int applyMigration(final SQLiteDatabase db, final int currentVersion) {
+    public int applyMigration(final Database db, final int currentVersion) {
         prepareMigration(db, currentVersion);
 
         final gc.david.dfm.model.v1.DaoMaster previousDaoMaster = new gc.david.dfm.model.v1.DaoMaster(db);
