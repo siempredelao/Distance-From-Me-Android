@@ -24,7 +24,7 @@ public class DFMDaoGenerator {
      */
     public static void main(String[] args) throws Exception {
 
-        final List<SchemaVersion> versions = new ArrayList<SchemaVersion>();
+        final List<SchemaVersion> versions = new ArrayList<>();
         versions.add(new Version1(false));
         versions.add(new Version2(false));
         // Workaround to have each version with its version number and final version outside
@@ -48,7 +48,7 @@ public class DFMDaoGenerator {
      */
     public static void validateSchemas(final List<SchemaVersion> versions) throws IllegalArgumentException {
         int numCurrent = 0;
-        final Set<Integer> versionNumbers = new HashSet<Integer>();
+        final Set<Integer> versionNumbers = new HashSet<>();
 
         for (final SchemaVersion version : versions) {
             if (version.isCurrent()) {
