@@ -1,6 +1,10 @@
 # Distance From Me
 ![Image] (/app/src/main/res/drawable-xxhdpi/ic_launcher.png)
 
+Master: [![Build Status](https://travis-ci.org/siempredelao/Distance-From-Me-Android.svg?branch=master)](https://travis-ci.org/siempredelao/Distance-From-Me-Android)
+
+Develop: [![Build Status](https://travis-ci.org/siempredelao/Distance-From-Me-Android.svg?branch=develop)](https://travis-ci.org/siempredelao/Distance-From-Me-Android)
+
 ## What is it?
 *Distance From Me* is an Android application whose objective is to calculate straight-line distances.
 
