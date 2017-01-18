@@ -70,7 +70,7 @@ public class RootModule {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             return deviceInfoBase;
         } else {
-            return new DeviceInfoApi16Decorator(context, deviceInfoBase);
+            return new DeviceInfoApi16Decorator(deviceInfoBase, context);
         }
     }
 

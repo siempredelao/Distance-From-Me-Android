@@ -30,20 +30,23 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
  */
 public class DeviceInfoApi16Decorator extends DeviceInfoDecorator {
 
-    public DeviceInfoApi16Decorator(final Context context, final DeviceInfo deviceInfo) {
-        super(context, deviceInfo);
+    private final Context context;
+
+    public DeviceInfoApi16Decorator(final DeviceInfo decoratedDeviceInfo,final Context context) {
+        super(decoratedDeviceInfo);
+        this.context = context;
     }
 
     @RequiresApi(api = JELLY_BEAN)
     @Override
     public String getDeviceInfo() {
-        return deviceInfo.getDeviceInfo() + "\n" + getMemoryParameters();
+        return super.getDeviceInfo() + "\n" + getMemoryParameters();
     }
 
     @RequiresApi(api = JELLY_BEAN)
     private String getMemoryParameters() {
-        final ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         final ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+        final ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
         final long freeMemoryMBs = memoryInfo.availMem / 1048576L; // 1MB
         final long totalMemoryMBs = memoryInfo.totalMem / 1048576L; // 1MB
