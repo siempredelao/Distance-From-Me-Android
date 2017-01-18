@@ -16,40 +16,33 @@
 
 package gc.david.dfm;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.support.annotation.RequiresApi;
 
 import java.util.Locale;
 
-import static android.content.Context.ACTIVITY_SERVICE;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 
 /**
  * Created by david on 07.12.16.
  */
+@RequiresApi(api = JELLY_BEAN)
 public class DeviceInfoApi16Decorator extends DeviceInfoDecorator {
 
-    private final Context context;
+    private final MemoryInfo memoryInfo;
 
-    public DeviceInfoApi16Decorator(final DeviceInfo decoratedDeviceInfo,final Context context) {
+    public DeviceInfoApi16Decorator(final DeviceInfo decoratedDeviceInfo, final MemoryInfo memoryInfo) {
         super(decoratedDeviceInfo);
-        this.context = context;
+        this.memoryInfo = memoryInfo;
     }
 
-    @RequiresApi(api = JELLY_BEAN)
     @Override
     public String getDeviceInfo() {
         return super.getDeviceInfo() + "\n" + getMemoryParameters();
     }
 
-    @RequiresApi(api = JELLY_BEAN)
     private String getMemoryParameters() {
-        final ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
-        final ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        final long freeMemoryMBs = memoryInfo.availMem / 1048576L; // 1MB
-        final long totalMemoryMBs = memoryInfo.totalMem / 1048576L; // 1MB
+        final long freeMemoryMBs = memoryInfo.getFreeMemory();
+        final long totalMemoryMBs = memoryInfo.getAvailableMemory();
 
         return String.format(Locale.getDefault(),
                              "TOTALMEMORYSIZE=%dMB\nFREEMEMORYSIZE=%dMB",
