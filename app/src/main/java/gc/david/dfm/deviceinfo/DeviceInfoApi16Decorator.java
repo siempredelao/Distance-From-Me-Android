@@ -37,16 +37,29 @@ public class DeviceInfoApi16Decorator extends DeviceInfoDecorator {
 
     @Override
     public String getDeviceInfo() {
-        return super.getDeviceInfo() + "\n" + getMemoryParameters();
+        return DeviceInfoPrinter.print(super.getDeviceInfo(), getMemoryParameters());
     }
 
     private String getMemoryParameters() {
         final long freeMemoryMBs = memoryInfo.getFreeMemory();
         final long totalMemoryMBs = memoryInfo.getAvailableMemory();
 
-        return String.format(Locale.getDefault(),
-                             "TOTALMEMORYSIZE=%dMB\nFREEMEMORYSIZE=%dMB",
-                             totalMemoryMBs,
-                             freeMemoryMBs);
+        return MemoryPrinter.print(totalMemoryMBs, freeMemoryMBs);
     }
+
+    static class DeviceInfoPrinter {
+        static String print(final String deviceInfo, final String memoryInfo) {
+            return String.format(Locale.getDefault(), "%s\n%s", deviceInfo, memoryInfo);
+        }
+    }
+
+    static class MemoryPrinter {
+        static String print(final long totalMemoryMbs, final long freeMemoryMbs) {
+            return String.format(Locale.getDefault(),
+                                 "TOTALMEMORYSIZE=%dMB\nFREEMEMORYSIZE=%dMB",
+                                 totalMemoryMbs,
+                                 freeMemoryMbs);
+        }
+    }
+
 }

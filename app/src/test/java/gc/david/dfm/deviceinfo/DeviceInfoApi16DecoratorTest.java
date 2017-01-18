@@ -64,7 +64,7 @@ public class DeviceInfoApi16DecoratorTest {
     }
 
     @Test
-    public void showsCorrectData() {
+    public void returnsDeviceInfoWithMemoryInfo() {
         // Given
         final String fakeDeviceInfo = "fake device info";
         final long availableMemInBytes = 2L;
@@ -77,11 +77,9 @@ public class DeviceInfoApi16DecoratorTest {
         final String actualDeviceInfo = deviceInfoApi16Decorator.getDeviceInfo();
 
         // Then
-        final String expectedDeviceInfo = String.format(Locale.getDefault(),
-                                                        "%s\nTOTALMEMORYSIZE=%dMB\nFREEMEMORYSIZE=%dMB",
-                                                        fakeDeviceInfo,
-                                                        availableMemInBytes,
-                                                        freeMemInBytes);
+        final String fakeMemoryInfo = DeviceInfoApi16Decorator.MemoryPrinter.print(availableMemInBytes, freeMemInBytes);
+        final String expectedDeviceInfo = DeviceInfoApi16Decorator.DeviceInfoPrinter.print(fakeDeviceInfo,
+                                                                                           fakeMemoryInfo);
         assertEquals(expectedDeviceInfo, actualDeviceInfo);
     }
 }
