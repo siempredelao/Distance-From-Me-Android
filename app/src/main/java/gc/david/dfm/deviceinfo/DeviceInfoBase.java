@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm.deviceinfo;
 
 import android.content.Context;
 import android.os.Build;

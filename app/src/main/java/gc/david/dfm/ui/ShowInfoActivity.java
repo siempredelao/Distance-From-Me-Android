@@ -56,7 +56,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
-import gc.david.dfm.PackageManager;
+import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.dagger.DaggerShowInfoComponent;

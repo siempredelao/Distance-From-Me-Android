@@ -20,8 +20,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 
-import gc.david.dfm.DeviceInfo;
-import gc.david.dfm.PackageManager;
+import gc.david.dfm.deviceinfo.DeviceInfo;
+import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.R;
 
 /**

@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm.deviceinfo;
 
 /**
  * Created by david on 06.12.16.
  */
-public interface DeviceInfo {
+public abstract class DeviceInfoDecorator implements DeviceInfo {
 
-    String getDeviceInfo();
+    private final DeviceInfo decoratedDeviceInfo;
 
+    public DeviceInfoDecorator(final DeviceInfo decoratedDeviceInfo) {
+        this.decoratedDeviceInfo = decoratedDeviceInfo;
+    }
+
+    @Override
+    public String getDeviceInfo() {
+        return decoratedDeviceInfo.getDeviceInfo();
+    }
 }

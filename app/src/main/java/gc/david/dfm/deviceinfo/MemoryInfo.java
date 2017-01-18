@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm.deviceinfo;
 
 /**
- * Created by david on 06.12.16.
+ * Created by david on 18.01.17.
  */
-public abstract class DeviceInfoDecorator implements DeviceInfo {
+public interface MemoryInfo {
 
-    private final DeviceInfo decoratedDeviceInfo;
+    long getAvailableMemory();
 
-    public DeviceInfoDecorator(final DeviceInfo decoratedDeviceInfo) {
-        this.decoratedDeviceInfo = decoratedDeviceInfo;
-    }
+    long getFreeMemory();
 
-    @Override
-    public String getDeviceInfo() {
-        return decoratedDeviceInfo.getDeviceInfo();
-    }
 }

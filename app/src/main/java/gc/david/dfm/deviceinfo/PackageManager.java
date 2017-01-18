@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm.deviceinfo;
+
+import android.content.Intent;
 
 /**
- * Created by david on 18.01.17.
+ * Created by david on 07.12.16.
  */
-public interface MemoryInfo {
+public interface PackageManager {
 
-    long getAvailableMemory();
+    String getVersionName();
 
-    long getFreeMemory();
+    boolean isThereAnyActivityForIntent(Intent intent);
 
 }
