@@ -1,12 +1,12 @@
 # Distance From Me
 ![Image] (/app/src/main/res/drawable-xxhdpi/ic_launcher.png)
 
-Master: [![Build Status](https://travis-ci.org/siempredelao/Distance-From-Me-Android.svg?branch=master)](https://travis-ci.org/siempredelao/Distance-From-Me-Android)
-
-Develop: [![Build Status](https://travis-ci.org/siempredelao/Distance-From-Me-Android.svg?branch=develop)](https://travis-ci.org/siempredelao/Distance-From-Me-Android)
+Master: [![Build Status](https://api.travis-ci.org/siempredelao/Distance-From-Me-Android.svg?branch=master)](https://travis-ci.org/siempredelao/Distance-From-Me-Android)
+&nbsp;Develop: [![Build Status](https://api.travis-ci.org/siempredelao/Distance-From-Me-Android.svg?branch=develop)](https://travis-ci.org/siempredelao/Distance-From-Me-Android)
 
 ## What is it?
 *Distance From Me* is an Android application whose objective is to calculate straight-line distances.
+Code is organised by features (still in progress, not 100%) following MVP architecture.
 
 ## Features
 * Searches places by keyboard and by voice.
@@ -18,24 +18,26 @@ Develop: [![Build Status](https://travis-ci.org/siempredelao/Distance-From-Me-An
 * Shares distances with friends.
 * Easy access to the dev team by email.
 * Shortcut to Play Store to rate app.
+* Some FAQ.
 * Languages: English, Spanish, French, German, Italian, Portuguese and Catalan.
 
-## Libraries used
-* [GraphView](http://android-graphview.org)
-* [InMobi Ads](http://www.inmobi.com)
+## Main libraries used
+* [Dagger 2](http://google.github.io/dagger/)
 * [ButterKnife](http://jakewharton.github.io/butterknife)
-* [GreenDAO](http://greendao-orm.com)
-* [Guava](https://github.com/google/guava)
-* [Crashlytics (Fabric)](https://get.fabric.io/crashlytics)
-* [Dagger](http://google.github.io/dagger/)
+* [GreenDAO](http://greenrobot.org/greendao/)
+* [OkHttp](http://square.github.io/okhttp/)
+* [Gson](https://github.com/google/gson)
+* [ConstraintLayout](https://developer.android.com/training/constraint-layout/index.html)
+* [GraphView](http://www.android-graphview.org/)
+* [Crashlytics (Fabric)](https://fabric.io/kits/android/crashlytics)
+* [InMobi Ads](http://www.inmobi.com)
+* [Mockito](http://site.mockito.org/)
 
 ## Contributions
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 
 
 ## Download
-[![Get it on Google Play]
-    (https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)]
-(http://goo.gl/0IBHFN)
+[![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](http://goo.gl/0IBHFN)
 
 ## License
 ```
