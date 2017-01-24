@@ -28,8 +28,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,7 +41,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -196,13 +195,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String       distanceMeasuredAsText                = "";
     private MenuItem     searchMenuItem                        = null;
     // Show position if we come from other app (p.e. Whatsapp)
-    private boolean         mustShowPositionWhenComingFromOutside = false;
-    private LatLng          sendDestinationPosition               = null;
-    private GraphView       graphView                             = null;
-    private List<LatLng>    coordinates                           = new ArrayList<>();
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private boolean               calculatingDistance;
-    private ProgressDialog        progressDialog;
+    private boolean      mustShowPositionWhenComingFromOutside = false;
+    private LatLng       sendDestinationPosition               = null;
+    private GraphView    graphView                             = null;
+    private List<LatLng> coordinates                           = new ArrayList<>();
+    private boolean        calculatingDistance;
+    private ProgressDialog progressDialog;
 
     private Elevation.Presenter elevationPresenter;
     private Address.Presenter   addressPresenter;
@@ -229,6 +227,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setHomeButtonEnabled(true);
+            final Drawable upArrow = ContextCompat.getDrawable(appContext, R.drawable.ic_menu_white_24dp);
+            supportActionBar.setHomeAsUpIndicator(upArrow);
         }
 
         elevationPresenter = new ElevationPresenter(this, elevationUseCase, connectionManager, preferencesProvider);
@@ -341,13 +341,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 return false;
             }
         });
-
-        // TODO: 23.08.15 check if this is still needed
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this,
-                                                          drawerLayout,
-                                                          R.string.progressdialog_search_position_message,
-                                                          R.string.progressdialog_search_position_message);
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
     @Override
@@ -454,31 +447,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return nvDrawer.getMenu().findItem(R.id.menu_current_position).isChecked()
                ? DistanceMode.DISTANCE_FROM_CURRENT_POINT
                : DistanceMode.DISTANCE_FROM_ANY_POINT;
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onPostCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
-
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        if (actionBarDrawerToggle != null) {
-            actionBarDrawerToggle.syncState();
-        } else {
-            DFMLogger.logMessage(TAG, "onPostCreate actionBarDrawerToggle null");
-        }
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        DFMLogger.logMessage(TAG, "onConfigurationChanged");
-
-        super.onConfigurationChanged(newConfig);
-        if (actionBarDrawerToggle != null) {
-            actionBarDrawerToggle.onConfigurationChanged(newConfig);
-        } else {
-            DFMLogger.logMessage(TAG, "onConfigurationChanged actionBarDrawerToggle null");
-        }
     }
 
     @Override
@@ -628,11 +596,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (actionBarDrawerToggle != null && actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
         switch (item.getItemId()) {
+            case android.R.id.home:
+                DFMLogger.logMessage(TAG, "onOptionsItemSelected home");
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
             case R.id.action_search:
                 DFMLogger.logMessage(TAG, "onOptionsItemSelected search");
                 return true;
@@ -751,9 +719,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }, packageManager.get(), deviceInfo.get()).start();
     }
 
-    /**
-     * Shows an AlertDialog with the Google Play Services License.
-     */
+    // TODO: 24.01.17 check http://stackoverflow.com/questions/27136551/google-maps-api-v2-legal-notices-string-too-much-long
     private void showGooglePlayServiceLicenseDialog() {
         DFMLogger.logMessage(TAG, "showGooglePlayServiceLicenseDialog");
 
