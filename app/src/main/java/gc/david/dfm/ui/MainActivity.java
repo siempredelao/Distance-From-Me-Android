@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         HelpAndFeedbackActivity.open(MainActivity.this);
                         return true;
                     case R.id.menu_about:
-//                        AboutActivity.open(MainActivity.this);
+                        AboutActivity.open(MainActivity.this);
                         return true;
                 }
                 return false;
