@@ -31,15 +31,19 @@ import gc.david.dfm.dagger.SettingsModule;
 import gc.david.dfm.dagger.StorageModule;
 import gc.david.dfm.distance.domain.ClearDistancesUseCase;
 import gc.david.dfm.logger.DFMLogger;
+import gc.david.dfm.settings.presentation.Settings;
+import gc.david.dfm.settings.presentation.SettingsPresenter;
 
 import static gc.david.dfm.Utils.toastIt;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat implements Settings.View {
 
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     @Inject
     protected ClearDistancesUseCase clearDistancesUseCase;
+
+    private Settings.Presenter presenter;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -52,26 +56,32 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                .build()
                                .inject(this);
 
+        presenter = new SettingsPresenter(this, clearDistancesUseCase);
+
         final Preference bbddPreference = findPreference(DFMPreferences.CLEAR_DATABASE_KEY);
         bbddPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 DFMLogger.logMessage(TAG, "onPreferenceClick delete entries");
 
-                // TODO: 16.01.17 move this to presenter
-                clearDistancesUseCase.execute(new ClearDistancesUseCase.Callback() {
-                    @Override
-                    public void onClear() {
-                        toastIt(R.string.toast_distances_deleted, getContext());
-                    }
-
-                    @Override
-                    public void onError() {
-                        DFMLogger.logException(new Exception("Unable to clear database."));
-                    }
-                });
+                presenter.onClearData();
                 return false;
             }
         });
+    }
+
+    @Override
+    public void setPresenter(final Settings.Presenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @Override
+    public void showClearDataSuccessMessage() {
+        toastIt(R.string.toast_distances_deleted, getContext());
+    }
+
+    @Override
+    public void showClearDataErrorMessage() {
+        DFMLogger.logException(new Exception("Unable to clear database."));
     }
 }
