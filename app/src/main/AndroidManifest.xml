@@ -42,7 +42,6 @@
         android:theme="@style/CustomActionBarTheme"
         android:hardwareAccelerated="true">
 
-        <!-- A partir de la API 12 hay que poner android:configChanges="orientation|screenSize" para rotar la pantalla -->
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
