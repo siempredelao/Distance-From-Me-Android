@@ -26,7 +26,7 @@ import io.fabric.sdk.android.Fabric;
 public class DFMLogger {
 
     public static void logMessage(final String tag, final String message) {
-        if (isReleaseBuild()) {
+        if (shouldLogToCrashlytics()) {
             Crashlytics.log(tag + ": " + message);
         } else {
             Log.d(tag, message);
@@ -34,7 +34,7 @@ public class DFMLogger {
     }
 
     public static void logException(final Exception exception) {
-        if (isReleaseBuild()) {
+        if (shouldLogToCrashlytics()) {
             Crashlytics.logException(exception);
         } else {
             Log.e("Exception", "Exception", exception);
@@ -42,14 +42,14 @@ public class DFMLogger {
     }
 
     public static void logEvent(final String eventName) {
-        if (isReleaseBuild()) {
+        if (shouldLogToCrashlytics()) {
             Crashlytics.setBool(eventName, true);
         } else {
             Log.i("New event", eventName);
         }
     }
 
-    private static boolean isReleaseBuild() {
+    private static boolean shouldLogToCrashlytics() {
         return !BuildConfig.DEBUG && Fabric.isInitialized();
     }
 }

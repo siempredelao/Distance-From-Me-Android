@@ -129,4 +129,8 @@ public class Utils {
         }
         return result;
     }
+
+    public static boolean isReleaseBuild() {
+        return "release".equals(BuildConfig.BUILD_TYPE);
+    }
 }

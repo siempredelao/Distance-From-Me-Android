@@ -95,8 +95,6 @@ import gc.david.dfm.BuildConfig;
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
-import gc.david.dfm.deviceinfo.DeviceInfo;
-import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
@@ -108,6 +106,8 @@ import gc.david.dfm.dagger.DaggerMainComponent;
 import gc.david.dfm.dagger.MainModule;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.StorageModule;
+import gc.david.dfm.deviceinfo.DeviceInfo;
+import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
 import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
 import gc.david.dfm.distance.domain.GetPositionListUseCase;
@@ -125,6 +125,7 @@ import gc.david.dfm.model.Position;
 import gc.david.dfm.service.GeofencingService;
 
 import static butterknife.ButterKnife.bind;
+import static gc.david.dfm.Utils.isReleaseBuild;
 import static gc.david.dfm.Utils.showAlertDialog;
 import static gc.david.dfm.Utils.toastIt;
 
@@ -616,6 +617,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 loadItem.setVisible(false);
             }
         });
+
+        menu.findItem(R.id.action_crash).setVisible(!isReleaseBuild());
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -633,6 +637,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 DFMLogger.logMessage(TAG, "onOptionsItemSelected load distances from ddbb");
                 loadDistancesFromDB();
                 return true;
+            case R.id.action_crash:
+                DFMLogger.logMessage(TAG, "onOptionsItemSelected crash");
+                throw new RuntimeException("User forced crash");
             default:
                 return super.onOptionsItemSelected(item);
         }

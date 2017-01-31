@@ -70,6 +70,11 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt')
 			proguardFiles fileTree(dir: "proguard", include: ["*.pro"]).asList().toArray()
 		}
+		beta {
+			initWith buildTypes.release
+
+			versionNameSuffix "-beta"
+		}
 	}
 }
 
@@ -126,6 +131,7 @@ dependencies {
 	compile "com.google.code.gson:gson:$gsonVersion"
 	compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 	debugCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
+	betaCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
 	releaseCompile "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
 
 	testCompile "junit:junit:$junitVersion"

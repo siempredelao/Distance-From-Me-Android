@@ -29,4 +29,9 @@
         android:orderInCategory="2"
         android:title="@string/menu_load_title"
         actual:showAsAction="never"/>
+    <item
+        android:id="@+id/action_crash"
+        android:orderInCategory="3"
+        android:title="Crash"
+        actual:showAsAction="never"/>
 </menu>
