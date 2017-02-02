@@ -131,7 +131,7 @@ dependencies {
 	compile "com.google.code.gson:gson:$gsonVersion"
 	compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 	debugCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
-	betaCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
+	betaCompile "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
 	releaseCompile "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
 
 	testCompile "junit:junit:$junitVersion"
