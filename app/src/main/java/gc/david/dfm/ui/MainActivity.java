@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             location.setLatitude(latitude);
             location.setLongitude(longitude);
             onLocationChanged(location);
+            InMobiSdk.setLocation(location);
         }
     };
 
