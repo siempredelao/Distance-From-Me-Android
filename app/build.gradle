@@ -133,6 +133,9 @@ dependencies {
 	debugCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
 	betaCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
 	releaseCompile "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
+	compile("$supportLibraryGroup:cardview-v7:$supportLibraryVersion") {
+		exclude group: "com.android.support", module: "support-annotations"
+	}
 
 	testCompile "junit:junit:$junitVersion"
 	testCompile "org.mockito:mockito-core:$mockitoVersion"
