@@ -24,9 +24,17 @@
     <dimen name="elevation_chart_hide_button_size">25dp</dimen>
     <dimen name="elevation_chart_vertical_label_width">50dp</dimen>
     <dimen name="elevation_chart_line_size">3dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="card_padding_top">24dp</dimen>
+    <dimen name="card_padding_bottom">@dimen/card_padding_top</dimen>
+    <dimen name="card_padding_sides">16dp</dimen>
+    <dimen name="opensource_card_version_outline_correction">3dp</dimen>
+    <dimen name="opensource_card_version_left_margin">8dp</dimen>
+    <dimen name="opensource_card_block_space_margin">16dp</dimen>
+    <dimen name="opensource_detail_margin">16dp</dimen>
 
     <!-- Text sizes -->
     <dimen name="elevation_chart_text_size">15sp</dimen>
-    <dimen name="text_margin">16dp</dimen>
 
 </resources>
