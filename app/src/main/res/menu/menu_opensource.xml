@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (c) 2017 David Aguiar Gonzalez
   ~
@@ -15,8 +14,13 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <color name="item_background">#FF142602</color>
-    <color name="elevation_chart_background">#66191919</color>
-    <color name="elevation_chart_line">#00FA9A</color>
-</resources>
+<menu xmlns:actual="http://schemas.android.com/apk/res-auto"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_open_license_browser"
+        android:icon="@drawable/ic_open_in_browser_white_24dp"
+        android:orderInCategory="1"
+        android:title="@string/menu_open_license_browser_title"
+        actual:showAsAction="always"/>
+</menu>

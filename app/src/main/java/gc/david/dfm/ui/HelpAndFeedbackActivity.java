@@ -148,7 +148,7 @@ public class HelpAndFeedbackActivity extends AppCompatActivity implements Faqs.V
     }
 
     public static void open(final Activity activity) {
-        final Intent showInfoActivityIntent = new Intent(activity, HelpAndFeedbackActivity.class);
-        activity.startActivity(showInfoActivityIntent);
+        final Intent openHelpAndFeedbackActivityIntent = new Intent(activity, HelpAndFeedbackActivity.class);
+        activity.startActivity(openHelpAndFeedbackActivityIntent);
     }
 }

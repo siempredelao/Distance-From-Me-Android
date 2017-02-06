@@ -15,8 +15,21 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <color name="item_background">#FF142602</color>
-    <color name="elevation_chart_background">#66191919</color>
-    <color name="elevation_chart_line">#00FA9A</color>
-</resources>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:fitsSystemWindows="true"
+              android:orientation="vertical"
+              tools:context=".ui.AboutActivity">
+
+    <include
+        android:id="@+id/tbMain"
+        layout="@layout/toolbar"/>
+
+    <FrameLayout
+        android:id="@+id/about_activity_container_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

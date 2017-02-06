@@ -51,5 +51,9 @@
             android:id="@+id/menu_help_feedback"
             android:icon="@drawable/ic_help_black_18dp"
             android:title="@string/menu_help_feedback_title"/>
+        <item
+            android:id="@+id/menu_about"
+            android:icon="@drawable/ic_android_black_18dp"
+            android:title="@string/menu_about_title"/>
     </group>
 </menu>

@@ -405,10 +405,10 @@ public class ShowInfoActivity extends AppCompatActivity {
     }
 
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {
-        final Intent showInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
-        showInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY,
-                                                           new ArrayList<Parcelable>(coordinates));
-        showInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText);
-        activity.startActivity(showInfoActivityIntent);
+        final Intent openShowInfoActivityIntent = new Intent(activity, ShowInfoActivity.class);
+        openShowInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY,
+                                                               new ArrayList<Parcelable>(coordinates));
+        openShowInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText);
+        activity.startActivity(openShowInfoActivityIntent);
     }
 }
