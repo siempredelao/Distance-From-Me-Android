@@ -20,8 +20,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".ui.ShowInfoActivity">
 
     <include layout="@layout/toolbar"/>
@@ -45,34 +45,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/info_current_position_title"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
             <TextView
-                android:id="@+id/datos1"
+                android:id="@+id/showinfo_activity_origin_address_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"/>
+                android:layout_marginTop="2dp"
+                tools:text="Sonnenburgerstr. 70, 10356 Berlin, Germany\n\n(45.6789, -10.2345)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:text="@string/info_destination_position_title"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
             <TextView
-                android:id="@+id/datos2"
+                android:id="@+id/showinfo_activity_destination_address_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"/>
+                android:layout_marginTop="2dp"
+                tools:text="Reichenbergerstr. 124, 10999 Berlin, Germany\n\n(-12.3456, 78,9123)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
             <TextView
-                android:id="@+id/distancia"
+                android:id="@+id/showinfo_activity_distance_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:gravity="right"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+                android:gravity="end"
+                tools:text="Distance: 987,654 km"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

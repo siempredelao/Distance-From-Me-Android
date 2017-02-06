@@ -77,11 +77,11 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     private static final String WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY = "wasSavingWhenOrientationChanged";
     private static final String ALIAS_HINT_KEY                          = "aliasHint";
 
-    @BindView(R.id.datos1)
+    @BindView(R.id.showinfo_activity_origin_address_textview)
     protected TextView tvOriginAddress;
-    @BindView(R.id.datos2)
+    @BindView(R.id.showinfo_activity_destination_address_textview)
     protected TextView tvDestinationAddress;
-    @BindView(R.id.distancia)
+    @BindView(R.id.showinfo_activity_distance_textview)
     protected TextView tvDistance;
     @BindView(R.id.tbMain)
     protected Toolbar  tbMain;
