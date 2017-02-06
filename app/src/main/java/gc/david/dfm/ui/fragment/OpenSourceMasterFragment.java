@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -47,6 +47,7 @@ import gc.david.dfm.opensource.presentation.OpenSource;
 import gc.david.dfm.opensource.presentation.OpenSourcePresenter;
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper;
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel;
+import gc.david.dfm.ui.animation.DetailsTransition;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;

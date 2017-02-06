@@ -19,7 +19,7 @@ package gc.david.dfm.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import gc.david.dfm.ui.SettingsFragment;
+import gc.david.dfm.ui.fragment.SettingsFragment;
 
 /**
  * Created by david on 16.01.17.

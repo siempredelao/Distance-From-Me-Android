@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.activity;
 
-import android.annotation.TargetApi;
-import android.transition.ChangeBounds;
-import android.transition.ChangeTransform;
-import android.transition.TransitionSet;
-
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 
 /**
- * Created by david on 25.01.17.
+ * Created by david on 07.11.16.
  */
-@TargetApi(LOLLIPOP)
-public class DetailsTransition extends TransitionSet {
+public class OnboardActivity extends AppCompatActivity {
 
-    public DetailsTransition() {
-        init();
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        final Intent openMainActivityIntent = new Intent(this, MainActivity.class);
+        startActivity(openMainActivityIntent);
+        finish();
     }
 
-    private void init() {
-        setOrdering(ORDERING_TOGETHER);
-        addTransition(new ChangeBounds()).addTransition(new ChangeTransform());
-    }
 }

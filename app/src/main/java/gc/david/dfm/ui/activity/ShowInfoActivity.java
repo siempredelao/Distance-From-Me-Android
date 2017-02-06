@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -69,13 +69,13 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     private static final String TAG = ShowInfoActivity.class.getSimpleName();
 
-    private static final String POSITIONS_LIST_EXTRA_KEY                = "positionsList";
-    private static final String DISTANCE_EXTRA_KEY                      = "distancia";
-    private static final String ORIGIN_ADDRESS_KEY                      = "originAddress";
-    private static final String DESTINATION_ADDRESS_KEY                 = "destinationAddress";
-    private static final String DISTANCE_KEY                            = "distance";
-    private static final String WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY = "wasSavingWhenOrientationChanged";
-    private static final String ALIAS_HINT_KEY                          = "aliasHint";
+    private static final String POSITIONS_LIST_EXTRA_KEY       = "positionsList";
+    private static final String DISTANCE_EXTRA_KEY             = "distance";
+    private static final String ORIGIN_ADDRESS_STATE_KEY       = "originAddressState";
+    private static final String DESTINATION_ADDRESS_STATE_KEY  = "destinationAddressState";
+    private static final String DISTANCE_STATE_KEY             = "distanceState";
+    private static final String WAS_SAVING_STATE_KEY           = "wasSavingState";
+    private static final String DISTANCE_DIALOG_NAME_STATE_KEY = "distanceDialogName";
 
     @BindView(R.id.showinfo_activity_origin_address_textview)
     protected TextView tvOriginAddress;
@@ -126,6 +126,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
         setSupportActionBar(tbMain);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // TODO: 06.02.17 store presenter in singleton Map, Loader,... to restore after config change
         showInfoPresenter = new ShowInfoPresenter(this,
                                                   getAddressNameByCoordinatesUseCase,
                                                   insertDistanceUseCase,
@@ -135,30 +136,32 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
         if (savedInstanceState == null) {
             DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
+
             fillAddressesInfo();
         } else {
-            originAddress = savedInstanceState.getString(ORIGIN_ADDRESS_KEY);
-            destinationAddress = savedInstanceState.getString(DESTINATION_ADDRESS_KEY);
-
-            tvOriginAddress.setText(formatAddress(originAddress,
-                                                  positionsList.get(0).latitude,
-                                                  positionsList.get(0).longitude));
-
-            tvDestinationAddress.setText(formatAddress(destinationAddress,
-                                                       positionsList.get(positionsList.size() - 1).latitude,
-                                                       positionsList.get(positionsList.size() - 1).longitude));
-
-            // Este se modifica dos veces...
-            distance = savedInstanceState.getString(DISTANCE_KEY);
-
-            wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY);
-            if (wasSavingWhenOrientationChanged) {
-                final String aliasHint = savedInstanceState.getString(ALIAS_HINT_KEY);
-                saveDataToDB(aliasHint);
-            }
+            restorePreviousState(savedInstanceState);
         }
 
         fillDistanceInfo();
+    }
+
+    private void restorePreviousState(final Bundle savedInstanceState) {
+        originAddress = savedInstanceState.getString(ORIGIN_ADDRESS_STATE_KEY);
+        destinationAddress = savedInstanceState.getString(DESTINATION_ADDRESS_STATE_KEY);
+
+        tvOriginAddress.setText(formatAddress(originAddress,
+                                              positionsList.get(0).latitude,
+                                              positionsList.get(0).longitude));
+        tvDestinationAddress.setText(formatAddress(destinationAddress,
+                                                   positionsList.get(positionsList.size() - 1).latitude,
+                                                   positionsList.get(positionsList.size() - 1).longitude));
+        distance = savedInstanceState.getString(DISTANCE_STATE_KEY);
+
+        wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(WAS_SAVING_STATE_KEY);
+        if (wasSavingWhenOrientationChanged) {
+            final String aliasHint = savedInstanceState.getString(DISTANCE_DIALOG_NAME_STATE_KEY);
+            saveDataToDB(aliasHint);
+        }
     }
 
     @Override
@@ -167,12 +170,14 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
         super.onSaveInstanceState(outState);
 
-        outState.putString(ORIGIN_ADDRESS_KEY, originAddress);
-        outState.putString(DESTINATION_ADDRESS_KEY, destinationAddress);
-        outState.putString(DISTANCE_KEY, distance);
-        outState.putBoolean(WAS_SAVING_WHEN_ORIENTATION_CHANGED_KEY, wasSavingWhenOrientationChanged);
+        outState.putString(ORIGIN_ADDRESS_STATE_KEY, originAddress);
+        outState.putString(DESTINATION_ADDRESS_STATE_KEY, destinationAddress);
+        outState.putString(DISTANCE_STATE_KEY, distance);
+
         if (wasSavingWhenOrientationChanged) {
-            outState.putString(ALIAS_HINT_KEY, etAlias.getText().toString());
+            outState.putBoolean(WAS_SAVING_STATE_KEY, wasSavingWhenOrientationChanged);
+            outState.putString(DISTANCE_DIALOG_NAME_STATE_KEY, etAlias.getText().toString());
+
             if (savingInDBDialog != null) {
                 savingInDBDialog.dismiss();
                 savingInDBDialog = null;

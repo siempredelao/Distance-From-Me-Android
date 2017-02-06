@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import gc.david.dfm.R;
+import gc.david.dfm.ui.fragment.SettingsFragment;
 
 import static butterknife.ButterKnife.bind;
 

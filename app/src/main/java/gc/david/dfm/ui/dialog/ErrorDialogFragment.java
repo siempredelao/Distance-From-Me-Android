@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;

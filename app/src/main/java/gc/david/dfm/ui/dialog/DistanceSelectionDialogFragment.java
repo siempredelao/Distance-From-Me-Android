@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dialog;
+package gc.david.dfm.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -23,25 +23,22 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import gc.david.dfm.R;
-import gc.david.dfm.address.domain.model.Address;
+import gc.david.dfm.adapter.DistanceAdapter;
+import gc.david.dfm.model.Distance;
 
 /**
  * Created by david on 07.02.16.
  */
-// TODO: 13.01.17 move to address.presentation package
-public class AddressSuggestionsDialogFragment extends DialogFragment {
+public class DistanceSelectionDialogFragment extends DialogFragment {
 
-    private static final String TAG = AddressSuggestionsDialogFragment.class.getSimpleName();
-
-    private List<Address>          addressList;
+    private List<Distance> distanceList;
     private OnDialogActionListener onDialogActionListener;
 
-    public void setAddressList(final List<Address> addressList) {
-        this.addressList = addressList;
+    public void setDistanceList(final List<Distance> allDistances) {
+        this.distanceList = allDistances;
     }
 
     public void setOnDialogActionListener(final OnDialogActionListener onDialogActionListener) {
@@ -51,26 +48,18 @@ public class AddressSuggestionsDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final DistanceAdapter distanceAdapter = new DistanceAdapter(getActivity(), distanceList);
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getString(R.string.dialog_select_address_title));
-        builder.setItems(groupAddresses(addressList).toArray(new String[addressList.size()]),
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(DialogInterface dialog, int item) {
-                                 if (onDialogActionListener != null) {
-                                     onDialogActionListener.onItemClick(item);
-                                 }
-                             }
-                         });
+        builder.setTitle(getString(R.string.dialog_load_distances_title))
+               .setAdapter(distanceAdapter, new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       if (onDialogActionListener != null) {
+                           onDialogActionListener.onItemClick(which);
+                       }
+                   }
+               });
         return builder.create();
-    }
-
-    // TODO: 13.01.17 improve this formatting, probably text will run out of space
-    private List<String> groupAddresses(final List<Address> addressList) {
-        final List<String> result = new ArrayList<>();
-        for (final Address address : addressList) {
-            result.add(address.getFormattedAddress());
-        }
-        return result;
     }
 
     public interface OnDialogActionListener {

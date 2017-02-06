@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.fragment;
 
 import android.content.Intent;
 import android.net.Uri;

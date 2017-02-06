@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import gc.david.dfm.R;
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel;
-import gc.david.dfm.ui.OpenSourceMasterFragment.OnItemClickListener;
+import gc.david.dfm.ui.fragment.OpenSourceMasterFragment.OnItemClickListener;
 
 /**
  * Created by david on 24.01.17.

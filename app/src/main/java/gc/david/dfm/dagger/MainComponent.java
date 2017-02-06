@@ -19,7 +19,7 @@ package gc.david.dfm.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import gc.david.dfm.ui.MainActivity;
+import gc.david.dfm.ui.activity.MainActivity;
 
 /**
  * Created by david on 27.12.16.
