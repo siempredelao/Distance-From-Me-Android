@@ -33,6 +33,7 @@
     <dimen name="opensource_card_version_left_margin">8dp</dimen>
     <dimen name="opensource_card_block_space_margin">16dp</dimen>
     <dimen name="opensource_detail_margin">16dp</dimen>
+    <dimen name="showinfo_distance_margin_top">24dp</dimen>
 
     <!-- Text sizes -->
     <dimen name="elevation_chart_text_size">15sp</dimen>
