@@ -15,43 +15,43 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:animateLayoutChanges="true"
-              android:background="@drawable/feedback_card_background"
-              android:orientation="vertical"
-              android:padding="10dp"
-              tools:showIn="@layout/activity_help_and_feedback">
-
-    <TextView
-        android:id="@+id/feedback_card_item_view_title_textview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        tools:text="How can I reset my distance?"/>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/card_margin"
+                                    app:cardCornerRadius="@dimen/card_corner_radius"
+                                    app:cardElevation="@dimen/elevation">
 
     <LinearLayout
-        android:id="@+id/feedback_card_item_view_hidden_content_linearlayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="?attr/selectableItemBackground"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:paddingBottom="@dimen/card_padding_bottom"
+        android:paddingLeft="@dimen/card_padding_sides"
+        android:paddingRight="@dimen/card_padding_sides"
+        android:paddingTop="@dimen/card_padding_top"
+        tools:showIn="@layout/activity_help_and_feedback">
 
-        <View
+        <TextView
+            android:id="@+id/feedback_card_item_view_title_textview"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="2dp"
-            android:background="@color/item_background"/>
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            tools:text="How can I reset my distance?"/>
 
         <TextView
             android:id="@+id/feedback_card_item_view_content_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Just open the side bar and select the mode you want to use for the next distance to measure."/>
+            android:layout_marginTop="@dimen/opensource_card_block_space_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:visibility="gone"
+            tools:text="Just open the side bar and select the mode you want to use for the next distance to measure."
+            tools:visibility="visible"/>
 
     </LinearLayout>
-
-</LinearLayout>
+</android.support.v7.widget.CardView>
