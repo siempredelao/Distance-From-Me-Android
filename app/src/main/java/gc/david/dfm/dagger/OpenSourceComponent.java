@@ -19,7 +19,7 @@ package gc.david.dfm.dagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import gc.david.dfm.ui.OpenSourceMasterFragment;
+import gc.david.dfm.ui.fragment.OpenSourceMasterFragment;
 
 /**
  * Created by david on 27.12.16.

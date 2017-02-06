@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -107,8 +107,10 @@ import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.StorageModule;
 import gc.david.dfm.deviceinfo.DeviceInfo;
 import gc.david.dfm.deviceinfo.PackageManager;
-import gc.david.dfm.dialog.AddressSuggestionsDialogFragment;
-import gc.david.dfm.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.ui.animation.AnimatorUtil;
+import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment;
+import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.ui.dialog.ErrorDialogFragment;
 import gc.david.dfm.distance.domain.GetPositionListUseCase;
 import gc.david.dfm.distance.domain.LoadDistancesUseCase;
 import gc.david.dfm.elevation.domain.ElevationUseCase;

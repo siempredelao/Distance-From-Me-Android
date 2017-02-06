@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
 
     <style name="CustomActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#4c9956</item>
@@ -41,33 +41,43 @@
 
     <!--&lt;!&ndash; ActionBar style &ndash;&gt;-->
     <!--<style name="ActionBar.Solid.NewTheme" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">-->
-        <!--<item name="background">@drawable/newtheme_action_bar_gradient</item>-->
+    <!--<item name="background">@drawable/newtheme_action_bar_gradient</item>-->
     <!--</style>-->
 
     <!--<style name="PopupMenu.NewTheme" parent="@style/Widget.AppCompat.PopupMenu">-->
-        <!--<item name="android:popupBackground">@color/item_background</item>-->
+    <!--<item name="android:popupBackground">@color/item_background</item>-->
     <!--</style>-->
 
     <!--<style name="DropDownListView.NewTheme" parent="@style/Widget.AppCompat.ListView.DropDown">-->
-        <!--<item name="android:listSelector">@drawable/newtheme_selectable_background</item>-->
+    <!--<item name="android:listSelector">@drawable/newtheme_selectable_background</item>-->
     <!--</style>-->
 
     <!--<style name="DropDownNav.NewTheme" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">-->
-        <!--<item name="android:background">@drawable/newtheme_spinner_background_ab</item>-->
-        <!--<item name="android:dropDownSelector">@drawable/newtheme_selectable_background</item>-->
+    <!--<item name="android:background">@drawable/newtheme_spinner_background_ab</item>-->
+    <!--<item name="android:dropDownSelector">@drawable/newtheme_selectable_background</item>-->
     <!--</style>-->
 
 
     <!--&lt;!&ndash; this style is only referenced in a Light.DarkActionBar based theme &ndash;&gt;-->
     <!--<style name="NewTheme.Widget" parent="@style/Theme.AppCompat">-->
-        <!--<item name="popupMenuStyle">@style/PopupMenu.NewTheme</item>-->
-        <!--<item name="dropDownListViewStyle">@style/DropDownListView.NewTheme</item>-->
+    <!--<item name="popupMenuStyle">@style/PopupMenu.NewTheme</item>-->
+    <!--<item name="dropDownListViewStyle">@style/DropDownListView.NewTheme</item>-->
     <!--</style>-->
 
     <style name="CustomActionBarTheme.Onboard">
         <item name="android:windowBackground">@drawable/ll_dfm_onboard</item>
     </style>
 
-    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="showinfo_table_components">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_gravity">fill_horizontal|center_vertical</item>
     </style>
+
+    <style name="showinfo_table_address_value" parent="showinfo_table_components">
+        <item name="android:layout_columnSpan">2</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+    </style>
+
 </resources>

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (c) 2017 David Aguiar Gonzalez
   ~
@@ -15,13 +14,8 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="48dp"
-             android:layout_height="wrap_content"
-             android:minWidth="48dp">
+<resources>
 
-    <ProgressBar
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center"/>
-</FrameLayout>
+    <dimen name="showinfo_distance_margin_top">24dp</dimen>
+
+</resources>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import gc.david.dfm.R;
+import gc.david.dfm.ui.fragment.OpenSourceMasterFragment;
 
 /**
  * Created by david on 24.01.17.

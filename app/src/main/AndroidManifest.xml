@@ -41,7 +41,7 @@
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop">
@@ -79,25 +79,25 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name=".ui.ShowInfoActivity"
+            android:name=".ui.activity.ShowInfoActivity"
             android:configChanges="screenSize|keyboardHidden"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity"/>
+                android:value=".ui.activity.MainActivity"/>
         </activity>
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.activity.SettingsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity"/>
+                android:value=".ui.activity.MainActivity"/>
         </activity>
         <activity
-            android:name=".ui.OnboardActivity"
+            android:name=".ui.activity.OnboardActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomActionBarTheme.Onboard">
             <intent-filter>
@@ -107,23 +107,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.HelpAndFeedbackActivity"
+            android:name=".ui.activity.HelpAndFeedbackActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity"/>
+                android:value=".ui.activity.MainActivity"/>
         </activity>
 
         <activity
-            android:name=".ui.AboutActivity"
+            android:name=".ui.activity.AboutActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity"/>
+                android:value=".ui.activity.MainActivity"/>
         </activity>
         <activity
             android:name="com.inmobi.rendering.InMobiAdActivity"

@@ -16,10 +16,18 @@
 
 package gc.david.dfm.dagger;
 
+import android.content.Context;
+
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import gc.david.dfm.address.data.AddressRemoteDataSource;
+import gc.david.dfm.address.data.AddressRepository;
+import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
+import gc.david.dfm.address.domain.GetAddressUseCase;
 import gc.david.dfm.distance.data.DistanceLocalDataSource;
 import gc.david.dfm.distance.data.DistanceRepository;
 import gc.david.dfm.distance.domain.InsertDistanceInteractor;
@@ -42,9 +50,27 @@ public class ShowInfoModule {
 
     @Provides
     @Singleton
+    AddressRepository provideAddressRepository(Context context) {
+        return new AddressRemoteDataSource(context);
+    }
+
+    @Provides
+    @Singleton
     InsertDistanceUseCase provideInsertDistanceUseCase(Executor executor,
                                                        MainThread mainThread,
                                                        DistanceRepository elevationRepository) {
         return new InsertDistanceInteractor(executor, mainThread, elevationRepository);
+    }
+
+    @Provides
+    @Named("NameByCoordinates")
+    GetAddressUseCase provideGetAddressNameByCoordinatesUseCase(Executor executor,
+                                                                MainThread mainThread,
+                                                                AddressCollectionEntityDataMapper addressCollectionEntityDataMapper,
+                                                                AddressRepository addressRepository) {
+        return new GetAddressNameByCoordinatesInteractor(executor,
+                                                         mainThread,
+                                                         addressCollectionEntityDataMapper,
+                                                         addressRepository);
     }
 }

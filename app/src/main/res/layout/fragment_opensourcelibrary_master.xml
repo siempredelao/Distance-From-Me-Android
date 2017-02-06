@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:context=".ui.OpenSourceMasterFragment"
+        tools:context=".ui.fragment.OpenSourceMasterFragment"
         tools:listitem="@layout/view_opensourcelibrary_item"/>
 
 </FrameLayout>

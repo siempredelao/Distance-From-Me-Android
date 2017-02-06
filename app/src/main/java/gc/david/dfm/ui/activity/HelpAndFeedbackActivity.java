@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui;
+package gc.david.dfm.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
