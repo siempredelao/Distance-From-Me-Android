@@ -42,7 +42,7 @@ import gc.david.dfm.R;
 import gc.david.dfm.dagger.DaggerFaqComponent;
 import gc.david.dfm.dagger.FaqModule;
 import gc.david.dfm.dagger.RootModule;
-import gc.david.dfm.faq.FAQAdapter;
+import gc.david.dfm.adapter.FAQAdapter;
 import gc.david.dfm.faq.model.Faq;
 import gc.david.dfm.faq.Faqs;
 import gc.david.dfm.faq.FaqsPresenter;

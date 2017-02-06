@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq;
+package gc.david.dfm.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -72,8 +72,6 @@ public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
 
         @BindView(R.id.feedback_card_item_view_title_textview)
         TextView     tvTitle;
-        @BindView(R.id.feedback_card_item_view_hidden_content_linearlayout)
-        LinearLayout llHiddenContent;
         @BindView(R.id.feedback_card_item_view_content_textview)
         TextView     tvContent;
 
@@ -84,7 +82,7 @@ public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    llHiddenContent.setVisibility(llHiddenContent.isShown() ? GONE : VISIBLE);
+                    tvContent.setVisibility(tvContent.isShown() ? GONE : VISIBLE);
                 }
             });
         }
