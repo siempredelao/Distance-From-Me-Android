@@ -38,48 +38,58 @@ import gc.david.dfm.model.Position;
 public class ShowInfoPresenter implements ShowInfo.Presenter {
 
     private final ShowInfo.View         showInfoView;
-    private final GetAddressUseCase     getAddressNameByCoordinatesUseCase;
+    private final GetAddressUseCase     getOriginAddressNameByCoordinatesUseCase;
+    private final GetAddressUseCase     getDestinationAddressNameByCoordinatesUseCase;
     private final InsertDistanceUseCase insertDistanceUseCase;
     private final ConnectionManager     connectionManager;
 
     public ShowInfoPresenter(final ShowInfo.View showInfoView,
-                             final GetAddressUseCase getAddressNameByCoordinatesUseCase,
+                             final GetAddressUseCase getOriginAddressNameByCoordinatesUseCase,
+                             final GetAddressUseCase getDestinationAddressNameByCoordinatesUseCase,
                              final InsertDistanceUseCase insertDistanceUseCase,
                              final ConnectionManager connectionManager) {
         this.showInfoView = showInfoView;
-        this.getAddressNameByCoordinatesUseCase = getAddressNameByCoordinatesUseCase;
+        this.getOriginAddressNameByCoordinatesUseCase = getOriginAddressNameByCoordinatesUseCase;
+        this.getDestinationAddressNameByCoordinatesUseCase = getDestinationAddressNameByCoordinatesUseCase;
         this.insertDistanceUseCase = insertDistanceUseCase;
         this.connectionManager = connectionManager;
     }
 
     @Override
-    public void searchPositionByCoordinates(final LatLng coordinates, final boolean isOrigin) {
+    public void searchPositionByCoordinates(final LatLng originLatLng, final LatLng destinationLatLng) {
         if (!connectionManager.isOnline()) {
             showInfoView.showNoInternetError();
         } else {
             showInfoView.showProgress();
 
-            getAddressNameByCoordinatesUseCase.execute(coordinates, 1, new GetAddressUseCase.Callback() {
-                @Override
-                public void onAddressLoaded(final AddressCollection addressCollection) {
-                    showInfoView.hideProgress();
-
-                    final List<Address> addressList = addressCollection.getAddressList();
-                    if (addressList.isEmpty()) {
-                        showInfoView.showNoMatchesMessage(isOrigin);
-                    } else {
-                        showInfoView.setAddress(addressList.get(0).getFormattedAddress(), isOrigin);
-                    }
-                }
-
-                @Override
-                public void onError(final String errorMessage) {
-                    showInfoView.hideProgress();
-
-                    showInfoView.showError(errorMessage, isOrigin);
-                }
-            });
+            getOriginAddress(getOriginAddressNameByCoordinatesUseCase, originLatLng, true);
+            getOriginAddress(getDestinationAddressNameByCoordinatesUseCase, destinationLatLng, false);
         }
+    }
+
+    private void getOriginAddress(final GetAddressUseCase getAddressUseCase,
+                                  final LatLng latLng,
+                                  final boolean isOrigin) {
+        getAddressUseCase.execute(latLng, 1, new GetAddressUseCase.Callback() {
+            @Override
+            public void onAddressLoaded(final AddressCollection addressCollection) {
+                showInfoView.hideProgress();
+
+                final List<Address> addressList = addressCollection.getAddressList();
+                if (addressList.isEmpty()) {
+                    showInfoView.showNoMatchesMessage(isOrigin);
+                } else {
+                    showInfoView.setAddress(addressList.get(0).getFormattedAddress(), isOrigin);
+                }
+            }
+
+            @Override
+            public void onError(final String errorMessage) {
+                showInfoView.hideProgress();
+
+                showInfoView.showError(errorMessage, isOrigin);
+            }
+        });
     }
 
     @Override

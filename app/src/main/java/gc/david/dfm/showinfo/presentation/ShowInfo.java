@@ -26,7 +26,7 @@ import java.util.List;
 public interface ShowInfo {
 
     interface Presenter {
-        void searchPositionByCoordinates(LatLng coordinates, boolean isOrigin);
+        void searchPositionByCoordinates(LatLng originLatLng, LatLng destinationLatLng);
 
         void saveDistance(String name, String distance, List<LatLng> latLngPositionList);
     }

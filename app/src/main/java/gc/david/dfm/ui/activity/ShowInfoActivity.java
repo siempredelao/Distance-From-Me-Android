@@ -96,7 +96,10 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     protected InsertDistanceUseCase insertDistanceUseCase;
     @Inject
     @Named("NameByCoordinates")
-    protected GetAddressUseCase     getAddressNameByCoordinatesUseCase;
+    protected GetAddressUseCase     getOriginAddressNameByCoordinatesUseCase;
+    @Inject
+    @Named("NameByCoordinates")
+    protected GetAddressUseCase     getDestinationAddressNameByCoordinatesUseCase;
 
     private MenuItem           refreshMenuItem;
     private List<LatLng>       positionsList;
@@ -128,7 +131,8 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
         // TODO: 06.02.17 store presenter in singleton Map, Loader,... to restore after config change
         showInfoPresenter = new ShowInfoPresenter(this,
-                                                  getAddressNameByCoordinatesUseCase,
+                                                  getOriginAddressNameByCoordinatesUseCase,
+                                                  getDestinationAddressNameByCoordinatesUseCase,
                                                   insertDistanceUseCase,
                                                   connectionManager);
 
@@ -196,7 +200,8 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     private void fillAddressesInfo() {
         DFMLogger.logMessage(TAG, "fillAddressesInfo");
 
-        showInfoPresenter.searchPositionByCoordinates(positionsList.get(0), true);
+        showInfoPresenter.searchPositionByCoordinates(positionsList.get(0),
+                                                      positionsList.get(positionsList.size() - 1));
     }
 
     private String formatAddress(final String address, final double latitude, final double longitude) {
@@ -297,14 +302,12 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     public void showProgress() {
         if (refreshMenuItem != null) {
             MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
-            MenuItemCompat.expandActionView(refreshMenuItem);
         }
     }
 
     @Override
     public void hideProgress() {
         if (refreshMenuItem != null) {
-            MenuItemCompat.collapseActionView(refreshMenuItem);
             MenuItemCompat.setActionView(refreshMenuItem, null);
         }
     }
@@ -316,7 +319,6 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
             tvOriginAddress.setText(formatAddress(originAddress,
                                                   positionsList.get(0).latitude,
                                                   positionsList.get(0).longitude));
-            showInfoPresenter.searchPositionByCoordinates(positionsList.get(positionsList.size() - 1), false);
         } else {
             destinationAddress = address;
             tvDestinationAddress.setText(formatAddress(destinationAddress,
@@ -329,7 +331,6 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     public void showNoMatchesMessage(final boolean isOrigin) {
         if (isOrigin) {
             tvOriginAddress.setText(R.string.error_no_address_found_message);
-            showInfoPresenter.searchPositionByCoordinates(positionsList.get(positionsList.size() - 1), false);
         } else {
             tvDestinationAddress.setText(R.string.error_no_address_found_message);
         }
@@ -339,7 +340,6 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     public void showError(final String errorMessage, final boolean isOrigin) {
         if (isOrigin) {
             tvOriginAddress.setText(R.string.toast_no_location_found);
-            showInfoPresenter.searchPositionByCoordinates(positionsList.get(positionsList.size() - 1), false);
         } else {
             tvDestinationAddress.setText(R.string.toast_no_location_found);
         }

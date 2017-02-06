@@ -63,7 +63,6 @@ public class ShowInfoModule {
     }
 
     @Provides
-    @Singleton
     @Named("NameByCoordinates")
     GetAddressUseCase provideGetAddressNameByCoordinatesUseCase(Executor executor,
                                                                 MainThread mainThread,
