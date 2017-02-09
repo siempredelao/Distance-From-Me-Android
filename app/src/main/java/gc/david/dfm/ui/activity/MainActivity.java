@@ -36,6 +36,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -107,10 +108,6 @@ import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.StorageModule;
 import gc.david.dfm.deviceinfo.DeviceInfo;
 import gc.david.dfm.deviceinfo.PackageManager;
-import gc.david.dfm.ui.animation.AnimatorUtil;
-import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment;
-import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment;
-import gc.david.dfm.ui.dialog.ErrorDialogFragment;
 import gc.david.dfm.distance.domain.GetPositionListUseCase;
 import gc.david.dfm.distance.domain.LoadDistancesUseCase;
 import gc.david.dfm.elevation.domain.ElevationUseCase;
@@ -124,7 +121,16 @@ import gc.david.dfm.map.LocationUtils;
 import gc.david.dfm.model.Distance;
 import gc.david.dfm.model.Position;
 import gc.david.dfm.service.GeofencingService;
+import gc.david.dfm.ui.animation.AnimatorUtil;
+import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment;
+import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment;
+import gc.david.dfm.ui.dialog.ErrorDialogFragment;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 import static butterknife.ButterKnife.bind;
 import static gc.david.dfm.Utils.isReleaseBuild;
 import static gc.david.dfm.Utils.showAlertDialog;
@@ -138,7 +144,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                                Elevation.View,
                                                                Address.View {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String   TAG                      = MainActivity.class.getSimpleName();
+    private static final String[] PERMISSIONS              = {ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION};
+    private static final int      PERMISSIONS_REQUEST_CODE = 2;
 
     @BindView(R.id.elevationchart)
     protected RelativeLayout       rlElevationChart;
@@ -304,11 +312,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             showConnectionProblemsDialog();
         }
 
-        // Iniciando la app
-        if (currentLocation == null) {
-            toastIt(R.string.toast_loading_position, appContext);
-        }
-
         handleIntents(getIntent());
 
         nvDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -319,6 +322,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     case R.id.menu_current_position:
                         menuItem.setChecked(true);
                         onStartingPointSelected();
+                        if (SDK_INT >= M && !isLocationPermissionGranted()) {
+                            Snackbar.make(drawerLayout,
+                                          "This feature needs location permissions.",
+                                          Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Settings", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    intent.setData(Uri.parse("package:" + getPackageName()));
+                                    startActivity(intent);
+                                }
+                                    })
+                                    .show();
+                        }
                         return true;
                     case R.id.menu_any_position:
                         menuItem.setChecked(true);
@@ -351,7 +368,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         googleMap.getUiSettings().setMyLocationButtonEnabled(false);
 
-        googleMap.setMyLocationEnabled(true);
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         googleMap.setOnMapLongClickListener(this);
@@ -360,6 +376,38 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter(this));
 
         onStartingPointSelected();
+
+        if (SDK_INT >= M && !isLocationPermissionGranted()) {
+            requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE);
+        } else {
+            toastIt(R.string.toast_loading_position, appContext);
+            googleMap.setMyLocationEnabled(true);
+            fabMyLocation.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            // not necessary to check both permissions, they fall under location group
+            if (grantResults[0] == PERMISSION_GRANTED) {
+                DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED");
+
+                toastIt(R.string.toast_loading_position, appContext);
+                googleMap.setMyLocationEnabled(true);
+                fabMyLocation.setVisibility(View.VISIBLE);
+
+                registerReceiver(locationReceiver, new IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION));
+                startService(new Intent(this, GeofencingService.class));
+            } else {
+                DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED");
+                fabMyLocation.setVisibility(View.GONE);
+                nvDrawer.getMenu().findItem(R.id.menu_any_position).setChecked(true);
+                onStartingPointSelected();
+            }
+        }
     }
 
     @Override
@@ -741,7 +789,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         DFMLogger.logMessage(TAG, "onStop");
 
         super.onStop();
-        unregisterReceiver(locationReceiver);
+        try {
+            unregisterReceiver(locationReceiver);
+        } catch (IllegalArgumentException exception) {
+            DFMLogger.logMessage(TAG, "onStop receiver not registered, do nothing");
+        }
         stopService(new Intent(this, GeofencingService.class));
     }
 
@@ -753,8 +805,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         DFMLogger.logMessage(TAG, "onStart");
 
         super.onStart();
-        registerReceiver(locationReceiver, new IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION));
-        startService(new Intent(this, GeofencingService.class));
+        if (isLocationPermissionGranted()) {
+            registerReceiver(locationReceiver, new IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION));
+            startService(new Intent(this, GeofencingService.class));
+            if (googleMap != null) {
+                googleMap.setMyLocationEnabled(true);
+            }
+            fabMyLocation.setVisibility(View.VISIBLE);
+        } else {
+            fabMyLocation.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isLocationPermissionGranted() {
+        return ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
     }
 
     /**

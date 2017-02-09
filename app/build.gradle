@@ -41,7 +41,7 @@ android {
 	defaultConfig {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 15
-		targetSdkVersion 21
+		targetSdkVersion 25
 		versionName '3.2.1'
 		versionCode 24
 		resConfigs "en", "ca", "de", "es", "fr", "it", "pt"
