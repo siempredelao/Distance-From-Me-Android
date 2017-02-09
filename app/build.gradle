@@ -41,7 +41,7 @@ android {
 	defaultConfig {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 15
-		targetSdkVersion 21
+		targetSdkVersion 25
 		versionName '3.2.1'
 		versionCode 24
 		resConfigs "en", "ca", "de", "es", "fr", "it", "pt"
@@ -133,6 +133,9 @@ dependencies {
 	debugCompile "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
 	betaCompile "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
 	releaseCompile "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
+	compile("$supportLibraryGroup:cardview-v7:$supportLibraryVersion") {
+		exclude group: "com.android.support", module: "support-annotations"
+	}
 
 	testCompile "junit:junit:$junitVersion"
 	testCompile "org.mockito:mockito-core:$mockitoVersion"

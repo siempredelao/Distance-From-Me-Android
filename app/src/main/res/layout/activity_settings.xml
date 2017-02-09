@@ -21,7 +21,7 @@
               android:layout_height="match_parent"
               android:fitsSystemWindows="true"
               android:orientation="vertical"
-              tools:context=".ui.SettingsActivity">
+              tools:context=".ui.activity.SettingsActivity">
 
     <include
         android:id="@+id/tbMain"

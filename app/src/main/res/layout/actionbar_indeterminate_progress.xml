@@ -16,9 +16,9 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="56dp"
+             android:layout_width="48dp"
              android:layout_height="wrap_content"
-             android:minWidth="56dp">
+             android:minWidth="48dp">
 
     <ProgressBar
         android:layout_width="32dp"
