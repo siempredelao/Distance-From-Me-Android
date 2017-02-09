@@ -24,8 +24,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Locale;
-
 import gc.david.dfm.deviceinfo.DeviceInfo;
 import gc.david.dfm.deviceinfo.DeviceInfoApi16Decorator;
 import gc.david.dfm.deviceinfo.MemoryInfo;
