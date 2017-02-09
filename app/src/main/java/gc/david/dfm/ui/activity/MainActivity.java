@@ -1029,7 +1029,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void addLine(final LatLng start, final LatLng end, final boolean isLoadingFromDB) {
         final PolylineOptions lineOptions = new PolylineOptions().add(start).add(end);
-        lineOptions.width(3 * getResources().getDisplayMetrics().density);
+        lineOptions.width(getResources().getDimension(R.dimen.map_line_width));
         lineOptions.color(isLoadingFromDB ? Color.YELLOW : Color.GREEN);
         googleMap.addPolyline(lineOptions);
     }
