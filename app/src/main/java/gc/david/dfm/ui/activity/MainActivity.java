@@ -54,6 +54,7 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -344,9 +345,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         return true;
                     case R.id.menu_rate_app:
                         showRateDialog();
-                        return true;
-                    case R.id.menu_legal_notices:
-                        showGooglePlayServiceLicenseDialog();
                         return true;
                     case R.id.menu_settings:
                         SettingsActivity.open(MainActivity.this);
@@ -768,17 +766,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 return appContext;
             }
         }, packageManager.get(), deviceInfo.get()).start();
-    }
-
-    // TODO: 24.01.17 check http://stackoverflow.com/questions/27136551/google-maps-api-v2-legal-notices-string-too-much-long
-    private void showGooglePlayServiceLicenseDialog() {
-        DFMLogger.logMessage(TAG, "showGooglePlayServiceLicenseDialog");
-
-        final String LicenseInfo = GoogleApiAvailability.getInstance().getOpenSourceSoftwareLicenseInfo(appContext);
-        final AlertDialog.Builder LicenseDialog = new AlertDialog.Builder(MainActivity.this);
-        LicenseDialog.setTitle(R.string.menu_legal_notices_title);
-        LicenseDialog.setMessage(LicenseInfo);
-        LicenseDialog.show();
     }
 
     /**
