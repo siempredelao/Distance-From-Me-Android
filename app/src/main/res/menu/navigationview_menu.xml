@@ -35,11 +35,6 @@
         android:icon="@drawable/ic_grade_black_18dp"
         android:title="@string/menu_rate_app_title"/>
 
-    <item
-        android:id="@+id/menu_legal_notices"
-        android:icon="@drawable/ic_info_black_18dp"
-        android:title="@string/menu_legal_notices_title"/>
-
     <group
         android:id="@+id/settings_group_id"
         android:checkableBehavior="none">
