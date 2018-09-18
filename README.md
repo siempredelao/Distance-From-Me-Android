@@ -41,7 +41,7 @@ Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md
 
 ## License
 ```
-   Copyright (c) 2017 David Aguiar Gonzalez
+   Copyright (c) 2018 David Aguiar Gonzalez
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
