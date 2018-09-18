@@ -52,13 +52,6 @@ public class OpenSourceDiskDataSource implements OpenSourceRepository {
                                                                     "Apache-2.0",
                                                                     "2016",
                                                                     "Android Graph Library for creating zoomable and scrollable line and bar graphs."));
-        openSourceLibraryEntityList.add(new OpenSourceLibraryEntity("InMobi",
-                                                                    "InMobi",
-                                                                    "7.2.0",
-                                                                    "http://www.inmobi.com/",
-                                                                    "Copyright",
-                                                                    "2017",
-                                                                    "InMobi enables consumers to discover new products and services by providing contextual and personalized ad experiences on mobile devices."));
         openSourceLibraryEntityList.add(new OpenSourceLibraryEntity("ButterKnife",
                                                                     "Jake Wharton",
                                                                     "8.8.1",

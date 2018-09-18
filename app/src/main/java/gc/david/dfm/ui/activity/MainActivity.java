@@ -48,13 +48,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -68,10 +66,6 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.inmobi.ads.InMobiAdRequestStatus;
-import com.inmobi.ads.InMobiBanner;
-import com.inmobi.ads.InMobiBanner.BannerAdListener;
-import com.inmobi.sdk.InMobiSdk;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
@@ -82,7 +76,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,7 +85,6 @@ import javax.inject.Named;
 import butterknife.BindView;
 import butterknife.OnClick;
 import dagger.Lazy;
-import gc.david.dfm.BuildConfig;
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
@@ -155,8 +147,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected ImageView            ivCloseElevationChart;
     @BindView(R.id.tbMain)
     protected Toolbar              tbMain;
-    @BindView(R.id.banner)
-    protected InMobiBanner         banner;
     @BindView(R.id.drawer_layout)
     protected DrawerLayout         drawerLayout;
     @BindView(R.id.nvDrawer)
@@ -196,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             location.setLatitude(latitude);
             location.setLongitude(longitude);
             onLocationChanged(location);
-            InMobiSdk.setLocation(location);
         }
     };
 
@@ -222,8 +211,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
-        InMobiSdk.setLogLevel(BuildConfig.DEBUG ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.NONE);
-        InMobiSdk.init(this, getString(R.string.inmobi_api_key));
         setContentView(R.layout.activity_main);
         DaggerMainComponent.builder()
                            .rootModule(new RootModule((DFMApplication) getApplication()))
@@ -251,64 +238,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         final SupportMapFragment supportMapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
-
-        // FIXME: 11.01.17 workaround: InMobi SDK v6.0.3 stops fetching ads if banner is not visible
-        // and when it is visible, it checks if height is valid (not zero)
-        banner.setVisibility(View.VISIBLE);
-        final ViewGroup.LayoutParams newLayoutParams = banner.getLayoutParams();
-        newLayoutParams.height = 1;
-        banner.setLayoutParams(newLayoutParams);
-
-        banner.setListener(new BannerAdListener() {
-            @Override
-            public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
-                DFMLogger.logMessage(TAG, "onAdLoadSucceeded");
-
-                final ViewGroup.LayoutParams newLayoutParams = banner.getLayoutParams();
-                newLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.banner_height);
-                banner.setLayoutParams(newLayoutParams);
-
-                fixMapPadding();
-            }
-
-            @Override
-            public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
-                DFMLogger.logMessage(TAG,
-                                     String.format("onAdLoadFailed %s %s",
-                                                   inMobiAdRequestStatus.getStatusCode(),
-                                                   inMobiAdRequestStatus.getMessage()));
-            }
-
-            @Override
-            public void onAdDisplayed(InMobiBanner inMobiBanner) {
-                DFMLogger.logMessage(TAG, "onAdDisplayed");
-            }
-
-            @Override
-            public void onAdDismissed(InMobiBanner inMobiBanner) {
-                DFMLogger.logMessage(TAG, "onAdDismissed");
-            }
-
-            @Override
-            public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-                DFMLogger.logMessage(TAG, String.format("onAdInteraction %s", map.toString()));
-
-                DFMLogger.logEvent("Ad tapped");
-            }
-
-            @Override
-            public void onUserLeftApplication(InMobiBanner inMobiBanner) {
-                DFMLogger.logMessage(TAG, "onUserLeftApplication");
-            }
-
-            @Override
-            public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-                DFMLogger.logMessage(TAG, String.format("onAdRewardActionCompleted %s", map.toString()));
-            }
-        });
-        if (!BuildConfig.DEBUG) {
-            banner.load();
-        }
 
         if (!connectionManager.isOnline()) {
             showConnectionProblemsDialog();
@@ -1045,20 +974,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    // FIXME: 11.01.17 workaround
-    private boolean isBannerShown() {
-        return banner.getLayoutParams().height > 1;
-    }
-
     private void fixMapPadding() {
         DFMLogger.logMessage(TAG,
-                             String.format("fixMapPadding bannerShown %s elevationChartShown %s",
-                                           isBannerShown(),
+                             String.format("fixMapPadding elevationChartShown %s",
                                            rlElevationChart.isShown()));
         googleMap.setPadding(0,
                              rlElevationChart.isShown() ? rlElevationChart.getHeight() : 0,
                              0,
-                             isBannerShown() ? banner.getLayoutParams().height : 0);
+                             0);
     }
 
     @Override

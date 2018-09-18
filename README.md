@@ -31,7 +31,6 @@ Code is organised by features (still in progress, not 100%) following MVP archit
 * [GraphView](http://www.android-graphview.org/)
 * [LeakCanary](https://github.com/square/leakcanary)
 * [Crashlytics (Fabric)](https://fabric.io/kits/android/crashlytics)
-* [InMobi Ads](http://www.inmobi.com)
 * [Mockito](http://site.mockito.org/)
 
 ## Contributions
