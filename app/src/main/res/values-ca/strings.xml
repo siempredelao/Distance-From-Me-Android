@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2017 David Aguiar Gonzalez
+  ~ Copyright (c) 2018 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 <resources>
     <string name="action_bar_search_title">Cercar</string>
     <string name="action_bar_item_social_share_title">Compartir</string>
-    <string name="menu_legal_notices_title">Avís legal</string>
     <string name="action_bar_search_hint">Cercar Distance From Me</string>
     <string name="progressdialog_search_position_title">Cercant</string>
     <string name="progressdialog_search_position_message">Per favor, espere un moment\u2026</string>

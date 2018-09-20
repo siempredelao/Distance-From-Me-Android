@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2017 David Aguiar Gonzalez
+  ~ Copyright (c) 2018 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
     <dimen name="map_line_width">3dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="banner_width">320dp</dimen>
-    <dimen name="banner_height">50dp</dimen>
     <dimen name="elevation">7dp</dimen>
     <dimen name="elevation_chart_hide_button_size">25dp</dimen>
     <dimen name="elevation_chart_vertical_label_width">50dp</dimen>

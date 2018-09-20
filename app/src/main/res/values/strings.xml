@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2017 David Aguiar Gonzalez
+  ~ Copyright (c) 2018 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 
     <string name="action_bar_search_title">Search</string>
     <string name="action_bar_search_hint">Search Distance From Me</string>
-    <string name="menu_legal_notices_title">Legal notices</string>
     <string name="menu_load_title">Load distance</string>
     <string name="menu_rate_app_title">Rate app</string>
     <string name="menu_settings_title">Settings</string>

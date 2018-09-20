@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 David Aguiar Gonzalez
+ * Copyright (c) 2018 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,18 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.1'
+        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 
     // Log unit test execution events into console + results
