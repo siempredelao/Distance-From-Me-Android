@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:actual="http://schemas.android.com/apk/res-auto"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:actual="http://schemas.android.com/apk/res-auto"
       xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
@@ -33,5 +34,6 @@
         android:id="@+id/action_crash"
         android:orderInCategory="3"
         android:title="Crash"
-        actual:showAsAction="never"/>
+        actual:showAsAction="never"
+        tools:ignore="HardcodedText" />
 </menu>

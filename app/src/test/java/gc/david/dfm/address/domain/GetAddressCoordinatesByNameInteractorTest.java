@@ -76,14 +76,14 @@ public class GetAddressCoordinatesByNameInteractorTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((Interactor) invocation.getArguments()[0]).run();
                 return null;
             }
         }).when(executor).run(any(Interactor.class));
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((Runnable) invocation.getArguments()[0]).run();
                 return null;
             }
@@ -99,7 +99,7 @@ public class GetAddressCoordinatesByNameInteractorTest {
                 STATUS_ZERO_RESULTS).withResults(results).build();
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((AddressRepository.Callback) invocation.getArguments()[1]).onSuccess(addressCollectionEntity);
                 return null;
             }
@@ -130,7 +130,7 @@ public class GetAddressCoordinatesByNameInteractorTest {
                 STATUS_OK).withResults(results).build();
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((AddressRepository.Callback) invocation.getArguments()[1]).onSuccess(addressCollectionEntity);
                 return null;
             }
@@ -156,7 +156,7 @@ public class GetAddressCoordinatesByNameInteractorTest {
                 STATUS_INVALID_REQUEST).build();
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((AddressRepository.Callback) invocation.getArguments()[1]).onSuccess(addressCollectionEntity);
                 return null;
             }
@@ -176,7 +176,7 @@ public class GetAddressCoordinatesByNameInteractorTest {
         final String fakeErrorMessage = "fake error message";
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((AddressRepository.Callback) invocation.getArguments()[1]).onError(fakeErrorMessage);
                 return null;
             }

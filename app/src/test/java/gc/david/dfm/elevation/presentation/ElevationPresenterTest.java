@@ -116,7 +116,7 @@ public class ElevationPresenterTest {
         final gc.david.dfm.elevation.domain.model.Elevation elevation = new gc.david.dfm.elevation.domain.model.Elevation(new ArrayList<Double>());
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ElevationUseCase.Callback) invocation.getArguments()[2]).onElevationLoaded(elevation);
                 return null;
             }
@@ -138,7 +138,7 @@ public class ElevationPresenterTest {
         final gc.david.dfm.elevation.domain.model.Elevation elevation = new gc.david.dfm.elevation.domain.model.Elevation(new ArrayList<Double>());
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 elevationPresenter.onReset(); // reset called before thread finishes
                 ((ElevationUseCase.Callback) invocation.getArguments()[2]).onElevationLoaded(elevation);
                 return null;
@@ -161,7 +161,7 @@ public class ElevationPresenterTest {
         final String errorMessage = "fake error message";
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ElevationUseCase.Callback) invocation.getArguments()[2]).onError(errorMessage);
                 return null;
             }

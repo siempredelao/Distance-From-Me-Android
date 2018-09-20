@@ -53,7 +53,7 @@ public class SettingsPresenterTest {
         // Given
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ClearDistancesUseCase.Callback) invocation.getArguments()[0]).onClear();
                 return null;
             }
@@ -71,7 +71,7 @@ public class SettingsPresenterTest {
         // Given
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ClearDistancesUseCase.Callback) invocation.getArguments()[0]).onError();
                 return null;
             }

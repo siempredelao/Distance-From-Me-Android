@@ -46,7 +46,7 @@ public class DeviceInfoApi16DecoratorTest {
     private DeviceInfoApi16Decorator deviceInfoApi16Decorator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         deviceInfoApi16Decorator = new DeviceInfoApi16Decorator(decoratedDeviceInfo, memoryInfo);

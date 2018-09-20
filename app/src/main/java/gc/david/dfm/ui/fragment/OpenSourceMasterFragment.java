@@ -17,6 +17,7 @@
 package gc.david.dfm.ui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -69,7 +70,7 @@ public class OpenSourceMasterFragment extends Fragment implements OpenSource.Vie
 
     private OpenSource.Presenter     presenter;
     private OpenSourceLibraryAdapter adapter;
-    private OnItemClickListener listener = new OnItemClickListener() {
+    private final OnItemClickListener listener = new OnItemClickListener() {
         @Override
         public void onItemClick(final OpenSourceLibraryModel openSourceLibraryModel,
                                 final OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder viewHolder) {
@@ -89,7 +90,7 @@ public class OpenSourceMasterFragment extends Fragment implements OpenSource.Vie
             bundle.putParcelable(OpenSourceDetailFragment.LIBRARY_KEY, openSourceLibraryModel);
             openSourceDetailFragment.setArguments(bundle);
 
-            getActivity().getSupportFragmentManager()
+            requireActivity().getSupportFragmentManager()
                          .beginTransaction()
                          .addSharedElement(viewHolder.getTvName(),
                                            getString(R.string.transition_opensourcelibrary_name))
@@ -106,7 +107,7 @@ public class OpenSourceMasterFragment extends Fragment implements OpenSource.Vie
         super.onCreate(savedInstanceState);
 
         DaggerOpenSourceComponent.builder()
-                                 .rootModule(new RootModule((DFMApplication) getActivity().getApplication()))
+                                 .rootModule(new RootModule((DFMApplication) requireActivity().getApplication()))
                                  .openSourceModule(new OpenSourceModule())
                                  .build()
                                  .inject(this);
@@ -118,14 +119,14 @@ public class OpenSourceMasterFragment extends Fragment implements OpenSource.Vie
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_opensourcelibrary_master, container, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (adapter.getItemCount() != 0) {
             hideLoading();
             setupList();

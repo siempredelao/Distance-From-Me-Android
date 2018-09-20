@@ -358,7 +358,7 @@ public class AddressPresenterTest {
                                                                              final AddressCollection addressCollection) {
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((GetAddressUseCase.Callback) invocation.getArguments()[2]).onAddressLoaded(addressCollection);
                 return null;
             }
@@ -370,7 +370,7 @@ public class AddressPresenterTest {
                                                                      final String errorMessage) {
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((GetAddressUseCase.Callback) invocation.getArguments()[2]).onError(errorMessage);
                 return null;
             }
@@ -382,7 +382,7 @@ public class AddressPresenterTest {
                                                                              final AddressCollection addressCollection) {
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((GetAddressUseCase.Callback) invocation.getArguments()[2]).onAddressLoaded(addressCollection);
                 return null;
             }
@@ -394,7 +394,7 @@ public class AddressPresenterTest {
                                                                      final String errorMessage) {
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((GetAddressUseCase.Callback) invocation.getArguments()[2]).onError(errorMessage);
                 return null;
             }

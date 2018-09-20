@@ -72,14 +72,14 @@ public class ElevationInteractorTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((Interactor) invocation.getArguments()[0]).run();
                 return null;
             }
         }).when(executor).run(any(Interactor.class));
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((Runnable) invocation.getArguments()[0]).run();
                 return null;
             }
@@ -111,7 +111,7 @@ public class ElevationInteractorTest {
                                                                              .build();
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ElevationRepository.Callback) invocation.getArguments()[2]).onSuccess(elevationEntity);
                 return null;
             }
@@ -137,7 +137,7 @@ public class ElevationInteractorTest {
         final String errorMessage = "fake error message";
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ElevationRepository.Callback) invocation.getArguments()[2]).onError(errorMessage);
                 return null;
             }

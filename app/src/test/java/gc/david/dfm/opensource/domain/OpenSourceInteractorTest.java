@@ -60,14 +60,14 @@ public class OpenSourceInteractorTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((Interactor) invocation.getArguments()[0]).run();
                 return null;
             }
         }).when(executor).run(any(Interactor.class));
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((Runnable) invocation.getArguments()[0]).run();
                 return null;
             }
@@ -81,7 +81,7 @@ public class OpenSourceInteractorTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((OpenSourceRepository.Callback) invocation.getArguments()[0]).onSuccess(openSourceLibraryEntityList);
                 return null;
             }
@@ -101,7 +101,7 @@ public class OpenSourceInteractorTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((OpenSourceRepository.Callback) invocation.getArguments()[0]).onError(errorMessage);
                 return null;
             }

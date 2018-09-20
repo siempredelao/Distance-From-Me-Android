@@ -88,20 +88,20 @@ public class Utils {
             return "intent is null";
         }
 
-        String intentAsString = "";
+        StringBuilder intentAsString = new StringBuilder();
         final Bundle bundle = intent.getExtras();
 
         if (bundle != null) {
             final Set<String> keys = bundle.keySet();
-            intentAsString += "intent=[ ";
+            intentAsString.append("intent=[ ");
             for (final String key : keys) {
-                intentAsString += key + "=" + bundle.get(key) + ", ";
+                intentAsString.append(key).append("=").append(bundle.get(key)).append(", ");
             }
-            intentAsString += " ]";
+            intentAsString.append(" ]");
         } else {
-            intentAsString = "intent with empty bundle";
+            intentAsString = new StringBuilder("intent with empty bundle");
         }
-        return intentAsString;
+        return intentAsString.toString();
     }
 
     public static String dumpBundleToString(Bundle bundle) {

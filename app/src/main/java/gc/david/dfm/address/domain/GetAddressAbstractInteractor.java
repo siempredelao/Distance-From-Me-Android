@@ -36,17 +36,17 @@ import static android.support.annotation.VisibleForTesting.PRIVATE;
  */
 abstract class GetAddressAbstractInteractor<T> implements Interactor, GetAddressUseCase<T> {
 
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_OK               = "OK";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_ZERO_RESULTS     = "ZERO_RESULTS";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_INVALID_REQUEST  = "INVALID_REQUEST";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_REQUEST_DENIED   = "REQUEST_DENIED";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_UNKNOWN_ERROR    = "UNKNOWN_ERROR";
 
     private final   Executor                          executor;

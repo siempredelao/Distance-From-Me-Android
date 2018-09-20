@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean      mustShowPositionWhenComingFromOutside = false;
     private LatLng       sendDestinationPosition               = null;
     private GraphView    graphView                             = null;
-    private List<LatLng> coordinates                           = new ArrayList<>();
+    private final List<LatLng> coordinates                     = new ArrayList<>();
     private boolean        calculatingDistance;
     private ProgressDialog progressDialog;
 
@@ -453,10 +453,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         final String query = intent.getStringExtra(SearchManager.QUERY);
         if (currentLocation != null) {
             addressPresenter.searchPositionByName(query);
-            MenuItemCompat.collapseActionView(searchMenuItem);
+            searchMenuItem.collapseActionView();
         }
         if (searchMenuItem != null) {
-            MenuItemCompat.collapseActionView(searchMenuItem);
+            searchMenuItem.collapseActionView();
         }
     }
 
@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                     // TODO check this ugly workaround
                     addressPresenter.searchPositionByName(destination);
-                    MenuItemCompat.collapseActionView(searchMenuItem);
+                    searchMenuItem.collapseActionView();
                     mustShowPositionWhenComingFromOutside = true;
                 }
             } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         getMenuInflater().inflate(R.menu.main, menu);
 
         searchMenuItem = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+        final SearchView searchView = (SearchView) searchMenuItem.getActionView();
         final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         // Indicamos que la activity actual sea la buscadora
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -959,18 +959,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void moveCameraZoom(final List<LatLng> coordinatesList) {
         final String centre = DFMPreferences.getAnimationPreference(getBaseContext());
-        if (DFMPreferences.ANIMATION_CENTRE_VALUE.equals(centre)) {
-            final LatLngBounds.Builder latLngBoundsBuilder = new LatLngBounds.Builder();
-            for (LatLng latLng : coordinatesList) {
-                latLngBoundsBuilder.include(latLng);
-            }
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 100));
-        } else if (DFMPreferences.ANIMATION_DESTINATION_VALUE.equals(centre)) {
-            final LatLng lastCoordinates = coordinatesList.get(coordinatesList.size() - 1);
-            googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastCoordinates.latitude,
-                                                                             lastCoordinates.longitude)));
-        } else if (DFMPreferences.NO_ANIMATION_DESTINATION_VALUE.equals(centre)) {
-            // nothing
+        switch (centre) {
+            case DFMPreferences.ANIMATION_CENTRE_VALUE:
+                final LatLngBounds.Builder latLngBoundsBuilder = new LatLngBounds.Builder();
+                for (LatLng latLng : coordinatesList) {
+                    latLngBoundsBuilder.include(latLng);
+                }
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 100));
+                break;
+            case DFMPreferences.ANIMATION_DESTINATION_VALUE:
+                final LatLng lastCoordinates = coordinatesList.get(coordinatesList.size() - 1);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastCoordinates.latitude,
+                        lastCoordinates.longitude)));
+                break;
+            case DFMPreferences.NO_ANIMATION_DESTINATION_VALUE:
+                // nothing
+                break;
         }
     }
 

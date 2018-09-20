@@ -56,7 +56,6 @@ public class AddressRemoteDataSource implements AddressRepository {
         executeRequest(getCoordinatesByNameUrl(name), callback);
     }
 
-    @Nullable
     private void executeRequest(final String url, final Callback callback) {
         final Request request = new Request.Builder().url(url).header("content-type", "application/json").build();
 

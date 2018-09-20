@@ -62,9 +62,10 @@
                 android:layout_width="@dimen/elevation_chart_hide_button_size"
                 android:layout_height="@dimen/elevation_chart_hide_button_size"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:contentDescription="Close elevation chart"
-                android:src="@drawable/ic_crop_white_24dp"/>
+                android:src="@drawable/ic_crop_white_24dp" />
         </RelativeLayout>
 
         <android.support.design.widget.FloatingActionButton
@@ -89,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:clickable="true"
             android:src="@drawable/ic_my_location_white_24dp"
             app:elevation="@dimen/elevation"

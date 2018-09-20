@@ -301,14 +301,14 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     @Override
     public void showProgress() {
         if (refreshMenuItem != null) {
-            MenuItemCompat.setActionView(refreshMenuItem, R.layout.actionbar_indeterminate_progress);
+            refreshMenuItem.setActionView(R.layout.actionbar_indeterminate_progress);
         }
     }
 
     @Override
     public void hideProgress() {
         if (refreshMenuItem != null) {
-            MenuItemCompat.setActionView(refreshMenuItem, null);
+            refreshMenuItem.setActionView(null);
         }
     }
 

@@ -46,15 +46,16 @@ public class OpenSourceLibraryAdapter extends RecyclerView.Adapter<OpenSourceLib
         this.onItemClickListener = listener;
     }
 
+    @NonNull
     @Override
-    public OpenSourceLibraryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OpenSourceLibraryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View view = LayoutInflater.from(parent.getContext())
                                         .inflate(R.layout.view_opensourcelibrary_item, parent, false);
         return new OpenSourceLibraryViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final OpenSourceLibraryViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final OpenSourceLibraryViewHolder holder, final int position) {
         holder.onBind(openSourceLibraryModelList.get(position));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

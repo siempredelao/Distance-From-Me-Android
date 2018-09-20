@@ -30,22 +30,20 @@ import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
 
-import static android.support.annotation.VisibleForTesting.PRIVATE;
-
 /**
  * Created by david on 05.01.17.
  */
 public class ElevationInteractor implements Interactor, ElevationUseCase {
 
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_OK               = "OK";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_INVALID_REQUEST  = "INVALID_REQUEST";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_REQUEST_DENIED   = "REQUEST_DENIED";
-    @VisibleForTesting(otherwise = PRIVATE)
+    @VisibleForTesting()
     static final String STATUS_UNKNOWN_ERROR    = "UNKNOWN_ERROR";
 
     private final Executor                  executor;
@@ -120,16 +118,17 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
     }
 
     private String getCoordinatesPath(final List<LatLng> coordinateList) {
-        String positionListUrlParameter = "";
+        StringBuilder positionListUrlParameter = new StringBuilder();
         for (int i = 0; i < coordinateList.size(); i++) {
             final LatLng coordinate = coordinateList.get(i);
-            positionListUrlParameter += String.valueOf(coordinate.latitude) +
-                                        "," +
-                                        String.valueOf(coordinate.longitude);
+            positionListUrlParameter
+                    .append(String.valueOf(coordinate.latitude))
+                    .append(",")
+                    .append(String.valueOf(coordinate.longitude));
             if (i != coordinateList.size() - 1) {
-                positionListUrlParameter += "|";
+                positionListUrlParameter.append("|");
             }
         }
-        return positionListUrlParameter;
+        return positionListUrlParameter.toString();
     }
 }

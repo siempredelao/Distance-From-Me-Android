@@ -16,6 +16,7 @@
 
 package gc.david.dfm.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,27 +40,24 @@ import static android.view.View.VISIBLE;
  */
 public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
 
-    private final List<Faq> faqList;
+    private final List<Faq> faqList = new ArrayList<>();
 
-    public FAQAdapter() {
-        this.faqList = new ArrayList<>();
-    }
-
+    @NonNull
     @Override
-    public FAQViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FAQViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.from(parent.getContext())
                                             .inflate(R.layout.view_feedback_card_item, parent, false);
         return new FAQViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(FAQViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FAQViewHolder holder, int position) {
         holder.onBind(faqList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return faqList == null ? 0 : faqList.size();
+        return faqList.size();
     }
 
     public void addAll(final Set<Faq> faqSet) {

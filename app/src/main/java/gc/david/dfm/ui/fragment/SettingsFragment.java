@@ -50,7 +50,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         addPreferencesFromResource(R.xml.settings);
 
         DaggerSettingsComponent.builder()
-                               .rootModule(new RootModule((DFMApplication) getActivity().getApplication()))
+                               .rootModule(new RootModule((DFMApplication) requireActivity().getApplication()))
                                .storageModule(new StorageModule())
                                .settingsModule(new SettingsModule())
                                .build()
@@ -77,7 +77,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
     @Override
     public void showClearDataSuccessMessage() {
-        toastIt(R.string.toast_distances_deleted, getContext());
+        toastIt(R.string.toast_distances_deleted, requireContext());
     }
 
     @Override

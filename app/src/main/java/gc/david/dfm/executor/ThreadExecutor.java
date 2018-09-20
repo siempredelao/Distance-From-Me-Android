@@ -15,6 +15,8 @@
  */
 package gc.david.dfm.executor;
 
+import android.support.annotation.NonNull;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -72,7 +74,7 @@ public class ThreadExecutor implements Executor {
         private              int    counter     = 0;
 
         @Override
-        public Thread newThread(Runnable runnable) {
+        public Thread newThread(@NonNull Runnable runnable) {
             return new Thread(runnable, THREAD_NAME + counter++);
         }
     }
