@@ -38,13 +38,13 @@ repositories {
 }
 
 android {
-	compileSdkVersion 27
-	buildToolsVersion '27.0.3'
+	compileSdkVersion 28
+	buildToolsVersion '28.0.3'
 
 	defaultConfig {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 15
-		targetSdkVersion 27
+		targetSdkVersion 28
 		versionName '3.4'
 		versionCode 26
 		resConfigs "en", "ca", "de", "es", "fr", "it", "pt"
