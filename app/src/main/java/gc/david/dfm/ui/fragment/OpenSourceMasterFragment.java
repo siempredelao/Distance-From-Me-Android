@@ -50,9 +50,6 @@ import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper;
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel;
 import gc.david.dfm.ui.animation.DetailsTransition;
 
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
-
 /**
  * Created by david on 24.01.17.
  */
@@ -75,16 +72,15 @@ public class OpenSourceMasterFragment extends Fragment implements OpenSource.Vie
         public void onItemClick(final OpenSourceLibraryModel openSourceLibraryModel,
                                 final OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder viewHolder) {
             final OpenSourceDetailFragment openSourceDetailFragment = new OpenSourceDetailFragment();
-            if (SDK_INT >= LOLLIPOP) {
-                final Transition changeBoundsTransition = new DetailsTransition();
-                final Transition fadeTransition = new Fade();
 
-                OpenSourceMasterFragment.this.setExitTransition(fadeTransition);
+            final Transition changeBoundsTransition = new DetailsTransition();
+            final Transition fadeTransition = new Fade();
 
-                openSourceDetailFragment.setSharedElementEnterTransition(changeBoundsTransition);
-                openSourceDetailFragment.setEnterTransition(fadeTransition);
-                openSourceDetailFragment.setSharedElementReturnTransition(changeBoundsTransition);
-            }
+            OpenSourceMasterFragment.this.setExitTransition(fadeTransition);
+
+            openSourceDetailFragment.setSharedElementEnterTransition(changeBoundsTransition);
+            openSourceDetailFragment.setEnterTransition(fadeTransition);
+            openSourceDetailFragment.setSharedElementReturnTransition(changeBoundsTransition);
 
             final Bundle bundle = new Bundle();
             bundle.putParcelable(OpenSourceDetailFragment.LIBRARY_KEY, openSourceLibraryModel);

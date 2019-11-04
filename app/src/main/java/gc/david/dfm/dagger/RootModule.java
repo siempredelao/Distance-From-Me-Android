@@ -77,11 +77,7 @@ public class RootModule {
     @Singleton
     DeviceInfo getDeviceInfo(Context context, PackageManager packageManager, MemoryInfo memoryInfo) {
         final DeviceInfoBase deviceInfoBase = new DeviceInfoBase(context, packageManager);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            return deviceInfoBase;
-        } else {
-            return new DeviceInfoApi16Decorator(deviceInfoBase, memoryInfo);
-        }
+        return new DeviceInfoApi16Decorator(deviceInfoBase, memoryInfo);
     }
 
     @Provides

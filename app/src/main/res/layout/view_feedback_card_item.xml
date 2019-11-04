@@ -31,8 +31,8 @@
         android:background="?attr/selectableItemBackground"
         android:orientation="vertical"
         android:paddingBottom="@dimen/card_padding_bottom"
-        android:paddingLeft="@dimen/card_padding_sides"
-        android:paddingRight="@dimen/card_padding_sides"
+        android:paddingStart="@dimen/card_padding_sides"
+        android:paddingEnd="@dimen/card_padding_sides"
         android:paddingTop="@dimen/card_padding_top"
         tools:showIn="@layout/activity_help_and_feedback">
 
