@@ -16,7 +16,7 @@
 
 package gc.david.dfm.deviceinfo;
 
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import java.util.Locale;
 

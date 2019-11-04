@@ -18,7 +18,7 @@ package gc.david.dfm.deviceinfo;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;

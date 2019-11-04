@@ -18,7 +18,7 @@ package gc.david.dfm.dagger;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import javax.inject.Singleton;
 

@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.maps.model.LatLng;
 

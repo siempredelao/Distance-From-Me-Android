@@ -17,7 +17,7 @@
 package gc.david.dfm.address.data;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;

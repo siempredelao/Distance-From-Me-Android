@@ -16,7 +16,7 @@
 
 package gc.david.dfm.address.domain;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
 
-import static android.support.annotation.VisibleForTesting.PRIVATE;
+import static androidx.annotation.VisibleForTesting.PRIVATE;
 
 /**
  * Created by david on 13.01.17.

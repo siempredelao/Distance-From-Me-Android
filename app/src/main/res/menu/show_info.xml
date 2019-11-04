@@ -22,7 +22,7 @@
         android:icon="@drawable/ic_share_white_24dp"
         android:orderInCategory="1"
         android:title="@string/action_bar_item_social_share_title"
-        actual:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        actual:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"
         actual:showAsAction="ifRoom"/>
     <item
         android:id="@+id/refresh"

@@ -17,16 +17,12 @@
 package gc.david.dfm.deviceinfo;
 
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import gc.david.dfm.deviceinfo.DeviceInfo;
-import gc.david.dfm.deviceinfo.DeviceInfoApi16Decorator;
-import gc.david.dfm.deviceinfo.MemoryInfo;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
