@@ -16,11 +16,14 @@
 
 package gc.david.dfm.elevation.data;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.Locale;
 
+import gc.david.dfm.R;
 import gc.david.dfm.elevation.data.model.ElevationEntity;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,13 +36,21 @@ public class ElevationRemoteDataSource implements ElevationRepository {
 
     private final OkHttpClient client = new OkHttpClient();
     private final Gson         gson   = new Gson();
+    private final String geocodeApiKey;
+
+    public ElevationRemoteDataSource(final Context context) {
+        this.geocodeApiKey = context.getResources().getString(R.string.maps_geocode_api_key);
+    }
 
     @Override
     public void getElevation(final String coordinatesPath, final int maxSamples, final Callback callback) {
-        final Request request = new Request.Builder().url(String.format(Locale.getDefault(),
-                                                                        "https://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d",
-                                                                        coordinatesPath,
-                                                                        maxSamples))
+        final String url = String.format(
+                Locale.getDefault(),
+                "https://maps.googleapis.com/maps/api/elevation/json?path=%s&samples=%d&key=%s",
+                coordinatesPath,
+                maxSamples,
+                geocodeApiKey);
+        final Request request = new Request.Builder().url(url)
                                                      .header("content-type", "application/json")
                                                      .build();
         try {

@@ -54,8 +54,8 @@ public class MainModule {
 
     @Provides
     @Singleton
-    ElevationRepository provideElevationRepository() {
-        return new ElevationRemoteDataSource();
+    ElevationRepository provideElevationRepository(Context context) {
+        return new ElevationRemoteDataSource(context);
     }
 
     @Provides
