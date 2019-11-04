@@ -28,6 +28,9 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 repositories {
 	maven { url 'https://maven.fabric.io/public' }
@@ -117,13 +120,13 @@ dependencies {
 	implementation("$butterKnifeGroup:butterknife:$butterKnifeVersion") {
 		exclude group: "com.android.support", module: "support-annotations"
 	}
-	annotationProcessor "$butterKnifeGroup:butterknife-compiler:$butterKnifeVersion"
+	kapt "$butterKnifeGroup:butterknife-compiler:$butterKnifeVersion"
 	implementation "org.greenrobot:greendao:$greenDaoVersion"
 	implementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar") {
 		transitive = true
 	}
 	implementation "$daggerGroup:dagger:$daggerVersion"
-	annotationProcessor "$daggerGroup:dagger-compiler:$daggerVersion"
+	kapt "$daggerGroup:dagger-compiler:$daggerVersion"
 	implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
 	implementation "com.google.code.gson:gson:$gsonVersion"
 	implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
