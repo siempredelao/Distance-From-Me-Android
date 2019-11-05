@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.address.domain.model
 
-import com.google.gson.annotations.SerializedName;
-
-public class Northeast {
-
-    @SerializedName("lat")
-    private double latitude;
-    @SerializedName("lng")
-    private double longitude;
-
-}
+/**
+ * Created by david on 13.01.17.
+ */
+class AddressCollection(val addressList: List<Address>)

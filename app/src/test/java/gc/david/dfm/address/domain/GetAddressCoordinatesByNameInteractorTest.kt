@@ -20,11 +20,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.address.data.AddressRepository
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
-import gc.david.dfm.address.data.model.AddressCollectionEntity
-import gc.david.dfm.address.data.model.Geometry
-import gc.david.dfm.address.data.model.Location
-import gc.david.dfm.address.data.model.Result
-import gc.david.dfm.address.domain.GetAddressAbstractInteractor.*
+import gc.david.dfm.address.data.model.*
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.executor.Executor
@@ -70,8 +66,7 @@ class GetAddressCoordinatesByNameInteractorTest {
     @Test
     fun `loads empty address when address collection model is correct`() {
         val results = ArrayList<Result>()
-        val addressCollectionEntity =
-                AddressCollectionEntity.Builder().withStatus(STATUS_ZERO_RESULTS).withResults(results).build()
+        val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.ZERO_RESULTS)
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
         }.whenever(repository).getCoordinatesByName(anyString(), any())
@@ -88,12 +83,11 @@ class GetAddressCoordinatesByNameInteractorTest {
     fun `loads non empty address when address collection model is correct`() {
         val latitude = 1.0
         val longitude = 1.0
-        val location = Location.Builder().withLatitude(latitude).withLongitude(longitude).build()
-        val geometry = Geometry.Builder().withLocation(location).build()
+        val location = Location(latitude, longitude)
+        val geometry = Geometry(location)
         val results = ArrayList<Result>()
-        results.add(Result.Builder().withFormattedAddress(LOCATION_NAME).withGeometry(geometry).build())
-        val addressCollectionEntity =
-                AddressCollectionEntity.Builder().withStatus(STATUS_OK).withResults(results).build()
+        results.add(Result(LOCATION_NAME, geometry))
+        val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
         }.whenever(repository).getCoordinatesByName(anyString(), any())
@@ -110,15 +104,14 @@ class GetAddressCoordinatesByNameInteractorTest {
 
     @Test
     fun `returns error callback when address collection model is not correct`() {
-        val addressCollectionEntity =
-                AddressCollectionEntity.Builder().withStatus(STATUS_INVALID_REQUEST).build()
+        val addressCollectionEntity = AddressCollectionEntity(status = GeocodingStatus.INVALID_REQUEST)
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
         }.whenever(repository).getCoordinatesByName(anyString(), any())
 
         getAddressInteractor.execute(LOCATION_NAME, anyInt(), callback)
 
-        verify(callback).onError(STATUS_INVALID_REQUEST)
+        verify(callback).onError(GeocodingStatus.INVALID_REQUEST.toString())
     }
 
     @Test

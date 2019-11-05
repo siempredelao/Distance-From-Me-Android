@@ -14,28 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain.model;
+package gc.david.dfm.address.data.model
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.annotations.SerializedName
 
-/**
- * Created by david on 13.01.17.
- */
-public class Address {
-
-    private final String formattedAddress;
-    private final LatLng coordinates;
-
-    public Address(final String formattedAddress, final LatLng coordinates) {
-        this.formattedAddress = formattedAddress;
-        this.coordinates = coordinates;
-    }
-
-    public String getFormattedAddress() {
-        return formattedAddress;
-    }
-
-    public LatLng getCoordinates() {
-        return coordinates;
-    }
-}
+class Result(
+        @SerializedName("formatted_address") val formattedAddress: String,
+        val geometry: Geometry)

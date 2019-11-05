@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.address.data.model
 
-public class Viewport {
+import com.google.gson.annotations.SerializedName
 
-    private Northeast northeast;
-    private Southwest southwest;
-
-}
+class Location(
+        @SerializedName("lat") val latitude: Double,
+        @SerializedName("lng") val longitude: Double)

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.address.data.model
 
-import com.google.gson.annotations.SerializedName;
+class AddressCollectionEntity(val results: List<Result> = emptyList(), val status: GeocodingStatus)
 
-public class Southwest {
-
-    @SerializedName("lat")
-    private double latitude;
-    @SerializedName("lng")
-    private double longitude;
-
+enum class GeocodingStatus {
+    OK,
+    ZERO_RESULTS,
+    INVALID_REQUEST,
+    OVER_QUERY_LIMIT,
+    REQUEST_DENIED,
+    UNKNOWN_ERROR
 }

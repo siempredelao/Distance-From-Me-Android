@@ -16,38 +16,22 @@
 
 package gc.david.dfm.address.domain;
 
-import androidx.annotation.VisibleForTesting;
-
 import java.util.List;
 
 import gc.david.dfm.address.data.AddressRepository;
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper;
 import gc.david.dfm.address.data.model.AddressCollectionEntity;
+import gc.david.dfm.address.data.model.GeocodingStatus;
 import gc.david.dfm.address.domain.model.Address;
 import gc.david.dfm.address.domain.model.AddressCollection;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
 import gc.david.dfm.executor.MainThread;
 
-import static androidx.annotation.VisibleForTesting.PRIVATE;
-
 /**
  * Created by david on 13.01.17.
  */
 abstract class GetAddressAbstractInteractor<T> implements Interactor, GetAddressUseCase<T> {
-
-    @VisibleForTesting()
-    static final String STATUS_OK               = "OK";
-    @VisibleForTesting()
-    static final String STATUS_ZERO_RESULTS     = "ZERO_RESULTS";
-    @VisibleForTesting()
-    static final String STATUS_INVALID_REQUEST  = "INVALID_REQUEST";
-    @VisibleForTesting()
-    static final String STATUS_OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
-    @VisibleForTesting()
-    static final String STATUS_REQUEST_DENIED   = "REQUEST_DENIED";
-    @VisibleForTesting()
-    static final String STATUS_UNKNOWN_ERROR    = "UNKNOWN_ERROR";
 
     private final   Executor                          executor;
     private final   MainThread                        mainThread;
@@ -84,8 +68,8 @@ abstract class GetAddressAbstractInteractor<T> implements Interactor, GetAddress
         repositoryCall(t, new AddressRepository.Callback() {
             @Override
             public void onSuccess(final AddressCollectionEntity addressCollectionEntity) {
-                if (STATUS_OK.equals(addressCollectionEntity.getStatus()) ||
-                    STATUS_ZERO_RESULTS.equals(addressCollectionEntity.getStatus())) {
+                if (GeocodingStatus.OK.equals(addressCollectionEntity.getStatus()) ||
+                    GeocodingStatus.ZERO_RESULTS.equals(addressCollectionEntity.getStatus())) {
                     final AddressCollection addressCollection = addressCollectionEntityDataMapper.transform(
                             addressCollectionEntity);
                     final AddressCollection limitedAddressCollection = limitAddress(addressCollection);
@@ -96,7 +80,7 @@ abstract class GetAddressAbstractInteractor<T> implements Interactor, GetAddress
                         }
                     });
                 } else {
-                    notifyError(addressCollectionEntity.getStatus());
+                    notifyError(addressCollectionEntity.getStatus().toString());
                 }
             }
 
