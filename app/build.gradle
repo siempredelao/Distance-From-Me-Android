@@ -37,6 +37,11 @@ repositories {
 	mavenCentral()
 }
 
+// Needed to allow Parcelize
+androidExtensions {
+	experimental = true
+}
+
 android {
 	compileSdkVersion 28
 	buildToolsVersion '28.0.3'
