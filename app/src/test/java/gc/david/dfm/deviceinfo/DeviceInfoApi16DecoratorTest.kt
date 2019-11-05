@@ -50,7 +50,7 @@ class DeviceInfoApi16DecoratorTest {
     fun `decorator is called`() {
         deviceInfoApi16Decorator.deviceInfo
 
-        verify<DeviceInfo>(decoratedDeviceInfo).deviceInfo
+        verify(decoratedDeviceInfo).deviceInfo
     }
 
     @Test
@@ -65,8 +65,8 @@ class DeviceInfoApi16DecoratorTest {
         val actualDeviceInfo = deviceInfoApi16Decorator.deviceInfo
 
         val fakeMemoryInfo = DeviceInfoApi16Decorator.MemoryPrinter.print(availableMemInBytes, freeMemInBytes)
-        val expectedDeviceInfo = DeviceInfoApi16Decorator.DeviceInfoPrinter.print(fakeDeviceInfo,
-                fakeMemoryInfo)
+        val expectedDeviceInfo =
+                DeviceInfoApi16Decorator.DeviceInfoPrinter.print(fakeDeviceInfo, fakeMemoryInfo)
         assertEquals(expectedDeviceInfo, actualDeviceInfo)
     }
 }

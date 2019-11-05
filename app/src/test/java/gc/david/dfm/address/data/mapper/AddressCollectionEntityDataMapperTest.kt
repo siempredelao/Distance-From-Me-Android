@@ -39,13 +39,11 @@ class AddressCollectionEntityDataMapperTest {
         val geometry = Geometry.Builder().withLocation(location).build()
         val result = Result.Builder().withFormattedAddress(fakeAddress).withGeometry(geometry).build()
         val results = mutableListOf(result)
-        val addressCollectionEntity = AddressCollectionEntity.Builder().withResults(results)
-                .build()
+        val addressCollectionEntity = AddressCollectionEntity.Builder().withResults(results).build()
 
-        val addressCollection = AddressCollectionEntityDataMapper().transform(
-                addressCollectionEntity)
+        val addressCollection = AddressCollectionEntityDataMapper().transform(addressCollectionEntity)
 
-        assertEquals(1, addressCollection.addressList.size.toLong())
+        assertEquals(1, addressCollection.addressList.size)
         val address = addressCollection.addressList[0]
         assertThat(address.coordinates.latitude, `is`(latitude))
         assertThat(address.coordinates.longitude, `is`(longitude))

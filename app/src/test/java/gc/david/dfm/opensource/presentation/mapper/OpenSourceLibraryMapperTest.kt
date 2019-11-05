@@ -16,14 +16,9 @@
 
 package gc.david.dfm.opensource.presentation.mapper
 
-import org.junit.Test
-
-import java.util.ArrayList
-
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
-
 import org.junit.Assert.assertEquals
+import org.junit.Test
 
 /**
  * Created by david on 26.01.17.
@@ -47,13 +42,12 @@ class OpenSourceLibraryMapperTest {
                 libraryYear,
                 libraryDescription)
 
-        val openSourceLibraryEntityList = ArrayList<OpenSourceLibraryEntity>()
-        openSourceLibraryEntityList.add(openSourceLibraryEntity)
+        val openSourceLibraryEntityList = mutableListOf(openSourceLibraryEntity)
 
-        val openSourceLibraryModelList = OpenSourceLibraryMapper().transform(
-                openSourceLibraryEntityList)
+        val openSourceLibraryModelList =
+                OpenSourceLibraryMapper().transform(openSourceLibraryEntityList)
 
-        assertEquals(1, openSourceLibraryModelList.size.toLong())
+        assertEquals(1, openSourceLibraryModelList.size)
         val openSourceLibraryModel = openSourceLibraryModelList[0]
         assertEquals(libraryName, openSourceLibraryModel.name)
         assertEquals(libraryAuthor, openSourceLibraryModel.author)
@@ -63,5 +57,4 @@ class OpenSourceLibraryMapperTest {
         assertEquals(libraryYear, openSourceLibraryModel.year)
         assertEquals(libraryDescription, openSourceLibraryModel.description)
     }
-
 }

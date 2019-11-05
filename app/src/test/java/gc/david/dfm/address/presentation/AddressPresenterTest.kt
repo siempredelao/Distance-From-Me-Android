@@ -18,27 +18,17 @@ package gc.david.dfm.address.presentation
 
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.whenever
-
-import org.junit.Before
-import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
-
-import java.util.ArrayList
-
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
-
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.eq
+import org.junit.Before
+import org.junit.Test
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import java.util.*
 
 /**
  * Created by david on 15.01.17.
@@ -56,21 +46,6 @@ class AddressPresenterTest {
 
     private lateinit var addressPresenter: AddressPresenter
 
-    private val fakeCoordinates: LatLng
-        get() = LatLng(0.0, 0.0)
-
-    private val fakeLocationName: String
-        get() = "fake location name"
-
-    private val fakeAddress: gc.david.dfm.address.domain.model.Address
-        get() = gc.david.dfm.address.domain.model.Address(fakeLocationName, fakeCoordinates)
-
-    private val fakeErrorMessage: String
-        get() = "fake errorMessage"
-
-    private val emptyAddressCollection: AddressCollection
-        get() = AddressCollection(ArrayList())
-
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
@@ -84,7 +59,7 @@ class AddressPresenterTest {
     @Test
     fun `shows connection problems dialog when no connection available in position by name`() {
         whenever(connectionManager.isOnline).thenReturn(false)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
 
         addressPresenter.searchPositionByName(locationName)
 
@@ -94,7 +69,7 @@ class AddressPresenterTest {
     @Test
     fun `shows progress dialog when connection available in position by name`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
 
         addressPresenter.searchPositionByName(locationName)
 
@@ -104,18 +79,17 @@ class AddressPresenterTest {
     @Test
     fun `executes coordinates by name use case when connection available`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
 
         addressPresenter.searchPositionByName(locationName)
 
-        verify(getAddressCoordinatesByNameUseCase)
-                .execute(any(), anyInt(), any(GetAddressUseCase.Callback::class.java))
+        verify(getAddressCoordinatesByNameUseCase).execute(any(), anyInt(), any())
     }
 
     @Test
     fun `hides progress dialog when position by name use case succeeds`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
         val addressCollection = emptyAddressCollection
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
@@ -127,7 +101,7 @@ class AddressPresenterTest {
     @Test
     fun `shows no matches when position by name use case return zero results`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
         val addressCollection = emptyAddressCollection
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
@@ -139,10 +113,9 @@ class AddressPresenterTest {
     @Test
     fun `shows position by name when use case return one result`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
         val address = fakeAddress
-        val addressList = ArrayList<gc.david.dfm.address.domain.model.Address>()
-        addressList.add(address)
+        val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
@@ -154,11 +127,9 @@ class AddressPresenterTest {
     @Test
     fun `shows address selection dialog when position by name use case return several results`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
+        val locationName = LOCATION_NAME
         val address = fakeAddress
-        val addressList = ArrayList<gc.david.dfm.address.domain.model.Address>()
-        addressList.add(address)
-        addressList.add(address)
+        val addressList = mutableListOf(address, address)
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
@@ -170,8 +141,8 @@ class AddressPresenterTest {
     @Test
     fun `hides progress dialog when position by name use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
-        val errorMessage = fakeErrorMessage
+        val locationName = LOCATION_NAME
+        val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
 
         addressPresenter.searchPositionByName(locationName)
@@ -182,8 +153,8 @@ class AddressPresenterTest {
     @Test
     fun `shows error when position by name use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
-        val locationName = fakeLocationName
-        val errorMessage = fakeErrorMessage
+        val locationName = LOCATION_NAME
+        val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
 
         addressPresenter.searchPositionByName(locationName)
@@ -227,8 +198,7 @@ class AddressPresenterTest {
 
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        verify(getAddressNameByCoordinatesUseCase)
-                .execute(any(), anyInt(), any(GetAddressUseCase.Callback::class.java))
+        verify(getAddressNameByCoordinatesUseCase).execute(any(), anyInt(), any())
     }
 
     @Test
@@ -260,8 +230,7 @@ class AddressPresenterTest {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
         val address = fakeAddress
-        val addressList = ArrayList<gc.david.dfm.address.domain.model.Address>()
-        addressList.add(address)
+        val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
 
@@ -274,7 +243,7 @@ class AddressPresenterTest {
     fun `hides progress dialog when position by coordinates use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
-        val errorMessage = fakeErrorMessage
+        val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
 
         addressPresenter.searchPositionByCoordinates(coordinates)
@@ -286,7 +255,7 @@ class AddressPresenterTest {
     fun `shows error when position by coordinates use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
-        val errorMessage = fakeErrorMessage
+        val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
 
         addressPresenter.searchPositionByCoordinates(coordinates)
@@ -298,31 +267,37 @@ class AddressPresenterTest {
                                                                             addressCollection: AddressCollection) {
         doAnswer {
                 (it.arguments[2] as GetAddressUseCase.Callback).onAddressLoaded(addressCollection)
-        }.whenever(getAddressCoordinatesByNameUseCase)
-                .execute(eq(locationName), anyInt(), any(GetAddressUseCase.Callback::class.java))
+        }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
     }
 
     private fun executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName: String,
                                                                     errorMessage: String) {
         doAnswer {
                 (it.arguments[2] as GetAddressUseCase.Callback).onError(errorMessage)
-        }.whenever(getAddressCoordinatesByNameUseCase)
-                .execute(eq(locationName), anyInt(), any(GetAddressUseCase.Callback::class.java))
+        }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
     }
 
     private fun executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
                                                                             addressCollection: AddressCollection) {
         doAnswer {
                 (it.arguments[2] as GetAddressUseCase.Callback).onAddressLoaded(addressCollection)
-        }.whenever(getAddressNameByCoordinatesUseCase)
-                .execute(eq(coordinates), anyInt(), any(GetAddressUseCase.Callback::class.java))
+        }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
     }
 
     private fun executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
                                                                     errorMessage: String) {
         doAnswer {
                 (it.arguments[2] as GetAddressUseCase.Callback).onError(errorMessage)
-        }.whenever(getAddressNameByCoordinatesUseCase)
-                .execute(eq(coordinates), anyInt(), any(GetAddressUseCase.Callback::class.java))
+        }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
+    }
+
+    companion object {
+
+        private const val LOCATION_NAME = "fake location name"
+        private const val ERROR_MESSAGE = "fake errorMessage"
+
+        private val fakeCoordinates = LatLng(0.0, 0.0)
+        private val fakeAddress = gc.david.dfm.address.domain.model.Address(LOCATION_NAME, fakeCoordinates)
+        private val emptyAddressCollection = AddressCollection(ArrayList())
     }
 }

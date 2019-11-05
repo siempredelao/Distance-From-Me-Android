@@ -29,7 +29,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
-import java.util.*
 
 /**
  * Created by david on 26.01.17.
@@ -53,21 +52,17 @@ class OpenSourceInteractorTest {
 
         openSourceInteractor = OpenSourceInteractor(executor, mainThread, repository)
 
-        doAnswer {
-                (it.arguments[0] as Interactor).run()
-        }.whenever(executor).run(any(Interactor::class.java))
-        doAnswer {
-                (it.arguments[0] as Runnable).run()
-        }.whenever(mainThread).post(any(Runnable::class.java))
+        doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
+        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
     }
 
     @Test
     fun `returns open source library list on success`() {
-        val openSourceLibraryEntityList = ArrayList<OpenSourceLibraryEntity>()
+        val openSourceLibraryEntityList = emptyList<OpenSourceLibraryEntity>()
 
         doAnswer {
                 (it.arguments[0] as OpenSourceRepository.Callback).onSuccess(openSourceLibraryEntityList)
-        }.whenever(repository).getOpenSourceLibraries(any(OpenSourceRepository.Callback::class.java))
+        }.whenever(repository).getOpenSourceLibraries(any())
 
         openSourceInteractor.execute(callback)
 
@@ -80,7 +75,7 @@ class OpenSourceInteractorTest {
 
         doAnswer {
                 (it.arguments[0] as OpenSourceRepository.Callback).onError(errorMessage)
-        }.whenever(repository).getOpenSourceLibraries(any(OpenSourceRepository.Callback::class.java))
+        }.whenever(repository).getOpenSourceLibraries(any())
 
         openSourceInteractor.execute(callback)
 

@@ -18,27 +18,20 @@ package gc.david.dfm.elevation.presentation
 
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.whenever
-
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
-
-import java.util.ArrayList
-
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.ElevationUseCase
-
+import org.junit.Before
+import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.eq
+import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import java.util.*
 
 /**
  * Created by david on 11.01.17.
@@ -68,7 +61,7 @@ class ElevationPresenterTest {
 
     @Test
     fun `hides chart when show elevation chart preference is false`() {
-        val dummyList = ArrayList<LatLng>()
+        val dummyList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(false)
 
         elevationPresenter.buildChart(dummyList)
@@ -78,7 +71,7 @@ class ElevationPresenterTest {
 
     @Test
     fun `hides chart when no connection available`() {
-        val dummyList = ArrayList<LatLng>()
+        val dummyList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(false)
 
@@ -89,24 +82,24 @@ class ElevationPresenterTest {
 
     @Test
     fun `executes use case when preference is activated and connection available`() {
-        val coordinateList = ArrayList<LatLng>()
+        val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
 
         elevationPresenter.buildChart(coordinateList)
 
-        verify<ElevationUseCase>(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
+        verify(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
     }
 
     @Test
     fun `builds chart when use case returns data`() {
-        val coordinateList = ArrayList<LatLng>()
+        val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
-        val elevation = gc.david.dfm.elevation.domain.model.Elevation(ArrayList())
+        val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
+        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
@@ -115,14 +108,14 @@ class ElevationPresenterTest {
 
     @Test
     fun `does not build chart when use case is stopped`() {
-        val coordinateList = ArrayList<LatLng>()
+        val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(ArrayList())
         doAnswer {
                 elevationPresenter.onReset() // reset called before thread finishes
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
+        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
@@ -131,13 +124,13 @@ class ElevationPresenterTest {
 
     @Test
     fun `shows error when use case returns error`() {
-        val coordinateList = ArrayList<LatLng>()
+        val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
         val errorMessage = "fake error message"
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onError(errorMessage)
-        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
+        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
