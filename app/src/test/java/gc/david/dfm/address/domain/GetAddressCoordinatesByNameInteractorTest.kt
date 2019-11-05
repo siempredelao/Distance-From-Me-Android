@@ -63,12 +63,8 @@ class GetAddressCoordinatesByNameInteractorTest {
 
         getAddressInteractor = GetAddressCoordinatesByNameInteractor(executor, mainThread, dataMapper, repository)
 
-        doAnswer  {
-                (it.arguments[0] as Interactor).run()
-        }.whenever(executor).run(any())
-        doAnswer {
-                (it.arguments[0] as Runnable).run()
-        }.whenever(mainThread).post(any())
+        doAnswer  { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
+        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
     }
 
     @Test
