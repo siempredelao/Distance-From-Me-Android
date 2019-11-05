@@ -88,7 +88,7 @@ class ElevationPresenterTest {
 
         elevationPresenter.buildChart(coordinateList)
 
-        verify(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
+        verify(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
     }
 
     @Test
@@ -99,7 +99,7 @@ class ElevationPresenterTest {
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
+        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
@@ -115,7 +115,7 @@ class ElevationPresenterTest {
         doAnswer {
                 elevationPresenter.onReset() // reset called before thread finishes
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
+        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
@@ -130,7 +130,7 @@ class ElevationPresenterTest {
         val errorMessage = "fake error message"
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onError(errorMessage)
-        }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any())
+        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
