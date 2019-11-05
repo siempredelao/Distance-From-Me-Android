@@ -65,20 +65,16 @@ class ElevationInteractorTest {
     }
 
     @Test
-    fun showsErrorWhenCoordinateListIsEmpty() {
-        // Given
+    fun `shows error when coordinate list is empty`() {
         val coordinateList = ArrayList<LatLng>()
 
-        // When
         elevationInteractor.execute(coordinateList, anyInt(), callback)
 
-        // Then
         verify(callback).onError("Empty coordinates list")
     }
 
     @Test
-    fun returnsCallbackWhenElevationModelIsCorrect() {
-        // Given
+    fun `returns callback when elevation model is correct`() {
         val coordinateList = ArrayList<LatLng>()
         coordinateList.add(LatLng(0.0, 0.0))
         val results = ArrayList<Result>()
@@ -95,16 +91,13 @@ class ElevationInteractorTest {
         val elevation1 = Elevation(elevationResults)
         whenever(elevationEntityDataMapper.transform(elevationEntity)).thenReturn(elevation1)
 
-        // When
         elevationInteractor.execute(coordinateList, anyInt(), callback)
 
-        // Then
         verify(callback).onElevationLoaded(any(Elevation::class.java))
     }
 
     @Test
-    fun showsErrorWhenElevationModelIsNotCorrect() {
-        // Given
+    fun `shows error when elevation model is not correct`() {
         val coordinateList = ArrayList<LatLng>()
         coordinateList.add(LatLng(0.0, 0.0))
         val errorMessage = "fake error message"
@@ -112,41 +105,33 @@ class ElevationInteractorTest {
                 (it.arguments[2] as ElevationRepository.Callback).onError(errorMessage)
         }.whenever(repository).getElevation(anyString(), anyInt(), any(ElevationRepository.Callback::class.java))
 
-        // When
         elevationInteractor.execute(coordinateList, anyInt(), callback)
 
-        // Then
         verify(callback).onError(errorMessage)
     }
 
     @Test
-    fun buildsCoordinatesPathForListWithOneCoordinate() {
-        // Given
+    fun `builds coordinates path for list with one coordinate`() {
         val coordinateList = ArrayList<LatLng>()
         coordinateList.add(LatLng(0.0, 0.0))
         val coordinatesPath = "0.0,0.0"
         val maxSamples = 1
 
-        // When
         elevationInteractor.execute(coordinateList, maxSamples, callback)
 
-        // Then
         verify(repository).getElevation(eq(coordinatesPath), eq(maxSamples), any(ElevationRepository.Callback::class.java))
     }
 
     @Test
-    fun buildsCoordinatesPathForListWithMoreThanOneCoordinate() {
-        // Given
+    fun `builds coordinates path for list with more than one coordinate`() {
         val coordinateList = ArrayList<LatLng>()
         coordinateList.add(LatLng(0.0, 0.0))
         coordinateList.add(LatLng(1.0, 1.0))
         val coordinatesPath = "0.0,0.0|1.0,1.0"
         val maxSamples = 1
 
-        // When
         elevationInteractor.execute(coordinateList, maxSamples, callback)
 
-        // Then
         verify(repository).getElevation(eq(coordinatesPath), eq(maxSamples), any(ElevationRepository.Callback::class.java))
     }
 }

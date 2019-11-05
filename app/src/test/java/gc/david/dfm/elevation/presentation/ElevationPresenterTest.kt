@@ -67,49 +67,39 @@ class ElevationPresenterTest {
     }
 
     @Test
-    fun hidesChartWhenShowElevationChartPreferenceIsFalse() {
-        // Given
+    fun `hides chart when show elevation chart preference is false`() {
         val dummyList = ArrayList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(false)
 
-        // When
         elevationPresenter.buildChart(dummyList)
 
-        // Then
         verify(elevationView).hideChart()
     }
 
     @Test
-    fun hidesChartWhenNoConnectionAvailable() {
-        // Given
+    fun `hides chart when no connection available`() {
         val dummyList = ArrayList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(false)
 
-        // When
         elevationPresenter.buildChart(dummyList)
 
-        // Then
         verify(elevationView).hideChart()
     }
 
     @Test
-    fun executesUseCaseWhenPreferenceIsActivatedAndConnectionAvailable() {
-        // Given
+    fun `executes use case when preference is activated and connection available`() {
         val coordinateList = ArrayList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
 
-        // When
         elevationPresenter.buildChart(coordinateList)
 
-        // Then
         verify<ElevationUseCase>(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
     }
 
     @Test
-    fun buildsChartWhenUseCaseReturnsData() {
-        // Given
+    fun `builds chart when use case returns data`() {
         val coordinateList = ArrayList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
@@ -118,16 +108,13 @@ class ElevationPresenterTest {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
         }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
 
-        // When
         elevationPresenter.buildChart(coordinateList)
 
-        // Then
         verify(elevationView).buildChart(elevation.results)
     }
 
     @Test
-    fun doesNotBuildChartWhenUseCaseIsStopped() {
-        // Given
+    fun `does not build chart when use case is stopped`() {
         val coordinateList = ArrayList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
@@ -137,16 +124,13 @@ class ElevationPresenterTest {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
         }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
 
-        // When
         elevationPresenter.buildChart(coordinateList)
 
-        // Then
         verify(elevationView, never()).buildChart(elevation.results)
     }
 
     @Test
-    fun showsErrorWhenUseCaseReturnsError() {
-        // Given
+    fun `shows error when use case returns error`() {
         val coordinateList = ArrayList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline).thenReturn(true)
@@ -155,34 +139,26 @@ class ElevationPresenterTest {
                 (it.arguments[2] as ElevationUseCase.Callback).onError(errorMessage)
         }.whenever(elevationUseCase).execute(eq<List<LatLng>>(coordinateList), anyInt(), any(ElevationUseCase.Callback::class.java))
 
-        // When
         elevationPresenter.buildChart(coordinateList)
 
-        // Then
         verify(elevationView).logError(errorMessage)
     }
 
     @Test
-    fun doesNotShowChartWhenMinimiseButtonIsShown() {
-        // Given
+    fun `does not show chart when minimise button is shown`() {
         whenever(elevationView.isMinimiseButtonShown).thenReturn(true)
 
-        // When
         elevationPresenter.onChartBuilt()
 
-        // Then
         verify(elevationView, never()).showChart()
     }
 
     @Test
-    fun showsChartWhenMinimiseButtonIsNotShown() {
-        // Given
+    fun `shows chart when minimise button is not shown`() {
         whenever(elevationView.isMinimiseButtonShown).thenReturn(false)
 
-        // When
         elevationPresenter.onChartBuilt()
 
-        // Then
         verify(elevationView).showChart()
     }
 }

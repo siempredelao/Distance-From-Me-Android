@@ -47,17 +47,14 @@ class DeviceInfoApi16DecoratorTest {
     }
 
     @Test
-    fun decoratorIsCalled() {
-        // When
+    fun `decorator is called`() {
         deviceInfoApi16Decorator.deviceInfo
 
-        // Then
         verify<DeviceInfo>(decoratedDeviceInfo).deviceInfo
     }
 
     @Test
-    fun returnsDeviceInfoWithMemoryInfo() {
-        // Given
+    fun `returns device info with memory info`() {
         val fakeDeviceInfo = "fake device info"
         val availableMemInBytes = 2L
         val freeMemInBytes = 1L
@@ -65,10 +62,8 @@ class DeviceInfoApi16DecoratorTest {
         whenever(memoryInfo.availableMemory).thenReturn(availableMemInBytes)
         whenever(memoryInfo.freeMemory).thenReturn(freeMemInBytes)
 
-        // When
         val actualDeviceInfo = deviceInfoApi16Decorator.deviceInfo
 
-        // Then
         val fakeMemoryInfo = DeviceInfoApi16Decorator.MemoryPrinter.print(availableMemInBytes, freeMemInBytes)
         val expectedDeviceInfo = DeviceInfoApi16Decorator.DeviceInfoPrinter.print(fakeDeviceInfo,
                 fakeMemoryInfo)

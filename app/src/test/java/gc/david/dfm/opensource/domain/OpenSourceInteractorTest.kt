@@ -62,34 +62,28 @@ class OpenSourceInteractorTest {
     }
 
     @Test
-    fun returnsOpenSourceLibraryListOnSuccess() {
-        // Given
+    fun `returns open source library list on success`() {
         val openSourceLibraryEntityList = ArrayList<OpenSourceLibraryEntity>()
 
         doAnswer {
                 (it.arguments[0] as OpenSourceRepository.Callback).onSuccess(openSourceLibraryEntityList)
         }.whenever(repository).getOpenSourceLibraries(any(OpenSourceRepository.Callback::class.java))
 
-        // When
         openSourceInteractor.execute(callback)
 
-        // Then
         verify(callback).onOpenSourceLibrariesLoaded(openSourceLibraryEntityList)
     }
 
     @Test
-    fun returnsErrorMessageOnFailure() {
-        // Given
+    fun `returns error message on failure`() {
         val errorMessage = "fake error message"
 
         doAnswer {
                 (it.arguments[0] as OpenSourceRepository.Callback).onError(errorMessage)
         }.whenever(repository).getOpenSourceLibraries(any(OpenSourceRepository.Callback::class.java))
 
-        // When
         openSourceInteractor.execute(callback)
 
-        // Then
         verify(callback).onError(errorMessage)
     }
 }

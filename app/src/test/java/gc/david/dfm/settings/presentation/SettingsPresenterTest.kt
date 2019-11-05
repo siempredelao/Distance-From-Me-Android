@@ -46,30 +46,24 @@ class SettingsPresenterTest {
     }
 
     @Test
-    fun showsSuccessMessageWhenUseCaseSucceeds() {
-        // Given
+    fun `shows success message when use case succeeds`() {
         doAnswer {
                 (it.arguments[0] as ClearDistancesUseCase.Callback).onClear()
         }.whenever(clearDistancesUseCase).execute(any(ClearDistancesUseCase.Callback::class.java))
 
-        // When
         settingsPresenter.onClearData()
 
-        // Then
         verify<Settings.View>(settingsView).showClearDataSuccessMessage()
     }
 
     @Test
-    fun showsErrorMessageWhenUseCaseFails() {
-        // Given
+    fun `shows error message when use case fails`() {
         doAnswer {
                 (it.arguments[0] as ClearDistancesUseCase.Callback).onError()
         }.whenever(clearDistancesUseCase).execute(any(ClearDistancesUseCase.Callback::class.java))
 
-        // When
         settingsPresenter.onClearData()
 
-        // Then
         verify(settingsView).showClearDataErrorMessage()
     }
 }

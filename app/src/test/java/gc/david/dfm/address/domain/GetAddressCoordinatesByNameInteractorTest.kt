@@ -76,37 +76,33 @@ class GetAddressCoordinatesByNameInteractorTest {
 
         doAnswer  {
                 (it.arguments[0] as Interactor).run()
-        }.whenever(executor).run(any(Interactor::class.java))
+        }.whenever(executor).run(any())
         doAnswer {
                 (it.arguments[0] as Runnable).run()
-        }.whenever(mainThread).post(any(Runnable::class.java))
+        }.whenever(mainThread).post(any())
     }
 
     @Test
-    fun loadsEmptyAddressWhenAddressCollectionModelIsCorrect() {
-        // Given
+    fun `loads empty address when address collection model is correct`() {
         val fakeLocationName = "Berlin DE"
         val results = ArrayList<Result>()
         val addressCollectionEntity = AddressCollectionEntity.Builder().withStatus(
                 STATUS_ZERO_RESULTS).withResults(results).build()
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
-        }.whenever(repository).getCoordinatesByName(anyString(), any(AddressRepository.Callback::class.java))
+        }.whenever(repository).getCoordinatesByName(anyString(), any())
 
         val addressList = ArrayList<Address>()
         val addressCollection = AddressCollection(addressList)
         whenever(dataMapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
 
-        // When
         getAddressInteractor.execute(fakeLocationName, anyInt(), callback)
 
-        // Then
         verify(callback).onAddressLoaded(addressCollection)
     }
 
     @Test
-    fun loadsNonEmptyAddressWhenAddressCollectionModelIsCorrect() {
-        // Given
+    fun `loads non empty address when address collection model is correct`() {
         val fakeLocationName = "Berlin DE"
         val results = ArrayList<Result>()
         val latitude = 1.0
@@ -118,51 +114,43 @@ class GetAddressCoordinatesByNameInteractorTest {
                 STATUS_OK).withResults(results).build()
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
-        }.whenever(repository).getCoordinatesByName(anyString(), any(AddressRepository.Callback::class.java))
+        }.whenever(repository).getCoordinatesByName(anyString(), any())
 
         val address = Address(fakeLocationName, LatLng(latitude, longitude))
         val addressList = ArrayList<Address>()
         addressList.add(address)
         val addressCollection = AddressCollection(addressList)
-        `when`(dataMapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
+        whenever(dataMapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
 
-        // When
         getAddressInteractor.execute(fakeLocationName, anyInt(), callback)
 
-        // Then
         verify(callback).onAddressLoaded(addressCollection)
     }
 
     @Test
-    fun returnsErrorCallbackWhenAddressCollectionModelIsNotCorrect() {
-        // Given
+    fun `returns error callback when address collection model is not correct`() {
         val addressCollectionEntity = AddressCollectionEntity.Builder().withStatus(
                 STATUS_INVALID_REQUEST).build()
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
-        }.whenever(repository).getCoordinatesByName(anyString(), any(AddressRepository.Callback::class.java))
+        }.whenever(repository).getCoordinatesByName(anyString(), any())
         val fakeLocationName = "Berlin DE"
 
-        // When
         getAddressInteractor.execute(fakeLocationName, anyInt(), callback)
 
-        // Then
         verify(callback).onError(STATUS_INVALID_REQUEST)
     }
 
     @Test
-    fun returnsErrorCallbackWhenRepositoryErrorCallback() {
-        // Given
+    fun `returns error callback when repository error callback`() {
         val fakeErrorMessage = "fake error message"
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onError(fakeErrorMessage)
-        }.whenever(repository).getCoordinatesByName(anyString(), any(AddressRepository.Callback::class.java))
+        }.whenever(repository).getCoordinatesByName(anyString(), any())
         val fakeLocationName = "Berlin DE"
 
-        // When
         getAddressInteractor.execute(fakeLocationName, anyInt(), callback)
 
-        // Then
         verify(callback).onError(fakeErrorMessage)
     }
 }

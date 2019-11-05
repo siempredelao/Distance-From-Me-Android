@@ -31,8 +31,7 @@ import org.junit.Assert.assertEquals
 class OpenSourceLibraryMapperTest {
 
     @Test
-    fun transformsOpenSourceLibraryEntityToOpenSourceLibraryModel() {
-        // Given
+    fun `transforms open source library entity to open source library model`() {
         val libraryName = "fake name"
         val libraryAuthor = "fake author"
         val libraryVersion = "fake version"
@@ -51,11 +50,9 @@ class OpenSourceLibraryMapperTest {
         val openSourceLibraryEntityList = ArrayList<OpenSourceLibraryEntity>()
         openSourceLibraryEntityList.add(openSourceLibraryEntity)
 
-        // When
         val openSourceLibraryModelList = OpenSourceLibraryMapper().transform(
                 openSourceLibraryEntityList)
 
-        // Then
         assertEquals(1, openSourceLibraryModelList.size.toLong())
         val openSourceLibraryModel = openSourceLibraryModelList[0]
         assertEquals(libraryName, openSourceLibraryModel.name)

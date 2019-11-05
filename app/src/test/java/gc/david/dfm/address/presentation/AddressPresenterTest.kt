@@ -82,78 +82,62 @@ class AddressPresenterTest {
     }
 
     @Test
-    fun showsConnectionProblemsDialogWhenNoConnectionAvailableInPositionByName() {
-        // Given
-        `when`(connectionManager.isOnline).thenReturn(false)
+    fun `shows connection problems dialog when no connection available in position by name`() {
+        whenever(connectionManager.isOnline).thenReturn(false)
         val locationName = fakeLocationName
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).showConnectionProblemsDialog()
     }
 
     @Test
-    fun showsProgressDialogWhenConnectionAvailableInPositionByName() {
-        // Given
+    fun `shows progress dialog when connection available in position by name`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).showProgressDialog()
     }
 
     @Test
-    fun executesCoordinatesByNameUseCaseWhenConnectionAvailable() {
-        // Given
+    fun `executes coordinates by name use case when connection available`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(getAddressCoordinatesByNameUseCase)
                 .execute(any(), anyInt(), any(GetAddressUseCase.Callback::class.java))
     }
 
     @Test
-    fun hidesProgressDialogWhenPositionByNameUseCaseSucceeds() {
-        // Given
+    fun `hides progress dialog when position by name use case succeeds`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
         val addressCollection = emptyAddressCollection
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).hideProgressDialog()
     }
 
     @Test
-    fun showsNoMatchesWhenPositionByNameUseCaseReturnZeroResults() {
-        // Given
+    fun `shows no matches when position by name use case return zero results`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
         val addressCollection = emptyAddressCollection
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).showNoMatchesMessage()
     }
 
     @Test
-    fun showsPositionByNameWhenUseCaseReturnOneResult() {
-        // Given
+    fun `shows position by name when use case return one result`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
         val address = fakeAddress
@@ -162,16 +146,13 @@ class AddressPresenterTest {
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).showPositionByName(address)
     }
 
     @Test
-    fun showsAddressSelectionDialogWhenPositionByNameUseCaseReturnSeveralResults() {
-        // Given
+    fun `shows address selection dialog when position by name use case return several results`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
         val address = fakeAddress
@@ -181,128 +162,101 @@ class AddressPresenterTest {
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).showAddressSelectionDialog(addressCollection.addressList)
     }
 
     @Test
-    fun hidesProgressDialogWhenPositionByNameUseCaseFails() {
-        // Given
+    fun `hides progress dialog when position by name use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
         val errorMessage = fakeErrorMessage
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).hideProgressDialog()
     }
 
     @Test
-    fun showsErrorWhenPositionByNameUseCaseFails() {
-        // Given
+    fun `shows error when position by name use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val locationName = fakeLocationName
         val errorMessage = fakeErrorMessage
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
 
-        // When
         addressPresenter.searchPositionByName(locationName)
 
-        // Then
         verify(addressView).showCallError(errorMessage)
     }
 
     @Test
-    fun selectAddressInDialogShowsPositionByNameWithAddress() {
-        // Given
+    fun `select address in dialog shows position by name with address`() {
         val address = fakeAddress
 
-        // When
         addressPresenter.selectAddressInDialog(address)
 
-        // Then
         verify(addressView).showPositionByName(address)
     }
 
     @Test
-    fun showsConnectionProblemsDialogWhenNoConnectionAvailableInPositionByCoordinates() {
-        // Given
+    fun `shows connection problems dialog when no connection available in position by coordinates`() {
         whenever(connectionManager.isOnline).thenReturn(false)
         val coordinates = fakeCoordinates
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).showConnectionProblemsDialog()
     }
 
     @Test
-    fun showsProgressDialogWhenConnectionAvailableInPositionByCoordinates() {
-        // Given
+    fun `shows progress dialog when connection available in position by coordinates`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).showProgressDialog()
     }
 
     @Test
-    fun executesNameByCoordinatesUseCaseWhenConnectionAvailable() {
-        // Given
+    fun `executes name by coordinates use case when connection available`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(getAddressNameByCoordinatesUseCase)
                 .execute(any(), anyInt(), any(GetAddressUseCase.Callback::class.java))
     }
 
     @Test
-    fun hidesProgressDialogWhenUseCaseSucceedsInPositionByCoordinates() {
-        // Given
+    fun `hides progress dialog when use case succeeds in position by coordinates`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
         val addressCollection = emptyAddressCollection
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).hideProgressDialog()
     }
 
     @Test
-    fun showsNoMatchesWhenPositionByCoordinatesUseCaseReturnZeroResults() {
-        // Given
+    fun `shows no matches when position by coordinates use case return zero results`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
         val addressCollection = emptyAddressCollection
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).showNoMatchesMessage()
     }
 
     @Test
-    fun showsPositionByCoordinatesWhenUseCaseReturnOneResult() {
-        // Given
+    fun `shows position by coordinates when use case return one result`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
         val address = fakeAddress
@@ -311,40 +265,32 @@ class AddressPresenterTest {
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).showPositionByCoordinates(address)
     }
 
     @Test
-    fun hidesProgressDialogWhenPositionByCoordinatesUseCaseFails() {
-        // Given
+    fun `hides progress dialog when position by coordinates use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
         val errorMessage = fakeErrorMessage
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).hideProgressDialog()
     }
 
     @Test
-    fun showsErrorWhenPositionByCoordinatesUseCaseFails() {
-        // Given
+    fun `shows error when position by coordinates use case fails`() {
         whenever(connectionManager.isOnline).thenReturn(true)
         val coordinates = fakeCoordinates
         val errorMessage = fakeErrorMessage
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
 
-        // When
         addressPresenter.searchPositionByCoordinates(coordinates)
 
-        // Then
         verify(addressView).showCallError(errorMessage)
     }
 
