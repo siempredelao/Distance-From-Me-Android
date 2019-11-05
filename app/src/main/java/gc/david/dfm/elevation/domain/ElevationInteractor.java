@@ -16,8 +16,6 @@
 
 package gc.david.dfm.elevation.domain;
 
-import androidx.annotation.VisibleForTesting;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -25,6 +23,7 @@ import java.util.List;
 import gc.david.dfm.elevation.data.ElevationRepository;
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper;
 import gc.david.dfm.elevation.data.model.ElevationEntity;
+import gc.david.dfm.elevation.data.model.ElevationStatus;
 import gc.david.dfm.elevation.domain.model.Elevation;
 import gc.david.dfm.executor.Executor;
 import gc.david.dfm.executor.Interactor;
@@ -34,17 +33,6 @@ import gc.david.dfm.executor.MainThread;
  * Created by david on 05.01.17.
  */
 public class ElevationInteractor implements Interactor, ElevationUseCase {
-
-    @VisibleForTesting()
-    static final String STATUS_OK               = "OK";
-    @VisibleForTesting()
-    static final String STATUS_INVALID_REQUEST  = "INVALID_REQUEST";
-    @VisibleForTesting()
-    static final String STATUS_OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT";
-    @VisibleForTesting()
-    static final String STATUS_REQUEST_DENIED   = "REQUEST_DENIED";
-    @VisibleForTesting()
-    static final String STATUS_UNKNOWN_ERROR    = "UNKNOWN_ERROR";
 
     private final Executor                  executor;
     private final MainThread                mainThread;
@@ -86,7 +74,7 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
             repository.getElevation(coordinatesPath, maxSamples, new ElevationRepository.Callback() {
                 @Override
                 public void onSuccess(final ElevationEntity elevationEntity) {
-                    if (STATUS_OK.equals(elevationEntity.getStatus())) {
+                    if (ElevationStatus.OK.equals(elevationEntity.getStatus())) {
                         final Elevation elevation = elevationEntityDataMapper.transform(elevationEntity);
 
                         mainThread.post(new Runnable() {
@@ -96,7 +84,7 @@ public class ElevationInteractor implements Interactor, ElevationUseCase {
                             }
                         });
                     } else {
-                        notifyError(elevationEntity.getStatus());
+                        notifyError(elevationEntity.getStatus().toString());
                     }
                 }
 
