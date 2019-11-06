@@ -17,6 +17,7 @@
 package gc.david.dfm.elevation.domain
 
 import com.google.android.gms.maps.model.LatLng
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.elevation.data.ElevationRepository
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
@@ -59,8 +60,8 @@ class ElevationInteractorTest {
 
         elevationInteractor = ElevationInteractor(executor, mainThread, elevationEntityDataMapper, repository)
 
-        doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
-        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
+        doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(anyOrNull())
+        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(anyOrNull())
     }
 
     @Test

@@ -17,6 +17,7 @@
 package gc.david.dfm.address.domain
 
 import com.google.android.gms.maps.model.LatLng
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.address.data.AddressRepository
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
@@ -59,8 +60,8 @@ class GetAddressCoordinatesByNameInteractorTest {
 
         getAddressInteractor = GetAddressCoordinatesByNameInteractor(executor, mainThread, dataMapper, repository)
 
-        doAnswer  { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
-        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
+        doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(anyOrNull())
+        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(anyOrNull())
     }
 
     @Test

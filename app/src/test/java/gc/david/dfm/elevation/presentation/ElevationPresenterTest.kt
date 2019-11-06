@@ -17,6 +17,7 @@
 package gc.david.dfm.elevation.presentation
 
 import com.google.android.gms.maps.model.LatLng
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
@@ -99,7 +100,7 @@ class ElevationPresenterTest {
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
+        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), anyOrNull())
 
         elevationPresenter.buildChart(coordinateList)
 
