@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger;
+package gc.david.dfm.dagger
 
-import javax.inject.Singleton;
-
-import dagger.Component;
-import gc.david.dfm.ui.activity.MainActivity;
+import dagger.Component
+import javax.inject.Singleton
 
 /**
- * Created by david on 27.12.16.
+ * Created by david on 06.12.16.
  */
 @Singleton
-@Component(modules = {RootModule.class, StorageModule.class, MainModule.class})
-public interface MainComponent {
-
-    void inject(MainActivity mainActivity);
-}
+@Component(modules = [RootModule::class])
+interface RootComponent

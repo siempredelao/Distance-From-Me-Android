@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger;
+package gc.david.dfm.dagger
 
-import javax.inject.Singleton;
-
-import dagger.Component;
-import gc.david.dfm.ui.fragment.SettingsFragment;
+import dagger.Component
+import gc.david.dfm.ui.activity.HelpAndFeedbackActivity
+import javax.inject.Singleton
 
 /**
- * Created by david on 16.01.17.
+ * Created by david on 27.12.16.
  */
 @Singleton
-@Component(modules = {RootModule.class, StorageModule.class, SettingsModule.class})
-public interface SettingsComponent {
+@Component(modules = [RootModule::class, FaqModule::class])
+interface FaqComponent {
 
-    void inject(SettingsFragment settingsFragment);
+    fun inject(helpAndFeedbackActivity: HelpAndFeedbackActivity)
 }

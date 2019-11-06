@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger;
+package gc.david.dfm.dagger
 
-import javax.inject.Singleton;
-
-import dagger.Component;
+import dagger.Component
+import javax.inject.Singleton
 
 /**
  * Created by david on 16.01.17.
  */
 @Singleton
-@Component(modules = {RootModule.class})
-public interface StorageComponent {
-}
+@Component(modules = [RootModule::class])
+interface StorageComponent

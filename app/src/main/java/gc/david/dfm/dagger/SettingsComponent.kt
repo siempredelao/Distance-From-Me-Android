@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger;
+package gc.david.dfm.dagger
 
-import javax.inject.Singleton;
-
-import dagger.Component;
-import gc.david.dfm.ui.activity.ShowInfoActivity;
+import dagger.Component
+import gc.david.dfm.ui.fragment.SettingsFragment
+import javax.inject.Singleton
 
 /**
  * Created by david on 16.01.17.
  */
 @Singleton
-@Component(modules = {RootModule.class, StorageModule.class, ShowInfoModule.class})
-public interface ShowInfoComponent {
+@Component(modules = [RootModule::class, StorageModule::class, SettingsModule::class])
+interface SettingsComponent {
 
-    void inject(ShowInfoActivity showInfoActivity);
+    fun inject(settingsFragment: SettingsFragment)
 }

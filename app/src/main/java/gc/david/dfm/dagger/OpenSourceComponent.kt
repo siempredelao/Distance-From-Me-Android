@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger;
+package gc.david.dfm.dagger
 
-import javax.inject.Singleton;
-
-import dagger.Component;
+import dagger.Component
+import gc.david.dfm.ui.fragment.OpenSourceMasterFragment
+import javax.inject.Singleton
 
 /**
- * Created by david on 06.12.16.
+ * Created by david on 27.12.16.
  */
 @Singleton
-@Component(modules = RootModule.class)
-public interface RootComponent {
+@Component(modules = [RootModule::class, OpenSourceModule::class])
+interface OpenSourceComponent {
+
+    fun inject(openSourceMasterFragment: OpenSourceMasterFragment)
 }

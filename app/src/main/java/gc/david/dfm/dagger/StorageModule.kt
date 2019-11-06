@@ -14,31 +14,28 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger;
+package gc.david.dfm.dagger
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-import gc.david.dfm.migration.UpgradeHelper;
-import gc.david.dfm.model.DaoMaster;
-import gc.david.dfm.model.DaoSession;
+import android.content.Context
+import dagger.Module
+import dagger.Provides
+import gc.david.dfm.migration.UpgradeHelper
+import gc.david.dfm.model.DaoMaster
+import gc.david.dfm.model.DaoSession
+import javax.inject.Singleton
 
 /**
  * Created by david on 16.01.17.
  */
 @Module
-public class StorageModule {
+class StorageModule {
 
     @Provides
     @Singleton
-    DaoSession getDaoSession(Context context) {
-        final UpgradeHelper helper = new UpgradeHelper(context, "DistanciasDB.db", null);
-        final SQLiteDatabase db = helper.getWritableDatabase();
-        final DaoMaster daoMaster = new DaoMaster(db);
-        return daoMaster.newSession();
+    internal fun getDaoSession(context: Context): DaoSession {
+        val helper = UpgradeHelper(context, "DistanciasDB.db", null)
+        val database = helper.writableDatabase
+        val daoMaster = DaoMaster(database)
+        return daoMaster.newSession()
     }
 }

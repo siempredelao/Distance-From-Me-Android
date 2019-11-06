@@ -92,7 +92,8 @@ import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
-import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
 import gc.david.dfm.address.presentation.Address;
 import gc.david.dfm.address.presentation.AddressPresenter;
 import gc.david.dfm.dagger.DaggerMainComponent;
@@ -169,9 +170,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Inject
     protected PreferencesProvider    preferencesProvider;
     @Inject @Named("CoordinatesByName")
-    protected GetAddressUseCase      getAddressCoordinatesByNameUseCase;
+    protected GetAddressCoordinatesByNameInteractor getAddressCoordinatesByNameUseCase;
     @Inject @Named("NameByCoordinates")
-    protected GetAddressUseCase      getAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesInteractor getAddressNameByCoordinatesUseCase;
     @Inject
     protected LoadDistancesUseCase   loadDistancesUseCase;
     @Inject

@@ -27,15 +27,16 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.core.view.MenuItemCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ShareActionProvider;
-import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -51,7 +52,7 @@ import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
-import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
 import gc.david.dfm.dagger.DaggerShowInfoComponent;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.ShowInfoModule;
@@ -96,10 +97,10 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     protected InsertDistanceUseCase insertDistanceUseCase;
     @Inject
     @Named("NameByCoordinates")
-    protected GetAddressUseCase     getOriginAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesInteractor getOriginAddressNameByCoordinatesUseCase;
     @Inject
     @Named("NameByCoordinates")
-    protected GetAddressUseCase     getDestinationAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesInteractor getDestinationAddressNameByCoordinatesUseCase;
 
     private MenuItem           refreshMenuItem;
     private List<LatLng>       positionsList;
