@@ -26,6 +26,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
  * Created by david on 07.12.16.
  */
 @RequiresApi(api = JELLY_BEAN)
+@Deprecated
 public class DeviceInfoApi16Decorator extends DeviceInfoDecorator {
 
     private final MemoryInfo memoryInfo;
