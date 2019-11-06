@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo;
+package gc.david.dfm.deviceinfo
+
+import android.content.Intent
 
 /**
- * Created by david on 06.12.16.
+ * Created by david on 07.12.16.
  */
-public abstract class DeviceInfoDecorator implements DeviceInfo {
+interface PackageManager {
 
-    private final DeviceInfo decoratedDeviceInfo;
+    val versionName: String
 
-    public DeviceInfoDecorator(final DeviceInfo decoratedDeviceInfo) {
-        this.decoratedDeviceInfo = decoratedDeviceInfo;
-    }
+    fun isThereAnyActivityForIntent(intent: Intent): Boolean
 
-    @Override
-    public String getDeviceInfo() {
-        return decoratedDeviceInfo.getDeviceInfo();
-    }
 }

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo;
+package gc.david.dfm.deviceinfo
 
 /**
  * Created by david on 06.12.16.
  */
-public interface DeviceInfo {
+abstract class DeviceInfoDecorator(private val decoratedDeviceInfo: DeviceInfo) : DeviceInfo {
 
-    String getDeviceInfo();
-
+    override val deviceInfo: String
+        get() = decoratedDeviceInfo.deviceInfo
 }

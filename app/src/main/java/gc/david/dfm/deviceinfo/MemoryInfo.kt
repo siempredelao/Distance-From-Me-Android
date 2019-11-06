@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo;
+package gc.david.dfm.deviceinfo
 
 /**
  * Created by david on 18.01.17.
  */
-public interface MemoryInfo {
+interface MemoryInfo {
 
-    long getAvailableMemory();
+    val availableMemory: Long
 
-    long getFreeMemory();
+    val freeMemory: Long
 
 }

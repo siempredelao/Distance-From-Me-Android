@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo;
-
-import android.content.Intent;
+package gc.david.dfm.deviceinfo
 
 /**
- * Created by david on 07.12.16.
+ * Created by david on 06.12.16.
  */
-public interface PackageManager {
+interface DeviceInfo {
 
-    String getVersionName();
-
-    boolean isThereAnyActivityForIntent(Intent intent);
+    val deviceInfo: String
 
 }
