@@ -66,7 +66,7 @@ public class DFMApplication extends Application {
     }
 
     private boolean isAmericanLocale() {
-        return Haversine.isAmericanLocale(Locale.getDefault());
+        return Haversine.INSTANCE.isAmericanLocale(Locale.getDefault());
     }
 
 }

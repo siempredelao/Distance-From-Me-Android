@@ -115,7 +115,7 @@ public class Utils {
     public static double calculateDistanceInMetres(final List<LatLng> coordinates) {
         double distanceInMetres = 0D;
         for (int i = 0; i < coordinates.size() - 1; i++) {
-            distanceInMetres += Haversine.getDistance(coordinates.get(i).latitude,
+            distanceInMetres += Haversine.INSTANCE.getDistance(coordinates.get(i).latitude,
                                                       coordinates.get(i).longitude,
                                                       coordinates.get(i + 1).latitude,
                                                       coordinates.get(i + 1).longitude);

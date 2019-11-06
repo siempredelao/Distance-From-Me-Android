@@ -889,7 +889,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this,
                                                                                       errorCode,
-                                                                                      LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
         // If Google Play services can provide an error dialog
         if (errorDialog != null) {
@@ -955,7 +955,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String calculateDistance(final List<LatLng> coordinates) {
         double distanceInMetres = Utils.calculateDistanceInMetres(coordinates);
 
-        return Haversine.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
+        return Haversine.INSTANCE.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
     }
 
     private void moveCameraZoom(final List<LatLng> coordinatesList) {
@@ -1017,7 +1017,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (graphView == null) {
             graphView = new LineGraphView(appContext,
                                           getString(R.string.elevation_chart_title,
-                                                    Haversine.getAltitudeUnitByLocale(locale)));
+                                                    Haversine.INSTANCE.getAltitudeUnitByLocale(locale)));
             final GraphViewStyle graphViewStyle = graphView.getGraphViewStyle();
             graphViewStyle.setGridColor(Color.TRANSPARENT);
             graphViewStyle.setNumHorizontalLabels(1); // Not working with zero?
@@ -1047,7 +1047,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         for (int w = 0; w < elevationList.size(); w++) {
             series.appendData(new GraphView.GraphViewData(w,
-                                                          Haversine.normalizeAltitudeByLocale(elevationList.get(w),
+                                                          Haversine.INSTANCE.normalizeAltitudeByLocale(elevationList.get(w),
                                                                                               locale)),
                               false,
                               elevationList.size());
