@@ -115,7 +115,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
@@ -140,7 +140,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
         getIntentData();
 
         if (savedInstanceState == null) {
-            DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
+            DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
 
             fillAddressesInfo();
         } else {
@@ -171,7 +171,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        DFMLogger.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
 
         super.onSaveInstanceState(outState);
 
@@ -191,7 +191,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     }
 
     private void getIntentData() {
-        DFMLogger.logMessage(TAG, "getIntentData");
+        DFMLogger.INSTANCE.logMessage(TAG, "getIntentData");
 
         final Intent inputDataIntent = getIntent();
         positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY);
@@ -199,7 +199,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     }
 
     private void fillAddressesInfo() {
-        DFMLogger.logMessage(TAG, "fillAddressesInfo");
+        DFMLogger.INSTANCE.logMessage(TAG, "fillAddressesInfo");
 
         showInfoPresenter.searchPositionByCoordinates(positionsList.get(0),
                                                       positionsList.get(positionsList.size() - 1));
@@ -210,7 +210,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     }
 
     private void fillDistanceInfo() {
-        DFMLogger.logMessage(TAG, "fillDistanceInfo");
+        DFMLogger.INSTANCE.logMessage(TAG, "fillDistanceInfo");
 
         tvDistance.setText(getString(R.string.info_distance_title, distance));
     }
@@ -344,7 +344,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
         } else {
             tvDestinationAddress.setText(R.string.toast_no_location_found);
         }
-        DFMLogger.logException(new Exception(errorMessage));
+        DFMLogger.INSTANCE.logException(new Exception(errorMessage));
     }
 
     @Override
@@ -360,7 +360,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     @Override
     public void showFailedSave() {
         toastIt("Unable to save distance. Try again later.", appContext);
-        DFMLogger.logException(new Exception("Unable to insert distance into database."));
+        DFMLogger.INSTANCE.logException(new Exception("Unable to insert distance into database."));
     }
 
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {

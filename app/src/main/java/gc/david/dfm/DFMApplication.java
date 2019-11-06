@@ -48,13 +48,13 @@ public class DFMApplication extends Application {
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
-        DFMLogger.logMessage(TAG, "onCreate");
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate");
 
         setupDefaultUnit();
     }
 
     private void setupDefaultUnit() {
-        DFMLogger.logMessage(TAG, "setupDefaultUnit");
+        DFMLogger.INSTANCE.logMessage(TAG, "setupDefaultUnit");
 
         final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit == null) {

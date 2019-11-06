@@ -17,6 +17,7 @@
 package gc.david.dfm.ui.fragment;
 
 import android.os.Bundle;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -62,7 +63,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
         bbddPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                DFMLogger.logMessage(TAG, "onPreferenceClick delete entries");
+                DFMLogger.INSTANCE.logMessage(TAG, "onPreferenceClick delete entries");
 
                 presenter.onClearData();
                 return false;
@@ -82,6 +83,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
     @Override
     public void showClearDataErrorMessage() {
-        DFMLogger.logException(new Exception("Unable to clear database."));
+        DFMLogger.INSTANCE.logException(new Exception("Unable to clear database."));
     }
 }

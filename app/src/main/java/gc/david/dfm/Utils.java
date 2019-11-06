@@ -22,8 +22,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.StringRes;
 import android.widget.Toast;
+
+import androidx.annotation.StringRes;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -43,13 +44,13 @@ public class Utils {
     private static final String TAG = Utils.class.getSimpleName();
 
     public static void toastIt(final String charSequence, final Context context) {
-        DFMLogger.logMessage(TAG, "toastIt message=" + charSequence);
+        DFMLogger.INSTANCE.logMessage(TAG, "toastIt message=" + charSequence);
 
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show();
     }
 
     public static void toastIt(final @StringRes int stringRes, final Context context) {
-        DFMLogger.logMessage(TAG, "toastIt message=" + context.getString(stringRes));
+        DFMLogger.INSTANCE.logMessage(TAG, "toastIt message=" + context.getString(stringRes));
 
         Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show();
     }
@@ -60,7 +61,7 @@ public class Utils {
                                        final @StringRes int positiveButton,
                                        final @StringRes int negativeButton,
                                        final Activity activity) {
-        DFMLogger.logMessage(TAG, "showAlertDialog");
+        DFMLogger.INSTANCE.logMessage(TAG, "showAlertDialog");
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(title)

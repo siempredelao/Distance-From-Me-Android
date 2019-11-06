@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.logger;
+package gc.david.dfm.logger
 
-import android.util.Log;
+import android.util.Log
 
-import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.Crashlytics
 
-import gc.david.dfm.BuildConfig;
-import io.fabric.sdk.android.Fabric;
+import gc.david.dfm.BuildConfig
+import io.fabric.sdk.android.Fabric
 
-public class DFMLogger {
+object DFMLogger {
 
-    public static void logMessage(final String tag, final String message) {
+    fun logMessage(tag: String, message: String) {
         if (shouldLogToCrashlytics()) {
-            Crashlytics.log(tag + ": " + message);
+            Crashlytics.log("$tag: $message")
         } else {
-            Log.d(tag, message);
+            Log.d(tag, message)
         }
     }
 
-    public static void logException(final Exception exception) {
+    fun logException(exception: Exception) {
         if (shouldLogToCrashlytics()) {
-            Crashlytics.logException(exception);
+            Crashlytics.logException(exception)
         } else {
-            Log.e("Exception", "Exception", exception);
+            Log.e("Exception", "Exception", exception)
         }
     }
 
-    public static void logEvent(final String eventName) {
+    fun logEvent(eventName: String) {
         if (shouldLogToCrashlytics()) {
-            Crashlytics.setBool(eventName, true);
+            Crashlytics.setBool(eventName, true)
         } else {
-            Log.i("New event", eventName);
+            Log.i("New event", eventName)
         }
     }
 
-    private static boolean shouldLogToCrashlytics() {
-        return !BuildConfig.DEBUG && Fabric.isInitialized();
+    private fun shouldLogToCrashlytics(): Boolean {
+        return !BuildConfig.DEBUG && Fabric.isInitialized()
     }
 }

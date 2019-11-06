@@ -17,18 +17,20 @@
 package gc.david.dfm.ui.fragment;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -155,7 +157,7 @@ public class OpenSourceMasterFragment extends Fragment implements OpenSource.Vie
 
     @Override
     public void showError(final String errorMessage) {
-        DFMLogger.logException(new Exception(errorMessage));
+        DFMLogger.INSTANCE.logException(new Exception(errorMessage));
 
         Snackbar.make(recyclerView, R.string.opensourcelibrary_error_message, Snackbar.LENGTH_LONG).show();
     }
