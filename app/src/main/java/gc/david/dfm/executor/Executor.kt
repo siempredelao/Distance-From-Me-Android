@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.executor;
+package gc.david.dfm.executor
 
 /**
- * UI thread abstraction created to change the execution context from any thread to the UI thread.
+ * Executor implementation can be based on different frameworks or techniques of asynchronous
+ * execution, but every implementation will execute the Interactor out of the UI thread.
+ *
+ *
+ * Use this class to execute an Interactor.
+ *
+ *
+ * This is just a sample implementation of how a Interactor/Executor environment can be
+ * implemented.
+ * Ideally interactors should not know about Executor or MainThread dependency. Interactors client
+ * code should get a Executor instance to execute interactors.
  *
  * @author Pedro Vicente Gómez Sánchez
  */
-public interface MainThread {
+interface Executor {
 
-    void post(Runnable runnable);
+    fun run(interactor: Interactor)
 
 }

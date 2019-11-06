@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.executor;
+package gc.david.dfm.executor
+
+import android.os.Handler
+import android.os.Looper
 
 /**
- * Common interface to every Interactor declared in the application. This interface represents a
- * execution unit for different use cases.
- * <p>
- * By convention every interactor implementation will return the result using a Callback. That
- * callback should be executed over the UI thread.
- * <p>
- * This is a simple Interactor implementation. Other approach to do this could be use a class
- * instead of an interface and create a base Interactor class that for every execution will use a
- * Request object and a callback implementation.
+ * MainThread implementation based on a Handler instantiated over the main looper obtained from
+ * Looper class.
  *
  * @author Pedro Vicente Gómez Sánchez
  */
-public interface Interactor {
+class MainThreadBase : MainThread {
 
-    void run();
+    private val handler = Handler(Looper.getMainLooper())
 
+    override fun post(runnable: Runnable) {
+        handler.post(runnable)
+    }
 }

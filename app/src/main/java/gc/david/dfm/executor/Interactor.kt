@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.executor;
+package gc.david.dfm.executor
 
 /**
- * Executor implementation can be based on different frameworks or techniques of asynchronous
- * execution, but every implementation will execute the Interactor out of the UI thread.
- * <p>
- * Use this class to execute an Interactor.
- * <p>
- * This is just a sample implementation of how a Interactor/Executor environment can be
- * implemented.
- * Ideally interactors should not know about Executor or MainThread dependency. Interactors client
- * code should get a Executor instance to execute interactors.
+ * Common interface to every Interactor declared in the application. This interface represents a
+ * execution unit for different use cases.
+ *
+ *
+ * By convention every interactor implementation will return the result using a Callback. That
+ * callback should be executed over the UI thread.
+ *
+ *
+ * This is a simple Interactor implementation. Other approach to do this could be use a class
+ * instead of an interface and create a base Interactor class that for every execution will use a
+ * Request object and a callback implementation.
  *
  * @author Pedro Vicente Gómez Sánchez
  */
-public interface Executor {
+interface Interactor {
 
-    void run(Interactor interactor);
+    fun run()
 
 }

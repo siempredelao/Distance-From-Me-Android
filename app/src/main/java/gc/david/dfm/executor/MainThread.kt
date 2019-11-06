@@ -13,26 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.executor;
-
-import android.os.Handler;
-import android.os.Looper;
+package gc.david.dfm.executor
 
 /**
- * MainThread implementation based on a Handler instantiated over the main looper obtained from
- * Looper class.
+ * UI thread abstraction created to change the execution context from any thread to the UI thread.
  *
  * @author Pedro Vicente Gómez Sánchez
  */
-public class MainThreadBase implements MainThread {
+interface MainThread {
 
-    private final Handler handler;
+    fun post(runnable: Runnable)
 
-    public MainThreadBase() {
-        this.handler = new Handler(Looper.getMainLooper());
-    }
-
-    public void post(final Runnable runnable) {
-        handler.post(runnable);
-    }
 }
