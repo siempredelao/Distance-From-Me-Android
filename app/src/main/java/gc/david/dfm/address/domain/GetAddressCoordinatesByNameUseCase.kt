@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain;
+package gc.david.dfm.address.domain
 
-import gc.david.dfm.address.domain.model.AddressCollection;
+import gc.david.dfm.address.domain.model.AddressCollection
 
 /**
  * Created by david on 12.01.17.
  */
-public interface GetAddressUseCase<T> {
+interface GetAddressCoordinatesByNameUseCase {
 
     interface Callback {
 
-        void onAddressLoaded(AddressCollection addressCollection);
+        fun onAddressLoaded(addressCollection: AddressCollection)
 
-        void onError(String errorMessage);
+        fun onError(errorMessage: String)
 
     }
 
-    void execute(T t, int maxResults, Callback callback);
+    fun execute(locationName: String, maxResults: Int, callback: Callback)
 }

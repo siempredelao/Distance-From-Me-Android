@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 import gc.david.dfm.ConnectionManager;
-import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase;
 import gc.david.dfm.address.domain.model.Address;
 import gc.david.dfm.address.domain.model.AddressCollection;
 import gc.david.dfm.distance.domain.InsertDistanceUseCase;
@@ -38,14 +38,14 @@ import gc.david.dfm.model.Position;
 public class ShowInfoPresenter implements ShowInfo.Presenter {
 
     private final ShowInfo.View         showInfoView;
-    private final GetAddressUseCase     getOriginAddressNameByCoordinatesUseCase;
-    private final GetAddressUseCase     getDestinationAddressNameByCoordinatesUseCase;
+    private final GetAddressNameByCoordinatesUseCase getOriginAddressNameByCoordinatesUseCase;
+    private final GetAddressNameByCoordinatesUseCase getDestinationAddressNameByCoordinatesUseCase;
     private final InsertDistanceUseCase insertDistanceUseCase;
     private final ConnectionManager     connectionManager;
 
     public ShowInfoPresenter(final ShowInfo.View showInfoView,
-                             final GetAddressUseCase getOriginAddressNameByCoordinatesUseCase,
-                             final GetAddressUseCase getDestinationAddressNameByCoordinatesUseCase,
+                             final GetAddressNameByCoordinatesUseCase getOriginAddressNameByCoordinatesUseCase,
+                             final GetAddressNameByCoordinatesUseCase getDestinationAddressNameByCoordinatesUseCase,
                              final InsertDistanceUseCase insertDistanceUseCase,
                              final ConnectionManager connectionManager) {
         this.showInfoView = showInfoView;
@@ -67,10 +67,10 @@ public class ShowInfoPresenter implements ShowInfo.Presenter {
         }
     }
 
-    private void getOriginAddress(final GetAddressUseCase getAddressUseCase,
+    private void getOriginAddress(final GetAddressNameByCoordinatesUseCase getAddressUseCase,
                                   final LatLng latLng,
                                   final boolean isOrigin) {
-        getAddressUseCase.execute(latLng, 1, new GetAddressUseCase.Callback() {
+        getAddressUseCase.execute(latLng, 1, new GetAddressNameByCoordinatesUseCase.Callback() {
             @Override
             public void onAddressLoaded(final AddressCollection addressCollection) {
                 showInfoView.hideProgress();

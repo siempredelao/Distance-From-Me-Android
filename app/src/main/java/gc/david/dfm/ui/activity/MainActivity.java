@@ -80,7 +80,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -92,8 +91,8 @@ import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor;
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase;
 import gc.david.dfm.address.presentation.Address;
 import gc.david.dfm.address.presentation.AddressPresenter;
 import gc.david.dfm.dagger.DaggerMainComponent;
@@ -166,10 +165,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected ConnectionManager      connectionManager;
     @Inject
     protected PreferencesProvider    preferencesProvider;
-    @Inject @Named("CoordinatesByName")
-    protected GetAddressCoordinatesByNameInteractor getAddressCoordinatesByNameUseCase;
-    @Inject @Named("NameByCoordinates")
-    protected GetAddressNameByCoordinatesInteractor getAddressNameByCoordinatesUseCase;
+    @Inject
+    protected GetAddressCoordinatesByNameUseCase getAddressCoordinatesByNameUseCase;
+    @Inject
+    protected GetAddressNameByCoordinatesUseCase getAddressNameByCoordinatesUseCase;
     @Inject
     protected LoadDistancesUseCase   loadDistancesUseCase;
     @Inject

@@ -29,7 +29,8 @@ import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.MainThread
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
@@ -50,7 +51,7 @@ class GetAddressCoordinatesByNameInteractorTest {
     @Mock
     lateinit var repository: AddressRepository
     @Mock
-    lateinit var callback: GetAddressUseCase.Callback
+    lateinit var callback: GetAddressCoordinatesByNameUseCase.Callback
 
     private lateinit var getAddressInteractor: GetAddressCoordinatesByNameInteractor
 
@@ -66,11 +67,10 @@ class GetAddressCoordinatesByNameInteractorTest {
 
     @Test
     fun `loads empty address when address collection model is correct`() {
-        val results = ArrayList<Result>()
-        val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.ZERO_RESULTS)
+        val addressCollectionEntity = AddressCollectionEntity(emptyList(), GeocodingStatus.ZERO_RESULTS)
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
-        }.whenever(repository).getCoordinatesByName(anyString(), any())
+        }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
 
         val addressCollection = AddressCollection(mutableListOf())
         whenever(dataMapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
@@ -91,14 +91,14 @@ class GetAddressCoordinatesByNameInteractorTest {
         val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
-        }.whenever(repository).getCoordinatesByName(anyString(), any())
+        }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
 
         val address = Address(LOCATION_NAME, LatLng(latitude, longitude))
         val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
         whenever(dataMapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
 
-        getAddressInteractor.execute(LOCATION_NAME, anyInt(), callback)
+        getAddressInteractor.execute(LOCATION_NAME, 1, callback)
 
         verify(callback).onAddressLoaded(addressCollection)
     }
@@ -108,7 +108,7 @@ class GetAddressCoordinatesByNameInteractorTest {
         val addressCollectionEntity = AddressCollectionEntity(status = GeocodingStatus.INVALID_REQUEST)
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
-        }.whenever(repository).getCoordinatesByName(anyString(), any())
+        }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
 
         getAddressInteractor.execute(LOCATION_NAME, anyInt(), callback)
 
@@ -119,7 +119,7 @@ class GetAddressCoordinatesByNameInteractorTest {
     fun `returns error callback when repository error callback`() {
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onError(ERROR_MESSAGE)
-        }.whenever(repository).getCoordinatesByName(anyString(), any())
+        }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
 
 
         getAddressInteractor.execute(LOCATION_NAME, anyInt(), callback)

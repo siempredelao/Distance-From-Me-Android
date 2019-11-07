@@ -45,14 +45,13 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindView;
 import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase;
 import gc.david.dfm.dagger.DaggerShowInfoComponent;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.ShowInfoModule;
@@ -95,11 +94,9 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     @Inject
     protected InsertDistanceUseCase insertDistanceUseCase;
     @Inject
-    @Named("NameByCoordinates")
-    protected GetAddressNameByCoordinatesInteractor getOriginAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesUseCase getOriginAddressNameByCoordinatesUseCase;
     @Inject
-    @Named("NameByCoordinates")
-    protected GetAddressNameByCoordinatesInteractor getDestinationAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesUseCase getDestinationAddressNameByCoordinatesUseCase;
 
     private MenuItem           refreshMenuItem;
     private List<LatLng>       positionsList;

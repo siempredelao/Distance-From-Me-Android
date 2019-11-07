@@ -23,6 +23,7 @@ import gc.david.dfm.address.data.AddressRemoteDataSource
 import gc.david.dfm.address.data.AddressRepository
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.distance.data.DistanceLocalDataSource
 import gc.david.dfm.distance.data.DistanceRepository
 import gc.david.dfm.distance.domain.InsertDistanceInteractor
@@ -30,7 +31,6 @@ import gc.david.dfm.distance.domain.InsertDistanceUseCase
 import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.MainThread
 import gc.david.dfm.model.DaoSession
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -61,12 +61,11 @@ class ShowInfoModule {
     }
 
     @Provides
-    @Named("NameByCoordinates")
     fun provideGetAddressNameByCoordinatesUseCase(executor: Executor,
                                                   mainThread: MainThread,
                                                   addressCollectionEntityDataMapper: AddressCollectionEntityDataMapper,
                                                   addressRepository: AddressRepository
-    ): GetAddressNameByCoordinatesInteractor {
+    ): GetAddressNameByCoordinatesUseCase {
         return GetAddressNameByCoordinatesInteractor(executor,
                 mainThread,
                 addressCollectionEntityDataMapper,
