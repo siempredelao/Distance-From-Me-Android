@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain.model;
+package gc.david.dfm.address.data.model
 
-import java.util.List;
+class AddressCollectionEntity(val results: List<Result> = emptyList(), val status: GeocodingStatus)
 
-/**
- * Created by david on 13.01.17.
- */
-public class AddressCollection {
-
-    private final List<Address> addressList;
-
-    public AddressCollection(final List<Address> addressList) {
-        this.addressList = addressList;
-    }
-
-    public List<Address> getAddressList() {
-        return addressList;
-    }
+enum class GeocodingStatus {
+    OK,
+    ZERO_RESULTS,
+    INVALID_REQUEST,
+    OVER_QUERY_LIMIT,
+    REQUEST_DENIED,
+    UNKNOWN_ERROR
 }

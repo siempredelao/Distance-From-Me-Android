@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.elevation.data.model
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
 
-public class Northeast {
-
-    @SerializedName("lat")
-    private double latitude;
-    @SerializedName("lng")
-    private double longitude;
-
-}
+class Location(
+        @SerializedName("lat") val latitude: Double,
+        @SerializedName("lng") val longitude: Double)

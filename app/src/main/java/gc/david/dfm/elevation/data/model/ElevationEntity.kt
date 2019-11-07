@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.elevation.data.model
 
-public class Viewport {
+class ElevationEntity(val results: List<Result> = emptyList(), val status: ElevationStatus)
 
-    private Northeast northeast;
-    private Southwest southwest;
-
+enum class ElevationStatus {
+    OK,
+    ZERO_RESULTS,
+    INVALID_REQUEST,
+    OVER_QUERY_LIMIT,
+    REQUEST_DENIED,
+    UNKNOWN_ERROR
 }

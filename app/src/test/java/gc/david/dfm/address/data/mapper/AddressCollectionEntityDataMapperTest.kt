@@ -16,10 +16,7 @@
 
 package gc.david.dfm.address.data.mapper
 
-import gc.david.dfm.address.data.model.AddressCollectionEntity
-import gc.david.dfm.address.data.model.Geometry
-import gc.david.dfm.address.data.model.Location
-import gc.david.dfm.address.data.model.Result
+import gc.david.dfm.address.data.model.*
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
@@ -35,11 +32,11 @@ class AddressCollectionEntityDataMapperTest {
         val fakeAddress = "address"
         val latitude = 1.0
         val longitude = 2.0
-        val location = Location.Builder().withLatitude(latitude).withLongitude(longitude).build()
-        val geometry = Geometry.Builder().withLocation(location).build()
-        val result = Result.Builder().withFormattedAddress(fakeAddress).withGeometry(geometry).build()
+        val location = Location(latitude, longitude)
+        val geometry = Geometry(location)
+        val result = Result(fakeAddress, geometry)
         val results = mutableListOf(result)
-        val addressCollectionEntity = AddressCollectionEntity.Builder().withResults(results).build()
+        val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
 
         val addressCollection = AddressCollectionEntityDataMapper().transform(addressCollectionEntity)
 

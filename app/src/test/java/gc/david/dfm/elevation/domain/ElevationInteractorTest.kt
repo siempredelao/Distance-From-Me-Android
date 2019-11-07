@@ -21,8 +21,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.elevation.data.ElevationRepository
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
+import gc.david.dfm.elevation.data.model.ElevationStatus
 import gc.david.dfm.elevation.data.model.Result
-import gc.david.dfm.elevation.domain.ElevationInteractor.STATUS_OK
 import gc.david.dfm.elevation.domain.model.Elevation
 import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
@@ -34,7 +34,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
-import java.util.*
 
 /**
  * Created by david on 11.01.17.
@@ -78,10 +77,8 @@ class ElevationInteractorTest {
         val coordinateList = mutableListOf(LatLng(0.0, 0.0))
         val results = ArrayList<Result>()
         val elevation = 1.0
-        results.add(Result.Builder().withElevation(elevation).build())
-        val elevationEntity = ElevationEntity.Builder().withStatus(STATUS_OK)
-                .withResults(results)
-                .build()
+        results.add(Result(elevation))
+        val elevationEntity = ElevationEntity(results, ElevationStatus.OK)
         doAnswer { (it.arguments[2] as ElevationRepository.Callback).onSuccess(elevationEntity) }
                 .whenever(repository).getElevation(anyString(), anyInt(), any())
 

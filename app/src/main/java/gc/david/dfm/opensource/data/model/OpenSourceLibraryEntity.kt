@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.opensource.data.model
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
-public class AddressComponent {
-
-    @SerializedName("long_name")
-    private String       longName;
-    @SerializedName("short_name")
-    private String       shortName;
-    private List<String> types;
-
-}
+/**
+ * Created by david on 25.01.17.
+ */
+class OpenSourceLibraryEntity(val name: String,
+                              val author: String,
+                              val version: String,
+                              val link: String,
+                              val licenseCode: String,
+                              val licenseYear: String,
+                              val description: String)

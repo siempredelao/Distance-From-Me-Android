@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data.model;
+package gc.david.dfm.elevation.data.model
 
-import com.google.gson.annotations.SerializedName;
-
-public class Southwest {
-
-    @SerializedName("lat")
-    private double latitude;
-    @SerializedName("lng")
-    private double longitude;
-
-}
+class Result(val elevation: Double)

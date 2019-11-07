@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.model;
+package gc.david.dfm.address.data.model
 
-/**
- * Created by david on 14.12.16.
- */
-public class Faq {
+import com.google.gson.annotations.SerializedName
 
-    private final String question;
-    private final String answer;
-
-    public Faq(final String question, final String answer) {
-        this.question = question;
-        this.answer = answer;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-}
+class Location(
+        @SerializedName("lat") val latitude: Double,
+        @SerializedName("lng") val longitude: Double)

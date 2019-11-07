@@ -14,28 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain.model;
-
-import com.google.android.gms.maps.model.LatLng;
+package gc.david.dfm.faq.model
 
 /**
- * Created by david on 13.01.17.
+ * Created by david on 14.12.16.
  */
-public class Address {
-
-    private final String formattedAddress;
-    private final LatLng coordinates;
-
-    public Address(final String formattedAddress, final LatLng coordinates) {
-        this.formattedAddress = formattedAddress;
-        this.coordinates = coordinates;
-    }
-
-    public String getFormattedAddress() {
-        return formattedAddress;
-    }
-
-    public LatLng getCoordinates() {
-        return coordinates;
-    }
-}
+class Faq(val question: String, val answer: String)
