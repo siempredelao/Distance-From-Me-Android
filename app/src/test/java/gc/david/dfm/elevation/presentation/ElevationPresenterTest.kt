@@ -74,7 +74,7 @@ class ElevationPresenterTest {
     fun `hides chart when no connection available`() {
         val dummyList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline).thenReturn(false)
+        whenever(connectionManager.isOnline()).thenReturn(false)
 
         elevationPresenter.buildChart(dummyList)
 
@@ -85,7 +85,7 @@ class ElevationPresenterTest {
     fun `executes use case when preference is activated and connection available`() {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
 
         elevationPresenter.buildChart(coordinateList)
 
@@ -96,7 +96,7 @@ class ElevationPresenterTest {
     fun `builds chart when use case returns data`() {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
@@ -111,7 +111,7 @@ class ElevationPresenterTest {
     fun `does not build chart when use case is stopped`() {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(ArrayList())
         doAnswer {
                 elevationPresenter.onReset() // reset called before thread finishes
@@ -127,7 +127,7 @@ class ElevationPresenterTest {
     fun `shows error when use case returns error`() {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val errorMessage = "fake error message"
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onError(errorMessage)

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm
 
 /**
  * Created by david on 10.01.17.
  */
-public interface ConnectionManager {
+interface ConnectionManager {
 
-    boolean isOnline();
+    fun isOnline(): Boolean
 }
