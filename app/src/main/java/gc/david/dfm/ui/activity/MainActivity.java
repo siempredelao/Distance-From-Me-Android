@@ -959,7 +959,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void moveCameraZoom(final List<LatLng> coordinatesList) {
-        final String centre = DFMPreferences.getAnimationPreference(getBaseContext());
+        final String centre = DFMPreferences.INSTANCE.getAnimationPreference(getBaseContext());
         switch (centre) {
             case DFMPreferences.ANIMATION_CENTRE_VALUE:
                 final LatLngBounds.Builder latLngBoundsBuilder = new LatLngBounds.Builder();
@@ -1205,7 +1205,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private Locale getAmericanOrEuropeanLocale() {
-        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
+        final String defaultUnit = DFMPreferences.INSTANCE.getMeasureUnitPreference(getBaseContext());
         return DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit) ? Locale.US : Locale.FRANCE;
     }
 }

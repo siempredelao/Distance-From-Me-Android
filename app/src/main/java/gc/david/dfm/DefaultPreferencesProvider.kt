@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm
 
-import android.content.Context;
+import android.content.Context
 
 /**
  * Created by david on 10.01.17.
  */
-public class DefaultPreferencesProvider implements PreferencesProvider {
+class DefaultPreferencesProvider(private val context: Context) : PreferencesProvider {
 
-    private final Context context;
-
-    public DefaultPreferencesProvider(final Context context) {
-        this.context = context;
-    }
-
-    @Override
-    public boolean shouldShowElevationChart() {
-        return DFMPreferences.shouldShowElevationChart(context);
+    override fun shouldShowElevationChart(): Boolean {
+        return DFMPreferences.shouldShowElevationChart(context)
     }
 }

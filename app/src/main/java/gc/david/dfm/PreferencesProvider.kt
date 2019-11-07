@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm;
+package gc.david.dfm
 
 /**
  * Created by david on 10.01.17.
  */
-public interface PreferencesProvider {
+interface PreferencesProvider {
 
-    boolean shouldShowElevationChart();
+    fun shouldShowElevationChart(): Boolean
 
     // TODO: 10.01.17 add rest of methods
 

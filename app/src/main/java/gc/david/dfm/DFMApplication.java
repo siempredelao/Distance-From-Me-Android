@@ -56,9 +56,9 @@ public class DFMApplication extends Application {
     private void setupDefaultUnit() {
         DFMLogger.INSTANCE.logMessage(TAG, "setupDefaultUnit");
 
-        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
+        final String defaultUnit = DFMPreferences.INSTANCE.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit == null) {
-            DFMPreferences.setMeasureUnitPreference(getBaseContext(),
+            DFMPreferences.INSTANCE.setMeasureUnitPreference(getBaseContext(),
                                                     isAmericanLocale()
                                                     ? DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
                                                     : DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
