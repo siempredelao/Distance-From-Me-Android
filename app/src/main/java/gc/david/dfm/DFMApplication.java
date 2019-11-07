@@ -48,17 +48,17 @@ public class DFMApplication extends Application {
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
         }
-        DFMLogger.logMessage(TAG, "onCreate");
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate");
 
         setupDefaultUnit();
     }
 
     private void setupDefaultUnit() {
-        DFMLogger.logMessage(TAG, "setupDefaultUnit");
+        DFMLogger.INSTANCE.logMessage(TAG, "setupDefaultUnit");
 
-        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
+        final String defaultUnit = DFMPreferences.INSTANCE.getMeasureUnitPreference(getBaseContext());
         if (defaultUnit == null) {
-            DFMPreferences.setMeasureUnitPreference(getBaseContext(),
+            DFMPreferences.INSTANCE.setMeasureUnitPreference(getBaseContext(),
                                                     isAmericanLocale()
                                                     ? DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
                                                     : DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE);
@@ -66,7 +66,7 @@ public class DFMApplication extends Application {
     }
 
     private boolean isAmericanLocale() {
-        return Haversine.isAmericanLocale(Locale.getDefault());
+        return Haversine.INSTANCE.isAmericanLocale(Locale.getDefault());
     }
 
 }

@@ -92,7 +92,8 @@ import gc.david.dfm.PreferencesProvider;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter;
-import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
 import gc.david.dfm.address.presentation.Address;
 import gc.david.dfm.address.presentation.AddressPresenter;
 import gc.david.dfm.dagger.DaggerMainComponent;
@@ -125,9 +126,6 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.isReleaseBuild;
-import static gc.david.dfm.Utils.showAlertDialog;
-import static gc.david.dfm.Utils.toastIt;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
                                                                OnMapReadyCallback,
@@ -169,9 +167,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Inject
     protected PreferencesProvider    preferencesProvider;
     @Inject @Named("CoordinatesByName")
-    protected GetAddressUseCase      getAddressCoordinatesByNameUseCase;
+    protected GetAddressCoordinatesByNameInteractor getAddressCoordinatesByNameUseCase;
     @Inject @Named("NameByCoordinates")
-    protected GetAddressUseCase      getAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesInteractor getAddressNameByCoordinatesUseCase;
     @Inject
     protected LoadDistancesUseCase   loadDistancesUseCase;
     @Inject
@@ -208,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.INSTANCE.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -308,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (SDK_INT >= M && !isLocationPermissionGranted()) {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE);
         } else {
-            toastIt(R.string.toast_loading_position, appContext);
+            Utils.INSTANCE.toastIt(R.string.toast_loading_position, appContext);
             googleMap.setMyLocationEnabled(true);
             fabMyLocation.setVisibility(View.VISIBLE);
         }
@@ -321,16 +319,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             // not necessary to check both permissions, they fall under location group
             if (grantResults[0] == PERMISSION_GRANTED) {
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED");
+                DFMLogger.INSTANCE.logMessage(TAG, "onRequestPermissionsResult GRANTED");
 
-                toastIt(R.string.toast_loading_position, appContext);
+                Utils.INSTANCE.toastIt(R.string.toast_loading_position, appContext);
                 googleMap.setMyLocationEnabled(true);
                 fabMyLocation.setVisibility(View.VISIBLE);
 
                 registerReceiver(locationReceiver, new IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION));
                 startService(new Intent(this, GeofencingService.class));
             } else {
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED");
+                DFMLogger.INSTANCE.logMessage(TAG, "onRequestPermissionsResult DENIED");
                 fabMyLocation.setVisibility(View.GONE);
                 nvDrawer.getMenu().findItem(R.id.menu_any_position).setChecked(true);
                 onStartingPointSelected();
@@ -340,13 +338,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onMapLongClick(LatLng point) {
-        DFMLogger.logMessage(TAG, "onMapLongClick");
+        DFMLogger.INSTANCE.logMessage(TAG, "onMapLongClick");
 
         calculatingDistance = true;
 
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             if (coordinates.isEmpty()) {
-                toastIt(R.string.toast_first_point_needed, appContext);
+                Utils.INSTANCE.toastIt(R.string.toast_first_point_needed, appContext);
             } else {
                 coordinates.add(point);
                 drawAndShowMultipleDistances(coordinates, "", false);
@@ -364,7 +362,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onMapClick(LatLng point) {
-        DFMLogger.logMessage(TAG, "onMapClick");
+        DFMLogger.INSTANCE.logMessage(TAG, "onMapClick");
 
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             if (!calculatingDistance) {
@@ -398,16 +396,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        DFMLogger.logMessage(TAG, "onInfoWindowClick");
+        DFMLogger.INSTANCE.logMessage(TAG, "onInfoWindowClick");
 
         ShowInfoActivity.open(this, coordinates, distanceMeasuredAsText);
     }
 
     private void onStartingPointSelected() {
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
-            DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from current point");
+            DFMLogger.INSTANCE.logMessage(TAG, "onStartingPointSelected Distance from current point");
         } else {
-            DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from any point");
+            DFMLogger.INSTANCE.logMessage(TAG, "onStartingPointSelected Distance from any point");
         }
 
         calculatingDistance = false;
@@ -429,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onNewIntent(Intent intent) {
-        DFMLogger.logMessage(TAG, "onNewIntent " + Utils.dumpIntentToString(intent));
+        DFMLogger.INSTANCE.logMessage(TAG, "onNewIntent " + Utils.INSTANCE.dumpIntentToString(intent));
 
         setIntent(intent);
         handleIntents(intent);
@@ -446,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void handleSearchIntent(final Intent intent) {
-        DFMLogger.logMessage(TAG, "handleSearchIntent");
+        DFMLogger.INSTANCE.logMessage(TAG, "handleSearchIntent");
 
         // Para controlar instancias únicas, no queremos que cada vez que
         // busquemos nos inicie una nueva instancia de la aplicación
@@ -462,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void handleViewPositionIntent(final Intent intent) {
         final Uri uri = intent.getData();
-        DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=" + uri.toString());
+        DFMLogger.INSTANCE.logMessage(TAG, "handleViewPositionIntent uri=" + uri.toString());
 
         final String uriScheme = uri.getScheme();
         if (uriScheme.equals("geo")) {
@@ -472,8 +470,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             handleMapsHostIntent(uri);
         } else {
             final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
-            DFMLogger.logException(exception);
-            toastIt("Unable to parse address", this);
+            DFMLogger.INSTANCE.logException(exception);
+            Utils.INSTANCE.toastIt("Unable to parse address", this);
         }
     }
 
@@ -499,8 +497,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         } else {
             final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                        matcher.toString());
-            DFMLogger.logException(noSuchFieldException);
-            toastIt("Unable to parse address", this);
+            DFMLogger.INSTANCE.logException(noSuchFieldException);
+            Utils.INSTANCE.toastIt("Unable to parse address", this);
         }
     }
 
@@ -513,25 +511,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             } else {
                 final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                            matcher.toString());
-                DFMLogger.logException(noSuchFieldException);
-                toastIt("Unable to parse address", this);
+                DFMLogger.INSTANCE.logException(noSuchFieldException);
+                Utils.INSTANCE.toastIt("Unable to parse address", this);
             }
         } else {
             final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
-            DFMLogger.logException(noSuchFieldException);
-            toastIt("Unable to parse address", this);
+            DFMLogger.INSTANCE.logException(noSuchFieldException);
+            Utils.INSTANCE.toastIt("Unable to parse address", this);
         }
     }
 
     private void setDestinationPosition(final Matcher matcher) {
-        DFMLogger.logMessage(TAG, "setDestinationPosition");
+        DFMLogger.INSTANCE.logMessage(TAG, "setDestinationPosition");
 
         sendDestinationPosition = new LatLng(Double.valueOf(matcher.group(1)), Double.valueOf(matcher.group(2)));
         mustShowPositionWhenComingFromOutside = true;
     }
 
     private Matcher getMatcherForUri(final String schemeSpecificPart) {
-        DFMLogger.logMessage(TAG, "getMatcherForUri scheme=" + schemeSpecificPart);
+        DFMLogger.INSTANCE.logMessage(TAG, "getMatcherForUri scheme=" + schemeSpecificPart);
 
         final String regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)";
         final Pattern pattern = Pattern.compile(regex);
@@ -567,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        menu.findItem(R.id.action_crash).setVisible(!isReleaseBuild());
+        menu.findItem(R.id.action_crash).setVisible(!Utils.INSTANCE.isReleaseBuild());
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -576,18 +574,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected home");
+                DFMLogger.INSTANCE.logMessage(TAG, "onOptionsItemSelected home");
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.action_search:
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected search");
+                DFMLogger.INSTANCE.logMessage(TAG, "onOptionsItemSelected search");
                 return true;
             case R.id.action_load:
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected load distances from ddbb");
+                DFMLogger.INSTANCE.logMessage(TAG, "onOptionsItemSelected load distances from ddbb");
                 loadDistancesFromDB();
                 return true;
             case R.id.action_crash:
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected crash");
+                DFMLogger.INSTANCE.logMessage(TAG, "onOptionsItemSelected crash");
                 throw new RuntimeException("User forced crash");
             default:
                 return super.onOptionsItemSelected(item);
@@ -619,14 +617,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 @Override
                                 public void onPositionListLoaded(final List<Position> positionList) {
                                     coordinates.clear();
-                                    coordinates.addAll(Utils.convertPositionListToLatLngList(positionList));
+                                    coordinates.addAll(Utils.INSTANCE.convertPositionListToLatLngList(positionList));
 
                                     drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true);
                                 }
 
                                 @Override
                                 public void onError() {
-                                    DFMLogger.logException(new Exception("Unable to get position by id."));
+                                    DFMLogger.INSTANCE.logException(new Exception("Unable to get position by id."));
                                 }
                             });
                         }
@@ -637,13 +635,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             @Override
             public void onError() {
-                DFMLogger.logException(new Exception("Unable to load distances."));
+                DFMLogger.INSTANCE.logException(new Exception("Unable to load distances."));
             }
         });
     }
 
     private void showRateDialog() {
-        DFMLogger.logMessage(TAG, "showRateDialog");
+        DFMLogger.INSTANCE.logMessage(TAG, "showRateDialog");
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.dialog_rate_app_title)
@@ -667,22 +665,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void openPlayStoreAppPage() {
-        DFMLogger.logMessage(TAG, "openPlayStoreAppPage");
+        DFMLogger.INSTANCE.logMessage(TAG, "openPlayStoreAppPage");
 
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")));
         } catch (ActivityNotFoundException e) {
-            DFMLogger.logException(new Exception("Unable to open Play Store, rooted device?"));
+            DFMLogger.INSTANCE.logException(new Exception("Unable to open Play Store, rooted device?"));
         }
     }
 
     private void openFeedbackActivity() {
-        DFMLogger.logMessage(TAG, "openFeedbackActivity");
+        DFMLogger.INSTANCE.logMessage(TAG, "openFeedbackActivity");
 
         new FeedbackPresenter(new Feedback.View() {
             @Override
             public void showError() {
-                toastIt(R.string.toast_send_feedback_error, appContext);
+                Utils.INSTANCE.toastIt(R.string.toast_send_feedback_error, appContext);
             }
 
             @Override
@@ -703,13 +701,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onStop() {
-        DFMLogger.logMessage(TAG, "onStop");
+        DFMLogger.INSTANCE.logMessage(TAG, "onStop");
 
         super.onStop();
         try {
             unregisterReceiver(locationReceiver);
         } catch (IllegalArgumentException exception) {
-            DFMLogger.logMessage(TAG, "onStop receiver not registered, do nothing");
+            DFMLogger.INSTANCE.logMessage(TAG, "onStop receiver not registered, do nothing");
         }
         stopService(new Intent(this, GeofencingService.class));
     }
@@ -719,7 +717,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onStart() {
-        DFMLogger.logMessage(TAG, "onStart");
+        DFMLogger.INSTANCE.logMessage(TAG, "onStart");
 
         super.onStart();
         if (isLocationPermissionGranted()) {
@@ -744,7 +742,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onResume() {
-        DFMLogger.logMessage(TAG, "onResume");
+        DFMLogger.INSTANCE.logMessage(TAG, "onResume");
 
         super.onResume();
         invalidateOptionsMenu();
@@ -753,7 +751,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onDestroy() {
-        DFMLogger.logMessage(TAG, "onDestroy");
+        DFMLogger.INSTANCE.logMessage(TAG, "onDestroy");
 
         elevationPresenter.onReset();
         super.onDestroy();
@@ -761,12 +759,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        DFMLogger.logMessage(TAG,
+        DFMLogger.INSTANCE.logMessage(TAG,
                              String.format(Locale.getDefault(),
                                            "onActivityResult requestCode=%d, resultCode=%d, intent=%s",
                                            requestCode,
                                            resultCode,
-                                           Utils.dumpIntentToString(intent)));
+                                           Utils.INSTANCE.dumpIntentToString(intent)));
 
         if (requestCode == LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
@@ -793,17 +791,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         final int resultCode = googleApiAvailabilityInstance.isGooglePlayServicesAvailable(appContext);
 
         if (resultCode == ConnectionResult.SUCCESS) {
-            DFMLogger.logMessage(TAG, "checkPlayServices success");
+            DFMLogger.INSTANCE.logMessage(TAG, "checkPlayServices success");
 
             return true;
         } else {
             if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
-                DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError");
+                DFMLogger.INSTANCE.logMessage(TAG, "checkPlayServices isUserRecoverableError");
 
                 final int RQS_GooglePlayServices = 1;
                 googleApiAvailabilityInstance.getErrorDialog(this, resultCode, RQS_GooglePlayServices).show();
             } else {
-                DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing");
+                DFMLogger.INSTANCE.logMessage(TAG, "checkPlayServices device not supported, finishing");
 
                 finish();
             }
@@ -816,7 +814,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        DFMLogger.logMessage(TAG, "onConnectionFailed");
+        DFMLogger.INSTANCE.logMessage(TAG, "onConnectionFailed");
 
         /*
          * Google Play services can resolve some errors it detects. If the error
@@ -824,7 +822,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 		 * services activity that can resolve error.
 		 */
         if (connectionResult.hasResolution()) {
-            DFMLogger.logMessage(TAG, "onConnectionFailed connection has resolution");
+            DFMLogger.INSTANCE.logMessage(TAG, "onConnectionFailed connection has resolution");
 
             try {
                 // Start an Activity that tries to resolve the error
@@ -836,10 +834,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             } catch (IntentSender.SendIntentException e) {
                 // Log the error
                 e.printStackTrace();
-                DFMLogger.logException(e);
+                DFMLogger.INSTANCE.logException(e);
             }
         } else {
-            DFMLogger.logMessage(TAG, "onConnectionFailed connection does not have resolution");
+            DFMLogger.INSTANCE.logMessage(TAG, "onConnectionFailed connection does not have resolution");
             // If no resolution is available, display a dialog to the user with
             // the error.
             showErrorDialog(connectionResult.getErrorCode());
@@ -847,7 +845,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void onLocationChanged(final Location location) {
-        DFMLogger.logMessage(TAG, "onLocationChanged");
+        DFMLogger.INSTANCE.logMessage(TAG, "onLocationChanged");
 
         if (currentLocation != null) {
             currentLocation.set(location);
@@ -856,10 +854,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
         if (appHasJustStarted) {
-            DFMLogger.logMessage(TAG, "onLocationChanged appHasJustStarted");
+            DFMLogger.INSTANCE.logMessage(TAG, "onLocationChanged appHasJustStarted");
 
             if (mustShowPositionWhenComingFromOutside) {
-                DFMLogger.logMessage(TAG, "onLocationChanged mustShowPositionWhenComingFromOutside");
+                DFMLogger.INSTANCE.logMessage(TAG, "onLocationChanged mustShowPositionWhenComingFromOutside");
 
                 if (currentLocation != null && sendDestinationPosition != null) {
                     addressPresenter.searchPositionByCoordinates(sendDestinationPosition);
@@ -867,7 +865,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     mustShowPositionWhenComingFromOutside = false;
                 }
             } else {
-                DFMLogger.logMessage(TAG, "onLocationChanged NOT mustShowPositionWhenComingFromOutside");
+                DFMLogger.INSTANCE.logMessage(TAG, "onLocationChanged NOT mustShowPositionWhenComingFromOutside");
 
                 final LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
                 // 17 is a good zoom level for this action
@@ -884,11 +882,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @param errorCode An error code returned from onConnectionFailed
      */
     private void showErrorDialog(final int errorCode) {
-        DFMLogger.logMessage(TAG, "showErrorDialog errorCode=" + errorCode);
+        DFMLogger.INSTANCE.logMessage(TAG, "showErrorDialog errorCode=" + errorCode);
 
         final Dialog errorDialog = GoogleApiAvailability.getInstance().getErrorDialog(this,
                                                                                       errorCode,
-                                                                                      LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
 
         // If Google Play services can provide an error dialog
         if (errorDialog != null) {
@@ -901,7 +899,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void drawAndShowMultipleDistances(final List<LatLng> coordinates,
                                               final String message,
                                               final boolean isLoadingFromDB) {
-        DFMLogger.logMessage(TAG, "drawAndShowMultipleDistances");
+        DFMLogger.INSTANCE.logMessage(TAG, "drawAndShowMultipleDistances");
 
         googleMap.clear();
 
@@ -952,13 +950,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private String calculateDistance(final List<LatLng> coordinates) {
-        double distanceInMetres = Utils.calculateDistanceInMetres(coordinates);
+        double distanceInMetres = Utils.INSTANCE.calculateDistanceInMetres(coordinates);
 
-        return Haversine.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
+        return Haversine.INSTANCE.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
     }
 
     private void moveCameraZoom(final List<LatLng> coordinatesList) {
-        final String centre = DFMPreferences.getAnimationPreference(getBaseContext());
+        final String centre = DFMPreferences.INSTANCE.getAnimationPreference(getBaseContext());
         switch (centre) {
             case DFMPreferences.ANIMATION_CENTRE_VALUE:
                 final LatLngBounds.Builder latLngBoundsBuilder = new LatLngBounds.Builder();
@@ -979,7 +977,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void fixMapPadding() {
-        DFMLogger.logMessage(TAG,
+        DFMLogger.INSTANCE.logMessage(TAG,
                              String.format("fixMapPadding elevationChartShown %s",
                                            rlElevationChart.isShown()));
         googleMap.setPadding(0,
@@ -1016,7 +1014,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (graphView == null) {
             graphView = new LineGraphView(appContext,
                                           getString(R.string.elevation_chart_title,
-                                                    Haversine.getAltitudeUnitByLocale(locale)));
+                                                    Haversine.INSTANCE.getAltitudeUnitByLocale(locale)));
             final GraphViewStyle graphViewStyle = graphView.getGraphViewStyle();
             graphViewStyle.setGridColor(Color.TRANSPARENT);
             graphViewStyle.setNumHorizontalLabels(1); // Not working with zero?
@@ -1046,7 +1044,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         for (int w = 0; w < elevationList.size(); w++) {
             series.appendData(new GraphView.GraphViewData(w,
-                                                          Haversine.normalizeAltitudeByLocale(elevationList.get(w),
+                                                          Haversine.INSTANCE.normalizeAltitudeByLocale(elevationList.get(w),
                                                                                               locale)),
                               false,
                               elevationList.size());
@@ -1071,7 +1069,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void logError(final String errorMessage) {
-        DFMLogger.logException(new Exception(errorMessage));
+        DFMLogger.INSTANCE.logException(new Exception(errorMessage));
     }
 
     @OnClick(R.id.main_activity_showchart_floatingactionbutton)
@@ -1094,9 +1092,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void showConnectionProblemsDialog() {
-        DFMLogger.logMessage(TAG, "showConnectionProblemsDialog");
+        DFMLogger.INSTANCE.logMessage(TAG, "showConnectionProblemsDialog");
 
-        showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
+        Utils.INSTANCE.showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
                         R.string.dialog_connection_problems_title,
                         R.string.dialog_connection_problems_message,
                         R.string.dialog_connection_problems_positive_button,
@@ -1124,12 +1122,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void showCallError(final String errorMessage) {
         logError(errorMessage);
-        toastIt(R.string.toast_no_find_address, appContext);
+        Utils.INSTANCE.toastIt(R.string.toast_no_find_address, appContext);
     }
 
     @Override
     public void showNoMatchesMessage() {
-        toastIt(R.string.toast_no_results, appContext);
+        Utils.INSTANCE.toastIt(R.string.toast_no_results, appContext);
     }
 
     @Override
@@ -1147,13 +1145,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void showPositionByName(final gc.david.dfm.address.domain.model.Address address) {
-        DFMLogger.logMessage(TAG, "showPositionByName " + getSelectedDistanceMode());
+        DFMLogger.INSTANCE.logMessage(TAG, "showPositionByName " + getSelectedDistanceMode());
 
         final LatLng addressCoordinates = address.getCoordinates();
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             coordinates.add(addressCoordinates);
             if (coordinates.isEmpty()) {
-                DFMLogger.logMessage(TAG, "showPositionByName empty coordinates list");
+                DFMLogger.INSTANCE.logMessage(TAG, "showPositionByName empty coordinates list");
 
                 // add marker
                 final Marker marker = addMarker(addressCoordinates);
@@ -1171,17 +1169,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         } else {
             if (!appHasJustStarted) {
-                DFMLogger.logMessage(TAG, "showPositionByName appHasJustStarted");
+                DFMLogger.INSTANCE.logMessage(TAG, "showPositionByName appHasJustStarted");
 
                 if (coordinates.isEmpty()) {
-                    DFMLogger.logMessage(TAG, "showPositionByName empty coordinates list");
+                    DFMLogger.INSTANCE.logMessage(TAG, "showPositionByName empty coordinates list");
 
                     coordinates.add(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
                 }
                 coordinates.add(addressCoordinates);
                 drawAndShowMultipleDistances(this.coordinates, address.getFormattedAddress() + "\n", false);
             } else {
-                DFMLogger.logMessage(TAG, "showPositionByName NOT appHasJustStarted");
+                DFMLogger.INSTANCE.logMessage(TAG, "showPositionByName NOT appHasJustStarted");
 
                 // Coming from View Action Intent
                 sendDestinationPosition = addressCoordinates;
@@ -1204,7 +1202,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private Locale getAmericanOrEuropeanLocale() {
-        final String defaultUnit = DFMPreferences.getMeasureUnitPreference(getBaseContext());
+        final String defaultUnit = DFMPreferences.INSTANCE.getMeasureUnitPreference(getBaseContext());
         return DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE.equals(defaultUnit) ? Locale.US : Locale.FRANCE;
     }
 }

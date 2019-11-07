@@ -18,6 +18,7 @@ package gc.david.dfm.ui.dialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
@@ -39,7 +40,7 @@ public class ErrorDialogFragment extends DialogFragment {
     }
 
     public void setDialog(final Dialog dialog) {
-        DFMLogger.logMessage(TAG, "setDialog");
+        DFMLogger.INSTANCE.logMessage(TAG, "setDialog");
 
         this.dialog = dialog;
     }
@@ -47,7 +48,7 @@ public class ErrorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreateDialog");
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreateDialog");
 
         return dialog;
     }

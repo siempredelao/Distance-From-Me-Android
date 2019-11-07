@@ -58,7 +58,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows connection problems dialog when no connection available in position by name`() {
-        whenever(connectionManager.isOnline).thenReturn(false)
+        whenever(connectionManager.isOnline()).thenReturn(false)
         val locationName = LOCATION_NAME
 
         addressPresenter.searchPositionByName(locationName)
@@ -68,7 +68,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows progress dialog when connection available in position by name`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
 
         addressPresenter.searchPositionByName(locationName)
@@ -78,7 +78,7 @@ class AddressPresenterTest {
 
     @Test
     fun `executes coordinates by name use case when connection available`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
 
         addressPresenter.searchPositionByName(locationName)
@@ -88,7 +88,7 @@ class AddressPresenterTest {
 
     @Test
     fun `hides progress dialog when position by name use case succeeds`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
@@ -100,7 +100,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows no matches when position by name use case return zero results`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
@@ -112,7 +112,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows position by name when use case return one result`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
         val address = ADDRESS
         val addressList = mutableListOf(address)
@@ -126,7 +126,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows address selection dialog when position by name use case return several results`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
         val address = ADDRESS
         val addressList = mutableListOf(address, address)
@@ -140,7 +140,7 @@ class AddressPresenterTest {
 
     @Test
     fun `hides progress dialog when position by name use case fails`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
@@ -152,7 +152,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows error when position by name use case fails`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
@@ -173,7 +173,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows connection problems dialog when no connection available in position by coordinates`() {
-        whenever(connectionManager.isOnline).thenReturn(false)
+        whenever(connectionManager.isOnline()).thenReturn(false)
         val coordinates = COORDINATES
 
         addressPresenter.searchPositionByCoordinates(coordinates)
@@ -183,7 +183,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows progress dialog when connection available in position by coordinates`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
 
         addressPresenter.searchPositionByCoordinates(coordinates)
@@ -193,7 +193,7 @@ class AddressPresenterTest {
 
     @Test
     fun `executes name by coordinates use case when connection available`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
 
         addressPresenter.searchPositionByCoordinates(coordinates)
@@ -203,7 +203,7 @@ class AddressPresenterTest {
 
     @Test
     fun `hides progress dialog when use case succeeds in position by coordinates`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
@@ -215,7 +215,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows no matches when position by coordinates use case return zero results`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
@@ -227,7 +227,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows position by coordinates when use case return one result`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
         val address = ADDRESS
         val addressList = mutableListOf(address)
@@ -241,7 +241,7 @@ class AddressPresenterTest {
 
     @Test
     fun `hides progress dialog when position by coordinates use case fails`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
@@ -253,7 +253,7 @@ class AddressPresenterTest {
 
     @Test
     fun `shows error when position by coordinates use case fails`() {
-        whenever(connectionManager.isOnline).thenReturn(true)
+        whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)

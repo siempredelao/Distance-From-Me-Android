@@ -27,15 +27,16 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.core.view.MenuItemCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.ShareActionProvider;
-import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -51,7 +52,7 @@ import gc.david.dfm.ConnectionManager;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.R;
 import gc.david.dfm.Utils;
-import gc.david.dfm.address.domain.GetAddressUseCase;
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor;
 import gc.david.dfm.dagger.DaggerShowInfoComponent;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.ShowInfoModule;
@@ -63,7 +64,6 @@ import gc.david.dfm.showinfo.presentation.ShowInfo;
 import gc.david.dfm.showinfo.presentation.ShowInfoPresenter;
 
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.toastIt;
 
 public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View {
 
@@ -96,10 +96,10 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     protected InsertDistanceUseCase insertDistanceUseCase;
     @Inject
     @Named("NameByCoordinates")
-    protected GetAddressUseCase     getOriginAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesInteractor getOriginAddressNameByCoordinatesUseCase;
     @Inject
     @Named("NameByCoordinates")
-    protected GetAddressUseCase     getDestinationAddressNameByCoordinatesUseCase;
+    protected GetAddressNameByCoordinatesInteractor getDestinationAddressNameByCoordinatesUseCase;
 
     private MenuItem           refreshMenuItem;
     private List<LatLng>       positionsList;
@@ -114,7 +114,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.INSTANCE.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
@@ -139,7 +139,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
         getIntentData();
 
         if (savedInstanceState == null) {
-            DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
+            DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info");
 
             fillAddressesInfo();
         } else {
@@ -170,7 +170,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        DFMLogger.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onSaveInstanceState outState=" + Utils.INSTANCE.dumpBundleToString(outState));
 
         super.onSaveInstanceState(outState);
 
@@ -190,7 +190,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     }
 
     private void getIntentData() {
-        DFMLogger.logMessage(TAG, "getIntentData");
+        DFMLogger.INSTANCE.logMessage(TAG, "getIntentData");
 
         final Intent inputDataIntent = getIntent();
         positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY);
@@ -198,7 +198,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     }
 
     private void fillAddressesInfo() {
-        DFMLogger.logMessage(TAG, "fillAddressesInfo");
+        DFMLogger.INSTANCE.logMessage(TAG, "fillAddressesInfo");
 
         showInfoPresenter.searchPositionByCoordinates(positionsList.get(0),
                                                       positionsList.get(positionsList.size() - 1));
@@ -209,7 +209,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
     }
 
     private void fillDistanceInfo() {
-        DFMLogger.logMessage(TAG, "fillDistanceInfo");
+        DFMLogger.INSTANCE.logMessage(TAG, "fillDistanceInfo");
 
         tvDistance.setText(getString(R.string.info_distance_title, distance));
     }
@@ -295,7 +295,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     public void showNoInternetError() {
-        toastIt(getString(R.string.toast_network_problems), getApplicationContext());
+        Utils.INSTANCE.toastIt(getString(R.string.toast_network_problems), getApplicationContext());
     }
 
     @Override
@@ -343,23 +343,23 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
         } else {
             tvDestinationAddress.setText(R.string.toast_no_location_found);
         }
-        DFMLogger.logException(new Exception(errorMessage));
+        DFMLogger.INSTANCE.logException(new Exception(errorMessage));
     }
 
     @Override
     public void showSuccessfulSave() {
-        toastIt(R.string.alias_dialog_no_name_toast, appContext);
+        Utils.INSTANCE.toastIt(R.string.alias_dialog_no_name_toast, appContext);
     }
 
     @Override
     public void showSuccessfulSaveWithName(final String distanceName) {
-        toastIt(getString(R.string.alias_dialog_with_name_toast, distanceName), appContext);
+        Utils.INSTANCE.toastIt(getString(R.string.alias_dialog_with_name_toast, distanceName), appContext);
     }
 
     @Override
     public void showFailedSave() {
-        toastIt("Unable to save distance. Try again later.", appContext);
-        DFMLogger.logException(new Exception("Unable to insert distance into database."));
+        Utils.INSTANCE.toastIt("Unable to save distance. Try again later.", appContext);
+        DFMLogger.INSTANCE.logException(new Exception("Unable to insert distance into database."));
     }
 
     public static void open(final Activity activity, final List<LatLng> coordinates, final String distanceAsText) {

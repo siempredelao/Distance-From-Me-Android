@@ -20,13 +20,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
+import android.widget.ProgressBar;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.widget.ProgressBar;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Set;
 
@@ -36,23 +38,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import gc.david.dfm.DFMApplication;
-import gc.david.dfm.dagger.DaggerFaqComponent;
-import gc.david.dfm.deviceinfo.DeviceInfo;
-import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
+import gc.david.dfm.adapter.FAQAdapter;
+import gc.david.dfm.dagger.DaggerFaqComponent;
 import gc.david.dfm.dagger.FaqModule;
 import gc.david.dfm.dagger.RootModule;
-import gc.david.dfm.adapter.FAQAdapter;
-import gc.david.dfm.faq.model.Faq;
+import gc.david.dfm.deviceinfo.DeviceInfo;
+import gc.david.dfm.deviceinfo.PackageManager;
 import gc.david.dfm.faq.Faqs;
 import gc.david.dfm.faq.FaqsPresenter;
 import gc.david.dfm.faq.GetFaqsUseCase;
+import gc.david.dfm.faq.model.Faq;
 import gc.david.dfm.feedback.Feedback;
 import gc.david.dfm.feedback.FeedbackPresenter;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static gc.david.dfm.Utils.toastIt;
 
 public class HelpAndFeedbackActivity extends AppCompatActivity implements Faqs.View {
 
@@ -96,7 +98,7 @@ public class HelpAndFeedbackActivity extends AppCompatActivity implements Faqs.V
         new FeedbackPresenter(new Feedback.View() {
             @Override
             public void showError() {
-                toastIt(R.string.toast_send_feedback_error, getApplicationContext());
+                Utils.INSTANCE.toastIt(R.string.toast_send_feedback_error, getApplicationContext());
             }
 
             @Override

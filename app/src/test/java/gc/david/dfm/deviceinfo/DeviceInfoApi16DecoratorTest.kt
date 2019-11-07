@@ -48,6 +48,9 @@ class DeviceInfoApi16DecoratorTest {
 
     @Test
     fun `decorator is called`() {
+        val fakeDeviceInfo = "fake device info"
+        whenever(decoratedDeviceInfo.deviceInfo).thenReturn(fakeDeviceInfo)
+
         deviceInfoApi16Decorator.deviceInfo
 
         verify(decoratedDeviceInfo).deviceInfo
