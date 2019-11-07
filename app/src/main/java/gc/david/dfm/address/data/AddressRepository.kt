@@ -14,9 +14,27 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain.model
+package gc.david.dfm.address.data
+
+import com.google.android.gms.maps.model.LatLng
+
+import gc.david.dfm.address.data.model.AddressCollectionEntity
 
 /**
- * Created by david on 13.01.17.
+ * Created by david on 12.01.17.
  */
-data class AddressCollection(val addressList: List<Address>)
+interface AddressRepository {
+
+    interface Callback {
+
+        fun onSuccess(addressCollectionEntity: AddressCollectionEntity)
+
+        fun onError(message: String)
+
+    }
+
+    fun getNameByCoordinates(coordinates: LatLng, callback: Callback)
+
+    fun getCoordinatesByName(name: String, callback: Callback)
+
+}

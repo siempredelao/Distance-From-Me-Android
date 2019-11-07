@@ -17,18 +17,20 @@
 package gc.david.dfm.address.presentation
 
 import com.google.android.gms.maps.model.LatLng
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.address.domain.GetAddressUseCase
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
-import java.util.*
 
 /**
  * Created by david on 15.01.17.
@@ -38,9 +40,9 @@ class AddressPresenterTest {
     @Mock
     lateinit var addressView: Address.View
     @Mock
-    lateinit var getAddressCoordinatesByNameUseCase: GetAddressUseCase<String>
+    lateinit var getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase
     @Mock
-    lateinit var getAddressNameByCoordinatesUseCase: GetAddressUseCase<LatLng>
+    lateinit var getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase
     @Mock
     lateinit var connectionManager: ConnectionManager
 
@@ -266,28 +268,28 @@ class AddressPresenterTest {
     private fun executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName: String,
                                                                             addressCollection: AddressCollection) {
         doAnswer {
-                (it.arguments[2] as GetAddressUseCase.Callback).onAddressLoaded(addressCollection)
+                (it.arguments[2] as GetAddressCoordinatesByNameUseCase.Callback).onAddressLoaded(addressCollection)
         }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
     }
 
     private fun executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName: String,
                                                                     errorMessage: String) {
         doAnswer {
-                (it.arguments[2] as GetAddressUseCase.Callback).onError(errorMessage)
+                (it.arguments[2] as GetAddressCoordinatesByNameUseCase.Callback).onError(errorMessage)
         }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
     }
 
     private fun executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
                                                                             addressCollection: AddressCollection) {
         doAnswer {
-                (it.arguments[2] as GetAddressUseCase.Callback).onAddressLoaded(addressCollection)
+                (it.arguments[2] as GetAddressNameByCoordinatesUseCase.Callback).onAddressLoaded(addressCollection)
         }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
     }
 
     private fun executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
                                                                     errorMessage: String) {
         doAnswer {
-                (it.arguments[2] as GetAddressUseCase.Callback).onError(errorMessage)
+                (it.arguments[2] as GetAddressNameByCoordinatesUseCase.Callback).onError(errorMessage)
         }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
     }
 

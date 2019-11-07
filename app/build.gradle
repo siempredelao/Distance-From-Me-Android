@@ -151,5 +151,6 @@ dependencies {
 	testImplementation "org.mockito:mockito-core:$mockitoVersion"
 	testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 	testImplementation "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
+	testImplementation 'org.mockito:mockito-inline:2.22.0'
 }
 

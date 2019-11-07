@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 David Aguiar Gonzalez
+ * Copyright (c) 2019 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.data;
+package gc.david.dfm.address.domain
 
-import com.google.android.gms.maps.model.LatLng;
-
-import gc.david.dfm.address.data.model.AddressCollectionEntity;
+import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.address.domain.model.AddressCollection
 
 /**
  * Created by david on 12.01.17.
  */
-public interface AddressRepository {
+interface GetAddressNameByCoordinatesUseCase {
 
     interface Callback {
 
-        void onSuccess(AddressCollectionEntity addressCollectionEntity);
+        fun onAddressLoaded(addressCollection: AddressCollection)
 
-        void onError(String message);
+        fun onError(errorMessage: String)
 
     }
 
-    void getNameByCoordinates(LatLng latLng, Callback callback);
-
-    void getCoordinatesByName(String name, Callback callback);
-
+    fun execute(coordinates: LatLng, maxResults: Int, callback: Callback)
 }
