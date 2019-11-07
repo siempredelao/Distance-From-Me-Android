@@ -64,7 +64,6 @@ import gc.david.dfm.showinfo.presentation.ShowInfo;
 import gc.david.dfm.showinfo.presentation.ShowInfoPresenter;
 
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.toastIt;
 
 public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View {
 
@@ -115,7 +114,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.INSTANCE.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_info);
@@ -171,7 +170,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        DFMLogger.INSTANCE.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onSaveInstanceState outState=" + Utils.INSTANCE.dumpBundleToString(outState));
 
         super.onSaveInstanceState(outState);
 
@@ -296,7 +295,7 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     public void showNoInternetError() {
-        toastIt(getString(R.string.toast_network_problems), getApplicationContext());
+        Utils.INSTANCE.toastIt(getString(R.string.toast_network_problems), getApplicationContext());
     }
 
     @Override
@@ -349,17 +348,17 @@ public class ShowInfoActivity extends AppCompatActivity implements ShowInfo.View
 
     @Override
     public void showSuccessfulSave() {
-        toastIt(R.string.alias_dialog_no_name_toast, appContext);
+        Utils.INSTANCE.toastIt(R.string.alias_dialog_no_name_toast, appContext);
     }
 
     @Override
     public void showSuccessfulSaveWithName(final String distanceName) {
-        toastIt(getString(R.string.alias_dialog_with_name_toast, distanceName), appContext);
+        Utils.INSTANCE.toastIt(getString(R.string.alias_dialog_with_name_toast, distanceName), appContext);
     }
 
     @Override
     public void showFailedSave() {
-        toastIt("Unable to save distance. Try again later.", appContext);
+        Utils.INSTANCE.toastIt("Unable to save distance. Try again later.", appContext);
         DFMLogger.INSTANCE.logException(new Exception("Unable to insert distance into database."));
     }
 

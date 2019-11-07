@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import gc.david.dfm.DFMApplication;
 import gc.david.dfm.DFMPreferences;
 import gc.david.dfm.R;
+import gc.david.dfm.Utils;
 import gc.david.dfm.dagger.DaggerSettingsComponent;
 import gc.david.dfm.dagger.RootModule;
 import gc.david.dfm.dagger.SettingsModule;
@@ -34,8 +35,6 @@ import gc.david.dfm.distance.domain.ClearDistancesUseCase;
 import gc.david.dfm.logger.DFMLogger;
 import gc.david.dfm.settings.presentation.Settings;
 import gc.david.dfm.settings.presentation.SettingsPresenter;
-
-import static gc.david.dfm.Utils.toastIt;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements Settings.View {
 
@@ -78,7 +77,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
 
     @Override
     public void showClearDataSuccessMessage() {
-        toastIt(R.string.toast_distances_deleted, requireContext());
+        Utils.INSTANCE.toastIt(R.string.toast_distances_deleted, requireContext());
     }
 
     @Override

@@ -126,9 +126,6 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static butterknife.ButterKnife.bind;
-import static gc.david.dfm.Utils.isReleaseBuild;
-import static gc.david.dfm.Utils.showAlertDialog;
-import static gc.david.dfm.Utils.toastIt;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
                                                                OnMapReadyCallback,
@@ -209,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState));
+        DFMLogger.INSTANCE.logMessage(TAG, "onCreate savedInstanceState=" + Utils.INSTANCE.dumpBundleToString(savedInstanceState));
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -309,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (SDK_INT >= M && !isLocationPermissionGranted()) {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE);
         } else {
-            toastIt(R.string.toast_loading_position, appContext);
+            Utils.INSTANCE.toastIt(R.string.toast_loading_position, appContext);
             googleMap.setMyLocationEnabled(true);
             fabMyLocation.setVisibility(View.VISIBLE);
         }
@@ -324,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             if (grantResults[0] == PERMISSION_GRANTED) {
                 DFMLogger.INSTANCE.logMessage(TAG, "onRequestPermissionsResult GRANTED");
 
-                toastIt(R.string.toast_loading_position, appContext);
+                Utils.INSTANCE.toastIt(R.string.toast_loading_position, appContext);
                 googleMap.setMyLocationEnabled(true);
                 fabMyLocation.setVisibility(View.VISIBLE);
 
@@ -347,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         if (getSelectedDistanceMode() == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             if (coordinates.isEmpty()) {
-                toastIt(R.string.toast_first_point_needed, appContext);
+                Utils.INSTANCE.toastIt(R.string.toast_first_point_needed, appContext);
             } else {
                 coordinates.add(point);
                 drawAndShowMultipleDistances(coordinates, "", false);
@@ -430,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onNewIntent(Intent intent) {
-        DFMLogger.INSTANCE.logMessage(TAG, "onNewIntent " + Utils.dumpIntentToString(intent));
+        DFMLogger.INSTANCE.logMessage(TAG, "onNewIntent " + Utils.INSTANCE.dumpIntentToString(intent));
 
         setIntent(intent);
         handleIntents(intent);
@@ -474,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         } else {
             final Exception exception = new Exception("Imposible tratar la query " + uri.toString());
             DFMLogger.INSTANCE.logException(exception);
-            toastIt("Unable to parse address", this);
+            Utils.INSTANCE.toastIt("Unable to parse address", this);
         }
     }
 
@@ -501,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                        matcher.toString());
             DFMLogger.INSTANCE.logException(noSuchFieldException);
-            toastIt("Unable to parse address", this);
+            Utils.INSTANCE.toastIt("Unable to parse address", this);
         }
     }
 
@@ -515,12 +512,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Error al obtener las coordenadas. Matcher = " +
                                                                                            matcher.toString());
                 DFMLogger.INSTANCE.logException(noSuchFieldException);
-                toastIt("Unable to parse address", this);
+                Utils.INSTANCE.toastIt("Unable to parse address", this);
             }
         } else {
             final NoSuchFieldException noSuchFieldException = new NoSuchFieldException("Query sin parámetro q.");
             DFMLogger.INSTANCE.logException(noSuchFieldException);
-            toastIt("Unable to parse address", this);
+            Utils.INSTANCE.toastIt("Unable to parse address", this);
         }
     }
 
@@ -568,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        menu.findItem(R.id.action_crash).setVisible(!isReleaseBuild());
+        menu.findItem(R.id.action_crash).setVisible(!Utils.INSTANCE.isReleaseBuild());
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -620,7 +617,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 @Override
                                 public void onPositionListLoaded(final List<Position> positionList) {
                                     coordinates.clear();
-                                    coordinates.addAll(Utils.convertPositionListToLatLngList(positionList));
+                                    coordinates.addAll(Utils.INSTANCE.convertPositionListToLatLngList(positionList));
 
                                     drawAndShowMultipleDistances(coordinates, distance.getName() + "\n", true);
                                 }
@@ -683,7 +680,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         new FeedbackPresenter(new Feedback.View() {
             @Override
             public void showError() {
-                toastIt(R.string.toast_send_feedback_error, appContext);
+                Utils.INSTANCE.toastIt(R.string.toast_send_feedback_error, appContext);
             }
 
             @Override
@@ -767,7 +764,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                            "onActivityResult requestCode=%d, resultCode=%d, intent=%s",
                                            requestCode,
                                            resultCode,
-                                           Utils.dumpIntentToString(intent)));
+                                           Utils.INSTANCE.dumpIntentToString(intent)));
 
         if (requestCode == LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
@@ -953,7 +950,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private String calculateDistance(final List<LatLng> coordinates) {
-        double distanceInMetres = Utils.calculateDistanceInMetres(coordinates);
+        double distanceInMetres = Utils.INSTANCE.calculateDistanceInMetres(coordinates);
 
         return Haversine.INSTANCE.normalizeDistance(distanceInMetres, getAmericanOrEuropeanLocale());
     }
@@ -1097,7 +1094,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void showConnectionProblemsDialog() {
         DFMLogger.INSTANCE.logMessage(TAG, "showConnectionProblemsDialog");
 
-        showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
+        Utils.INSTANCE.showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
                         R.string.dialog_connection_problems_title,
                         R.string.dialog_connection_problems_message,
                         R.string.dialog_connection_problems_positive_button,
@@ -1125,12 +1122,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void showCallError(final String errorMessage) {
         logError(errorMessage);
-        toastIt(R.string.toast_no_find_address, appContext);
+        Utils.INSTANCE.toastIt(R.string.toast_no_find_address, appContext);
     }
 
     @Override
     public void showNoMatchesMessage() {
-        toastIt(R.string.toast_no_results, appContext);
+        Utils.INSTANCE.toastIt(R.string.toast_no_results, appContext);
     }
 
     @Override
