@@ -14,41 +14,39 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.data;
+package gc.david.dfm.distance.data
 
-import java.util.List;
-
-import gc.david.dfm.model.Distance;
-import gc.david.dfm.model.Position;
+import gc.david.dfm.model.Distance
+import gc.david.dfm.model.Position
 
 /**
  * Created by david on 16.01.17.
  */
-public interface DistanceRepository {
+interface DistanceRepository {
 
     interface Callback {
-        void onSuccess();
+        fun onSuccess()
 
-        void onFailure();
+        fun onFailure()
     }
 
     interface LoadDistancesCallback {
-        void onSuccess(List<Distance> distanceList);
+        fun onSuccess(distanceList: List<Distance>)
 
-        void onFailure();
+        fun onFailure()
     }
 
     interface LoadPositionsByIdCallback {
-        void onSuccess(List<Position> positionList);
+        fun onSuccess(positionList: List<Position>)
 
-        void onFailure();
+        fun onFailure()
     }
 
-    void insert(Distance distance, List<Position> positionList, Callback callback);
+    fun insert(distance: Distance, positionList: List<Position>, callback: Callback)
 
-    void loadDistances(LoadDistancesCallback callback);
+    fun loadDistances(callback: LoadDistancesCallback)
 
-    void clear(Callback callback);
+    fun clear(callback: Callback)
 
-    void getPositionListById(long distanceId, LoadPositionsByIdCallback callback);
+    fun getPositionListById(distanceId: Long, callback: LoadPositionsByIdCallback)
 }

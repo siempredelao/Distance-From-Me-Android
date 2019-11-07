@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain;
+package gc.david.dfm.distance.domain
 
-import java.util.List;
-
-import gc.david.dfm.model.Distance;
+import gc.david.dfm.model.Position
 
 /**
  * Created by david on 16.01.17.
  */
-public interface LoadDistancesUseCase {
+interface GetPositionListUseCase {
 
     interface Callback {
 
-        void onDistanceListLoaded(List<Distance> distanceList);
+        fun onPositionListLoaded(positionList: List<Position>)
 
-        void onError();
+        fun onError()
 
     }
 
-    void execute(Callback callback);
+    fun execute(distanceId: Long, callback: Callback)
+
 }

@@ -72,6 +72,8 @@ import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -552,7 +554,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         final MenuItem loadItem = menu.findItem(R.id.action_load);
         loadDistancesUseCase.execute(new LoadDistancesUseCase.Callback() {
             @Override
-            public void onDistanceListLoaded(final List<Distance> distanceList) {
+            public void onDistanceListLoaded(@NotNull List<? extends Distance> distanceList) {
                 if (distanceList.isEmpty()) {
                     loadItem.setVisible(false);
                 }
@@ -604,17 +606,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // TODO: 16.01.17 move this to presenter
         loadDistancesUseCase.execute(new LoadDistancesUseCase.Callback() {
             @Override
-            public void onDistanceListLoaded(final List<Distance> distanceList) {
+            public void onDistanceListLoaded(final List<? extends Distance> distanceList) {
                 if (!distanceList.isEmpty()) {
                     final DistanceSelectionDialogFragment distanceSelectionDialogFragment = new DistanceSelectionDialogFragment();
-                    distanceSelectionDialogFragment.setDistanceList(distanceList);
+                    distanceSelectionDialogFragment.setDistanceList((List<Distance>) distanceList);
                     distanceSelectionDialogFragment.setOnDialogActionListener(new DistanceSelectionDialogFragment.OnDialogActionListener() {
                         @Override
                         public void onItemClick(int position) {
                             final Distance distance = distanceList.get(position);
                             getPositionListUseCase.execute(distance.getId(), new GetPositionListUseCase.Callback() {
                                 @Override
-                                public void onPositionListLoaded(final List<Position> positionList) {
+                                public void onPositionListLoaded(final List<? extends Position> positionList) {
                                     coordinates.clear();
                                     coordinates.addAll(Utils.INSTANCE.convertPositionListToLatLngList(positionList));
 

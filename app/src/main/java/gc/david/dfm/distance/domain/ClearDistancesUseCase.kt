@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain;
+package gc.david.dfm.distance.domain
 
 /**
  * Created by david on 16.01.17.
  */
-public interface ClearDistancesUseCase {
+interface ClearDistancesUseCase {
 
     interface Callback {
 
-        void onClear();
+        fun onClear()
 
-        void onError();
+        fun onError()
 
     }
 
-    void execute(Callback callback);
+    fun execute(callback: Callback)
 }
