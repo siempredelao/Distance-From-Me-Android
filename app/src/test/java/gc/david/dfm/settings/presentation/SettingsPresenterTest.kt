@@ -16,7 +16,7 @@
 
 package gc.david.dfm.settings.presentation
 
-import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.distance.domain.ClearDistancesUseCase
 import org.junit.Before
@@ -49,7 +49,7 @@ class SettingsPresenterTest {
     fun `shows success message when use case succeeds`() {
         doAnswer {
                 (it.arguments[0] as ClearDistancesUseCase.Callback).onClear()
-        }.whenever(clearDistancesUseCase).execute(anyOrNull())
+        }.whenever(clearDistancesUseCase).execute(any())
 
         settingsPresenter.onClearData()
 
@@ -60,7 +60,7 @@ class SettingsPresenterTest {
     fun `shows error message when use case fails`() {
         doAnswer {
                 (it.arguments[0] as ClearDistancesUseCase.Callback).onError()
-        }.whenever(clearDistancesUseCase).execute(anyOrNull())
+        }.whenever(clearDistancesUseCase).execute(any())
 
         settingsPresenter.onClearData()
 
