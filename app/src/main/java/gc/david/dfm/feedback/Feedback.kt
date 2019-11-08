@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.feedback;
+package gc.david.dfm.feedback
 
-import android.content.Context;
-import android.content.Intent;
+import android.content.Context
+import android.content.Intent
 
 /**
  * Created by david on 07.12.16.
  */
-public interface Feedback {
+interface Feedback {
 
     interface View {
-        void showError();
+        fun showError()
 
-        void showEmailClient(Intent intent);
+        fun showEmailClient(intent: Intent)
 
-        Context context();
+        fun context(): Context
     }
 
     interface Presenter {
-        void start();
+        fun start()
     }
 
 }
