@@ -17,7 +17,8 @@
 package gc.david.dfm.elevation.domain
 
 import com.google.android.gms.maps.model.LatLng
-import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.elevation.data.ElevationRepository
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
@@ -30,7 +31,8 @@ import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.MainThread
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
@@ -60,8 +62,8 @@ class ElevationInteractorTest {
 
         elevationInteractor = ElevationInteractor(executor, mainThread, elevationEntityDataMapper, repository)
 
-        doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(anyOrNull())
-        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(anyOrNull())
+        doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
+        doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
     }
 
     @Test

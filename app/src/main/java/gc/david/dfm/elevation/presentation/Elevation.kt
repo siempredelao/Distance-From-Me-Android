@@ -14,45 +14,43 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.elevation.presentation;
+package gc.david.dfm.elevation.presentation
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
+import com.google.android.gms.maps.model.LatLng
 
 /**
  * Created by david on 06.01.17.
  */
-public interface Elevation {
+interface Elevation {
 
     interface View {
-        void setPresenter(Presenter presenter);
 
-        void hideChart();
+        val isMinimiseButtonShown: Boolean
+        fun setPresenter(presenter: Presenter)
 
-        void showChart();
+        fun hideChart()
 
-        void buildChart(List<Double> elevationList);
+        fun showChart()
 
-        void animateHideChart();
+        fun buildChart(elevationList: List<Double>)
 
-        void animateShowChart();
+        fun animateHideChart()
 
-        boolean isMinimiseButtonShown();
+        fun animateShowChart()
 
-        void logError(String errorMessage);
+        fun logError(errorMessage: String)
     }
 
     interface Presenter {
-        void buildChart(List<LatLng> coordinates);
+        fun buildChart(coordinates: List<LatLng>)
 
-        void onChartBuilt();
+        fun onChartBuilt()
 
-        void onOpenChart();
+        fun onOpenChart()
 
-        void onCloseChart();
+        fun onCloseChart()
 
-        void onReset();
+        fun onReset()
     }
 
 }

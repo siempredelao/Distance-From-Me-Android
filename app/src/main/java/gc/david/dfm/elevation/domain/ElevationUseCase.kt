@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.elevation.data;
+package gc.david.dfm.elevation.domain
 
-import gc.david.dfm.elevation.data.model.ElevationEntity;
+import com.google.android.gms.maps.model.LatLng
+
+import gc.david.dfm.elevation.domain.model.Elevation
 
 /**
  * Created by david on 05.01.17.
  */
-public interface ElevationRepository {
+interface ElevationUseCase {
 
     interface Callback {
 
-        void onSuccess(ElevationEntity elevationEntity);
+        fun onElevationLoaded(elevation: Elevation)
 
-        void onError(String message);
+        fun onError(errorMessage: String)
 
     }
 
-    void getElevation(String coordinatesPath, int maxSamples, Callback callback);
+    fun execute(coordinateList: List<LatLng>, maxSamples: Int, callback: Callback)
 }
