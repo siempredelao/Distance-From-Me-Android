@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.settings.presentation;
+package gc.david.dfm.settings.presentation
 
 /**
  * Created by david on 24.01.17.
  */
-public interface Settings {
+interface Settings {
 
     interface View {
-        void setPresenter(Presenter presenter);
-        
-        void showClearDataSuccessMessage();
+        fun setPresenter(presenter: Presenter)
 
-        void showClearDataErrorMessage();
+        fun showClearDataSuccessMessage()
+
+        fun showClearDataErrorMessage()
     }
 
     interface Presenter {
-        void onClearData();
+        fun onClearData()
     }
 
 }
