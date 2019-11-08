@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq;
+package gc.david.dfm.faq
 
-import java.util.Set;
-
-import gc.david.dfm.faq.model.Faq;
+import gc.david.dfm.faq.model.Faq
 
 /**
- * Created by david on 17.12.16.
+ * Created by david on 21.12.16.
  */
-public interface GetFaqsUseCase {
 
-    interface Callback {
+interface Faqs {
 
-        void onFaqsLoaded(final Set<Faq> faqs);
+    interface View {
+        fun setPresenter(presenter: Presenter)
 
-        void onError();
+        fun showLoading()
 
+        fun hideLoading()
+
+        fun add(faq: Set<Faq>)
+
+        fun showError()
+
+        fun setupList()
     }
 
-    void execute(Callback callback);
+    interface Presenter {
+        fun start()
+    }
 }
