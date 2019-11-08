@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.data;
+package gc.david.dfm.opensource.data
 
-import java.util.List;
-
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity;
+import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 
 /**
  * Created by david on 25.01.17.
  */
-public interface OpenSourceRepository {
+interface OpenSourceRepository {
 
     interface Callback {
 
-        void onSuccess(List<OpenSourceLibraryEntity> openSourceLibraryEntities);
+        fun onSuccess(openSourceLibraryEntities: List<OpenSourceLibraryEntity>)
 
-        void onError(String message);
+        fun onError(message: String)
 
     }
 
-    void getOpenSourceLibraries(Callback callback);
+    fun getOpenSourceLibraries(callback: Callback)
 }

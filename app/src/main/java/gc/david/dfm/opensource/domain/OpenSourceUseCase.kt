@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.presentation;
+package gc.david.dfm.opensource.domain
 
-import java.util.List;
-
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel;
+import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 
 /**
  * Created by david on 25.01.17.
  */
-public interface OpenSource {
+interface OpenSourceUseCase {
 
-    interface View {
-        void setPresenter(Presenter presenter);
+    interface Callback {
 
-        void showLoading();
+        fun onOpenSourceLibrariesLoaded(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>)
 
-        void hideLoading();
+        fun onError(errorMessage: String)
 
-        void add(List<OpenSourceLibraryModel> openSourceLibraryModelList);
-
-        void showError(String errorMessage);
-
-        void setupList();
     }
 
-    interface Presenter {
-        void start();
-    }
-
+    fun execute(callback: Callback)
 }
