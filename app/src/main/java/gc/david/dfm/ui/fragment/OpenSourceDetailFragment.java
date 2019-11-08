@@ -19,9 +19,6 @@ package gc.david.dfm.ui.fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +27,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,7 +90,7 @@ public class OpenSourceDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         tvName.setText(openSourceLibraryModel.getName());
-        tvLongLicense.setText(LicensePrinter.print(openSourceLibraryModel, getContext()));
+        tvLongLicense.setText(LicensePrinter.INSTANCE.print(openSourceLibraryModel, getContext()));
         tvLongLicense.setMovementMethod(ScrollingMovementMethod.getInstance());
     }
 }
