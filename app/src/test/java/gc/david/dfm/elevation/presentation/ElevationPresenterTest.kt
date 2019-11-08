@@ -17,22 +17,18 @@
 package gc.david.dfm.elevation.presentation
 
 import com.google.android.gms.maps.model.LatLng
-import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.ElevationUseCase
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mock
-import org.mockito.Mockito.doAnswer
-import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
+import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-import java.util.*
 
 /**
  * Created by david on 11.01.17.
@@ -100,7 +96,7 @@ class ElevationPresenterTest {
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         doAnswer {
                 (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), anyOrNull())
+        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
 
