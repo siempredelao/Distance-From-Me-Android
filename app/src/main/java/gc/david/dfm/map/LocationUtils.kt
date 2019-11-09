@@ -18,12 +18,6 @@ package gc.david.dfm.map
 
 object LocationUtils {
 
-    /**
-     * Define a request code to send to Google Play services
-     * This code is returned in Activity.onActivityResult
-     */
-    const val CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000
-
     /*
      * Constants for location update parameters
      */
