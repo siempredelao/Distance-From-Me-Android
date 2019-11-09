@@ -967,7 +967,9 @@ class MainActivity :
     override fun showAddressSelectionDialog(addressList: List<gc.david.dfm.address.domain.model.Address>) {
         val addressSuggestionsDialogFragment = AddressSuggestionsDialogFragment()
         addressSuggestionsDialogFragment.setAddressList(addressList)
-        addressSuggestionsDialogFragment.setOnDialogActionListener { position -> addressPresenter.selectAddressInDialog(addressList[position]) }
+        addressSuggestionsDialogFragment.setOnDialogActionListener {
+            position -> addressPresenter.selectAddressInDialog(addressList[position])
+        }
         addressSuggestionsDialogFragment.show(supportFragmentManager, null)
     }
 
