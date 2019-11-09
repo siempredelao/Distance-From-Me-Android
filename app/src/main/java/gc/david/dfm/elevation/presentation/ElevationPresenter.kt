@@ -59,7 +59,7 @@ class ElevationPresenter(
     }
 
     override fun onChartBuilt() {
-        if (!elevationView.isMinimiseButtonShown) {
+        if (!elevationView.isMinimiseButtonShown()) {
             elevationView.showChart()
         }
     }

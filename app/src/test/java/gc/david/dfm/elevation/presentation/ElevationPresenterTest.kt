@@ -136,7 +136,7 @@ class ElevationPresenterTest {
 
     @Test
     fun `does not show chart when minimise button is shown`() {
-        whenever(elevationView.isMinimiseButtonShown).thenReturn(true)
+        whenever(elevationView.isMinimiseButtonShown()).thenReturn(true)
 
         elevationPresenter.onChartBuilt()
 
@@ -145,7 +145,7 @@ class ElevationPresenterTest {
 
     @Test
     fun `shows chart when minimise button is not shown`() {
-        whenever(elevationView.isMinimiseButtonShown).thenReturn(false)
+        whenever(elevationView.isMinimiseButtonShown()).thenReturn(false)
 
         elevationPresenter.onChartBuilt()
 

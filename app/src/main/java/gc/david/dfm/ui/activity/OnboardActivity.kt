@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.activity;
+package gc.david.dfm.ui.activity
 
-import android.content.Intent;
-import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Created by david on 07.11.16.
  */
-public class OnboardActivity extends AppCompatActivity {
+class OnboardActivity : AppCompatActivity() {
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        final Intent openMainActivityIntent = new Intent(this, MainActivity.class);
-        startActivity(openMainActivityIntent);
-        finish();
+        val openMainActivityIntent = Intent(this, MainActivity::class.java)
+        startActivity(openMainActivityIntent)
+        finish()
     }
-
 }

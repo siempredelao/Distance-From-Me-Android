@@ -25,7 +25,8 @@ interface Elevation {
 
     interface View {
 
-        val isMinimiseButtonShown: Boolean
+        fun isMinimiseButtonShown(): Boolean
+
         fun setPresenter(presenter: Presenter)
 
         fun hideChart()
@@ -42,6 +43,7 @@ interface Elevation {
     }
 
     interface Presenter {
+
         fun buildChart(coordinates: List<LatLng>)
 
         fun onChartBuilt()
@@ -52,5 +54,4 @@ interface Elevation {
 
         fun onReset()
     }
-
 }
