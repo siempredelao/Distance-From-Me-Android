@@ -297,6 +297,13 @@ class MainActivity :
                                             permissions: Array<String>,
                                             grantResults: IntArray) {
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.isEmpty()) { // happens when the permissions request interaction with the user is interrupted
+                DFMLogger.logMessage(TAG, "onRequestPermissionsResult INTERRUPTED")
+                fabMyLocation.isVisible = false
+                nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
+                onStartingPointSelected()
+            }
+
             // not necessary to check both permissions, they fall under location group
             if (grantResults.first() == PERMISSION_GRANTED) {
                 DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED")
