@@ -40,7 +40,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Settings.View {
 
     private lateinit var presenter: Settings.Presenter
 
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
 
         DaggerSettingsComponent.builder()
