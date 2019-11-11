@@ -17,11 +17,10 @@
 package gc.david.dfm.dagger
 
 import android.content.Context
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
-import gc.david.dfm.migration.UpgradeHelper
-import gc.david.dfm.model.DaoMaster
-import gc.david.dfm.model.DaoSession
+import gc.david.dfm.database.DFMDatabase
 import javax.inject.Singleton
 
 /**
@@ -32,10 +31,7 @@ class StorageModule {
 
     @Provides
     @Singleton
-    internal fun getDaoSession(context: Context): DaoSession {
-        val helper = UpgradeHelper(context, "DistanciasDB.db", null)
-        val database = helper.writableDatabase
-        val daoMaster = DaoMaster(database)
-        return daoMaster.newSession()
+    fun provideDatabase(context: Context): DFMDatabase {
+        return Room.databaseBuilder(context, DFMDatabase::class.java, "DistanciasDB.db").build()
     }
 }

@@ -24,9 +24,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.database.Position
 import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.map.Haversine
-import gc.david.dfm.model.Position
 
 /**
  * Created by David on 15/10/2014.

@@ -22,7 +22,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import gc.david.dfm.R
 import gc.david.dfm.adapter.DistanceAdapter
-import gc.david.dfm.model.Distance
+import gc.david.dfm.database.Distance
 
 /**
  * Created by david on 07.02.16.

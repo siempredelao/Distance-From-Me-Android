@@ -18,13 +18,13 @@ package gc.david.dfm.dagger
 
 import dagger.Module
 import dagger.Provides
+import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.distance.data.DistanceLocalDataSource
 import gc.david.dfm.distance.data.DistanceRepository
 import gc.david.dfm.distance.domain.ClearDistancesInteractor
 import gc.david.dfm.distance.domain.ClearDistancesUseCase
 import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.MainThread
-import gc.david.dfm.model.DaoSession
 import javax.inject.Singleton
 
 /**
@@ -35,8 +35,8 @@ class SettingsModule {
 
     @Provides
     @Singleton
-    fun provideDistanceRepository(daoSession: DaoSession): DistanceRepository {
-        return DistanceLocalDataSource(daoSession)
+    fun provideDistanceRepository(database: DFMDatabase): DistanceRepository {
+        return DistanceLocalDataSource(database)
     }
 
     @Provides

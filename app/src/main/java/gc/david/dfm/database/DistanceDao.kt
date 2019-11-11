@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.database
 
-import gc.david.dfm.database.Distance
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
-/**
- * Created by david on 16.01.17.
- */
-interface LoadDistancesUseCase {
+@Dao
+interface DistanceDao {
 
-    interface Callback {
+    @Query("SELECT * FROM DISTANCE")
+    fun loadAll(): List<Distance>
 
-        fun onDistanceListLoaded(distanceList: List<Distance>)
+    @Query("DELETE FROM DISTANCE")
+    fun deleteAll()
 
-        fun onError()
+    @Insert
+    fun insert(distance: Distance): Long
 
-    }
-
-    fun execute(callback: Callback)
 }

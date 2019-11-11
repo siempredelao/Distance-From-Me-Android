@@ -70,6 +70,8 @@ import gc.david.dfm.dagger.DaggerMainComponent
 import gc.david.dfm.dagger.MainModule
 import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.dagger.StorageModule
+import gc.david.dfm.database.Distance
+import gc.david.dfm.database.Position
 import gc.david.dfm.deviceinfo.DeviceInfo
 import gc.david.dfm.deviceinfo.PackageManager
 import gc.david.dfm.distance.domain.GetPositionListUseCase
@@ -81,8 +83,6 @@ import gc.david.dfm.feedback.Feedback
 import gc.david.dfm.feedback.FeedbackPresenter
 import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.map.Haversine
-import gc.david.dfm.model.Distance
-import gc.david.dfm.model.Position
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
@@ -582,7 +582,7 @@ class MainActivity :
                     distanceSelectionDialogFragment.setDistanceList(distanceList)
                     distanceSelectionDialogFragment.setOnDialogActionListener { position ->
                         val distance = distanceList[position]
-                        getPositionListUseCase.execute(distance.id, object : GetPositionListUseCase.Callback {
+                        getPositionListUseCase.execute(distance.id!!, object : GetPositionListUseCase.Callback {
                             override fun onPositionListLoaded(positionList: List<Position>) {
                                 coordinates.clear()
                                 coordinates.addAll(Utils.convertPositionListToLatLngList(positionList))

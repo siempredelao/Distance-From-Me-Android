@@ -21,9 +21,9 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.database.Distance
+import gc.david.dfm.database.Position
 import gc.david.dfm.distance.domain.InsertDistanceUseCase
-import gc.david.dfm.model.Distance
-import gc.david.dfm.model.Position
 import java.util.*
 
 /**
@@ -72,17 +72,10 @@ class ShowInfoPresenter(
     }
 
     override fun saveDistance(name: String, distance: String, latLngPositionList: List<LatLng>) {
-        val distanceAsDistance = Distance().apply {
-            this.name = name
-            this.distance = distance
-            date = Date()
-        }
+        val distanceAsDistance = Distance(id = null, name = name, distance = distance, date = Date())
 
         val positionList = latLngPositionList.map {
-            Position().apply {
-                latitude = it.latitude
-                longitude = it.longitude
-            }
+            Position(id = null, latitude = it.latitude, longitude = it.longitude, distanceId = -1L) // FIXME
         }
 
         insertDistanceUseCase.execute(distanceAsDistance, positionList, object : InsertDistanceUseCase.Callback {
