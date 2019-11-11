@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 David Aguiar Gonzalez
+ * Copyright (c) 2019 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.model.Position
-import java.util.*
 
 /**
  * Created by David on 15/10/2014.
