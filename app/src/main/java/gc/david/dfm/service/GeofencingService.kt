@@ -42,7 +42,7 @@ class GeofencingService :
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createGoogleApiClient()
-        googleApiClient!!.connect()
+        googleApiClient?.connect()
         createLocationRequest()
 
         return Service.START_STICKY
@@ -82,7 +82,7 @@ class GeofencingService :
     }
 
     private fun stopLocationUpdates() {
-        if (googleApiClient!!.isConnected) {
+        if (googleApiClient?.isConnected == true) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this)
         }
     }
@@ -97,6 +97,8 @@ class GeofencingService :
     }
 
     private fun startLocationUpdates() {
+        val googleApiClient = googleApiClient ?: return
+        val locationRequest = locationRequest ?: return
         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this)
     }
 
@@ -115,16 +117,13 @@ class GeofencingService :
     override fun onDestroy() {
         super.onDestroy()
         stopLocationUpdates()
-        googleApiClient!!.disconnect()
+        googleApiClient?.disconnect()
     }
 
     companion object {
 
-        @kotlin.jvm.JvmField
-        val GEOFENCE_RECEIVER_ACTION = "geofence.receiver.action"
-        @kotlin.jvm.JvmField
-        val GEOFENCE_RECEIVER_LATITUDE_KEY = "geofence.receiver.latitude.key"
-        @kotlin.jvm.JvmField
-        val GEOFENCE_RECEIVER_LONGITUDE_KEY = "geofence.receiver.longitude.key"
+        const val GEOFENCE_RECEIVER_ACTION = "geofence.receiver.action"
+        const val GEOFENCE_RECEIVER_LATITUDE_KEY = "geofence.receiver.latitude.key"
+        const val GEOFENCE_RECEIVER_LONGITUDE_KEY = "geofence.receiver.longitude.key"
     }
 }
