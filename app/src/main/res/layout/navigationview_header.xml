@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018 David Aguiar Gonzalez
+  ~ Copyright (c) 2019 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
-            android:drawableLeft="@drawable/ic_launcher"
             android:drawableStart="@drawable/ic_launcher"
             android:drawablePadding="20dp"
             android:gravity="center"

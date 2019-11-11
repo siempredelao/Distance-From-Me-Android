@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018 David Aguiar Gonzalez
+  ~ Copyright (c) 2019 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<android.support.v4.widget.DrawerLayout
+<androidx.drawerlayout.widget.DrawerLayout
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,7 +25,7 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.activity.MainActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -61,20 +61,18 @@
                 android:id="@+id/closeChart"
                 android:layout_width="@dimen/elevation_chart_hide_button_size"
                 android:layout_height="@dimen/elevation_chart_hide_button_size"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentTop="true"
                 android:contentDescription="Close elevation chart"
                 android:src="@drawable/ic_crop_white_24dp" />
         </RelativeLayout>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/main_activity_showchart_floatingactionbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
             android:clickable="true"
             android:src="@drawable/ic_show_chart_white_24dp"
             android:visibility="invisible"
@@ -84,12 +82,11 @@
             app:layout_constraintRight_toRightOf="@+id/map"
             tools:visibility="visible"/>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/main_activity_mylocation_floatingactionbutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             android:clickable="true"
             android:src="@drawable/ic_my_location_white_24dp"
@@ -98,9 +95,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="@+id/map" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.design.widget.NavigationView
+    <com.google.android.material.navigation.NavigationView
         android:id="@+id/nvDrawer"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -108,4 +105,4 @@
         app:headerLayout="@layout/navigationview_header"
         app:menu="@menu/navigationview_menu"/>
 
-</android.support.v4.widget.DrawerLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

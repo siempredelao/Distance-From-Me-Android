@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018 David Aguiar Gonzalez
+  ~ Copyright (c) 2019 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
 
     </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/help_and_feedback_activity_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +57,6 @@
         android:layout_alignParentBottom="true"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:drawableLeft="@drawable/ic_announcement_black_18dp"
         android:drawablePadding="16dp"
         android:drawableStart="@drawable/ic_announcement_black_18dp"
         android:padding="16dp"

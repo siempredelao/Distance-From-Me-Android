@@ -2,24 +2,13 @@
 ## Android Studio
 #################
 
-# Built application files
-*.apk
-*.ap_
-
-# Files for the Dalvik VM
-*.dex
-
 # Android Studio
 build
 .idea
 .gradle
 
-# Other folders
-libs
-
 # Local configuration file (sdk path, etc)
 local.properties
-.classpath
 *.iml
 app/src/main/res/values/other.xml
 app/crashlytics.properties
