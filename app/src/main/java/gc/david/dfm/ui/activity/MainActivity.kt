@@ -717,8 +717,8 @@ class MainActivity :
             if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
                 DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError")
 
-                val RQS_GooglePlayServices = 1
-                googleApiAvailabilityInstance.getErrorDialog(this, resultCode, RQS_GooglePlayServices).show()
+                val googlePlayServicesRequestCode = 1
+                googleApiAvailabilityInstance.getErrorDialog(this, resultCode, googlePlayServicesRequestCode).show()
             } else {
                 DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing")
 
