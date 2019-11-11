@@ -820,8 +820,7 @@ class MainActivity :
     }
 
     private fun moveCameraZoom(coordinatesList: List<LatLng>) {
-        val centre = DFMPreferences.getAnimationPreference(baseContext)
-        when (centre) {
+        when (DFMPreferences.getAnimationPreference(baseContext)) {
             DFMPreferences.ANIMATION_CENTRE_VALUE -> {
                 val latLngBoundsBuilder = LatLngBounds.Builder()
                 coordinatesList.forEach { latLngBoundsBuilder.include(it) }
