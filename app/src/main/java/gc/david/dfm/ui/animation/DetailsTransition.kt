@@ -14,27 +14,19 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.animation;
+package gc.david.dfm.ui.animation
 
-import android.annotation.TargetApi;
-import android.transition.ChangeBounds;
-import android.transition.ChangeTransform;
-import android.transition.TransitionSet;
-
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import android.transition.ChangeBounds
+import android.transition.ChangeTransform
+import android.transition.TransitionSet
 
 /**
  * Created by david on 25.01.17.
  */
-@TargetApi(LOLLIPOP)
-public class DetailsTransition extends TransitionSet {
+class DetailsTransition : TransitionSet() {
 
-    public DetailsTransition() {
-        init();
-    }
-
-    private void init() {
-        setOrdering(ORDERING_TOGETHER);
-        addTransition(new ChangeBounds()).addTransition(new ChangeTransform());
+    init {
+        ordering = ORDERING_TOGETHER
+        addTransition(ChangeBounds()).addTransition(ChangeTransform())
     }
 }
