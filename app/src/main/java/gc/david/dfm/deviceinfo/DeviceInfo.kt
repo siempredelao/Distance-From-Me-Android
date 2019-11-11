@@ -21,6 +21,6 @@ package gc.david.dfm.deviceinfo
  */
 interface DeviceInfo {
 
-    val deviceInfo: String
+    fun getDeviceInfo(): String
 
 }

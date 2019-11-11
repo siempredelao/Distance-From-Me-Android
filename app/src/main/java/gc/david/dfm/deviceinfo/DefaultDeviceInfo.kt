@@ -22,14 +22,13 @@ import android.os.Build
 /**
  * Created by david on 06.12.16.
  */
-class DeviceInfoBase(
+class DefaultDeviceInfo(
         private val context: Context,
-        private val packageManager: PackageManager
+        private val packageManager: PackageManager,
+        private val memoryInfo: MemoryInfo
 ) : DeviceInfo {
 
-    override val deviceInfo: String
-        get() = """
-Important device info for analysis:
+    override fun getDeviceInfo(): String = """Important device info for analysis:
 
 Version:
 NAME=${packageManager.versionName}
@@ -56,6 +55,22 @@ TAGS=${Build.TAGS}
 TIME=${Build.TIME}
 TYPE=${Build.TYPE}
 USER=${Build.USER}
+$memoryParameters
 """
 
+    private val memoryParameters: String
+        get() {
+            val freeMemoryMBs = memoryInfo.freeMemory
+            val totalMemoryMBs = memoryInfo.availableMemory
+
+            return MemoryPrinter.print(totalMemoryMBs, freeMemoryMBs)
+        }
+
+
+    internal object MemoryPrinter {
+
+        fun print(totalMemoryMbs: Long, freeMemoryMbs: Long): String {
+            return "TOTALMEMORYSIZE=${totalMemoryMbs}MB\nFREEMEMORYSIZE=${freeMemoryMbs}MB"
+        }
+    }
 }

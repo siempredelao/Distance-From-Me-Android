@@ -61,8 +61,7 @@ class RootModule(@get:Provides
             packageManager: PackageManager,
             memoryInfo: MemoryInfo
     ): DeviceInfo {
-        val deviceInfoBase = DeviceInfoBase(context, packageManager)
-        return DeviceInfoApi16Decorator(deviceInfoBase, memoryInfo)
+        return DefaultDeviceInfo(context, packageManager, memoryInfo)
     }
 
     @Provides
