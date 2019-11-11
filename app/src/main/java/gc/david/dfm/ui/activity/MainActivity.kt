@@ -306,7 +306,7 @@ class MainActivity :
                 fabMyLocation.isVisible = true
 
                 registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
-                startService(Intent(this, GeofencingService::class.java))
+                ContextCompat.startForegroundService(this, Intent(this, GeofencingService::class.java))
             } else {
                 DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED")
                 fabMyLocation.isVisible = false
@@ -672,7 +672,7 @@ class MainActivity :
         super.onStart()
         if (isLocationPermissionGranted) {
             registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
-            startService(Intent(this, GeofencingService::class.java))
+            ContextCompat.startForegroundService(this, Intent(this, GeofencingService::class.java))
             googleMap?.isMyLocationEnabled = true
             fabMyLocation.isVisible = true
         } else {
