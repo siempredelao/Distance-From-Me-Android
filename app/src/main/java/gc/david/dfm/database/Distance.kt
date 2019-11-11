@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.database
 
-import gc.david.dfm.database.Distance
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import gc.david.dfm.database.Distance.Companion.TABLE_NAME
+import java.util.*
 
-/**
- * Created by david on 16.01.17.
- */
-interface LoadDistancesUseCase {
+@Entity(tableName = TABLE_NAME)
+data class Distance(
+        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long?,
+        @ColumnInfo(name = "NAME") val name: String,
+        @ColumnInfo(name = "DISTANCE") val distance: String,
+        @ColumnInfo(name = "DATE") val date: Date
+) {
 
-    interface Callback {
+    companion object {
 
-        fun onDistanceListLoaded(distanceList: List<Distance>)
-
-        fun onError()
-
+        const val TABLE_NAME = "DISTANCE"
     }
-
-    fun execute(callback: Callback)
 }

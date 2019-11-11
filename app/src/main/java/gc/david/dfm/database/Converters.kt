@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.database
 
-import gc.david.dfm.database.Distance
+import androidx.room.TypeConverter
+import java.util.*
 
-/**
- * Created by david on 16.01.17.
- */
-interface LoadDistancesUseCase {
+class Converters {
 
-    interface Callback {
-
-        fun onDistanceListLoaded(distanceList: List<Distance>)
-
-        fun onError()
-
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }
     }
 
-    fun execute(callback: Callback)
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
+    }
 }

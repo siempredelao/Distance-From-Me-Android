@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.database
 
-import gc.david.dfm.database.Distance
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-/**
- * Created by david on 16.01.17.
- */
-interface LoadDistancesUseCase {
+@Database(entities = [Distance::class, Position::class], version = 2)
+@TypeConverters(Converters::class)
+abstract class DFMDatabase : RoomDatabase() {
 
-    interface Callback {
+    abstract fun distanceDao(): DistanceDao
 
-        fun onDistanceListLoaded(distanceList: List<Distance>)
-
-        fun onError()
-
-    }
-
-    fun execute(callback: Callback)
+    abstract fun positionDao(): PositionDao
 }

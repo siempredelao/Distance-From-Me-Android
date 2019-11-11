@@ -27,7 +27,7 @@ import androidx.annotation.LayoutRes
 import butterknife.BindView
 import butterknife.ButterKnife.bind
 import gc.david.dfm.R
-import gc.david.dfm.model.Distance
+import gc.david.dfm.database.Distance
 import java.text.SimpleDateFormat
 import java.util.*
 

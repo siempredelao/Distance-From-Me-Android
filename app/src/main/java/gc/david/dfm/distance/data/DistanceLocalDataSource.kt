@@ -16,41 +16,39 @@
 
 package gc.david.dfm.distance.data
 
-import gc.david.dfm.model.DaoSession
-import gc.david.dfm.model.Distance
-import gc.david.dfm.model.Position
+import gc.david.dfm.database.DFMDatabase
+import gc.david.dfm.database.Distance
+import gc.david.dfm.database.Position
 
 /**
  * Created by david on 16.01.17.
  */
-class DistanceLocalDataSource(private val daoSession: DaoSession) : DistanceRepository {
+class DistanceLocalDataSource(private val database: DFMDatabase) : DistanceRepository {
 
     override fun insert(distance: Distance, positionList: List<Position>, callback: DistanceRepository.Callback) {
-        val rowID = daoSession.insert(distance)
+        val rowID = database.distanceDao().insert(distance)
         if (rowID == -1L) {
             callback.onFailure()
         } else {
-            positionList.forEach { position ->
-                position.distanceId = rowID
-                daoSession.insert(position)
-            }
+            val positionListWithDistanceId = positionList.map { it.apply { distanceId = rowID } }
+            database.positionDao().insertMany(positionListWithDistanceId)
             callback.onSuccess()
         }
     }
 
     override fun loadDistances(callback: DistanceRepository.LoadDistancesCallback) {
-        callback.onSuccess(daoSession.loadAll<Distance, Any>(Distance::class.java))
+        callback.onSuccess(database.distanceDao().loadAll())
     }
 
     override fun clear(callback: DistanceRepository.Callback) {
-        with(daoSession) {
-            deleteAll(Distance::class.java)
-            deleteAll(Position::class.java)
+        with(database) {
+            distanceDao().deleteAll()
+            positionDao().deleteAll()
         }
         callback.onSuccess()
     }
 
     override fun getPositionListById(distanceId: Long, callback: DistanceRepository.LoadPositionsByIdCallback) {
-        callback.onSuccess(daoSession.positionDao._queryDistance_PositionList(distanceId))
+        callback.onSuccess(database.positionDao().loadAllById(distanceId))
     }
 }

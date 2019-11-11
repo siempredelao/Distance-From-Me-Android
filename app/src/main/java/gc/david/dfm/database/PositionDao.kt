@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.daogenerator;
+package gc.david.dfm.database
 
-/**
- * Created by David on 29/10/2014.
- */
-public class WorkingVersion extends Version2 {
-    public WorkingVersion(boolean current) {
-        super(current);
-    }
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+
+@Dao
+interface PositionDao {
+
+    @Query("SELECT * FROM POSITION WHERE DISTANCE_ID=:distanceId")
+    fun loadAllById(distanceId: Long): List<Position>
+
+    @Query("DELETE FROM POSITION")
+    fun deleteAll()
+
+    @Insert
+    fun insertMany(positions: List<Position>)
 }

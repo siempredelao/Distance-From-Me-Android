@@ -24,7 +24,7 @@ Code is organised by features (still in progress, not 100%) following MVP archit
 ## Main libraries used
 * [Dagger 2](http://google.github.io/dagger/)
 * [ButterKnife](http://jakewharton.github.io/butterknife)
-* [GreenDAO](http://greenrobot.org/greendao/)
+* [Room](https://developer.android.com/topic/libraries/architecture/room)
 * [OkHttp](http://square.github.io/okhttp/)
 * [Gson](https://github.com/google/gson)
 * [ConstraintLayout](https://developer.android.com/training/constraint-layout/index.html)

@@ -16,8 +16,8 @@
 
 package gc.david.dfm.distance.data
 
-import gc.david.dfm.model.Distance
-import gc.david.dfm.model.Position
+import gc.david.dfm.database.Distance
+import gc.david.dfm.database.Position
 
 /**
  * Created by david on 16.01.17.

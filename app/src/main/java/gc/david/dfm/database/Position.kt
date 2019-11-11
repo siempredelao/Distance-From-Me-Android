@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
-apply plugin: 'application'
+package gc.david.dfm.database
 
-mainClassName = 'gc.david.dfm.daogenerator.DFMDaoGenerator'
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import gc.david.dfm.database.Position.Companion.TABLE_NAME
 
-dependencies {
-	compile 'org.greenrobot:greendao-generator:3.2.0'
+@Entity(tableName = TABLE_NAME)
+data class Position(
+        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long?,
+        @ColumnInfo(name = "LATITUDE") val latitude: Double,
+        @ColumnInfo(name = "LONGITUDE") val longitude: Double,
+        @ColumnInfo(name = "DISTANCE_ID") var distanceId: Long
+) {
+
+    companion object {
+
+        const val TABLE_NAME = "POSITION"
+    }
 }

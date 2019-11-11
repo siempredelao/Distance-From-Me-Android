@@ -16,11 +16,11 @@
 
 package gc.david.dfm.distance.domain
 
+import gc.david.dfm.database.Distance
 import gc.david.dfm.distance.data.DistanceRepository
 import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.MainThread
-import gc.david.dfm.model.Distance
 
 /**
  * Created by david on 16.01.17.
