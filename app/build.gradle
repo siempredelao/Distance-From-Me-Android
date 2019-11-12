@@ -50,8 +50,8 @@ android {
 		applicationId 'gc.david.dfm'
 		minSdkVersion 22
 		targetSdkVersion 28
-		versionName '3.4.1'
-		versionCode 27
+		versionName '3.4.2'
+		versionCode 28
 		resConfigs "en", "ca", "de", "es", "fr", "it", "pt"
 
 		javaCompileOptions {
