@@ -30,9 +30,7 @@ import android.view.MenuItem
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ShareActionProvider
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.MenuItemCompat
 import butterknife.BindView
 import butterknife.ButterKnife.bind
 import com.google.android.gms.maps.model.LatLng
@@ -45,7 +43,6 @@ import gc.david.dfm.dagger.DaggerShowInfoComponent
 import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.dagger.ShowInfoModule
 import gc.david.dfm.dagger.StorageModule
-import gc.david.dfm.deviceinfo.PackageManager
 import gc.david.dfm.distance.domain.InsertDistanceUseCase
 import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.showinfo.presentation.ShowInfo
@@ -66,8 +63,6 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
 
     @Inject
     lateinit var appContext: Context
-    @Inject
-    lateinit var packageManager: PackageManager
     @Inject
     lateinit var connectionManager: ConnectionManager
     @Inject
@@ -193,35 +188,16 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.show_info, menu)
 
-        val shareItem = menu.findItem(R.id.action_social_share)
-        val shareActionProvider = MenuItemCompat.getActionProvider(shareItem) as ShareActionProvider
-        val shareDistanceIntent = createDefaultShareIntent()
-        if (packageManager.isThereAnyActivityForIntent(shareDistanceIntent)) {
-            shareActionProvider.setShareIntent(shareDistanceIntent)
-        }
         refreshMenuItem = menu.findItem(R.id.refresh)
         return true
     }
 
-    private fun createDefaultShareIntent(): Intent {
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)")
-
-        val extraText = String.format("\nDistance From Me (http://goo.gl/0IBHFN)\n%s\n%s\n\n%s\n%s\n\n%s\n%s",
-                getString(R.string.share_distance_from_message),
-                originAddress,
-                getString(R.string.share_distance_to_message),
-                destinationAddress,
-                getString(R.string.share_distance_there_are_message),
-                distance)
-        shareIntent.putExtra(Intent.EXTRA_TEXT, extraText)
-        return shareIntent
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_social_share -> true
+            R.id.action_social_share -> {
+                showShareDialog()
+                true
+            }
             R.id.refresh -> {
                 fillAddressesInfo()
                 true
@@ -231,6 +207,24 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showShareDialog() {
+        startActivity(
+                Intent.createChooser(
+                        getDefaultShareIntent(),
+                        getString(R.string.action_bar_item_social_share_title)
+                )
+        )
+    }
+
+    private fun getDefaultShareIntent(): Intent {
+        return Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)")
+            val extraText = "\nDistance From Me (http://goo.gl/0IBHFN)\n${getString(R.string.share_distance_from_message)}\n$originAddress\n\n${getString(R.string.share_distance_to_message)}\n$destinationAddress\n\n${getString(R.string.share_distance_there_are_message)}\n$distance"
+            putExtra(Intent.EXTRA_TEXT, extraText)
         }
     }
 
