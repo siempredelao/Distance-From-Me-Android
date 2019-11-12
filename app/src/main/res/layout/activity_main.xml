@@ -47,25 +47,14 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tbMain"/>
 
-        <RelativeLayout
-            android:id="@+id/elevationchart"
-            android:layout_width="0dp"
+        <gc.david.dfm.ui.ElevationChartView
+            android:id="@+id/elevationChartView"
+            android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_margin="8dp"
-            android:background="@color/elevation_chart_background"
+            android:layout_margin="2dp"
             app:layout_constraintLeft_toLeftOf="@+id/map"
             app:layout_constraintRight_toRightOf="@+id/map"
-            app:layout_constraintTop_toBottomOf="@+id/tbMain">
-
-            <ImageView
-                android:id="@+id/closeChart"
-                android:layout_width="@dimen/elevation_chart_hide_button_size"
-                android:layout_height="@dimen/elevation_chart_hide_button_size"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:contentDescription="Close elevation chart"
-                android:src="@drawable/ic_crop_white_24dp" />
-        </RelativeLayout>
+            app:layout_constraintTop_toBottomOf="@+id/tbMain"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/main_activity_showchart_floatingactionbutton"
