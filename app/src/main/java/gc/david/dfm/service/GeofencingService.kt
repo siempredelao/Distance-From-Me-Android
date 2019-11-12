@@ -99,7 +99,9 @@ class GeofencingService :
     private fun startLocationUpdates() {
         val googleApiClient = googleApiClient ?: return
         val locationRequest = locationRequest ?: return
-        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this)
+        if (googleApiClient.isConnected) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this)
+        }
     }
 
     private fun sendUpdate(location: Location) {
