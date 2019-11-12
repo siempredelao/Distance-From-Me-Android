@@ -14,28 +14,27 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:actual="http://schemas.android.com/apk/res-auto"
-      xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_social_share"
         android:icon="@drawable/ic_share_white_24dp"
         android:orderInCategory="1"
         android:title="@string/action_bar_item_social_share_title"
-        actual:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"
-        actual:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/refresh"
         android:alphabeticShortcut="r"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="2"
         android:title="@string/action_bar_item_refresh_title"
-        actual:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_save"
         android:icon="@drawable/ic_save_white_24dp"
         android:orderInCategory="3"
         android:title="@string/action_bar_item_save_title"
-        actual:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom|withText" />
 
 </menu>
