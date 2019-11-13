@@ -20,6 +20,7 @@ import android.content.Context
 import com.google.gson.Gson
 import gc.david.dfm.R
 import gc.david.dfm.elevation.data.model.ElevationEntity
+import gc.david.dfm.logger.DFMLogger
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -34,7 +35,9 @@ class ElevationRemoteDataSource(context: Context) : ElevationRepository {
     private val geocodeApiKey: String = context.resources.getString(R.string.maps_geocode_api_key)
 
     override fun getElevation(coordinatesPath: String, maxSamples: Int, callback: ElevationRepository.Callback) {
-        val url = "https://maps.googleapis.com/maps/api/elevation/json?path=$coordinatesPath&samples=$maxSamples&key=$geocodeApiKey"
+        val urlNoKey = "https://maps.googleapis.com/maps/api/elevation/json?path=$coordinatesPath&samples=$maxSamples"
+        DFMLogger.logMessage("ElevationRemoteDataSource", urlNoKey)
+        val url = "$urlNoKey&key=$geocodeApiKey"
         val request = Request.Builder().url(url)
                 .header("content-type", "application/json")
                 .build()
