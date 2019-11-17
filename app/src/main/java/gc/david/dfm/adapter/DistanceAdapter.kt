@@ -31,7 +31,6 @@ import gc.david.dfm.database.Distance
 import java.text.SimpleDateFormat
 import java.util.*
 
-// TODO OH GOD! Use a RecyclerView instead...
 class DistanceAdapter(
         private val activity: Activity,
         private val distanceList: List<Distance>

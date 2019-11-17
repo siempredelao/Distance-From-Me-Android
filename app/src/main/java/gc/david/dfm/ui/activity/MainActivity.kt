@@ -405,12 +405,10 @@ class MainActivity :
     }
 
     private fun handleIntents(intent: Intent?) {
-        if (intent != null) {
-            if (Intent.ACTION_SEARCH == intent.action) {
-                handleSearchIntent(intent)
-            } else if (Intent.ACTION_VIEW == intent.action) {
-                handleViewPositionIntent(intent)
-            }
+        intent ?: return
+        when(intent.action) {
+            Intent.ACTION_SEARCH -> handleSearchIntent(intent)
+            Intent.ACTION_VIEW -> handleViewPositionIntent(intent)
         }
     }
 
@@ -422,7 +420,6 @@ class MainActivity :
         val query = intent.getStringExtra(SearchManager.QUERY)
         if (currentLocation != null) {
             addressPresenter.searchPositionByName(query)
-//            searchMenuItem.collapseActionView()
         }
         searchMenuItem?.collapseActionView()
     }
@@ -431,15 +428,13 @@ class MainActivity :
         val uri = intent.data ?: return
         DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=$uri")
 
-        val uriScheme = uri.scheme
-        if (uriScheme == "geo") {
-            handleGeoSchemeIntent(uri)
-        } else if ((uriScheme == "http" || uriScheme == "https") && uri.host == "maps.google.com") { // Manage maps.google.com?q=latitude,longitude
-            handleMapsHostIntent(uri)
-        } else {
-            val exception = Exception("Imposible tratar la query $uri")
-            DFMLogger.logException(exception)
-            Utils.toastIt("Unable to parse address", this)
+        when(uri.scheme) {
+            "geo" -> handleGeoSchemeIntent(uri)
+            "http", "https" -> handleHttpSchemeIntent(uri)
+            else -> {
+                DFMLogger.logException(Exception("Unable to parse query $uri"))
+                Utils.toastIt("Unable to parse address", this)
+            }
         }
     }
 
@@ -466,6 +461,13 @@ class MainActivity :
             val noSuchFieldException = NoSuchFieldException("Error al obtener las coordenadas. Matcher = $matcher")
             DFMLogger.logException(noSuchFieldException)
             Utils.toastIt("Unable to parse address", this)
+        }
+    }
+
+    private fun handleHttpSchemeIntent(uri: Uri) {
+        if (uri.host == "maps.google.com") {
+            // Manage maps.google.com?q=latitude,longitude
+            handleMapsHostIntent(uri)
         }
     }
 

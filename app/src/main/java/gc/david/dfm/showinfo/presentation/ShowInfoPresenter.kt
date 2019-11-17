@@ -80,7 +80,7 @@ class ShowInfoPresenter(
 
         insertDistanceUseCase.execute(distanceAsDistance, positionList, object : InsertDistanceUseCase.Callback {
             override fun onInsert() {
-                if (!TextUtils.isEmpty(name)) {
+                if (name.isNotEmpty()) {
                     showInfoView.showSuccessfulSaveWithName(name)
                 } else {
                     showInfoView.showSuccessfulSave()
