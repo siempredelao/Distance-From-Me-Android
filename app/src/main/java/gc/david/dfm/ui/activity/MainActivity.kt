@@ -42,8 +42,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import butterknife.BindView
 import butterknife.ButterKnife.bind
 import butterknife.OnClick
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -691,7 +689,6 @@ class MainActivity :
 
         super.onResume()
         invalidateOptionsMenu()
-        checkPlayServices()
     }
 
     public override fun onDestroy() {
@@ -699,29 +696,6 @@ class MainActivity :
 
         elevationPresenter.onReset()
         super.onDestroy()
-    }
-
-    private fun checkPlayServices(): Boolean {
-        val googleApiAvailabilityInstance = GoogleApiAvailability.getInstance()
-        val resultCode = googleApiAvailabilityInstance.isGooglePlayServicesAvailable(appContext)
-
-        if (resultCode == ConnectionResult.SUCCESS) {
-            DFMLogger.logMessage(TAG, "checkPlayServices success")
-
-            return true
-        } else {
-            if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
-                DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError")
-
-                val googlePlayServicesRequestCode = 1
-                googleApiAvailabilityInstance.getErrorDialog(this, resultCode, googlePlayServicesRequestCode).show()
-            } else {
-                DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing")
-
-                finish()
-            }
-            return false
-        }
     }
 
     fun onLocationChanged(location: Location) {
