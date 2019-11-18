@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger
+package gc.david.dfm.initializers
 
-import dagger.Component
-import gc.david.dfm.DFMApplication
-import javax.inject.Singleton
+import android.app.Application
+import javax.inject.Inject
 
-/**
- * Created by david on 06.12.16.
- */
-@Singleton
-@Component(modules = [RootModule::class])
-interface RootComponent {
+class Initializers @Inject constructor(private val initializers: Array<Initializer>) : Initializer {
 
-    fun inject(application: DFMApplication)
+    override fun init(application: Application) {
+        initializers.forEach {
+            it.init(application)
+        }
+    }
 }

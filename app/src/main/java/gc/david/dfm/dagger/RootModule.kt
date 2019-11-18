@@ -29,6 +29,10 @@ import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.MainThread
 import gc.david.dfm.executor.MainThreadBase
 import gc.david.dfm.executor.ThreadExecutor
+import gc.david.dfm.initializers.DefaultUnitInitializer
+import gc.david.dfm.initializers.FabricInitializer
+import gc.david.dfm.initializers.Initializer
+import gc.david.dfm.initializers.LeakCanaryInitializer
 import javax.inject.Singleton
 
 @Module
@@ -80,5 +84,15 @@ class RootModule(@get:Provides
     @Singleton
     fun provideConnectionManager(context: Context): ConnectionManager {
         return DefaultConnectionManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitializers(): Array<Initializer> {
+        return arrayOf(
+                DefaultUnitInitializer(),
+                FabricInitializer(),
+                LeakCanaryInitializer()
+        )
     }
 }

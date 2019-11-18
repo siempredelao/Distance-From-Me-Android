@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.dagger
+package gc.david.dfm.initializers
 
-import dagger.Component
-import gc.david.dfm.DFMApplication
-import javax.inject.Singleton
+import android.app.Application
+import com.crashlytics.android.Crashlytics
+import gc.david.dfm.BuildConfig
+import io.fabric.sdk.android.Fabric
 
-/**
- * Created by david on 06.12.16.
- */
-@Singleton
-@Component(modules = [RootModule::class])
-interface RootComponent {
+class FabricInitializer : Initializer {
 
-    fun inject(application: DFMApplication)
+    override fun init(application: Application) {
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(application, Crashlytics())
+        }
+    }
 }
