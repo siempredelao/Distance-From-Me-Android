@@ -499,7 +499,7 @@ class MainActivity :
     private fun getMatcherForUri(schemeSpecificPart: String): Matcher {
         DFMLogger.logMessage(TAG, "getMatcherForUri scheme=$schemeSpecificPart")
 
-        val regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)"
+        val regex = "(-?\\d+(\\.\\d+)?),(-?\\d+(\\.\\d+)?)"
         val pattern = Pattern.compile(regex)
         return pattern.matcher(schemeSpecificPart)
     }
