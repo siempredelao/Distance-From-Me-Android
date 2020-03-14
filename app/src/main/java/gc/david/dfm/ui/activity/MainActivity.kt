@@ -294,23 +294,23 @@ class MainActivity :
                 fabMyLocation.isVisible = false
                 nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
                 onStartingPointSelected()
-            }
-
-            // not necessary to check both permissions, they fall under location group
-            if (grantResults.first() == PERMISSION_GRANTED) {
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED")
-
-                Utils.toastIt(R.string.toast_loading_position, appContext)
-                googleMap?.isMyLocationEnabled = true
-                fabMyLocation.isVisible = true
-
-                registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
-                startService(Intent(this, GeofencingService::class.java))
             } else {
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED")
-                fabMyLocation.isVisible = false
-                nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-                onStartingPointSelected()
+                // no need to check both permissions, they fall under location group
+                if (grantResults.first() == PERMISSION_GRANTED) {
+                    DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED")
+
+                    Utils.toastIt(R.string.toast_loading_position, appContext)
+                    googleMap?.isMyLocationEnabled = true
+                    fabMyLocation.isVisible = true
+
+                    registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
+                    startService(Intent(this, GeofencingService::class.java))
+                } else {
+                    DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED")
+                    fabMyLocation.isVisible = false
+                    nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
+                    onStartingPointSelected()
+                }
             }
         }
     }
