@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo
+package gc.david.dfm.initializers
 
-/**
- * Created by david on 06.12.16.
- */
-abstract class DeviceInfoDecorator(private val decoratedDeviceInfo: DeviceInfo) : DeviceInfo {
+import android.app.Application
+import javax.inject.Inject
 
-    override val deviceInfo: String
-        get() = decoratedDeviceInfo.deviceInfo
+class Initializers @Inject constructor(private val initializers: Array<Initializer>) : Initializer {
+
+    override fun init(application: Application) {
+        initializers.forEach {
+            it.init(application)
+        }
+    }
 }

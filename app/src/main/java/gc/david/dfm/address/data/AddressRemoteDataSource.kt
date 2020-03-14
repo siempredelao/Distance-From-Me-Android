@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import gc.david.dfm.R
 import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.logger.DFMLogger
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -57,12 +58,16 @@ class AddressRemoteDataSource(context: Context) : AddressRepository {
     }
 
     private fun getNameByCoordinatesUrl(coordinates: LatLng): String {
-        return getUrl("latlng=${coordinates.latitude},${coordinates.longitude}")
+        val parameter = "latlng=${coordinates.latitude},${coordinates.longitude}"
+        DFMLogger.logMessage("AddressRemoteDataSource", parameter)
+        return getUrl(parameter)
     }
 
     private fun getCoordinatesByNameUrl(name: String): String {
         val parameterValue = name.replace(" ", "+")
-        return getUrl("address=$parameterValue")
+        val parameter = "address=$parameterValue"
+        DFMLogger.logMessage("AddressRemoteDataSource", parameter)
+        return getUrl(parameter)
     }
 
     private fun getUrl(parameter: String): String {

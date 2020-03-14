@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo
+package gc.david.dfm.initializers
 
-/**
- * Created by david on 06.12.16.
- */
-interface DeviceInfo {
+import android.app.Application
 
-    fun getDeviceInfo(): String
+interface Initializer {
 
+    fun init(application: Application)
 }

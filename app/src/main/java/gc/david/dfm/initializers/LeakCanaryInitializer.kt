@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo
+package gc.david.dfm.initializers
 
-/**
- * Created by david on 06.12.16.
- */
-interface DeviceInfo {
+import android.app.Application
+import com.squareup.leakcanary.LeakCanary
 
-    fun getDeviceInfo(): String
+class LeakCanaryInitializer : Initializer {
 
+    override fun init(application: Application) {
+        if (!LeakCanary.isInAnalyzerProcess(application)) {
+            LeakCanary.install(application)
+        }
+    }
 }

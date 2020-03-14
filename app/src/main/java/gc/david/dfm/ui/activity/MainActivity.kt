@@ -31,8 +31,6 @@ import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -44,8 +42,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import butterknife.BindView
 import butterknife.ButterKnife.bind
 import butterknife.OnClick
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -54,10 +50,6 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.GraphViewSeries
-import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle
-import com.jjoe64.graphview.LineGraphView
 import dagger.Lazy
 import gc.david.dfm.*
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
@@ -84,6 +76,7 @@ import gc.david.dfm.feedback.FeedbackPresenter
 import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
+import gc.david.dfm.ui.ElevationChartView
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
@@ -102,10 +95,6 @@ class MainActivity :
         Elevation.View,
         Address.View {
 
-    @BindView(R.id.elevationchart)
-    lateinit var rlElevationChart: RelativeLayout
-    @BindView(R.id.closeChart)
-    lateinit var ivCloseElevationChart: ImageView
     @BindView(R.id.tbMain)
     lateinit var tbMain: Toolbar
     @BindView(R.id.drawer_layout)
@@ -116,6 +105,8 @@ class MainActivity :
     lateinit var fabShowChart: FloatingActionButton
     @BindView(R.id.main_activity_mylocation_floatingactionbutton)
     lateinit var fabMyLocation: FloatingActionButton
+    @BindView(R.id.elevationChartView)
+    lateinit var elevationChartView: ElevationChartView
 
     @Inject
     lateinit var appContext: Context
@@ -162,7 +153,6 @@ class MainActivity :
     // Show position if we come from other app (p.e. Whatsapp)
     private var mustShowPositionWhenComingFromOutside = false
     private var sendDestinationPosition: LatLng? = null
-    private var graphView: GraphView? = null
     private val coordinates = ArrayList<LatLng>()
     private var calculatingDistance: Boolean = false
     private var progressDialog: ProgressDialog? = null
@@ -270,6 +260,8 @@ class MainActivity :
             }
             false
         })
+
+        elevationChartView.setOnCloseListener { elevationPresenter.onCloseChart() }
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -302,23 +294,23 @@ class MainActivity :
                 fabMyLocation.isVisible = false
                 nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
                 onStartingPointSelected()
-            }
-
-            // not necessary to check both permissions, they fall under location group
-            if (grantResults.first() == PERMISSION_GRANTED) {
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED")
-
-                Utils.toastIt(R.string.toast_loading_position, appContext)
-                googleMap?.isMyLocationEnabled = true
-                fabMyLocation.isVisible = true
-
-                registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
-                startService(Intent(this, GeofencingService::class.java))
             } else {
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED")
-                fabMyLocation.isVisible = false
-                nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-                onStartingPointSelected()
+                // no need to check both permissions, they fall under location group
+                if (grantResults.first() == PERMISSION_GRANTED) {
+                    DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED")
+
+                    Utils.toastIt(R.string.toast_loading_position, appContext)
+                    googleMap?.isMyLocationEnabled = true
+                    fabMyLocation.isVisible = true
+
+                    registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
+                    startService(Intent(this, GeofencingService::class.java))
+                } else {
+                    DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED")
+                    fabMyLocation.isVisible = false
+                    nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
+                    onStartingPointSelected()
+                }
             }
         }
     }
@@ -411,12 +403,10 @@ class MainActivity :
     }
 
     private fun handleIntents(intent: Intent?) {
-        if (intent != null) {
-            if (Intent.ACTION_SEARCH == intent.action) {
-                handleSearchIntent(intent)
-            } else if (Intent.ACTION_VIEW == intent.action) {
-                handleViewPositionIntent(intent)
-            }
+        intent ?: return
+        when(intent.action) {
+            Intent.ACTION_SEARCH -> handleSearchIntent(intent)
+            Intent.ACTION_VIEW -> handleViewPositionIntent(intent)
         }
     }
 
@@ -428,7 +418,6 @@ class MainActivity :
         val query = intent.getStringExtra(SearchManager.QUERY)
         if (currentLocation != null) {
             addressPresenter.searchPositionByName(query)
-//            searchMenuItem.collapseActionView()
         }
         searchMenuItem?.collapseActionView()
     }
@@ -437,15 +426,13 @@ class MainActivity :
         val uri = intent.data ?: return
         DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=$uri")
 
-        val uriScheme = uri.scheme
-        if (uriScheme == "geo") {
-            handleGeoSchemeIntent(uri)
-        } else if ((uriScheme == "http" || uriScheme == "https") && uri.host == "maps.google.com") { // Manage maps.google.com?q=latitude,longitude
-            handleMapsHostIntent(uri)
-        } else {
-            val exception = Exception("Imposible tratar la query $uri")
-            DFMLogger.logException(exception)
-            Utils.toastIt("Unable to parse address", this)
+        when(uri.scheme) {
+            "geo" -> handleGeoSchemeIntent(uri)
+            "http", "https" -> handleHttpSchemeIntent(uri)
+            else -> {
+                DFMLogger.logException(Exception("Unable to parse query $uri"))
+                Utils.toastIt("Unable to parse address", this)
+            }
         }
     }
 
@@ -472,6 +459,13 @@ class MainActivity :
             val noSuchFieldException = NoSuchFieldException("Error al obtener las coordenadas. Matcher = $matcher")
             DFMLogger.logException(noSuchFieldException)
             Utils.toastIt("Unable to parse address", this)
+        }
+    }
+
+    private fun handleHttpSchemeIntent(uri: Uri) {
+        if (uri.host == "maps.google.com") {
+            // Manage maps.google.com?q=latitude,longitude
+            handleMapsHostIntent(uri)
         }
     }
 
@@ -503,7 +497,7 @@ class MainActivity :
     private fun getMatcherForUri(schemeSpecificPart: String): Matcher {
         DFMLogger.logMessage(TAG, "getMatcherForUri scheme=$schemeSpecificPart")
 
-        val regex = "(\\-?\\d+\\.*\\d*),(\\-?\\d+\\.*\\d*)"
+        val regex = "(-?\\d+(\\.\\d+)?),(-?\\d+(\\.\\d+)?)"
         val pattern = Pattern.compile(regex)
         return pattern.matcher(schemeSpecificPart)
     }
@@ -616,11 +610,11 @@ class MainActivity :
                     dialog.dismiss()
                     openPlayStoreAppPage()
                 }
-                .setNegativeButton(getString(R.string.dialog_rate_app_negative_button)
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                    openFeedbackActivity()
-                }
+//                .setNegativeButton(getString(R.string.dialog_rate_app_negative_button)
+//                ) { dialog, _ ->
+//                    dialog.dismiss()
+//                    openFeedbackActivity()
+//                }
                 .create()
                 .show()
     }
@@ -695,7 +689,6 @@ class MainActivity :
 
         super.onResume()
         invalidateOptionsMenu()
-        checkPlayServices()
     }
 
     public override fun onDestroy() {
@@ -703,29 +696,6 @@ class MainActivity :
 
         elevationPresenter.onReset()
         super.onDestroy()
-    }
-
-    private fun checkPlayServices(): Boolean {
-        val googleApiAvailabilityInstance = GoogleApiAvailability.getInstance()
-        val resultCode = googleApiAvailabilityInstance.isGooglePlayServicesAvailable(appContext)
-
-        if (resultCode == ConnectionResult.SUCCESS) {
-            DFMLogger.logMessage(TAG, "checkPlayServices success")
-
-            return true
-        } else {
-            if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
-                DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError")
-
-                val googlePlayServicesRequestCode = 1
-                googleApiAvailabilityInstance.getErrorDialog(this, resultCode, googlePlayServicesRequestCode).show()
-            } else {
-                DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing")
-
-                finish()
-            }
-            return false
-        }
     }
 
     fun onLocationChanged(location: Location) {
@@ -840,10 +810,10 @@ class MainActivity :
 
     private fun fixMapPadding() {
         DFMLogger.logMessage(TAG,
-                "fixMapPadding elevationChartShown ${rlElevationChart.isShown}")
+                "fixMapPadding elevationChartShown ${elevationChartView.isShown}")
         googleMap?.setPadding(
                 0,
-                if (rlElevationChart.isShown) rlElevationChart.height else 0,
+                if (elevationChartView.isShown) elevationChartView.height else 0,
                 0,
                 0)
     }
@@ -853,65 +823,32 @@ class MainActivity :
     }
 
     override fun hideChart() {
-        rlElevationChart.isInvisible = true
+        elevationChartView.isInvisible = true
         fabShowChart.isInvisible = true
         fixMapPadding()
     }
 
     override fun showChart() {
-        rlElevationChart.isVisible = true
+        elevationChartView.isVisible = true
         fixMapPadding()
     }
 
     override fun buildChart(elevationList: List<Double>) {
         val locale = americanOrEuropeanLocale
 
-        // Creates the series and adds data to it
-        val series = buildGraphViewSeries(elevationList, locale)
-
-        if (graphView == null) {
-            graphView = LineGraphView(appContext,
-                    getString(R.string.elevation_chart_title,
-                            Haversine.getAltitudeUnitByLocale(locale))).apply {
-               graphViewStyle.apply {
-                    gridColor = Color.TRANSPARENT
-                    numHorizontalLabels = 1 // Not working with zero?
-                    textSize = resources.getDimension(R.dimen.elevation_chart_text_size)
-                    verticalLabelsWidth = resources.getDimensionPixelSize(R.dimen.elevation_chart_vertical_label_width)
-                }
-                rlElevationChart.addView(this)
-            }
-
-            ivCloseElevationChart.setOnClickListener { elevationPresenter.onCloseChart() }
-        }
-        graphView!!.removeAllSeries()
-        graphView!!.addSeries(series)
+        val normalizedElevation = elevationList.map { Haversine.normalizeAltitudeByLocale(it, locale) }
+        elevationChartView.setElevationProfile(normalizedElevation)
+        elevationChartView.setTitle(Haversine.getAltitudeUnitByLocale(locale))
 
         elevationPresenter.onChartBuilt()
     }
 
-    private fun buildGraphViewSeries(elevationList: List<Double>, locale: Locale): GraphViewSeries {
-        val style = GraphViewSeriesStyle(ContextCompat.getColor(applicationContext,
-                R.color.elevation_chart_line),
-                resources.getDimensionPixelSize(R.dimen.elevation_chart_line_size))
-        val series = GraphViewSeries(null, style, arrayOf<GraphView.GraphViewData>())
-
-        for (w in elevationList.indices) {
-            series.appendData(GraphView.GraphViewData(w.toDouble(),
-                    Haversine.normalizeAltitudeByLocale(elevationList[w],
-                            locale)),
-                    false,
-                    elevationList.size)
-        }
-        return series
-    }
-
     override fun animateHideChart() {
-        AnimatorUtil.replaceViews(rlElevationChart, fabShowChart)
+        AnimatorUtil.replaceViews(elevationChartView, fabShowChart)
     }
 
     override fun animateShowChart() {
-        AnimatorUtil.replaceViews(fabShowChart, rlElevationChart)
+        AnimatorUtil.replaceViews(fabShowChart, elevationChartView)
     }
 
     override fun logError(errorMessage: String) {

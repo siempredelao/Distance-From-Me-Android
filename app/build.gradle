@@ -21,7 +21,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'io.fabric.tools:gradle:1.31.2'
+		classpath Dependencies.fabric
 	}
 }
 
@@ -43,15 +43,15 @@ androidExtensions {
 }
 
 android {
-	compileSdkVersion 28
-	buildToolsVersion '28.0.3'
+
+	compileSdkVersion SdkVersions.target
 
 	defaultConfig {
 		applicationId 'gc.david.dfm'
-		minSdkVersion 22
-		targetSdkVersion 28
-		versionName '3.4.3'
-		versionCode 29
+		minSdkVersion SdkVersions.min
+		targetSdkVersion SdkVersions.target
+		versionName AppVersions.name
+		versionCode AppVersions.code
 		resConfigs "en", "ca", "de", "es", "fr", "it", "pt"
 
 		javaCompileOptions {
@@ -72,8 +72,7 @@ android {
 //			proguardFiles fileTree(dir: "proguard", include: ["*.pro"]).asList().toArray()
 
 			if (System.getenv("TRAVIS")) {
-				resValue "string", "maps_debug_api_key", "guess_it"
-				resValue "string", "maps_release_api_key", "guess_it"
+				resValue "string", "maps_api_key", "guess_it"
 				resValue "string", "maps_geocode_api_key", "guess_it"
 			}
 		}
@@ -97,71 +96,34 @@ android {
 	}
 }
 
-ext {
-	playServicesGroup = 'com.google.android.gms'
-	butterKnifeGroup = 'com.jakewharton'
-	daggerGroup = 'com.google.dagger'
-	leakCanaryGroup = 'com.squareup.leakcanary'
-    roomGroup = 'androidx.room'
-    mockitoGroup = 'org.mockito'
-
-	playServicesVersion = '17.0.0'
-	graphViewVersion = '3.1.3'
-	butterKnifeVersion = '10.2.0'
-	crashlyticsVersion = '2.9.5'
-	daggerVersion = '2.16'
-	okhttpVersion = '3.11.0'
-	gsonVersion = '2.8.6'
-	leakCanaryVersion = '1.6.3'
-    roomVersion = '2.2.0'
-
-    junitVersion = '4.12'
-	mockitoVersion = '2.28.2'
-}
-
 dependencies {
-	implementation "com.google.android.material:material:1.0.0"
-	implementation("androidx.preference:preference:1.0.0") {
-		transitive = false
-	}
-	implementation("$playServicesGroup:play-services-maps:$playServicesVersion") {
-		exclude group: "androidx.legacy", module: "legacy-support-v4"
-	}
-	implementation("$playServicesGroup:play-services-location:$playServicesVersion") {
-		transitive = false
-	}
-	implementation("com.jjoe64:graphview:$graphViewVersion") {
-		transitive = false
-	}
-	implementation("$butterKnifeGroup:butterknife:$butterKnifeVersion") {
-		exclude group: "androidx.annotation", module: "annotation"
-	}
-	kapt "$butterKnifeGroup:butterknife-compiler:$butterKnifeVersion"
-	implementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion@aar") {
-		transitive = true
-	}
-	implementation "$daggerGroup:dagger:$daggerVersion"
-	kapt "$daggerGroup:dagger-compiler:$daggerVersion"
-	implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
-	implementation "com.google.code.gson:gson:$gsonVersion"
-	implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-	debugImplementation "$leakCanaryGroup:leakcanary-android:$leakCanaryVersion"
-	betaImplementation "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
-	releaseImplementation "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
-	implementation('androidx.cardview:cardview:1.0.0') {
-		exclude group: "androidx.annotation", module: "annotation"
-	}
-	implementation("androidx.collection:collection-ktx:1.1.0")
-	implementation("androidx.core:core-ktx:1.1.0")
-    implementation "$roomGroup:room-runtime:$roomVersion"
-    implementation "$roomGroup:room-ktx:$roomVersion"
-    kapt "$roomGroup:room-compiler:$roomVersion"
+	implementation Dependencies.materialComponents
+	implementation Dependencies.preference
+	implementation Dependencies.playServicesMaps
+	implementation Dependencies.playServicesLocation
+	implementation Dependencies.graphview
+	implementation Dependencies.butterknife
+	kapt Dependencies.butterknifeCompiler
+	implementation Dependencies.crashlytics
+	implementation Dependencies.dagger
+	kapt Dependencies.daggerCompiler
+	implementation Dependencies.okhttp
+	implementation Dependencies.gson
+	implementation Dependencies.constraintLayout
+	debugImplementation Dependencies.leakCanary
+	betaImplementation Dependencies.leakCanaryNoOp
+	releaseImplementation Dependencies.leakCanaryNoOp
+	implementation Dependencies.cardView
+	implementation Dependencies.collectionKtx
+	implementation Dependencies.coreKtx
+    implementation Dependencies.roomRuntime
+    implementation Dependencies.roomKtx
+    kapt Dependencies.roomCompiler
 
-    testImplementation "junit:junit:$junitVersion"
-	testImplementation "$mockitoGroup:mockito-core:$mockitoVersion"
-    testImplementation "$mockitoGroup:mockito-inline:2.22.0"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-    testImplementation "$leakCanaryGroup:leakcanary-android-no-op:$leakCanaryVersion"
-    testImplementation "$roomGroup:room-testing:$roomVersion"
+    testImplementation TestDependencies.junit
+	testImplementation TestDependencies.mockito
+    testImplementation TestDependencies.mockitoInline
+    testImplementation TestDependencies.mockitoKotlin
+    testImplementation Dependencies.leakCanaryNoOp
 }
 

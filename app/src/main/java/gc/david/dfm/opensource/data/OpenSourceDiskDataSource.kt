@@ -24,7 +24,6 @@ import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 class OpenSourceDiskDataSource : OpenSourceRepository {
 
     private val openSourceLibraryEntityList = listOf(
-            // TODO: 21.12.16 get open source libraries from Firebase and cache them
             OpenSourceLibraryEntity(
                     "Support Library",
                     "The Android Open Source Project",
@@ -36,7 +35,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "Google Play Services",
                     "The Android Open Source Project",
-                    "15.0.1",
+                    "17.0.0",
                     "https://developers.google.com/android/guides/overview",
                     "Apache-2.0",
                     "2007-2017",
@@ -44,7 +43,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "GraphView",
                     "Jonas Gehring",
-                    "3.1.3",
+                    "4.2.2",
                     "http://www.android-graphview.org/",
                     "Apache-2.0",
                     "2016",
@@ -52,7 +51,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "ButterKnife",
                     "Jake Wharton",
-                    "8.8.1",
+                    "10.2.0",
                     "http://jakewharton.github.io/butterknife/",
                     "Apache-2.0",
                     "2013",
@@ -68,7 +67,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "Crashlytics",
                     "Fabric",
-                    "2.9.5",
+                    "2.10.1",
                     "https://fabric.io/kits/android/crashlytics",
                     "Copyright",
                     "2017",
@@ -92,7 +91,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "Gson",
                     "Google Inc.",
-                    "2.8.5",
+                    "2.8.6",
                     "https://github.com/google/gson",
                     "Apache-2.0",
                     "2008",
@@ -108,7 +107,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "LeakCanary",
                     "Square, Inc.",
-                    "1.6.1",
+                    "1.6.3",
                     "https://github.com/square/leakcanary",
                     "Apache-2.0",
                     "2015",
@@ -124,7 +123,7 @@ class OpenSourceDiskDataSource : OpenSourceRepository {
             OpenSourceLibraryEntity(
                     "Mockito",
                     "Mockito contributors",
-                    "2.3.0",
+                    "2.28.2",
                     "http://site.mockito.org/",
                     "MIT",
                     "2007",

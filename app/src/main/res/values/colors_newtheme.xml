@@ -18,4 +18,5 @@
 <resources>
     <color name="elevation_chart_background">#66191919</color>
     <color name="elevation_chart_line">#00FA9A</color>
+    <color name="white">#FFFFFF</color>
 </resources>

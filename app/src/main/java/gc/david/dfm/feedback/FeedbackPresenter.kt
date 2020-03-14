@@ -37,8 +37,7 @@ class FeedbackPresenter(
         val emailAddress = "davidaguiargonzalez@gmail.com"
         val emailSubject = feedbackView.context().getString(R.string.feedback_email_subject)
         val emailBody = feedbackView.context()
-                .getString(R.string.feedback_device_info_comments,
-                        deviceInfo.deviceInfo)
+                .getString(R.string.feedback_device_info_comments, deviceInfo.getDeviceInfo())
 
         val uri =
                 Uri.parse("mailto:$emailAddress?subject=${Uri.encode(emailSubject)}&body=${Uri.encode(emailBody)}")

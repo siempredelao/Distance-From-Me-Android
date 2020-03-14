@@ -17,6 +17,7 @@
 package gc.david.dfm.dagger
 
 import dagger.Component
+import gc.david.dfm.DFMApplication
 import javax.inject.Singleton
 
 /**
@@ -24,4 +25,7 @@ import javax.inject.Singleton
  */
 @Singleton
 @Component(modules = [RootModule::class])
-interface RootComponent
+interface RootComponent {
+
+    fun inject(application: DFMApplication)
+}

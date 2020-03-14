@@ -19,14 +19,11 @@ package gc.david.dfm.deviceinfo
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
-import android.os.Build.VERSION_CODES.JELLY_BEAN
-import androidx.annotation.RequiresApi
 import gc.david.dfm.adapter.systemService
 
 /**
  * Created by david on 18.01.17.
  */
-@RequiresApi(api = JELLY_BEAN)
 class DefaultMemoryInfo(context: Context) : MemoryInfo {
 
     private val memoryInfo: ActivityManager.MemoryInfo

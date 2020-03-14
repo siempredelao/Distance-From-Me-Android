@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.deviceinfo
+package gc.david.dfm.initializers
 
-/**
- * Created by david on 06.12.16.
- */
-interface DeviceInfo {
+import android.app.Application
+import com.crashlytics.android.Crashlytics
+import gc.david.dfm.BuildConfig
+import io.fabric.sdk.android.Fabric
 
-    fun getDeviceInfo(): String
+class FabricInitializer : Initializer {
 
+    override fun init(application: Application) {
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(application, Crashlytics())
+        }
+    }
 }

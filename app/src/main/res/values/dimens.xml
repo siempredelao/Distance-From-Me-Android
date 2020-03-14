@@ -21,8 +21,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="elevation">7dp</dimen>
     <dimen name="elevation_chart_hide_button_size">25dp</dimen>
-    <dimen name="elevation_chart_vertical_label_width">50dp</dimen>
-    <dimen name="elevation_chart_line_size">3dp</dimen>
     <dimen name="card_corner_radius">4dp</dimen>
     <dimen name="card_margin">8dp</dimen>
     <dimen name="card_padding_top">24dp</dimen>
