@@ -30,6 +30,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.hellofresh.gradle.deblibs' version '2.2.0'
+}
+
 allprojects {
     repositories {
         jcenter()
@@ -66,3 +70,8 @@ allprojects {
     }
 }
 
+deblibs {
+    projectName = "Distance From Me"
+    githubRepo = "siempredelao/Distance-From-Me-Android"
+    // githubToken = ...
+}
