@@ -60,6 +60,7 @@
         android:drawablePadding="16dp"
         android:drawableStart="@drawable/ic_announcement_black_18dp"
         android:padding="16dp"
+        android:visibility="gone"
         android:text="@string/doubt_not_answered_send_feedback_action"/>
 
 </RelativeLayout>

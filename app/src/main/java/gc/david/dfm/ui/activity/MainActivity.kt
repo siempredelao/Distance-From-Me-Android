@@ -610,11 +610,11 @@ class MainActivity :
                     dialog.dismiss()
                     openPlayStoreAppPage()
                 }
-                .setNegativeButton(getString(R.string.dialog_rate_app_negative_button)
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                    openFeedbackActivity()
-                }
+//                .setNegativeButton(getString(R.string.dialog_rate_app_negative_button)
+//                ) { dialog, _ ->
+//                    dialog.dismiss()
+//                    openFeedbackActivity()
+//                }
                 .create()
                 .show()
     }
