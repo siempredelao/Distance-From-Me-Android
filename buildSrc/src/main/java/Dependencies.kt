@@ -22,8 +22,8 @@ object SdkVersions {
 
 object AppVersions {
 
-    const val code = 29
-    const val name = "3.4.3"
+    const val code = 30
+    const val name = "3.5"
 }
 
 object LibraryVersions {
