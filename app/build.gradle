@@ -72,8 +72,7 @@ android {
 //			proguardFiles fileTree(dir: "proguard", include: ["*.pro"]).asList().toArray()
 
 			if (System.getenv("TRAVIS")) {
-				resValue "string", "maps_debug_api_key", "guess_it"
-				resValue "string", "maps_release_api_key", "guess_it"
+				resValue "string", "maps_api_key", "guess_it"
 				resValue "string", "maps_geocode_api_key", "guess_it"
 			}
 		}
