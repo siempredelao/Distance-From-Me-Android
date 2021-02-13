@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 David Aguiar Gonzalez
+ * Copyright (c) 2021 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package gc.david.dfm.showinfo.presentation
 
-import android.text.TextUtils
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
