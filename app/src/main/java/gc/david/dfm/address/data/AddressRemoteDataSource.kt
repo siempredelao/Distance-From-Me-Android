@@ -49,7 +49,7 @@ class AddressRemoteDataSource(context: Context) : AddressRepository {
         try {
             val response = client.newCall(request).execute()
             val addressCollectionEntity =
-                    gson.fromJson(response.body()!!.charStream(), AddressCollectionEntity::class.java)
+                    gson.fromJson(response.body!!.charStream(), AddressCollectionEntity::class.java)
             callback.onSuccess(addressCollectionEntity)
         } catch (exception: IOException) {
             callback.onError(exception.message ?: "AddressRemoteDataSource error")

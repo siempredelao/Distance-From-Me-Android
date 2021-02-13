@@ -44,7 +44,7 @@ class ElevationRemoteDataSource(context: Context) : ElevationRepository {
         try {
             val response = client.newCall(request).execute()
             val elevationEntity =
-                    gson.fromJson(response.body()!!.charStream(), ElevationEntity::class.java)
+                    gson.fromJson(response.body!!.charStream(), ElevationEntity::class.java)
             callback.onSuccess(elevationEntity)
         } catch (exception: IOException) {
             callback.onError(exception.message ?: "ElevationRemoteDataSource error")

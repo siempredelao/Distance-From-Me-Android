@@ -95,8 +95,6 @@ dependencies {
 	implementation Dependencies.gson
 	implementation Dependencies.constraintLayout
 	debugImplementation Dependencies.leakCanary
-	betaImplementation Dependencies.leakCanaryNoOp
-	releaseImplementation Dependencies.leakCanaryNoOp
 	implementation Dependencies.cardView
 	implementation Dependencies.collectionKtx
 	implementation Dependencies.coreKtx
@@ -109,6 +107,5 @@ dependencies {
 	testImplementation TestDependencies.mockito
     testImplementation TestDependencies.mockitoInline
     testImplementation TestDependencies.mockitoKotlin
-    testImplementation Dependencies.leakCanaryNoOp
 }
 
