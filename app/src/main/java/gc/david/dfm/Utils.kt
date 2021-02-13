@@ -25,26 +25,26 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.database.Position
-import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.map.Haversine
+import timber.log.Timber
 
 /**
  * Created by David on 15/10/2014.
  */
 object Utils {
 
-    private val TAG = Utils::class.java.simpleName
+    private val TAG = "Utils"
 
     fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
 
     fun toastIt(charSequence: String, context: Context) {
-        DFMLogger.logMessage(TAG, "toastIt message=$charSequence")
+        Timber.tag(TAG).d("toastIt message=$charSequence")
 
         Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show()
     }
 
     fun toastIt(@StringRes stringRes: Int, context: Context) {
-        DFMLogger.logMessage(TAG, "toastIt message=" + context.getString(stringRes))
+        Timber.tag(TAG).d("toastIt message=%s", context.getString(stringRes))
 
         Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
     }
@@ -55,7 +55,7 @@ object Utils {
                         @StringRes positiveButton: Int,
                         @StringRes negativeButton: Int,
                         activity: Activity) {
-        DFMLogger.logMessage(TAG, "showAlertDialog")
+        Timber.tag(TAG).d("showAlertDialog")
 
         AlertDialog.Builder(activity).apply {
             setTitle(title)

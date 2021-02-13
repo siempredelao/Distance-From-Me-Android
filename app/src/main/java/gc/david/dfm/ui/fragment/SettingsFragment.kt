@@ -28,9 +28,9 @@ import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.dagger.SettingsModule
 import gc.david.dfm.dagger.StorageModule
 import gc.david.dfm.distance.domain.ClearDistancesUseCase
-import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.settings.presentation.Settings
 import gc.david.dfm.settings.presentation.SettingsPresenter
+import timber.log.Timber
 import javax.inject.Inject
 
 class SettingsFragment : PreferenceFragmentCompat(), Settings.View {
@@ -54,7 +54,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Settings.View {
 
         val bbddPreference = findPreference(DFMPreferences.CLEAR_DATABASE_KEY)
         bbddPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            DFMLogger.logMessage(TAG, "onPreferenceClick delete entries")
+            Timber.tag(TAG).d("onPreferenceClick delete entries")
 
             presenter.onClearData()
             false
@@ -70,11 +70,11 @@ class SettingsFragment : PreferenceFragmentCompat(), Settings.View {
     }
 
     override fun showClearDataErrorMessage() {
-        DFMLogger.logException(Exception("Unable to clear database."))
+        Timber.tag(TAG).e(Exception("Unable to clear database."))
     }
 
     companion object {
 
-        private val TAG = SettingsFragment::class.java.simpleName
+        private const val TAG = "SettingsFragment"
     }
 }

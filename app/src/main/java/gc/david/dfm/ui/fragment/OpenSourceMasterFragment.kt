@@ -36,13 +36,13 @@ import gc.david.dfm.adapter.OpenSourceLibraryAdapter
 import gc.david.dfm.dagger.DaggerOpenSourceComponent
 import gc.david.dfm.dagger.OpenSourceModule
 import gc.david.dfm.dagger.RootModule
-import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.opensource.domain.OpenSourceUseCase
 import gc.david.dfm.opensource.presentation.OpenSource
 import gc.david.dfm.opensource.presentation.OpenSourcePresenter
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 import gc.david.dfm.ui.animation.DetailsTransition
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -139,7 +139,7 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
     }
 
     override fun showError(errorMessage: String) {
-        DFMLogger.logException(Exception(errorMessage))
+        Timber.tag(TAG).e(Exception(errorMessage))
 
         Snackbar.make(recyclerView, R.string.opensourcelibrary_error_message, Snackbar.LENGTH_LONG).show()
     }
@@ -152,5 +152,10 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
     interface OnItemClickListener {
 
         fun onItemClick(openSourceLibraryModel: OpenSourceLibraryModel, item: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder)
+    }
+
+    companion object {
+
+        private const val TAG = "OpenSourceMasterFrgmnt"
     }
 }

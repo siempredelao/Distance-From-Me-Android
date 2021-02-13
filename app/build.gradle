@@ -14,28 +14,13 @@
  * limitations under the License.
  */
 
-buildscript {
-	repositories {
-		maven { url 'https://maven.fabric.io/public' }
-		mavenCentral()
-	}
-
-	dependencies {
-		classpath Dependencies.fabric
-	}
-}
-
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
-repositories {
-	maven { url 'https://maven.fabric.io/public' }
-	mavenCentral()
-}
 
 // Needed to allow Parcelize
 androidExtensions {
@@ -94,6 +79,10 @@ android {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
 	}
+
+	kotlinOptions {
+		jvmTarget = JavaVersion.VERSION_1_8
+	}
 }
 
 dependencies {
@@ -119,6 +108,7 @@ dependencies {
     implementation Dependencies.roomRuntime
     implementation Dependencies.roomKtx
     kapt Dependencies.roomCompiler
+	implementation Dependencies.timber
 
     testImplementation TestDependencies.junit
 	testImplementation TestDependencies.mockito

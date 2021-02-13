@@ -73,13 +73,13 @@ import gc.david.dfm.elevation.presentation.Elevation
 import gc.david.dfm.elevation.presentation.ElevationPresenter
 import gc.david.dfm.feedback.Feedback
 import gc.david.dfm.feedback.FeedbackPresenter
-import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.ElevationChartView
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
+import timber.log.Timber
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -176,7 +176,7 @@ class MainActivity :
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState))
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -290,14 +290,14 @@ class MainActivity :
                                             grantResults: IntArray) {
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (grantResults.isEmpty()) { // happens when the permissions request interaction with the user is interrupted
-                DFMLogger.logMessage(TAG, "onRequestPermissionsResult INTERRUPTED")
+                Timber.tag(TAG).d("onRequestPermissionsResult INTERRUPTED")
                 fabMyLocation.isVisible = false
                 nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
                 onStartingPointSelected()
             } else {
                 // no need to check both permissions, they fall under location group
                 if (grantResults.first() == PERMISSION_GRANTED) {
-                    DFMLogger.logMessage(TAG, "onRequestPermissionsResult GRANTED")
+                    Timber.tag(TAG).d("onRequestPermissionsResult GRANTED")
 
                     Utils.toastIt(R.string.toast_loading_position, appContext)
                     googleMap?.isMyLocationEnabled = true
@@ -306,7 +306,7 @@ class MainActivity :
                     registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
                     startService(Intent(this, GeofencingService::class.java))
                 } else {
-                    DFMLogger.logMessage(TAG, "onRequestPermissionsResult DENIED")
+                    Timber.tag(TAG).d("onRequestPermissionsResult DENIED")
                     fabMyLocation.isVisible = false
                     nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
                     onStartingPointSelected()
@@ -316,7 +316,7 @@ class MainActivity :
     }
 
     override fun onMapLongClick(point: LatLng) {
-        DFMLogger.logMessage(TAG, "onMapLongClick")
+        Timber.tag(TAG).d("onMapLongClick")
 
         calculatingDistance = true
 
@@ -341,7 +341,7 @@ class MainActivity :
     }
 
     override fun onMapClick(point: LatLng) {
-        DFMLogger.logMessage(TAG, "onMapClick")
+        Timber.tag(TAG).d("onMapClick")
 
         if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             if (!calculatingDistance) {
@@ -374,16 +374,16 @@ class MainActivity :
     }
 
     override fun onInfoWindowClick(marker: Marker) {
-        DFMLogger.logMessage(TAG, "onInfoWindowClick")
+        Timber.tag(TAG).d("onInfoWindowClick")
 
         ShowInfoActivity.open(this, coordinates, distanceMeasuredAsText)
     }
 
     private fun onStartingPointSelected() {
         if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
-            DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from current point")
+            Timber.tag(TAG).d("onStartingPointSelected Distance from current point")
         } else {
-            DFMLogger.logMessage(TAG, "onStartingPointSelected Distance from any point")
+            Timber.tag(TAG).d("onStartingPointSelected Distance from any point")
         }
 
         calculatingDistance = false
@@ -396,7 +396,7 @@ class MainActivity :
     }
 
     override fun onNewIntent(intent: Intent) {
-        DFMLogger.logMessage(TAG, "onNewIntent " + Utils.dumpIntentToString(intent))
+        Timber.tag(TAG).d("onNewIntent %s", Utils.dumpIntentToString(intent))
 
         setIntent(intent)
         handleIntents(intent)
@@ -411,7 +411,7 @@ class MainActivity :
     }
 
     private fun handleSearchIntent(intent: Intent) {
-        DFMLogger.logMessage(TAG, "handleSearchIntent")
+        Timber.tag(TAG).d("handleSearchIntent")
 
         // Para controlar instancias únicas, no queremos que cada vez que
         // busquemos nos inicie una nueva instancia de la aplicación
@@ -424,13 +424,13 @@ class MainActivity :
 
     private fun handleViewPositionIntent(intent: Intent) {
         val uri = intent.data ?: return
-        DFMLogger.logMessage(TAG, "handleViewPositionIntent uri=$uri")
+        Timber.tag(TAG).d("handleViewPositionIntent uri=$uri")
 
         when(uri.scheme) {
             "geo" -> handleGeoSchemeIntent(uri)
             "http", "https" -> handleHttpSchemeIntent(uri)
             else -> {
-                DFMLogger.logException(Exception("Unable to parse query $uri"))
+                Timber.tag(TAG).e(Exception("Unable to parse query $uri"))
                 Utils.toastIt("Unable to parse address", this)
             }
         }
@@ -457,7 +457,7 @@ class MainActivity :
             }
         } else {
             val noSuchFieldException = NoSuchFieldException("Error al obtener las coordenadas. Matcher = $matcher")
-            DFMLogger.logException(noSuchFieldException)
+            Timber.tag(TAG).e(noSuchFieldException)
             Utils.toastIt("Unable to parse address", this)
         }
     }
@@ -477,25 +477,25 @@ class MainActivity :
                 setDestinationPosition(matcher)
             } else {
                 val noSuchFieldException = NoSuchFieldException("Error al obtener las coordenadas. Matcher = $matcher")
-                DFMLogger.logException(noSuchFieldException)
+                Timber.tag(TAG).e(noSuchFieldException)
                 Utils.toastIt("Unable to parse address", this)
             }
         } else {
             val noSuchFieldException = NoSuchFieldException("Query sin parámetro q.")
-            DFMLogger.logException(noSuchFieldException)
+            Timber.tag(TAG).e(noSuchFieldException)
             Utils.toastIt("Unable to parse address", this)
         }
     }
 
     private fun setDestinationPosition(matcher: Matcher) {
-        DFMLogger.logMessage(TAG, "setDestinationPosition")
+        Timber.tag(TAG).d("setDestinationPosition")
 
         sendDestinationPosition = LatLng(java.lang.Double.valueOf(matcher.group(1)), java.lang.Double.valueOf(matcher.group(2)))
         mustShowPositionWhenComingFromOutside = true
     }
 
     private fun getMatcherForUri(schemeSpecificPart: String): Matcher {
-        DFMLogger.logMessage(TAG, "getMatcherForUri scheme=$schemeSpecificPart")
+        Timber.tag(TAG).d("getMatcherForUri scheme=$schemeSpecificPart")
 
         val regex = "(-?\\d+(\\.\\d+)?),(-?\\d+(\\.\\d+)?)"
         val pattern = Pattern.compile(regex)
@@ -538,21 +538,21 @@ class MainActivity :
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected home")
+                Timber.tag(TAG).d("onOptionsItemSelected home")
                 drawerLayout.openDrawer(GravityCompat.START)
                 return true
             }
             R.id.action_search -> {
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected search")
+                Timber.tag(TAG).d("onOptionsItemSelected search")
                 return true
             }
             R.id.action_load -> {
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected load distances from ddbb")
+                Timber.tag(TAG).d("onOptionsItemSelected load distances from ddbb")
                 loadDistancesFromDB()
                 return true
             }
             R.id.action_crash -> {
-                DFMLogger.logMessage(TAG, "onOptionsItemSelected crash")
+                Timber.tag(TAG).d("onOptionsItemSelected crash")
                 throw RuntimeException("User forced crash")
             }
             else -> return super.onOptionsItemSelected(item)
@@ -585,7 +585,7 @@ class MainActivity :
                             }
 
                             override fun onError() {
-                                DFMLogger.logException(Exception("Unable to get position by id."))
+                                Timber.tag(TAG).e(Exception("Unable to get position by id."))
                             }
                         })
                     }
@@ -594,13 +594,13 @@ class MainActivity :
             }
 
             override fun onError() {
-                DFMLogger.logException(Exception("Unable to load distances."))
+                Timber.tag(TAG).e(Exception("Unable to load distances."))
             }
         })
     }
 
     private fun showRateDialog() {
-        DFMLogger.logMessage(TAG, "showRateDialog")
+        Timber.tag(TAG).d("showRateDialog")
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.dialog_rate_app_title)
@@ -620,17 +620,17 @@ class MainActivity :
     }
 
     private fun openPlayStoreAppPage() {
-        DFMLogger.logMessage(TAG, "openPlayStoreAppPage")
+        Timber.tag(TAG).d("openPlayStoreAppPage")
 
         try {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")))
         } catch (e: ActivityNotFoundException) {
-            DFMLogger.logException(Exception("Unable to open Play Store, rooted device?"))
+            Timber.tag(TAG).e(Exception("Unable to open Play Store, rooted device?"))
         }
     }
 
     private fun openFeedbackActivity() {
-        DFMLogger.logMessage(TAG, "openFeedbackActivity")
+        Timber.tag(TAG).d("openFeedbackActivity")
 
         FeedbackPresenter(object : Feedback.View {
             override fun showError() {
@@ -652,13 +652,13 @@ class MainActivity :
      * disconnect.
      */
     public override fun onStop() {
-        DFMLogger.logMessage(TAG, "onStop")
+        Timber.tag(TAG).d("onStop")
 
         super.onStop()
         try {
             unregisterReceiver(locationReceiver)
         } catch (exception: IllegalArgumentException) {
-            DFMLogger.logMessage(TAG, "onStop receiver not registered, do nothing")
+            Timber.tag(TAG).d("onStop receiver not registered, do nothing")
         }
 
         stopService(Intent(this, GeofencingService::class.java))
@@ -668,7 +668,7 @@ class MainActivity :
      * Called when the Activity is restarted, even before it becomes visible.
      */
     public override fun onStart() {
-        DFMLogger.logMessage(TAG, "onStart")
+        Timber.tag(TAG).d("onStart")
 
         super.onStart()
         if (isLocationPermissionGranted) {
@@ -685,21 +685,21 @@ class MainActivity :
      * Called when the system detects that this Activity is now visible.
      */
     public override fun onResume() {
-        DFMLogger.logMessage(TAG, "onResume")
+        Timber.tag(TAG).d("onResume")
 
         super.onResume()
         invalidateOptionsMenu()
     }
 
     public override fun onDestroy() {
-        DFMLogger.logMessage(TAG, "onDestroy")
+        Timber.tag(TAG).d("onDestroy")
 
         elevationPresenter.onReset()
         super.onDestroy()
     }
 
     fun onLocationChanged(location: Location) {
-        DFMLogger.logMessage(TAG, "onLocationChanged")
+        Timber.tag(TAG).d("onLocationChanged")
 
         if (currentLocation != null) {
             currentLocation!!.set(location)
@@ -708,10 +708,10 @@ class MainActivity :
         }
 
         if (appHasJustStarted) {
-            DFMLogger.logMessage(TAG, "onLocationChanged appHasJustStarted")
+            Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
             if (mustShowPositionWhenComingFromOutside) {
-                DFMLogger.logMessage(TAG, "onLocationChanged mustShowPositionWhenComingFromOutside")
+                Timber.tag(TAG).d("onLocationChanged mustShowPositionWhenComingFromOutside")
 
                 if (currentLocation != null && sendDestinationPosition != null) {
                     addressPresenter.searchPositionByCoordinates(sendDestinationPosition!!)
@@ -719,7 +719,7 @@ class MainActivity :
                     mustShowPositionWhenComingFromOutside = false
                 }
             } else {
-                DFMLogger.logMessage(TAG, "onLocationChanged NOT mustShowPositionWhenComingFromOutside")
+                Timber.tag(TAG).d("onLocationChanged NOT mustShowPositionWhenComingFromOutside")
 
                 val latlng = LatLng(location.latitude, location.longitude)
                 // 17 is a good zoom level for this action
@@ -732,7 +732,7 @@ class MainActivity :
     private fun drawAndShowMultipleDistances(coordinates: List<LatLng>,
                                              message: String,
                                              isLoadingFromDB: Boolean) {
-        DFMLogger.logMessage(TAG, "drawAndShowMultipleDistances")
+        Timber.tag(TAG).d("drawAndShowMultipleDistances")
 
         googleMap?.clear()
 
@@ -809,8 +809,7 @@ class MainActivity :
     }
 
     private fun fixMapPadding() {
-        DFMLogger.logMessage(TAG,
-                "fixMapPadding elevationChartShown ${elevationChartView.isShown}")
+        Timber.tag(TAG).d("fixMapPadding elevationChartShown ${elevationChartView.isShown}")
         googleMap?.setPadding(
                 0,
                 if (elevationChartView.isShown) elevationChartView.height else 0,
@@ -852,7 +851,7 @@ class MainActivity :
     }
 
     override fun logError(errorMessage: String) {
-        DFMLogger.logException(Exception(errorMessage))
+        Timber.tag(TAG).e(Exception(errorMessage))
     }
 
     @OnClick(R.id.main_activity_showchart_floatingactionbutton)
@@ -872,7 +871,7 @@ class MainActivity :
     }
 
     override fun showConnectionProblemsDialog() {
-        DFMLogger.logMessage(TAG, "showConnectionProblemsDialog")
+        Timber.tag(TAG).d("showConnectionProblemsDialog")
 
         Utils.showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
                 R.string.dialog_connection_problems_title,
@@ -917,13 +916,13 @@ class MainActivity :
     }
 
     override fun showPositionByName(address: gc.david.dfm.address.domain.model.Address) {
-        DFMLogger.logMessage(TAG, "showPositionByName $selectedDistanceMode")
+        Timber.tag(TAG).d("showPositionByName $selectedDistanceMode")
 
         val addressCoordinates = address.coordinates
         if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
             coordinates.add(addressCoordinates)
             if (coordinates.isEmpty()) {
-                DFMLogger.logMessage(TAG, "showPositionByName empty coordinates list")
+                Timber.tag(TAG).d("showPositionByName empty coordinates list")
 
                 // add marker
                 addMarker(addressCoordinates).apply {
@@ -943,10 +942,10 @@ class MainActivity :
             }
         } else {
             if (!appHasJustStarted) {
-                DFMLogger.logMessage(TAG, "showPositionByName appHasJustStarted")
+                Timber.tag(TAG).d("showPositionByName appHasJustStarted")
 
                 if (coordinates.isEmpty()) {
-                    DFMLogger.logMessage(TAG, "showPositionByName empty coordinates list")
+                    Timber.tag(TAG).d("showPositionByName empty coordinates list")
 
                     currentLocation?.let {
                         coordinates.add(LatLng(it.latitude, it.longitude))
@@ -955,7 +954,7 @@ class MainActivity :
                 coordinates.add(addressCoordinates)
                 drawAndShowMultipleDistances(this.coordinates, address.formattedAddress + "\n", false)
             } else {
-                DFMLogger.logMessage(TAG, "showPositionByName NOT appHasJustStarted")
+                Timber.tag(TAG).d("showPositionByName NOT appHasJustStarted")
 
                 // Coming from View Action Intent
                 sendDestinationPosition = addressCoordinates
@@ -980,7 +979,7 @@ class MainActivity :
 
     companion object {
 
-        private val TAG = MainActivity::class.java.simpleName
+        private val TAG = "MainActivity"
         private val PERMISSIONS = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
         private const val PERMISSIONS_REQUEST_CODE = 2
     }

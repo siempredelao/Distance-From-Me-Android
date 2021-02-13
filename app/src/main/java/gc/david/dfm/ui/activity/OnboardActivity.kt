@@ -21,7 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import gc.david.dfm.Utils
-import gc.david.dfm.logger.DFMLogger
+import timber.log.Timber
 
 /**
  * Created by david on 07.11.16.
@@ -38,21 +38,21 @@ class OnboardActivity : AppCompatActivity() {
         val resultCode = googleApiAvailabilityInstance.isGooglePlayServicesAvailable(this)
 
         if (resultCode == ConnectionResult.SUCCESS) {
-            DFMLogger.logMessage(TAG, "checkPlayServices success")
+            Timber.tag(TAG).d("checkPlayServices success")
 
             val openMainActivityIntent = Intent(this, MainActivity::class.java)
             startActivity(openMainActivityIntent)
             finish()
         } else {
             if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
-                DFMLogger.logMessage(TAG, "checkPlayServices isUserRecoverableError")
+                Timber.tag(TAG).d("checkPlayServices isUserRecoverableError")
 
                 val googlePlayServicesRequestCode = 9000
                 googleApiAvailabilityInstance
                         .getErrorDialog(this, resultCode, googlePlayServicesRequestCode)
                         .show()
             } else {
-                DFMLogger.logMessage(TAG, "checkPlayServices device not supported, finishing")
+                Timber.tag(TAG).e("checkPlayServices device not supported, finishing")
                 Utils.toastIt("This device is not supported by Google Play Services.", this)
 
                 finish()
@@ -62,6 +62,6 @@ class OnboardActivity : AppCompatActivity() {
 
     companion object {
 
-        private val TAG = OnboardActivity::class.java.simpleName
+        private val TAG = "OnboardActivity"
     }
 }

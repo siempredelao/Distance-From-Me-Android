@@ -17,15 +17,11 @@
 package gc.david.dfm.initializers
 
 import android.app.Application
-import com.crashlytics.android.Crashlytics
-import gc.david.dfm.BuildConfig
-import io.fabric.sdk.android.Fabric
+import com.google.firebase.FirebaseApp
 
-class FabricInitializer : Initializer {
+class FirebaseInitializer : Initializer {
 
     override fun init(application: Application) {
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(application, Crashlytics())
-        }
+        FirebaseApp.initializeApp(application)
     }
 }

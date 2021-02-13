@@ -24,9 +24,11 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
-        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.41"
+        classpath Dependencies.gradlePlugin
+        classpath Dependencies.dexcountPlugin
+        classpath Dependencies.kotlinGradle
+        classpath Dependencies.googleServicesPlugin
+        classpath Dependencies.crashlyticsPlugin
     }
 }
 

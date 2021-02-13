@@ -44,9 +44,9 @@ import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.dagger.ShowInfoModule
 import gc.david.dfm.dagger.StorageModule
 import gc.david.dfm.distance.domain.InsertDistanceUseCase
-import gc.david.dfm.logger.DFMLogger
 import gc.david.dfm.showinfo.presentation.ShowInfo
 import gc.david.dfm.showinfo.presentation.ShowInfoPresenter
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -86,7 +86,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     private var wasSavingWhenOrientationChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        DFMLogger.logMessage(TAG, "onCreate savedInstanceState=" + Utils.dumpBundleToString(savedInstanceState))
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_info)
@@ -111,7 +111,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
         getIntentData()
 
         if (savedInstanceState == null) {
-            DFMLogger.logMessage(TAG, "onCreate savedInstanceState null, filling addresses info")
+            Timber.tag(TAG).d("onCreate savedInstanceState null, filling addresses info")
 
             fillAddressesInfo()
         } else {
@@ -143,7 +143,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        DFMLogger.logMessage(TAG, "onSaveInstanceState outState=" + Utils.dumpBundleToString(outState))
+        Timber.tag(TAG).d("onSaveInstanceState outState=%s", Utils.dumpBundleToString(outState))
 
         super.onSaveInstanceState(outState)
 
@@ -162,7 +162,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     }
 
     private fun getIntentData() {
-        DFMLogger.logMessage(TAG, "getIntentData")
+        Timber.tag(TAG).d("getIntentData")
 
         val inputDataIntent = intent
         positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY) ?: error("No positions available")
@@ -170,7 +170,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     }
 
     private fun fillAddressesInfo() {
-        DFMLogger.logMessage(TAG, "fillAddressesInfo")
+        Timber.tag(TAG).d("fillAddressesInfo")
 
         showInfoPresenter.searchPositionByCoordinates(positionsList.first(), positionsList.last())
     }
@@ -180,7 +180,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     }
 
     private fun fillDistanceInfo() {
-        DFMLogger.logMessage(TAG, "fillDistanceInfo")
+        Timber.tag(TAG).d("fillDistanceInfo")
 
         tvDistance.text = getString(R.string.info_distance_title, distance)
     }
@@ -296,7 +296,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
         } else {
             tvDestinationAddress.setText(R.string.toast_no_location_found)
         }
-        DFMLogger.logException(Exception(errorMessage))
+        Timber.tag(TAG).d(Exception(errorMessage))
     }
 
     override fun showSuccessfulSave() {
@@ -309,12 +309,12 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
 
     override fun showFailedSave() {
         Utils.toastIt("Unable to save distance. Try again later.", appContext)
-        DFMLogger.logException(Exception("Unable to insert distance into database."))
+        Timber.tag(TAG).d(Exception("Unable to insert distance into database."))
     }
 
     companion object {
 
-        private val TAG = ShowInfoActivity::class.java.simpleName
+        private const val TAG = "ShowInfoActivity"
 
         private const val POSITIONS_LIST_EXTRA_KEY = "positionsList"
         private const val DISTANCE_EXTRA_KEY = "distance"

@@ -29,10 +29,7 @@ import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.MainThread
 import gc.david.dfm.executor.MainThreadBase
 import gc.david.dfm.executor.ThreadExecutor
-import gc.david.dfm.initializers.DefaultUnitInitializer
-import gc.david.dfm.initializers.FabricInitializer
-import gc.david.dfm.initializers.Initializer
-import gc.david.dfm.initializers.LeakCanaryInitializer
+import gc.david.dfm.initializers.*
 import javax.inject.Singleton
 
 @Module
@@ -88,11 +85,12 @@ class RootModule(@get:Provides
 
     @Provides
     @Singleton
-    fun provideInitializers(): Array<Initializer> {
+    fun provideInitializers(context: Context): Array<Initializer> {
         return arrayOf(
                 DefaultUnitInitializer(),
-                FabricInitializer(),
-                LeakCanaryInitializer()
+                FirebaseInitializer(),
+                LeakCanaryInitializer(),
+                LoggingInitializer(context)
         )
     }
 }

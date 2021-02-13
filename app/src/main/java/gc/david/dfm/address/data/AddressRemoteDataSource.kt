@@ -21,9 +21,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import gc.david.dfm.R
 import gc.david.dfm.address.data.model.AddressCollectionEntity
-import gc.david.dfm.logger.DFMLogger
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import timber.log.Timber
 import java.io.IOException
 
 /**
@@ -59,18 +59,23 @@ class AddressRemoteDataSource(context: Context) : AddressRepository {
 
     private fun getNameByCoordinatesUrl(coordinates: LatLng): String {
         val parameter = "latlng=${coordinates.latitude},${coordinates.longitude}"
-        DFMLogger.logMessage("AddressRemoteDataSource", parameter)
+        Timber.tag(TAG).d(parameter)
         return getUrl(parameter)
     }
 
     private fun getCoordinatesByNameUrl(name: String): String {
         val parameterValue = name.replace(" ", "+")
         val parameter = "address=$parameterValue"
-        DFMLogger.logMessage("AddressRemoteDataSource", parameter)
+        Timber.tag(TAG).d(parameter)
         return getUrl(parameter)
     }
 
     private fun getUrl(parameter: String): String {
         return "https://maps.googleapis.com/maps/api/geocode/json?$parameter&key=$geocodeApiKey"
+    }
+
+    companion object {
+
+        private const val TAG = "AddressRemoteDataSource"
     }
 }
