@@ -21,11 +21,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.*
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import butterknife.BindView
-import butterknife.ButterKnife
 import gc.david.dfm.R
+import gc.david.dfm.databinding.FragmentOpensourcelibraryDetailBinding
 import gc.david.dfm.opensource.presentation.LicensePrinter
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 
@@ -34,11 +32,7 @@ import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
  */
 class OpenSourceDetailFragment : Fragment() {
 
-    @BindView(R.id.opensourcelibrary_detail_fragment_name_textview)
-    lateinit var tvName: TextView
-    @BindView(R.id.opensourcelibrary_detail_fragment_long_license_textview)
-    lateinit var tvLongLicense: TextView
-
+    private lateinit var binding: FragmentOpensourcelibraryDetailBinding
     private lateinit var openSourceLibraryModel: OpenSourceLibraryModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +43,9 @@ class OpenSourceDetailFragment : Fragment() {
         openSourceLibraryModel = arguments.getParcelable(LIBRARY_KEY) ?: error("No model available")
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_opensourcelibrary_detail, container, false)
-        ButterKnife.bind(this, view)
-        return view
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = FragmentOpensourcelibraryDetailBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -72,9 +65,9 @@ class OpenSourceDetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        tvName.text = openSourceLibraryModel.name
-        tvLongLicense.text = LicensePrinter.print(openSourceLibraryModel, requireContext())
-        tvLongLicense.movementMethod = ScrollingMovementMethod.getInstance()
+        binding.textViewTitle.text = openSourceLibraryModel.name
+        binding.textViewDescription.text = LicensePrinter.print(openSourceLibraryModel, requireContext())
+        binding.textViewDescription.movementMethod = ScrollingMovementMethod.getInstance()
     }
 
     companion object {

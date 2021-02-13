@@ -24,7 +24,8 @@
     android:orientation="vertical"
     tools:context=".ui.activity.ShowInfoActivity">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar"
+        android:id="@+id/tbMain"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -48,7 +49,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
             <TextView
-                android:id="@+id/showinfo_activity_origin_address_textview"
+                android:id="@+id/textViewOriginAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -63,7 +64,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
             <TextView
-                android:id="@+id/showinfo_activity_destination_address_textview"
+                android:id="@+id/textViewDestinationAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -71,7 +72,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
             <TextView
-                android:id="@+id/showinfo_activity_distance_textview"
+                android:id="@+id/textViewDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/showinfo_distance_margin_top"

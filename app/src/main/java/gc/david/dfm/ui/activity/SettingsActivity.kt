@@ -20,23 +20,19 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindView
-import butterknife.ButterKnife.bind
 import gc.david.dfm.R
+import gc.david.dfm.databinding.ActivitySettingsBinding
 import gc.david.dfm.ui.fragment.SettingsFragment
 
 class SettingsActivity : AppCompatActivity() {
 
-    @BindView(R.id.tbMain)
-    lateinit var tbMain: Toolbar
-
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        bind(this)
+        ActivitySettingsBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            setSupportActionBar(tbMain.tbMain)
+        }
 
-        setSupportActionBar(tbMain)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         supportFragmentManager.beginTransaction()

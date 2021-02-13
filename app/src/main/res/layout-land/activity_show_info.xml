@@ -24,7 +24,8 @@
     android:orientation="vertical"
     tools:context=".ui.activity.ShowInfoActivity">
 
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar"
+        android:id="@+id/tbMain"/>
 
     <ScrollView
         android:layout_width="match_parent"

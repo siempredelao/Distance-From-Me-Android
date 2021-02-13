@@ -21,14 +21,10 @@ import android.transition.Fade
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.ButterKnife
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.DFMApplication
 import gc.david.dfm.R
@@ -36,6 +32,7 @@ import gc.david.dfm.adapter.OpenSourceLibraryAdapter
 import gc.david.dfm.dagger.DaggerOpenSourceComponent
 import gc.david.dfm.dagger.OpenSourceModule
 import gc.david.dfm.dagger.RootModule
+import gc.david.dfm.databinding.FragmentOpensourcelibraryMasterBinding
 import gc.david.dfm.opensource.domain.OpenSourceUseCase
 import gc.david.dfm.opensource.presentation.OpenSource
 import gc.david.dfm.opensource.presentation.OpenSourcePresenter
@@ -50,16 +47,12 @@ import javax.inject.Inject
  */
 class OpenSourceMasterFragment : Fragment(), OpenSource.View {
 
-    @BindView(R.id.opensourcelibrary_fragment_recyclerview)
-    lateinit var recyclerView: RecyclerView
-    @BindView(R.id.opensourcelibrary_fragment_progressbar)
-    lateinit var progressbar: ProgressBar
-
     @Inject
     lateinit var openSourceUseCase: OpenSourceUseCase
     @Inject
     lateinit var openSourceLibraryMapper: OpenSourceLibraryMapper
 
+    private lateinit var binding: FragmentOpensourcelibraryMasterBinding
     private lateinit var presenter: OpenSource.Presenter
     private lateinit var adapter: OpenSourceLibraryAdapter
     
@@ -84,7 +77,7 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
                             getString(R.string.transition_opensourcelibrary_name))
                     .addSharedElement(viewHolder.tvShortLicense,
                             getString(R.string.transition_opensourcelibrary_description))
-                    .replace(R.id.about_activity_container_framelayout, openSourceDetailFragment)
+                    .replace(R.id.container, openSourceDetailFragment)
                     .addToBackStack(null)
                     .commit()
         }
@@ -106,9 +99,8 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_opensourcelibrary_master, container, false)
-        ButterKnife.bind(this, view)
-        return view
+        binding = FragmentOpensourcelibraryMasterBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -124,14 +116,14 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
 
     override fun showLoading() {
         if (view != null) { // Workaround: at this point, onCreateView could not have been executed
-            progressbar.isVisible = true
-            recyclerView.isVisible = false
+            binding.progressBar.isVisible = true
+            binding.recyclerView.isVisible = false
         }
     }
 
     override fun hideLoading() {
-        progressbar.isVisible = false
-        recyclerView.isVisible = true
+        binding.progressBar.isVisible = false
+        binding.recyclerView.isVisible = true
     }
 
     override fun add(openSourceLibraryModelList: List<OpenSourceLibraryModel>) {
@@ -141,12 +133,12 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
     override fun showError(errorMessage: String) {
         Timber.tag(TAG).e(Exception(errorMessage))
 
-        Snackbar.make(recyclerView, R.string.opensourcelibrary_error_message, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding.recyclerView, R.string.opensourcelibrary_error_message, Snackbar.LENGTH_LONG).show()
     }
 
     override fun setupList() {
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = adapter
     }
 
     interface OnItemClickListener {

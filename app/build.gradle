@@ -69,6 +69,10 @@ android {
 		}
 	}
 
+	buildFeatures {
+		viewBinding true
+	}
+
 	// Butterknife requires Java 8
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8

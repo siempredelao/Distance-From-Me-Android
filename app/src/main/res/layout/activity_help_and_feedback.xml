@@ -24,7 +24,8 @@
     tools:context=".ui.activity.HelpAndFeedbackActivity">
 
     <include
-        layout="@layout/toolbar"/>
+        layout="@layout/toolbar"
+        android:id="@+id/tbMain"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -33,7 +34,7 @@
         android:layout_above="@+id/help_and_feedback_activity_send_feedback_textview">
 
         <ProgressBar
-            android:id="@+id/help_and_feedback_activity_progressbar"
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -42,16 +43,16 @@
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/help_and_feedback_activity_recyclerview"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/help_and_feedback_activity_send_feedback_textview"
+        android:layout_above="@+id/textViewSendDescription"
         android:layout_below="@+id/tbMain"
         android:visibility="gone"
         tools:listitem="@layout/view_feedback_card_item"/>
 
     <TextView
-        android:id="@+id/help_and_feedback_activity_send_feedback_textview"
+        android:id="@+id/textViewSendDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

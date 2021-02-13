@@ -28,11 +28,7 @@ import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import butterknife.BindView
-import butterknife.ButterKnife.bind
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.DFMApplication
@@ -43,6 +39,7 @@ import gc.david.dfm.dagger.DaggerShowInfoComponent
 import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.dagger.ShowInfoModule
 import gc.david.dfm.dagger.StorageModule
+import gc.david.dfm.databinding.ActivityShowInfoBinding
 import gc.david.dfm.distance.domain.InsertDistanceUseCase
 import gc.david.dfm.showinfo.presentation.ShowInfo
 import gc.david.dfm.showinfo.presentation.ShowInfoPresenter
@@ -51,15 +48,6 @@ import java.util.*
 import javax.inject.Inject
 
 class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
-
-    @BindView(R.id.showinfo_activity_origin_address_textview)
-    lateinit var tvOriginAddress: TextView
-    @BindView(R.id.showinfo_activity_destination_address_textview)
-    lateinit var tvDestinationAddress: TextView
-    @BindView(R.id.showinfo_activity_distance_textview)
-    lateinit var tvDistance: TextView
-    @BindView(R.id.tbMain)
-    lateinit var tbMain: Toolbar
 
     @Inject
     lateinit var appContext: Context
@@ -73,6 +61,8 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     lateinit var getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase
 
     private lateinit var showInfoPresenter: ShowInfo.Presenter
+
+    private lateinit var binding: ActivityShowInfoBinding
 
     private lateinit var positionsList: List<LatLng>
     private lateinit var distance: String
@@ -89,16 +79,17 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_info)
         DaggerShowInfoComponent.builder()
                 .rootModule(RootModule(application as DFMApplication))
                 .storageModule(StorageModule())
                 .showInfoModule(ShowInfoModule())
                 .build()
                 .inject(this)
-        bind(this)
+        binding = ActivityShowInfoBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            setSupportActionBar(tbMain.tbMain)
+        }
 
-        setSupportActionBar(tbMain)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // TODO: 06.02.17 store presenter in singleton Map, Loader,... to restore after config change
@@ -125,11 +116,11 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
         originAddress = savedInstanceState.getString(ORIGIN_ADDRESS_STATE_KEY)
         destinationAddress = savedInstanceState.getString(DESTINATION_ADDRESS_STATE_KEY)
 
-        tvOriginAddress.text = formatAddress(
+        binding.textViewOriginAddress!!.text = formatAddress(
                 originAddress,
                 positionsList.first().latitude,
                 positionsList.first().longitude)
-        tvDestinationAddress.text = formatAddress(
+        binding.textViewDestinationAddress!!.text = formatAddress(
                 destinationAddress,
                 positionsList.last().latitude,
                 positionsList.last().longitude)
@@ -182,7 +173,7 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     private fun fillDistanceInfo() {
         Timber.tag(TAG).d("fillDistanceInfo")
 
-        tvDistance.text = getString(R.string.info_distance_title, distance)
+        binding.textViewDistance!!.text = getString(R.string.info_distance_title, distance)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -269,13 +260,13 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     override fun setAddress(address: String, isOrigin: Boolean) {
         if (isOrigin) {
             originAddress = address
-            tvOriginAddress.text = formatAddress(
+            binding.textViewOriginAddress!!.text = formatAddress(
                     originAddress,
                     positionsList.first().latitude,
                     positionsList.first().longitude)
         } else {
             destinationAddress = address
-            tvDestinationAddress.text = formatAddress(
+            binding.textViewDestinationAddress!!.text = formatAddress(
                     destinationAddress,
                     positionsList.last().latitude,
                     positionsList.last().longitude)
@@ -284,17 +275,17 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
 
     override fun showNoMatchesMessage(isOrigin: Boolean) {
         if (isOrigin) {
-            tvOriginAddress.setText(R.string.error_no_address_found_message)
+            binding.textViewOriginAddress!!.setText(R.string.error_no_address_found_message)
         } else {
-            tvDestinationAddress.setText(R.string.error_no_address_found_message)
+            binding.textViewDestinationAddress!!.setText(R.string.error_no_address_found_message)
         }
     }
 
     override fun showError(errorMessage: String, isOrigin: Boolean) {
         if (isOrigin) {
-            tvOriginAddress.setText(R.string.toast_no_location_found)
+            binding.textViewOriginAddress!!.setText(R.string.toast_no_location_found)
         } else {
-            tvDestinationAddress.setText(R.string.toast_no_location_found)
+            binding.textViewDestinationAddress!!.setText(R.string.toast_no_location_found)
         }
         Timber.tag(TAG).d(Exception(errorMessage))
     }

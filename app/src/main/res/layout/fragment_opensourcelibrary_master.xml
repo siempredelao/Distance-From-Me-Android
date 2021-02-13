@@ -27,7 +27,7 @@
         android:layout_height="match_parent">
 
         <ProgressBar
-            android:id="@+id/opensourcelibrary_fragment_progressbar"
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -36,7 +36,7 @@
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/opensourcelibrary_fragment_recyclerview"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"

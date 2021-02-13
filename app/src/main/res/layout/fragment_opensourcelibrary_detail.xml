@@ -23,7 +23,7 @@
                 android:orientation="vertical">
 
     <TextView
-        android:id="@+id/opensourcelibrary_detail_fragment_name_textview"
+        android:id="@+id/textViewTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
@@ -31,7 +31,7 @@
         tools:text="Awesome library"/>
 
     <TextView
-        android:id="@+id/opensourcelibrary_detail_fragment_long_license_textview"
+        android:id="@+id/textViewDescription"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="16dp"
