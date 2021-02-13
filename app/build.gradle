@@ -19,13 +19,8 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-
-// Needed to allow Parcelize
-androidExtensions {
-	experimental = true
-}
+apply plugin: "kotlin-parcelize"
 
 android {
 

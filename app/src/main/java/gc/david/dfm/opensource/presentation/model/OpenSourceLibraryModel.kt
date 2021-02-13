@@ -17,7 +17,7 @@
 package gc.david.dfm.opensource.presentation.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 /**
  * Created by david on 25.01.17.
