@@ -133,11 +133,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
-
-        <!-- TODO Crashlytics does not allow to use placeholders... Move to other.xml -->
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="8e0385314ec35f002d83083f2a102babce173f98"/>
     </application>
 
 </manifest>
