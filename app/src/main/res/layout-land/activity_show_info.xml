@@ -58,7 +58,7 @@
                     style="@style/showinfo_table_components"/>
 
                 <TextView
-                    android:id="@+id/showinfo_activity_origin_address_textview"
+                    android:id="@+id/textViewOriginAddress"
                     tools:text="Sonnenburgerstr. 70, 10356 Berlin, Germany\n\n(45.6789, -10.2345)"
                     style="@style/showinfo_table_address_value"/>
 
@@ -69,13 +69,13 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
                 <TextView
-                    android:id="@+id/showinfo_activity_destination_address_textview"
+                    android:id="@+id/textViewDestinationAddress"
                     tools:text="Reichenbergerstr. 124, 10999 Berlin, Germany\n\n(-12.3456, 78,9123)"
                     style="@style/showinfo_table_address_value"/>
             </GridLayout>
 
             <TextView
-                android:id="@+id/showinfo_activity_distance_textview"
+                android:id="@+id/textViewDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/showinfo_distance_margin_top"
