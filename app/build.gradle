@@ -73,7 +73,6 @@ android {
 		viewBinding true
 	}
 
-	// Butterknife requires Java 8
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
 		targetCompatibility JavaVersion.VERSION_1_8
@@ -90,8 +89,6 @@ dependencies {
 	implementation Dependencies.playServicesMaps
 	implementation Dependencies.playServicesLocation
 	implementation Dependencies.graphview
-	implementation Dependencies.butterknife
-	kapt Dependencies.butterknifeCompiler
 	implementation Dependencies.crashlytics
 	implementation Dependencies.dagger
 	kapt Dependencies.daggerCompiler

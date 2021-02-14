@@ -16,16 +16,12 @@
 
 package gc.david.dfm.adapter
 
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.ButterKnife
-import gc.david.dfm.R
+import gc.david.dfm.databinding.ViewOpensourcelibraryItemBinding
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 import gc.david.dfm.ui.fragment.OpenSourceMasterFragment.OnItemClickListener
-import kotlinx.android.extensions.LayoutContainer
 
 /**
  * Created by david on 24.01.17.
@@ -37,8 +33,8 @@ class OpenSourceLibraryAdapter(
     private val openSourceLibraryModelList = mutableListOf<OpenSourceLibraryModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpenSourceLibraryViewHolder {
-        val view = parent.inflate(R.layout.view_opensourcelibrary_item)
-        return OpenSourceLibraryViewHolder(view)
+        val binding = ViewOpensourcelibraryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return OpenSourceLibraryViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: OpenSourceLibraryViewHolder, position: Int) {
@@ -46,8 +42,8 @@ class OpenSourceLibraryAdapter(
 
         holder.itemView.setOnClickListener { onItemClickListener.onItemClick(openSourceLibraryModelList[holder.adapterPosition], holder) }
 
-        holder.tvName.transitionName = position.toString() + "_id"
-        holder.tvShortLicense.transitionName = position.toString() + "_content"
+        holder.binding.textViewName.transitionName = position.toString() + "_id"
+        holder.binding.textViewLicense.transitionName = position.toString() + "_content"
     }
 
     fun add(openSourceLibraryModels: List<OpenSourceLibraryModel>) {
@@ -61,27 +57,14 @@ class OpenSourceLibraryAdapter(
     }
 
     class OpenSourceLibraryViewHolder(
-            override val containerView: View
-    ) : LayoutContainer, RecyclerView.ViewHolder(containerView) {
+            val binding: ViewOpensourcelibraryItemBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        @BindView(R.id.opensourcelibrary_item_view_name_textview)
-        lateinit var tvName: TextView
-        @BindView(R.id.opensourcelibrary_item_view_version_textview)
-        lateinit var tvVersion: TextView
-        @BindView(R.id.opensourcelibrary_item_view_description_textview)
-        lateinit var tvDescription: TextView
-        @BindView(R.id.opensourcelibrary_item_view_short_license_textview)
-        lateinit var tvShortLicense: TextView
-
-        init {
-            ButterKnife.bind(this, itemView)
-        }
-
-        internal fun onBind(openSourceLibraryModel: OpenSourceLibraryModel) {
-            tvName.text = openSourceLibraryModel.name
-            tvVersion.text = String.format("v%s", openSourceLibraryModel.version)
-            tvDescription.text = openSourceLibraryModel.description
-            tvShortLicense.text = String.format("%s license", openSourceLibraryModel.license)
+        internal fun onBind(openSourceLibraryModel: OpenSourceLibraryModel) = with(binding) {
+            textViewName.text = openSourceLibraryModel.name
+            textViewVersion.text = String.format("v%s", openSourceLibraryModel.version)
+            textViewDescription.text = openSourceLibraryModel.description
+            textViewLicense.text = String.format("%s license", openSourceLibraryModel.license)
         }
     }
 }

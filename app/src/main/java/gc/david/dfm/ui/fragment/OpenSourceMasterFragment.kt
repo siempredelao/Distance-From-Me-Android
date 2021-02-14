@@ -73,9 +73,9 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
 
             requireActivity().supportFragmentManager
                     .beginTransaction()
-                    .addSharedElement(viewHolder.tvName,
+                    .addSharedElement(viewHolder.binding.textViewName,
                             getString(R.string.transition_opensourcelibrary_name))
-                    .addSharedElement(viewHolder.tvShortLicense,
+                    .addSharedElement(viewHolder.binding.textViewLicense,
                             getString(R.string.transition_opensourcelibrary_description))
                     .replace(R.id.container, openSourceDetailFragment)
                     .addToBackStack(null)

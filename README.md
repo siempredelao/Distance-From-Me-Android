@@ -23,14 +23,13 @@ Code is organised by features (still in progress, not 100%) following MVP archit
 
 ## Main libraries used
 * [Dagger 2](http://google.github.io/dagger/)
-* [ButterKnife](http://jakewharton.github.io/butterknife)
 * [Room](https://developer.android.com/topic/libraries/architecture/room)
 * [OkHttp](http://square.github.io/okhttp/)
 * [Gson](https://github.com/google/gson)
 * [ConstraintLayout](https://developer.android.com/training/constraint-layout/index.html)
 * [GraphView](http://www.android-graphview.org/)
 * [LeakCanary](https://github.com/square/leakcanary)
-* [Crashlytics (Fabric)](https://fabric.io/kits/android/crashlytics)
+* [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)
 * [Mockito](http://site.mockito.org/)
 
 ## Contributions
@@ -41,7 +40,7 @@ Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md
 
 ## License
 ```
-   Copyright (c) 2019 David Aguiar Gonzalez
+   Copyright (c) 2021 David Aguiar Gonzalez
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

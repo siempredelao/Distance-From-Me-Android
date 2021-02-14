@@ -22,17 +22,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.TextView
-import androidx.annotation.LayoutRes
-import butterknife.BindView
-import butterknife.ButterKnife.bind
 import gc.david.dfm.R
 import gc.david.dfm.database.Distance
+import gc.david.dfm.databinding.DatabaseListItemBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
 class DistanceAdapter(
-        private val activity: Activity,
+        activity: Activity,
         private val distanceList: List<Distance>
 ) : ArrayAdapter<Distance>(activity, R.layout.database_list_item, distanceList) {
 
@@ -41,34 +38,27 @@ class DistanceAdapter(
         val holder: ViewHolder
 
         if (item == null) {
-            val inflater = activity.systemService<LayoutInflater>(Context.LAYOUT_INFLATER_SERVICE)
-            item = inflater.inflate(R.layout.database_list_item, parent, false)
+            val binding = DatabaseListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            item = binding.root
 
-            holder = ViewHolder(item)
+            holder = ViewHolder(binding)
 
-            item!!.tag = holder
+            item.tag = holder
         } else {
             holder = item.tag as ViewHolder
         }
 
-        holder.title.text = distanceList[position].name
-        holder.distance.text = distanceList[position].distance
-        holder.date.text = DATE_FORMAT.format(distanceList[position].date)
+        holder.bind(distanceList[position])
 
         return item
     }
 
-    internal class ViewHolder(view: View) {
+    internal class ViewHolder(private val binding: DatabaseListItemBinding) {
 
-        @BindView(R.id.alias)
-        lateinit var title: TextView
-        @BindView(R.id.distancia)
-        lateinit var distance: TextView
-        @BindView(R.id.fecha)
-        lateinit var date: TextView
-
-        init {
-            bind(this, view)
+        fun bind(distance: Distance) {
+            binding.textViewAlias.text = distance.name
+            binding.textViewDistance.text = distance.distance
+            binding.textViewDate.text = DATE_FORMAT.format(distance.date)
         }
     }
 
@@ -81,8 +71,4 @@ class DistanceAdapter(
 // TODO move to utils or some better place
 inline fun <reified T> Context.systemService(name: String): T {
     return getSystemService(name) as T
-}
-
-fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
-    return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }

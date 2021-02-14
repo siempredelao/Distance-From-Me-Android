@@ -37,14 +37,14 @@
         tools:showIn="@layout/activity_help_and_feedback">
 
         <TextView
-            android:id="@+id/feedback_card_item_view_title_textview"
+            android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             tools:text="How can I reset my distance?"/>
 
         <TextView
-            android:id="@+id/feedback_card_item_view_content_textview"
+            android:id="@+id/textViewContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/opensource_card_block_space_margin"

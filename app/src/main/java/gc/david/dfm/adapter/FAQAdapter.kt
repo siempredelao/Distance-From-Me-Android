@@ -16,16 +16,12 @@
 
 package gc.david.dfm.adapter
 
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
-import butterknife.ButterKnife
-import gc.david.dfm.R
+import gc.david.dfm.databinding.ViewFeedbackCardItemBinding
 import gc.david.dfm.faq.model.Faq
-import kotlinx.android.extensions.LayoutContainer
 
 /**
  * Created by david on 14.12.16.
@@ -35,7 +31,8 @@ class FAQAdapter : RecyclerView.Adapter<FAQAdapter.FAQViewHolder>() {
     private val faqList = mutableListOf<Faq>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FAQViewHolder {
-        return FAQViewHolder(parent.inflate(R.layout.view_feedback_card_item))
+        val binding = ViewFeedbackCardItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return FAQViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: FAQViewHolder, position: Int) {
@@ -52,23 +49,18 @@ class FAQAdapter : RecyclerView.Adapter<FAQAdapter.FAQViewHolder>() {
     }
 
     class FAQViewHolder(
-            override val containerView: View
-    ) : LayoutContainer, RecyclerView.ViewHolder(containerView) {
-
-        @BindView(R.id.feedback_card_item_view_title_textview)
-        lateinit var tvTitle: TextView
-        @BindView(R.id.feedback_card_item_view_content_textview)
-        lateinit var tvContent: TextView
+            private val binding: ViewFeedbackCardItemBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         init {
-            ButterKnife.bind(this, itemView)
-
-            itemView.setOnClickListener { tvContent.isGone = tvContent.isShown }
+            binding.root.setOnClickListener {
+                binding.textViewContent.isGone = binding.textViewContent.isShown
+            }
         }
 
-        internal fun onBind(faq: Faq) {
-            tvTitle.text = faq.question
-            tvContent.text = faq.answer
+        internal fun onBind(faq: Faq) = with(binding) {
+            textViewTitle.text = faq.question
+            textViewContent.text = faq.answer
         }
     }
 }

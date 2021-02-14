@@ -28,7 +28,6 @@ object AppVersions {
 
 object LibraryVersions {
 
-    const val butterknife = "10.2.0"
     const val cardView = "1.0.0"
     const val collectionKtx = "1.1.0"
     const val constraintLayout = "2.0.4"
@@ -56,8 +55,6 @@ object LibraryVersions {
 
 object Dependencies {
 
-    const val butterknife = "com.jakewharton:butterknife:${LibraryVersions.butterknife}"
-    const val butterknifeCompiler = "com.jakewharton:butterknife-compiler:${LibraryVersions.butterknife}"
     const val cardView = "androidx.cardview:cardview:${LibraryVersions.cardView}"
     const val collectionKtx = "androidx.collection:collection-ktx:${LibraryVersions.collectionKtx}"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:${LibraryVersions.constraintLayout}"

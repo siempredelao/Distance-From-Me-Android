@@ -33,21 +33,15 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.drawerlayout.widget.DrawerLayout
-import butterknife.BindView
-import butterknife.ButterKnife.bind
-import butterknife.OnClick
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.Lazy
@@ -64,6 +58,7 @@ import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.dagger.StorageModule
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
+import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.deviceinfo.DeviceInfo
 import gc.david.dfm.deviceinfo.PackageManager
 import gc.david.dfm.distance.domain.GetPositionListUseCase
@@ -75,7 +70,6 @@ import gc.david.dfm.feedback.Feedback
 import gc.david.dfm.feedback.FeedbackPresenter
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
-import gc.david.dfm.ui.ElevationChartView
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
@@ -94,19 +88,6 @@ class MainActivity :
         GoogleMap.OnInfoWindowClickListener,
         Elevation.View,
         Address.View {
-
-    @BindView(R.id.tbMain)
-    lateinit var tbMain: Toolbar
-    @BindView(R.id.drawer_layout)
-    lateinit var drawerLayout: DrawerLayout
-    @BindView(R.id.nvDrawer)
-    lateinit var nvDrawer: NavigationView
-    @BindView(R.id.main_activity_showchart_floatingactionbutton)
-    lateinit var fabShowChart: FloatingActionButton
-    @BindView(R.id.main_activity_mylocation_floatingactionbutton)
-    lateinit var fabMyLocation: FloatingActionButton
-    @BindView(R.id.elevationChartView)
-    lateinit var elevationChartView: ElevationChartView
 
     @Inject
     lateinit var appContext: Context
@@ -131,6 +112,7 @@ class MainActivity :
 
     private lateinit var elevationPresenter: Elevation.Presenter
     private lateinit var addressPresenter: Address.Presenter
+    private lateinit var binding: ActivityMainBinding
 
     private val locationReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -158,7 +140,7 @@ class MainActivity :
     private var progressDialog: ProgressDialog? = null
 
     private val selectedDistanceMode: DistanceMode
-        get() = if (nvDrawer.menu.findItem(R.id.menu_current_position).isChecked)
+        get() = if (binding.nvDrawer.menu.findItem(R.id.menu_current_position).isChecked)
             DistanceMode.DISTANCE_FROM_CURRENT_POINT
         else
             DistanceMode.DISTANCE_FROM_ANY_POINT
@@ -167,7 +149,7 @@ class MainActivity :
         get() = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
 
-    override fun isMinimiseButtonShown(): Boolean = fabShowChart.isShown
+    override fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
 
     private val americanOrEuropeanLocale: Locale
         get() {
@@ -179,16 +161,19 @@ class MainActivity :
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         DaggerMainComponent.builder()
                 .rootModule(RootModule(application as DFMApplication))
                 .storageModule(StorageModule())
                 .mainModule(MainModule())
                 .build()
                 .inject(this)
-        bind(this)
+        binding = ActivityMainBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            fabMyLocation.setOnClickListener { onMyLocationClick() }
+            fabShowChart.setOnClickListener { onShowChartClick() }
+        }
 
-        setSupportActionBar(tbMain)
+        setSupportActionBar(binding.tbMain.tbMain)
 
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -208,8 +193,8 @@ class MainActivity :
                 getAddressNameByCoordinatesUseCase,
                 connectionManager)
 
-        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        supportMapFragment?.getMapAsync(this)
+        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
+        supportMapFragment.getMapAsync(this)
 
         if (!connectionManager.isOnline()) {
             showConnectionProblemsDialog()
@@ -217,14 +202,14 @@ class MainActivity :
 
         handleIntents(intent)
 
-        nvDrawer.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener { menuItem ->
-            drawerLayout.closeDrawers()
+        binding.nvDrawer.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener { menuItem ->
+            binding.drawerLayout.closeDrawers()
             when (menuItem.itemId) {
                 R.id.menu_current_position -> {
                     menuItem.isChecked = true
                     onStartingPointSelected()
                     if (SDK_INT >= M && !isLocationPermissionGranted) {
-                        Snackbar.make(drawerLayout,
+                        Snackbar.make(binding.drawerLayout,
                                 "This feature needs location permissions.",
                                 Snackbar.LENGTH_INDEFINITE)
                                 .setAction("Settings") {
@@ -261,7 +246,7 @@ class MainActivity :
             false
         })
 
-        elevationChartView.setOnCloseListener { elevationPresenter.onCloseChart() }
+        binding.elevationChartView.setOnCloseListener { elevationPresenter.onCloseChart() }
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -281,7 +266,7 @@ class MainActivity :
         } else {
             Utils.toastIt(R.string.toast_loading_position, appContext)
             googleMap?.isMyLocationEnabled = true
-            fabMyLocation.isVisible = true
+            binding.fabMyLocation.isVisible = true
         }
     }
 
@@ -291,8 +276,8 @@ class MainActivity :
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (grantResults.isEmpty()) { // happens when the permissions request interaction with the user is interrupted
                 Timber.tag(TAG).d("onRequestPermissionsResult INTERRUPTED")
-                fabMyLocation.isVisible = false
-                nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
+                binding.fabMyLocation.isVisible = false
+                binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
                 onStartingPointSelected()
             } else {
                 // no need to check both permissions, they fall under location group
@@ -301,14 +286,14 @@ class MainActivity :
 
                     Utils.toastIt(R.string.toast_loading_position, appContext)
                     googleMap?.isMyLocationEnabled = true
-                    fabMyLocation.isVisible = true
+                    binding.fabMyLocation.isVisible = true
 
                     registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
                     startService(Intent(this, GeofencingService::class.java))
                 } else {
                     Timber.tag(TAG).d("onRequestPermissionsResult DENIED")
-                    fabMyLocation.isVisible = false
-                    nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
+                    binding.fabMyLocation.isVisible = false
+                    binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
                     onStartingPointSelected()
                 }
             }
@@ -397,6 +382,7 @@ class MainActivity :
 
     override fun onNewIntent(intent: Intent) {
         Timber.tag(TAG).d("onNewIntent %s", Utils.dumpIntentToString(intent))
+        super.onNewIntent(intent)
 
         setIntent(intent)
         handleIntents(intent)
@@ -539,7 +525,7 @@ class MainActivity :
         when (item.itemId) {
             android.R.id.home -> {
                 Timber.tag(TAG).d("onOptionsItemSelected home")
-                drawerLayout.openDrawer(GravityCompat.START)
+                binding.drawerLayout.openDrawer(GravityCompat.START)
                 return true
             }
             R.id.action_search -> {
@@ -560,8 +546,8 @@ class MainActivity :
     }
 
     override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
@@ -675,9 +661,9 @@ class MainActivity :
             registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
             startService(Intent(this, GeofencingService::class.java))
             googleMap?.isMyLocationEnabled = true
-            fabMyLocation.isVisible = true
+            binding.fabMyLocation.isVisible = true
         } else {
-            fabMyLocation.isVisible = false
+            binding.fabMyLocation.isVisible = false
         }
     }
 
@@ -809,10 +795,10 @@ class MainActivity :
     }
 
     private fun fixMapPadding() {
-        Timber.tag(TAG).d("fixMapPadding elevationChartShown ${elevationChartView.isShown}")
+        Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
         googleMap?.setPadding(
                 0,
-                if (elevationChartView.isShown) elevationChartView.height else 0,
+                if (binding.elevationChartView.isShown) binding.elevationChartView.height else 0,
                 0,
                 0)
     }
@@ -822,13 +808,13 @@ class MainActivity :
     }
 
     override fun hideChart() {
-        elevationChartView.isInvisible = true
-        fabShowChart.isInvisible = true
+        binding.elevationChartView.isInvisible = true
+        binding.fabShowChart.isInvisible = true
         fixMapPadding()
     }
 
     override fun showChart() {
-        elevationChartView.isVisible = true
+        binding.elevationChartView.isVisible = true
         fixMapPadding()
     }
 
@@ -836,31 +822,29 @@ class MainActivity :
         val locale = americanOrEuropeanLocale
 
         val normalizedElevation = elevationList.map { Haversine.normalizeAltitudeByLocale(it, locale) }
-        elevationChartView.setElevationProfile(normalizedElevation)
-        elevationChartView.setTitle(Haversine.getAltitudeUnitByLocale(locale))
+        binding.elevationChartView.setElevationProfile(normalizedElevation)
+        binding.elevationChartView.setTitle(Haversine.getAltitudeUnitByLocale(locale))
 
         elevationPresenter.onChartBuilt()
     }
 
     override fun animateHideChart() {
-        AnimatorUtil.replaceViews(elevationChartView, fabShowChart)
+        AnimatorUtil.replaceViews(binding.elevationChartView, binding.fabShowChart)
     }
 
     override fun animateShowChart() {
-        AnimatorUtil.replaceViews(fabShowChart, elevationChartView)
+        AnimatorUtil.replaceViews(binding.fabShowChart, binding.elevationChartView)
     }
 
     override fun logError(errorMessage: String) {
         Timber.tag(TAG).e(Exception(errorMessage))
     }
 
-    @OnClick(R.id.main_activity_showchart_floatingactionbutton)
-    internal fun onShowChartClick() {
+    private fun onShowChartClick() {
         elevationPresenter.onOpenChart()
     }
 
-    @OnClick(R.id.main_activity_mylocation_floatingactionbutton)
-    internal fun onMyLocationClick() {
+    private fun onMyLocationClick() {
         currentLocation?.let {
             googleMap?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
         }

@@ -18,15 +18,14 @@ package gc.david.dfm.ui
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
-import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import gc.david.dfm.R
+import gc.david.dfm.databinding.ViewElevationChartBinding
 
 class ElevationChartView @JvmOverloads constructor(
         context: Context,
@@ -34,13 +33,11 @@ class ElevationChartView @JvmOverloads constructor(
         defStyle: Int = 0
 ) : RelativeLayout(context, attrs, defStyle) {
 
-    private val graphView: GraphView
-    private val ivCloseChart: ImageView
-
     private var onCloseListener: (() -> Unit)? = null
 
+    private val binding = ViewElevationChartBinding.inflate(LayoutInflater.from(context), this)
+
     init {
-        View.inflate(context, R.layout.view_elevation_chart, this)
         if (!isInEditMode) {
             layoutParams = LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
@@ -48,12 +45,9 @@ class ElevationChartView @JvmOverloads constructor(
             )
             setBackgroundColor(ContextCompat.getColor(context, R.color.elevation_chart_background))
         }
+        binding.ivCloseChart.setOnClickListener { onCloseListener?.invoke() }
 
-        ivCloseChart = findViewById(R.id.ivCloseChart)
-        ivCloseChart.setOnClickListener { onCloseListener?.invoke() }
-
-        graphView = findViewById(R.id.graphView)
-        with(graphView) {
+        with(binding.graphView) {
             titleTextSize = resources.getDimension(R.dimen.elevation_chart_text_size)
             titleColor = ContextCompat.getColor(context, R.color.white)
         }
@@ -64,7 +58,7 @@ class ElevationChartView @JvmOverloads constructor(
     }
 
     fun setElevationProfile(elevationList: List<Double>) {
-        with(graphView) {
+        with(binding.graphView) {
             removeAllSeries()
             val series =
                     elevationList
@@ -91,7 +85,7 @@ class ElevationChartView @JvmOverloads constructor(
     }
 
     fun setTitle(altitude: String) {
-        graphView.title = resources.getString(R.string.elevation_chart_title, altitude)
+        binding.graphView.title = resources.getString(R.string.elevation_chart_title, altitude)
     }
 }
 

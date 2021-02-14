@@ -18,29 +18,20 @@ package gc.david.dfm.adapter
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
-import butterknife.BindView
-import butterknife.ButterKnife.bind
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.Marker
-import gc.david.dfm.R
+import gc.david.dfm.databinding.CustomInfoBinding
 
 class MarkerInfoWindowAdapter @SuppressLint("InflateParams")
 constructor(activity: Activity) : InfoWindowAdapter {
 
-    private val view: View = activity.layoutInflater.inflate(R.layout.custom_info, null)
-
-    @BindView(R.id.infowindow_address_textview)
-    lateinit var tvAddress: TextView
-
-    init {
-        bind(this, view)
-    }
+    private val binding = CustomInfoBinding.inflate(LayoutInflater.from(activity))
 
     override fun getInfoContents(marker: Marker): View {
-        tvAddress.text = marker.title
-        return view
+        binding.textViewAddress.text = marker.title
+        return binding.root
     }
 
     override fun getInfoWindow(marker: Marker): View? {
