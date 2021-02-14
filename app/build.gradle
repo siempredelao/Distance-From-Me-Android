@@ -55,6 +55,10 @@ android {
 				resValue "string", "maps_api_key", "guess_it"
 				resValue "string", "maps_geocode_api_key", "guess_it"
 			}
+
+			firebaseCrashlytics {
+				mappingFileUploadEnabled false
+			}
 		}
 		release {
 			minifyEnabled true
