@@ -24,23 +24,17 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.R
 import gc.david.dfm.adapter.FAQAdapter
 import gc.david.dfm.databinding.ActivityHelpAndFeedbackBinding
-import gc.david.dfm.faq.Faqs
-import gc.david.dfm.faq.FaqsPresenter
-import gc.david.dfm.faq.GetFaqsInteractor
-import gc.david.dfm.faq.model.Faq
+import gc.david.dfm.faq.FaqViewModel
 import org.koin.android.ext.android.inject
 
-class HelpAndFeedbackActivity : AppCompatActivity(), Faqs.View {
+class HelpAndFeedbackActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHelpAndFeedbackBinding
-
-    val getFaqsUseCase: GetFaqsInteractor by inject()
-
-    private lateinit var faqsPresenter: Faqs.Presenter
     private lateinit var faqAdapter: FAQAdapter
+
+    private val viewModel: FaqViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,39 +42,25 @@ class HelpAndFeedbackActivity : AppCompatActivity(), Faqs.View {
             setContentView(root)
             setSupportActionBar(tbMain.tbMain)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            recyclerView.layoutManager = LinearLayoutManager(this@HelpAndFeedbackActivity)
+            recyclerView.itemAnimator = DefaultItemAnimator().apply { addDuration = 1000 }
+            faqAdapter = FAQAdapter()
+            recyclerView.adapter = faqAdapter
         }
 
-        faqsPresenter = FaqsPresenter(this, getFaqsUseCase)
-        faqsPresenter.start()
-    }
-
-    override fun setPresenter(presenter: Faqs.Presenter) {
-        this.faqsPresenter = presenter
-    }
-
-    override fun showLoading() {
-        binding.progressBar.isVisible = true
-        binding.recyclerView.isVisible = false
-    }
-
-    override fun hideLoading() {
-        binding.progressBar.isVisible = false
-        binding.recyclerView.isVisible = true
-    }
-
-    override fun add(faq: Set<Faq>) {
-        faqAdapter.addAll(faq)
-    }
-
-    override fun showError() {
-        Snackbar.make(binding.recyclerView, R.string.faq_error_message, Snackbar.LENGTH_LONG).show()
-    }
-
-    override fun setupList() {
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.itemAnimator = DefaultItemAnimator().apply { addDuration = 1000 }
-        faqAdapter = FAQAdapter()
-        binding.recyclerView.adapter = faqAdapter
+        with(viewModel) {
+            progressVisibility.observe(this@HelpAndFeedbackActivity, { visible ->
+                binding.progressBar.isVisible = visible
+                binding.recyclerView.isVisible = !visible
+            })
+            faqList.observe(this@HelpAndFeedbackActivity, { faqs ->
+                faqAdapter.addAll(faqs)
+            })
+            errorMessage.observe(this@HelpAndFeedbackActivity, { message ->
+                Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_LONG).show()
+            })
+            onStart()
+        }
     }
 
     companion object {

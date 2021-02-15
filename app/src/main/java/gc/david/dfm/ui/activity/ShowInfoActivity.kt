@@ -17,53 +17,32 @@
 package gc.david.dfm.ui.activity
 
 import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.ConnectionManager
+import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.R
 import gc.david.dfm.Utils
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.databinding.ActivityShowInfoBinding
-import gc.david.dfm.distance.domain.InsertDistanceInteractor
-import gc.david.dfm.showinfo.presentation.ShowInfo
-import gc.david.dfm.showinfo.presentation.ShowInfoPresenter
-import org.koin.android.ext.android.inject
+import gc.david.dfm.showinfo.presentation.SaveDistanceData
+import gc.david.dfm.showinfo.presentation.ShareDialogData
+import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
+import gc.david.dfm.ui.dialog.SaveDistanceDialogFragment
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.*
 
-class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
-
-    val appContext: Context by inject()
-    val connectionManager: ConnectionManager by inject()
-    val insertDistanceUseCase: InsertDistanceInteractor by inject()
-    val getOriginAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor by inject()
-    val getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor by inject()
-
-    private lateinit var showInfoPresenter: ShowInfo.Presenter
+class ShowInfoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityShowInfoBinding
 
-    private lateinit var positionsList: List<LatLng>
-    private lateinit var distance: String
-
-    // TODO transform this into a ViewState
     private var refreshMenuItem: MenuItem? = null
-    private var savingInDBDialog: Dialog? = null
-    private var etAlias: EditText? = null
-    private var originAddress: String? = ""
-    private var destinationAddress: String? = ""
-    private var wasSavingWhenOrientationChanged = false
+
+    private val viewModel: ShowInfoViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
@@ -72,92 +51,47 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
         binding = ActivityShowInfoBinding.inflate(layoutInflater).apply {
             setContentView(root)
             setSupportActionBar(tbMain.tbMain)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        // TODO: 06.02.17 store presenter in singleton Map, Loader,... to restore after config change
-        showInfoPresenter = ShowInfoPresenter(this,
-                getOriginAddressNameByCoordinatesUseCase,
-                getDestinationAddressNameByCoordinatesUseCase,
-                insertDistanceUseCase,
-                connectionManager)
-
-        getIntentData()
+        with(viewModel) {
+            originAddress.observe(this@ShowInfoActivity, { originAddress ->
+                binding.textViewOriginAddress.text = originAddress
+            })
+            destinationAddress.observe(this@ShowInfoActivity, { destinationAddress ->
+                binding.textViewDestinationAddress.text = destinationAddress
+            })
+            distanceMessage.observe(this@ShowInfoActivity, { distance ->
+                binding.textViewDistance.text = distance
+            })
+            errorMessage.observe(this@ShowInfoActivity, { message ->
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+            })
+            progressVisibility.observe(this@ShowInfoActivity, { visible ->
+                if (visible) showProgress() else hideProgress()
+            })
+            showShareDialogEvent.observe(this@ShowInfoActivity, { event ->
+                event.getContentIfNotHandled()?.let { showShareDialog(it) }
+            })
+            saveDistanceEvent.observe(this@ShowInfoActivity, { event ->
+                event.getContentIfNotHandled()?.let { storeDataLocally(it) }
+            })
+        }
 
         if (savedInstanceState == null) {
-            Timber.tag(TAG).d("onCreate savedInstanceState null, filling addresses info")
-
-            fillAddressesInfo()
-        } else {
-            restorePreviousState(savedInstanceState)
-        }
-
-        fillDistanceInfo()
-    }
-
-    private fun restorePreviousState(savedInstanceState: Bundle) {
-        originAddress = savedInstanceState.getString(ORIGIN_ADDRESS_STATE_KEY)
-        destinationAddress = savedInstanceState.getString(DESTINATION_ADDRESS_STATE_KEY)
-
-        binding.textViewOriginAddress!!.text = formatAddress(
-                originAddress,
-                positionsList.first().latitude,
-                positionsList.first().longitude)
-        binding.textViewDestinationAddress!!.text = formatAddress(
-                destinationAddress,
-                positionsList.last().latitude,
-                positionsList.last().longitude)
-        distance = savedInstanceState.getString(DISTANCE_STATE_KEY) ?: error("Invalid null distance")
-
-        wasSavingWhenOrientationChanged = savedInstanceState.getBoolean(WAS_SAVING_STATE_KEY)
-        if (wasSavingWhenOrientationChanged) {
-            val aliasHint = savedInstanceState.getString(DISTANCE_DIALOG_NAME_STATE_KEY)
-            saveDataToDB(aliasHint)
+            Timber.tag(TAG).d("onCreate savedInstanceState null")
+            loadData()
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        Timber.tag(TAG).d("onSaveInstanceState outState=%s", Utils.dumpBundleToString(outState))
+    private fun loadData() {
+        Timber.tag(TAG).d("loadData")
 
-        super.onSaveInstanceState(outState)
-
-        outState.putString(ORIGIN_ADDRESS_STATE_KEY, originAddress)
-        outState.putString(DESTINATION_ADDRESS_STATE_KEY, destinationAddress)
-        outState.putString(DISTANCE_STATE_KEY, distance)
-
-        if (wasSavingWhenOrientationChanged) {
-            outState.putBoolean(WAS_SAVING_STATE_KEY, wasSavingWhenOrientationChanged)
-            // TODO oh god why... move this to a dialog fragment and handle it there
-            outState.putString(DISTANCE_DIALOG_NAME_STATE_KEY, etAlias?.text.toString())
-
-            savingInDBDialog?.dismiss()
-            savingInDBDialog = null
-        }
-    }
-
-    private fun getIntentData() {
-        Timber.tag(TAG).d("getIntentData")
-
-        val inputDataIntent = intent
-        positionsList = inputDataIntent.getParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY) ?: error("No positions available")
-        distance = inputDataIntent.getStringExtra(DISTANCE_EXTRA_KEY)
-    }
-
-    private fun fillAddressesInfo() {
-        Timber.tag(TAG).d("fillAddressesInfo")
-
-        showInfoPresenter.searchPositionByCoordinates(positionsList.first(), positionsList.last())
-    }
-
-    private fun formatAddress(address: String?, latitude: Double, longitude: Double): String {
-        return "$address\n\n($latitude,$longitude)"
-    }
-
-    private fun fillDistanceInfo() {
-        Timber.tag(TAG).d("fillDistanceInfo")
-
-        binding.textViewDistance!!.text = getString(R.string.info_distance_title, distance)
+        val positionsList =
+                intent.getParcelableArrayListExtra<LatLng>(POSITIONS_LIST_EXTRA_KEY)
+                        ?: error("No positions available")
+        val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)
+        viewModel.onStart(positionsList, distance)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -170,121 +104,47 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_social_share -> {
-                showShareDialog()
+                viewModel.onShare()
                 true
             }
             R.id.refresh -> {
-                fillAddressesInfo()
+                loadData()
                 true
             }
             R.id.menu_save -> {
-                saveDataToDB("")
+                viewModel.onSave()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun showShareDialog() {
-        startActivity(
-                Intent.createChooser(
-                        getDefaultShareIntent(),
-                        getString(R.string.action_bar_item_social_share_title)
-                )
-        )
-    }
+    private fun showShareDialog(data: ShareDialogData) {
+        with(data) {
+            val defaultShareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, subject)
+                putExtra(Intent.EXTRA_TEXT, description)
+            }
 
-    private fun getDefaultShareIntent(): Intent {
-        return Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Distance From Me (http://goo.gl/0IBHFN)")
-            val extraText = "\nDistance From Me (http://goo.gl/0IBHFN)\n${getString(R.string.share_distance_from_message)}\n$originAddress\n\n${getString(R.string.share_distance_to_message)}\n$destinationAddress\n\n${getString(R.string.share_distance_there_are_message)}\n$distance"
-            putExtra(Intent.EXTRA_TEXT, extraText)
+            startActivity(Intent.createChooser(defaultShareIntent, title))
         }
     }
 
-    private fun saveDataToDB(defaultText: String?) {
-        wasSavingWhenOrientationChanged = true
-
-        val builder = AlertDialog.Builder(this@ShowInfoActivity)
-        etAlias = EditText(appContext).apply {
-            setTextColor(Color.BLACK)
-            inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-            setText(defaultText)
+    private fun storeDataLocally(data: SaveDistanceData) {
+        with(data) {
+            val saveDistanceDialogFragment =
+                    SaveDistanceDialogFragment.newInstance(positionsList, distance)
+            saveDistanceDialogFragment.show(supportFragmentManager, null)
         }
-
-        builder.setMessage(getString(R.string.alias_dialog_message))
-                .setTitle(getString(R.string.alias_dialog_title))
-                .setView(etAlias)
-                .setOnCancelListener { wasSavingWhenOrientationChanged = false }
-                .setPositiveButton(getString(R.string.alias_dialog_accept)) { _, _ ->
-                    showInfoPresenter.saveDistance(etAlias?.text.toString(), distance, positionsList)
-                    wasSavingWhenOrientationChanged = false
-                }
-                .create().apply { savingInDBDialog = this }
-                .show()
     }
 
-    override fun setPresenter(presenter: ShowInfo.Presenter) {
-        this.showInfoPresenter = presenter
-    }
-
-    override fun showNoInternetError() {
-        Utils.toastIt(getString(R.string.toast_network_problems), applicationContext)
-    }
-
-    override fun showProgress() {
+    private fun showProgress() {
         refreshMenuItem?.setActionView(R.layout.actionbar_indeterminate_progress)
     }
 
-    override fun hideProgress() {
+    private fun hideProgress() {
         refreshMenuItem?.actionView = null
-    }
-
-    override fun setAddress(address: String, isOrigin: Boolean) {
-        if (isOrigin) {
-            originAddress = address
-            binding.textViewOriginAddress!!.text = formatAddress(
-                    originAddress,
-                    positionsList.first().latitude,
-                    positionsList.first().longitude)
-        } else {
-            destinationAddress = address
-            binding.textViewDestinationAddress!!.text = formatAddress(
-                    destinationAddress,
-                    positionsList.last().latitude,
-                    positionsList.last().longitude)
-        }
-    }
-
-    override fun showNoMatchesMessage(isOrigin: Boolean) {
-        if (isOrigin) {
-            binding.textViewOriginAddress!!.setText(R.string.error_no_address_found_message)
-        } else {
-            binding.textViewDestinationAddress!!.setText(R.string.error_no_address_found_message)
-        }
-    }
-
-    override fun showError(errorMessage: String, isOrigin: Boolean) {
-        if (isOrigin) {
-            binding.textViewOriginAddress!!.setText(R.string.toast_no_location_found)
-        } else {
-            binding.textViewDestinationAddress!!.setText(R.string.toast_no_location_found)
-        }
-        Timber.tag(TAG).d(Exception(errorMessage))
-    }
-
-    override fun showSuccessfulSave() {
-        Utils.toastIt(R.string.alias_dialog_no_name_toast, appContext)
-    }
-
-    override fun showSuccessfulSaveWithName(distanceName: String) {
-        Utils.toastIt(getString(R.string.alias_dialog_with_name_toast, distanceName), appContext)
-    }
-
-    override fun showFailedSave() {
-        Utils.toastIt("Unable to save distance. Try again later.", appContext)
-        Timber.tag(TAG).d(Exception("Unable to insert distance into database."))
     }
 
     companion object {
@@ -293,11 +153,6 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
 
         private const val POSITIONS_LIST_EXTRA_KEY = "positionsList"
         private const val DISTANCE_EXTRA_KEY = "distance"
-        private const val ORIGIN_ADDRESS_STATE_KEY = "originAddressState"
-        private const val DESTINATION_ADDRESS_STATE_KEY = "destinationAddressState"
-        private const val DISTANCE_STATE_KEY = "distanceState"
-        private const val WAS_SAVING_STATE_KEY = "wasSavingState"
-        private const val DISTANCE_DIALOG_NAME_STATE_KEY = "distanceDialogName"
 
         fun open(activity: Activity, coordinates: List<LatLng>, distanceAsText: String) {
             val openShowInfoActivityIntent = Intent(activity, ShowInfoActivity::class.java)

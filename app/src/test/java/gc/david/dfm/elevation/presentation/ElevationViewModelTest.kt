@@ -16,6 +16,7 @@
 
 package gc.david.dfm.elevation.presentation
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
@@ -23,20 +24,24 @@ import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.ElevationInteractor
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
+import org.mockito.Mockito.doAnswer
+import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
 /**
  * Created by david on 11.01.17.
  */
-class ElevationPresenterTest {
+@RunWith(MockitoJUnitRunner::class)
+class ElevationViewModelTest {
 
-    @Mock
-    lateinit var elevationView: Elevation.View
     @Mock
     lateinit var elevationUseCase: ElevationInteractor
     @Mock
@@ -44,16 +49,14 @@ class ElevationPresenterTest {
     @Mock
     lateinit var preferencesProvider: PreferencesProvider
 
-    private lateinit var elevationPresenter: ElevationPresenter
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    private lateinit var viewModel: ElevationViewModel
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        elevationPresenter = ElevationPresenter(elevationView,
-                elevationUseCase,
-                connectionManager,
-                preferencesProvider)
+        viewModel = ElevationViewModel(elevationUseCase, connectionManager, preferencesProvider)
     }
 
     @Test
@@ -61,9 +64,9 @@ class ElevationPresenterTest {
         val dummyList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(false)
 
-        elevationPresenter.buildChart(dummyList)
+        viewModel.onCoordinatesSelected(dummyList)
 
-        verify(elevationView).hideChart()
+        assertTrue(viewModel.hideChartEvent.value!!.peekContent() == Unit)
     }
 
     @Test
@@ -72,9 +75,9 @@ class ElevationPresenterTest {
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(false)
 
-        elevationPresenter.buildChart(dummyList)
+        viewModel.onCoordinatesSelected(dummyList)
 
-        verify(elevationView).hideChart()
+        assertTrue(viewModel.hideChartEvent.value!!.peekContent() == Unit)
     }
 
     @Test
@@ -83,13 +86,13 @@ class ElevationPresenterTest {
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
 
-        elevationPresenter.buildChart(coordinateList)
+        viewModel.onCoordinatesSelected(coordinateList)
 
         verify(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
     }
 
     @Test
-    fun `builds chart when use case returns data`() {
+    fun `returns elevation samples when use case returns data`() {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
@@ -98,57 +101,8 @@ class ElevationPresenterTest {
                 (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation)
         }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
-        elevationPresenter.buildChart(coordinateList)
+        viewModel.onCoordinatesSelected(coordinateList)
 
-        verify(elevationView).buildChart(elevation.results)
-    }
-
-    @Test
-    fun `does not build chart when use case is stopped`() {
-        val coordinateList = emptyList<LatLng>()
-        whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        val elevation = gc.david.dfm.elevation.domain.model.Elevation(ArrayList())
-        doAnswer {
-                elevationPresenter.onReset() // reset called before thread finishes
-                (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
-
-        elevationPresenter.buildChart(coordinateList)
-
-        verify(elevationView, never()).buildChart(elevation.results)
-    }
-
-    @Test
-    fun `shows error when use case returns error`() {
-        val coordinateList = emptyList<LatLng>()
-        whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        val errorMessage = "fake error message"
-        doAnswer {
-                (it.arguments[2] as ElevationInteractor.Callback).onError(errorMessage)
-        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
-
-        elevationPresenter.buildChart(coordinateList)
-
-        verify(elevationView).logError(errorMessage)
-    }
-
-    @Test
-    fun `does not show chart when minimise button is shown`() {
-        whenever(elevationView.isMinimiseButtonShown()).thenReturn(true)
-
-        elevationPresenter.onChartBuilt()
-
-        verify(elevationView, never()).showChart()
-    }
-
-    @Test
-    fun `shows chart when minimise button is not shown`() {
-        whenever(elevationView.isMinimiseButtonShown()).thenReturn(false)
-
-        elevationPresenter.onChartBuilt()
-
-        verify(elevationView).showChart()
+        assertEquals(elevation.results, viewModel.elevationSamples.value)
     }
 }

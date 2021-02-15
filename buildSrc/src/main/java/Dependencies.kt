@@ -28,6 +28,8 @@ object AppVersions {
 
 object LibraryVersions {
 
+    const val activityKtx = "1.2.0"
+    const val archCompTesting = "1.1.1"
     const val cardView = "1.0.0"
     const val collectionKtx = "1.1.0"
     const val constraintLayout = "2.0.4"
@@ -43,6 +45,7 @@ object LibraryVersions {
     const val koin = "2.2.2"
     const val kotlin = "1.4.30"
     const val leakCanary = "2.6"
+    const val lifecycle = "2.3.0"
     const val materialComponents = "1.3.0"
     const val mockito = "3.7.7"
     const val mockitoKotlin = "2.2.0"
@@ -55,6 +58,7 @@ object LibraryVersions {
 
 object Dependencies {
 
+    const val activityKtx = "androidx.activity:activity-ktx:${LibraryVersions.activityKtx}"
     const val cardView = "androidx.cardview:cardview:${LibraryVersions.cardView}"
     const val collectionKtx = "androidx.collection:collection-ktx:${LibraryVersions.collectionKtx}"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:${LibraryVersions.constraintLayout}"
@@ -70,6 +74,8 @@ object Dependencies {
     const val koinViewModel = "org.koin:koin-android-viewmodel:${LibraryVersions.koin}"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${LibraryVersions.kotlin}"
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:${LibraryVersions.leakCanary}"
+    const val lifecycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${LibraryVersions.lifecycle}"
+    const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${LibraryVersions.lifecycle}"
     const val materialComponents = "com.google.android.material:material:${LibraryVersions.materialComponents}"
     const val okhttp = "com.squareup.okhttp3:okhttp:${LibraryVersions.okhttp}"
     const val playServicesLocation = "com.google.android.gms:play-services-location:${LibraryVersions.playServices}"
@@ -83,6 +89,7 @@ object Dependencies {
 
 object TestDependencies {
 
+    const val archCompTesting = "android.arch.core:core-testing:${LibraryVersions.archCompTesting}"
     const val junit = "junit:junit:${LibraryVersions.junit}"
     const val mockito = "org.mockito:mockito-core:${LibraryVersions.mockito}"
     const val mockitoInline = "org.mockito:mockito-inline:${LibraryVersions.mockito}"

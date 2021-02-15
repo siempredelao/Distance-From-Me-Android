@@ -16,33 +16,39 @@
 
 package gc.david.dfm.settings.presentation
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
+import gc.david.dfm.ResourceProvider
 import gc.david.dfm.distance.domain.ClearDistancesInteractor
+import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
-import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 
 /**
  * Created by david on 24.01.17.
  */
-class SettingsPresenterTest {
+@RunWith(MockitoJUnitRunner::class)
+class SettingsViewModelTest {
 
-    @Mock
-    lateinit var settingsView: Settings.View
     @Mock
     lateinit var clearDistancesUseCase: ClearDistancesInteractor
+    @Mock
+    lateinit var resourceProvider: ResourceProvider
 
-    private lateinit var settingsPresenter: SettingsPresenter
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    private lateinit var viewModel: SettingsViewModel
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        settingsPresenter = SettingsPresenter(settingsView, clearDistancesUseCase)
+        viewModel = SettingsViewModel(clearDistancesUseCase, resourceProvider)
     }
 
     @Test
@@ -50,20 +56,11 @@ class SettingsPresenterTest {
         doAnswer {
                 (it.arguments[0] as ClearDistancesInteractor.Callback).onClear()
         }.whenever(clearDistancesUseCase).execute(any())
+        val successMessage = "success"
+        whenever(resourceProvider.get(any())).thenReturn(successMessage)
 
-        settingsPresenter.onClearData()
+        viewModel.onClearData()
 
-        verify(settingsView).showClearDataSuccessMessage()
-    }
-
-    @Test
-    fun `shows error message when use case fails`() {
-        doAnswer {
-                (it.arguments[0] as ClearDistancesInteractor.Callback).onError()
-        }.whenever(clearDistancesUseCase).execute(any())
-
-        settingsPresenter.onClearData()
-
-        verify(settingsView).showClearDataErrorMessage()
+        assertEquals(viewModel.resultMessage.value, successMessage)
     }
 }

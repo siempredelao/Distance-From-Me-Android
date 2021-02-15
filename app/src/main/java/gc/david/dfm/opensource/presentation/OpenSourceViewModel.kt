@@ -16,36 +16,37 @@
 
 package gc.david.dfm.opensource.presentation
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import gc.david.dfm.R
+import gc.david.dfm.ResourceProvider
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import gc.david.dfm.opensource.domain.OpenSourceInteractor
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 
-/**
- * Created by david on 25.01.17.
- */
-class OpenSourcePresenter(
-        private val openSourceView: OpenSource.View,
+class OpenSourceViewModel(
         private val openSourceUseCase: OpenSourceInteractor,
-        private val openSourceLibraryMapper: OpenSourceLibraryMapper
-) : OpenSource.Presenter {
+        private val openSourceLibraryMapper: OpenSourceLibraryMapper,
+        private val resourceProvider: ResourceProvider
+) : ViewModel() {
 
-    init {
-        this.openSourceView.setPresenter(this)
-    }
+    val progressVisibility = MutableLiveData<Boolean>()
+    val openSourceList = MutableLiveData<List<OpenSourceLibraryModel>>()
+    val errorMessage = MutableLiveData<String>()
 
-    override fun start() {
-        openSourceView.showLoading()
+    fun onStart() {
+        progressVisibility.value = true
 
         openSourceUseCase.execute(object : OpenSourceInteractor.Callback {
             override fun onOpenSourceLibrariesLoaded(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>) {
-                openSourceView.hideLoading()
-                openSourceView.setupList()
-                openSourceView.add(openSourceLibraryMapper.transform(openSourceLibraryEntityList))
+                progressVisibility.value = false
+                openSourceList.value = openSourceLibraryMapper.transform(openSourceLibraryEntityList)
             }
 
-            override fun onError(errorMessage: String) {
-                openSourceView.hideLoading()
-                openSourceView.showError(errorMessage)
+            override fun onError(error: String) {
+                progressVisibility.value = false
+                errorMessage.value = resourceProvider.get(R.string.opensourcelibrary_error_message)
             }
         })
     }

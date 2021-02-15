@@ -16,56 +16,66 @@
 
 package gc.david.dfm.address.presentation
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
+import gc.david.dfm.ResourceProvider
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.domain.model.AddressCollection
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 
 /**
  * Created by david on 15.01.17.
  */
-class AddressPresenterTest {
+@RunWith(MockitoJUnitRunner::class)
+class AddressViewModelTest {
 
-    @Mock
-    lateinit var addressView: Address.View
     @Mock
     lateinit var getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor
     @Mock
     lateinit var getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor
     @Mock
     lateinit var connectionManager: ConnectionManager
+    @Mock
+    lateinit var resourceProvider: ResourceProvider
 
-    private lateinit var addressPresenter: AddressPresenter
+    @get:Rule
+    val rule = InstantTaskExecutorRule()
+
+    private lateinit var viewModel: AddressViewModel
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        addressPresenter = AddressPresenter(addressView,
+        viewModel = AddressViewModel(
                 getAddressCoordinatesByNameUseCase,
                 getAddressNameByCoordinatesUseCase,
-                connectionManager)
+                connectionManager,
+                resourceProvider)
     }
 
     @Test
     fun `shows connection problems dialog when no connection available in position by name`() {
         whenever(connectionManager.isOnline()).thenReturn(false)
         val locationName = LOCATION_NAME
+        whenever(resourceProvider.get(any())).thenReturn("random string")
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).showConnectionProblemsDialog()
+        assertTrue(viewModel.connectionIssueEvent.value != null)
     }
 
     @Test
@@ -73,9 +83,9 @@ class AddressPresenterTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).showProgressDialog()
+        assertEquals(true, viewModel.progressVisibility.value)
     }
 
     @Test
@@ -83,7 +93,7 @@ class AddressPresenterTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
         verify(getAddressCoordinatesByNameUseCase).execute(any(), anyInt(), any())
     }
@@ -95,9 +105,9 @@ class AddressPresenterTest {
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).hideProgressDialog()
+        assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
@@ -106,10 +116,12 @@ class AddressPresenterTest {
         val locationName = LOCATION_NAME
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
+        val message = "no matches"
+        whenever(resourceProvider.get(any())).thenReturn(message)
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).showNoMatchesMessage()
+        assertEquals(message, viewModel.errorMessage.value)
     }
 
     @Test
@@ -121,9 +133,9 @@ class AddressPresenterTest {
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).showPositionByName(address)
+        assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
     }
 
     @Test
@@ -135,9 +147,9 @@ class AddressPresenterTest {
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).showAddressSelectionDialog(addressCollection.addressList)
+        assertEquals(addressCollection.addressList, viewModel.multipleAddressesFoundEvent.value!!.peekContent())
     }
 
     @Test
@@ -147,9 +159,9 @@ class AddressPresenterTest {
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).hideProgressDialog()
+        assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
@@ -159,28 +171,29 @@ class AddressPresenterTest {
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
 
-        addressPresenter.searchPositionByName(locationName)
+        viewModel.onAddressSearch(locationName)
 
-        verify(addressView).showCallError(errorMessage)
+        assertEquals(errorMessage, viewModel.errorMessage.value)
     }
 
     @Test
     fun `select address in dialog shows position by name with address`() {
         val address = ADDRESS
 
-        addressPresenter.selectAddressInDialog(address)
+        viewModel.onAddressSelected(address)
 
-        verify(addressView).showPositionByName(address)
+        assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
     }
 
     @Test
     fun `shows connection problems dialog when no connection available in position by coordinates`() {
         whenever(connectionManager.isOnline()).thenReturn(false)
         val coordinates = COORDINATES
+        whenever(resourceProvider.get(any())).thenReturn("random string")
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).showConnectionProblemsDialog()
+        assertTrue(viewModel.connectionIssueEvent.value != null)
     }
 
     @Test
@@ -188,9 +201,9 @@ class AddressPresenterTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).showProgressDialog()
+        assertEquals(true, viewModel.progressVisibility.value)
     }
 
     @Test
@@ -198,7 +211,7 @@ class AddressPresenterTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val coordinates = COORDINATES
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
         verify(getAddressNameByCoordinatesUseCase).execute(any(), anyInt(), any())
     }
@@ -210,9 +223,9 @@ class AddressPresenterTest {
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).hideProgressDialog()
+        assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
@@ -221,10 +234,12 @@ class AddressPresenterTest {
         val coordinates = COORDINATES
         val addressCollection = EMPTY_ADDRESS_COLLECTION
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
+        val message = "no matches"
+        whenever(resourceProvider.get(any())).thenReturn(message)
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).showNoMatchesMessage()
+        assertEquals(message, viewModel.errorMessage.value)
     }
 
     @Test
@@ -236,9 +251,9 @@ class AddressPresenterTest {
         val addressCollection = AddressCollection(addressList)
         executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).showPositionByCoordinates(address)
+        assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
     }
 
     @Test
@@ -248,9 +263,9 @@ class AddressPresenterTest {
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).hideProgressDialog()
+        assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
@@ -260,9 +275,9 @@ class AddressPresenterTest {
         val errorMessage = ERROR_MESSAGE
         executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
 
-        addressPresenter.searchPositionByCoordinates(coordinates)
+        viewModel.onAddressSearch(coordinates)
 
-        verify(addressView).showCallError(errorMessage)
+        assertEquals(errorMessage, viewModel.errorMessage.value)
     }
 
     private fun executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName: String,

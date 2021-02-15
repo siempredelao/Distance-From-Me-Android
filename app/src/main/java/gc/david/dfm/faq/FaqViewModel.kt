@@ -16,33 +16,33 @@
 
 package gc.david.dfm.faq
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import gc.david.dfm.R
+import gc.david.dfm.ResourceProvider
 import gc.david.dfm.faq.model.Faq
 
-/**
- * Created by david on 21.12.16.
- */
-class FaqsPresenter(
-        private val faqsView: Faqs.View,
-        private val getFaqsUseCase: GetFaqsInteractor
-) : Faqs.Presenter {
+class FaqViewModel(
+        private val getFaqsUseCase: GetFaqsInteractor,
+        private val resourceProvider: ResourceProvider
+) : ViewModel() {
 
-    init {
-        this.faqsView.setPresenter(this)
-    }
+    val progressVisibility = MutableLiveData<Boolean>()
+    val faqList = MutableLiveData<Set<Faq>>()
+    val errorMessage = MutableLiveData<String>()
 
-    override fun start() {
-        faqsView.showLoading()
+    fun onStart() {
+        progressVisibility.value = true
 
         getFaqsUseCase.execute(object : GetFaqsInteractor.Callback {
             override fun onFaqsLoaded(faqs: Set<Faq>) {
-                faqsView.hideLoading()
-                faqsView.setupList()
-                faqsView.add(faqs)
+                progressVisibility.value = false
+                faqList.value = faqs
             }
 
             override fun onError() {
-                faqsView.hideLoading()
-                faqsView.showError()
+                progressVisibility.value = false
+                errorMessage.value = resourceProvider.get(R.string.faq_error_message)
             }
         })
     }
