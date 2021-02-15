@@ -18,9 +18,10 @@ package gc.david.dfm.opensource.domain
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
+import gc.david.dfm.opensource.data.NewOpenSourceDiskDataSource
 import gc.david.dfm.opensource.data.OpenSourceRepository
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import org.junit.Before
@@ -36,13 +37,13 @@ import org.mockito.MockitoAnnotations
 class OpenSourceInteractorTest {
 
     @Mock
-    lateinit var executor: Executor
+    lateinit var executor: NewThreadExecutor
     @Mock
-    lateinit var mainThread: MainThread
+    lateinit var mainThread: NewMainThread
     @Mock
-    lateinit var repository: OpenSourceRepository
+    lateinit var repository: NewOpenSourceDiskDataSource
     @Mock
-    lateinit var callback: OpenSourceUseCase.Callback
+    lateinit var callback: OpenSourceInteractor.Callback
 
     private lateinit var openSourceInteractor: OpenSourceInteractor
 

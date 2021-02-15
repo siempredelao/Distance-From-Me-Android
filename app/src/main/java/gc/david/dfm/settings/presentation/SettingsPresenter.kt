@@ -16,18 +16,18 @@
 
 package gc.david.dfm.settings.presentation
 
-import gc.david.dfm.distance.domain.ClearDistancesUseCase
+import gc.david.dfm.distance.domain.ClearDistancesInteractor
 
 /**
  * Created by david on 24.01.17.
  */
 class SettingsPresenter(
         private val settingsView: Settings.View,
-        private val clearDistancesUseCase: ClearDistancesUseCase
+        private val clearDistancesUseCase: ClearDistancesInteractor
 ) : Settings.Presenter {
 
     override fun onClearData() {
-        clearDistancesUseCase.execute(object : ClearDistancesUseCase.Callback {
+        clearDistancesUseCase.execute(object : ClearDistancesInteractor.Callback {
             override fun onClear() {
                 settingsView.showClearDataSuccessMessage()
             }

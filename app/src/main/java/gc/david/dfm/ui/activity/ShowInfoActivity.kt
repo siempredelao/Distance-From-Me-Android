@@ -31,34 +31,24 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DFMApplication
 import gc.david.dfm.R
 import gc.david.dfm.Utils
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
-import gc.david.dfm.dagger.DaggerShowInfoComponent
-import gc.david.dfm.dagger.RootModule
-import gc.david.dfm.dagger.ShowInfoModule
-import gc.david.dfm.dagger.StorageModule
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.databinding.ActivityShowInfoBinding
-import gc.david.dfm.distance.domain.InsertDistanceUseCase
+import gc.david.dfm.distance.domain.InsertDistanceInteractor
 import gc.david.dfm.showinfo.presentation.ShowInfo
 import gc.david.dfm.showinfo.presentation.ShowInfoPresenter
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.util.*
-import javax.inject.Inject
 
 class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
 
-    @Inject
-    lateinit var appContext: Context
-    @Inject
-    lateinit var connectionManager: ConnectionManager
-    @Inject
-    lateinit var insertDistanceUseCase: InsertDistanceUseCase
-    @Inject
-    lateinit var getOriginAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase
-    @Inject
-    lateinit var getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase
+    val appContext: Context by inject()
+    val connectionManager: ConnectionManager by inject()
+    val insertDistanceUseCase: InsertDistanceInteractor by inject()
+    val getOriginAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor by inject()
+    val getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor by inject()
 
     private lateinit var showInfoPresenter: ShowInfo.Presenter
 
@@ -79,12 +69,6 @@ class ShowInfoActivity : AppCompatActivity(), ShowInfo.View {
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
-        DaggerShowInfoComponent.builder()
-                .rootModule(RootModule(application as DFMApplication))
-                .storageModule(StorageModule())
-                .showInfoModule(ShowInfoModule())
-                .build()
-                .inject(this)
         binding = ActivityShowInfoBinding.inflate(layoutInflater).apply {
             setContentView(root)
             setSupportActionBar(tbMain.tbMain)

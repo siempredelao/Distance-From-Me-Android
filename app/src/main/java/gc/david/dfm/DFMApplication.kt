@@ -17,26 +17,30 @@
 package gc.david.dfm
 
 import android.app.Application
-import gc.david.dfm.dagger.DaggerRootComponent
-import gc.david.dfm.dagger.RootModule
-import gc.david.dfm.initializers.Initializers
-import javax.inject.Inject
+import gc.david.dfm.di.*
+import gc.david.dfm.initializers.*
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 /**
  * Created by David on 28/10/2014.
  */
 class DFMApplication : Application() {
 
-    @Inject
-    lateinit var initializers: Initializers
+    val initializers: Initializers by inject()
 
     override fun onCreate() {
         super.onCreate()
 
-        DaggerRootComponent.builder()
-                .rootModule(RootModule(this))
-                .build()
-                .inject(this)
+        startKoin {
+            androidContext(this@DFMApplication)
+            modules(appModule,
+                    viewModelModule,
+                    useCaseModule,
+                    repositoryModule,
+                    storageModule)
+        }
 
         initializers.init(this)
     }

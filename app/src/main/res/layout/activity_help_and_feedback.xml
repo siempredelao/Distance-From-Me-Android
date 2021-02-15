@@ -30,8 +30,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tbMain"
-        android:layout_above="@+id/help_and_feedback_activity_send_feedback_textview">
+        android:layout_below="@+id/tbMain">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -46,22 +45,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/textViewSendDescription"
         android:layout_below="@+id/tbMain"
         android:visibility="gone"
         tools:listitem="@layout/view_feedback_card_item"/>
-
-    <TextView
-        android:id="@+id/textViewSendDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:drawablePadding="16dp"
-        android:drawableStart="@drawable/ic_announcement_black_18dp"
-        android:padding="16dp"
-        android:visibility="gone"
-        android:text="@string/doubt_not_answered_send_feedback_action"/>
 
 </RelativeLayout>

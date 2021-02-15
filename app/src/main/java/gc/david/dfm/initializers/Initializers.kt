@@ -17,9 +17,8 @@
 package gc.david.dfm.initializers
 
 import android.app.Application
-import javax.inject.Inject
 
-class Initializers @Inject constructor(private val initializers: Array<Initializer>) : Initializer {
+class Initializers(private val initializers: Array<Initializer>) : Initializer {
 
     override fun init(application: Application) {
         initializers.forEach {

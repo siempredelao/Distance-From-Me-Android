@@ -120,7 +120,6 @@
     <string name="feedback_device_info_comments" translatable="false">%s\n\nYour comments:\n</string>
     <string name="feedback_email_subject" translatable="false">[Distance From Me] Feedback</string>
 
-    <string name="doubt_not_answered_send_feedback_action" translatable="false">Didn\'t find an answer to your question in this section? Contact us!</string>
     <string name="faq_error_message" translatable="false">Unable to get questions, try again later.</string>
 
     <string name="transition_opensourcelibrary_name" translatable="false">transition_opensourcelibrary_name</string>

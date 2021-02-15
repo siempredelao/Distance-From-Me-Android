@@ -20,13 +20,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.address.data.AddressRepository
+import gc.david.dfm.address.data.NewAddressRemoteDataSource
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.*
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.AddressCollection
-import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -43,15 +44,15 @@ import java.util.*
 class GetAddressCoordinatesByNameInteractorTest {
 
     @Mock
-    lateinit var executor: Executor
+    lateinit var executor: NewThreadExecutor
     @Mock
-    lateinit var mainThread: MainThread
+    lateinit var mainThread: NewMainThread
     @Mock
     lateinit var dataMapper: AddressCollectionEntityDataMapper
     @Mock
-    lateinit var repository: AddressRepository
+    lateinit var repository: NewAddressRemoteDataSource
     @Mock
-    lateinit var callback: GetAddressCoordinatesByNameUseCase.Callback
+    lateinit var callback: GetAddressCoordinatesByNameInteractor.Callback
 
     private lateinit var getAddressInteractor: GetAddressCoordinatesByNameInteractor
 

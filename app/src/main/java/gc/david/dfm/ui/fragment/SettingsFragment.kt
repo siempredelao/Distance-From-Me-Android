@@ -19,36 +19,23 @@ package gc.david.dfm.ui.fragment
 import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import gc.david.dfm.DFMApplication
 import gc.david.dfm.DFMPreferences
 import gc.david.dfm.R
 import gc.david.dfm.Utils
-import gc.david.dfm.dagger.DaggerSettingsComponent
-import gc.david.dfm.dagger.RootModule
-import gc.david.dfm.dagger.SettingsModule
-import gc.david.dfm.dagger.StorageModule
-import gc.david.dfm.distance.domain.ClearDistancesUseCase
+import gc.david.dfm.distance.domain.ClearDistancesInteractor
 import gc.david.dfm.settings.presentation.Settings
 import gc.david.dfm.settings.presentation.SettingsPresenter
+import org.koin.android.ext.android.inject
 import timber.log.Timber
-import javax.inject.Inject
 
 class SettingsFragment : PreferenceFragmentCompat(), Settings.View {
 
-    @Inject
-    lateinit var clearDistancesUseCase: ClearDistancesUseCase
+    val clearDistancesUseCase: ClearDistancesInteractor by inject()
 
     private lateinit var presenter: Settings.Presenter
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
-
-        DaggerSettingsComponent.builder()
-                .rootModule(RootModule(requireActivity().application as DFMApplication))
-                .storageModule(StorageModule())
-                .settingsModule(SettingsModule())
-                .build()
-                .inject(this)
 
         presenter = SettingsPresenter(this, clearDistancesUseCase)
 

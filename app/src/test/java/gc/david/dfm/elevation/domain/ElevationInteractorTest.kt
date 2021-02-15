@@ -21,14 +21,15 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.elevation.data.ElevationRepository
+import gc.david.dfm.elevation.data.NewElevationRemoteDataSource
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
 import gc.david.dfm.elevation.data.model.Result
 import gc.david.dfm.elevation.domain.model.Elevation
-import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -44,15 +45,15 @@ import org.mockito.MockitoAnnotations
 class ElevationInteractorTest {
 
     @Mock
-    lateinit var executor: Executor
+    lateinit var executor: NewThreadExecutor
     @Mock
-    lateinit var mainThread: MainThread
+    lateinit var mainThread: NewMainThread
     @Mock
     lateinit var elevationEntityDataMapper: ElevationEntityDataMapper
     @Mock
-    lateinit var repository: ElevationRepository
+    lateinit var repository: NewElevationRemoteDataSource
     @Mock
-    lateinit var callback: ElevationUseCase.Callback
+    lateinit var callback: ElevationInteractor.Callback
 
     private lateinit var elevationInteractor: ElevationInteractor
 

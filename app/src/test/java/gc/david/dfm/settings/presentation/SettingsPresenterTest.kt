@@ -18,7 +18,7 @@ package gc.david.dfm.settings.presentation
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.whenever
-import gc.david.dfm.distance.domain.ClearDistancesUseCase
+import gc.david.dfm.distance.domain.ClearDistancesInteractor
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -34,7 +34,7 @@ class SettingsPresenterTest {
     @Mock
     lateinit var settingsView: Settings.View
     @Mock
-    lateinit var clearDistancesUseCase: ClearDistancesUseCase
+    lateinit var clearDistancesUseCase: ClearDistancesInteractor
 
     private lateinit var settingsPresenter: SettingsPresenter
 
@@ -48,7 +48,7 @@ class SettingsPresenterTest {
     @Test
     fun `shows success message when use case succeeds`() {
         doAnswer {
-                (it.arguments[0] as ClearDistancesUseCase.Callback).onClear()
+                (it.arguments[0] as ClearDistancesInteractor.Callback).onClear()
         }.whenever(clearDistancesUseCase).execute(any())
 
         settingsPresenter.onClearData()
@@ -59,7 +59,7 @@ class SettingsPresenterTest {
     @Test
     fun `shows error message when use case fails`() {
         doAnswer {
-                (it.arguments[0] as ClearDistancesUseCase.Callback).onError()
+                (it.arguments[0] as ClearDistancesInteractor.Callback).onError()
         }.whenever(clearDistancesUseCase).execute(any())
 
         settingsPresenter.onClearData()

@@ -18,8 +18,6 @@ package gc.david.dfm.opensource.presentation.mapper
 
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Created by david on 25.01.17.
@@ -28,8 +26,7 @@ import javax.inject.Singleton
  * Mapper class used to transform [OpenSourceLibraryEntity] in the Domain layer
  * to [OpenSourceLibraryModel] in the Presentation layer.
  */
-@Singleton
-class OpenSourceLibraryMapper @Inject constructor() {
+class OpenSourceLibraryMapper {
 
     fun transform(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>): List<OpenSourceLibraryModel> {
         return openSourceLibraryEntityList.map {

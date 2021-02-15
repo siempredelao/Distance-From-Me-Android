@@ -52,3 +52,33 @@ class DistanceLocalDataSource(private val database: DFMDatabase) : DistanceRepos
         callback.onSuccess(database.positionDao().loadAllById(distanceId))
     }
 }
+
+class NewDistanceLocalDataSource(private val database: DFMDatabase) {
+
+    fun insert(distance: Distance, positionList: List<Position>, callback: DistanceRepository.Callback) {
+        val rowID = database.distanceDao().insert(distance)
+        if (rowID == -1L) {
+            callback.onFailure()
+        } else {
+            val positionListWithDistanceId = positionList.map { it.apply { distanceId = rowID } }
+            database.positionDao().insertMany(positionListWithDistanceId)
+            callback.onSuccess()
+        }
+    }
+
+    fun loadDistances(callback: DistanceRepository.LoadDistancesCallback) {
+        callback.onSuccess(database.distanceDao().loadAll())
+    }
+
+    fun clear(callback: DistanceRepository.Callback) {
+        with(database) {
+            distanceDao().deleteAll()
+            positionDao().deleteAll()
+        }
+        callback.onSuccess()
+    }
+
+    fun getPositionListById(distanceId: Long, callback: DistanceRepository.LoadPositionsByIdCallback) {
+        callback.onSuccess(database.positionDao().loadAllById(distanceId))
+    }
+}

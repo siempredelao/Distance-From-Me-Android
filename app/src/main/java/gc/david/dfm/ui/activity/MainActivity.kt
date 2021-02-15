@@ -44,40 +44,31 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import dagger.Lazy
 import gc.david.dfm.*
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.adapter.systemService
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.presentation.Address
 import gc.david.dfm.address.presentation.AddressPresenter
-import gc.david.dfm.dagger.DaggerMainComponent
-import gc.david.dfm.dagger.MainModule
-import gc.david.dfm.dagger.RootModule
-import gc.david.dfm.dagger.StorageModule
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
 import gc.david.dfm.databinding.ActivityMainBinding
-import gc.david.dfm.deviceinfo.DeviceInfo
-import gc.david.dfm.deviceinfo.PackageManager
-import gc.david.dfm.distance.domain.GetPositionListUseCase
-import gc.david.dfm.distance.domain.LoadDistancesUseCase
-import gc.david.dfm.elevation.domain.ElevationUseCase
+import gc.david.dfm.distance.domain.GetPositionListInteractor
+import gc.david.dfm.distance.domain.LoadDistancesInteractor
+import gc.david.dfm.elevation.domain.ElevationInteractor
 import gc.david.dfm.elevation.presentation.Elevation
 import gc.david.dfm.elevation.presentation.ElevationPresenter
-import gc.david.dfm.feedback.Feedback
-import gc.david.dfm.feedback.FeedbackPresenter
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class MainActivity :
@@ -89,26 +80,14 @@ class MainActivity :
         Elevation.View,
         Address.View {
 
-    @Inject
-    lateinit var appContext: Context
-    @Inject
-    lateinit var packageManager: Lazy<PackageManager>
-    @Inject
-    lateinit var deviceInfo: Lazy<DeviceInfo>
-    @Inject
-    lateinit var elevationUseCase: ElevationUseCase
-    @Inject
-    lateinit var connectionManager: ConnectionManager
-    @Inject
-    lateinit var preferencesProvider: PreferencesProvider
-    @Inject
-    lateinit var getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase
-    @Inject
-    lateinit var getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase
-    @Inject
-    lateinit var loadDistancesUseCase: LoadDistancesUseCase
-    @Inject
-    lateinit var getPositionListUseCase: GetPositionListUseCase
+    val appContext: Context by inject()
+    val elevationUseCase: ElevationInteractor by inject()
+    val connectionManager: ConnectionManager by inject()
+    val preferencesProvider: PreferencesProvider by inject()
+    val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor by inject()
+    val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor by inject()
+    val loadDistancesUseCase: LoadDistancesInteractor by inject()
+    val getPositionListUseCase: GetPositionListInteractor by inject()
 
     private lateinit var elevationPresenter: Elevation.Presenter
     private lateinit var addressPresenter: Address.Presenter
@@ -161,12 +140,6 @@ class MainActivity :
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
-        DaggerMainComponent.builder()
-                .rootModule(RootModule(application as DFMApplication))
-                .storageModule(StorageModule())
-                .mainModule(MainModule())
-                .build()
-                .inject(this)
         binding = ActivityMainBinding.inflate(layoutInflater).apply {
             setContentView(root)
             fabMyLocation.setOnClickListener { onMyLocationClick() }
@@ -504,7 +477,7 @@ class MainActivity :
 
         // TODO: 16.01.17 move this to presenter
         val loadItem = menu.findItem(R.id.action_load)
-        loadDistancesUseCase.execute(object : LoadDistancesUseCase.Callback {
+        loadDistancesUseCase.execute(object : LoadDistancesInteractor.Callback {
             override fun onDistanceListLoaded(distanceList: List<Distance>) {
                 if (distanceList.isEmpty()) {
                     loadItem.isVisible = false
@@ -555,14 +528,14 @@ class MainActivity :
 
     private fun loadDistancesFromDB() {
         // TODO: 16.01.17 move this to presenter
-        loadDistancesUseCase.execute(object : LoadDistancesUseCase.Callback {
+        loadDistancesUseCase.execute(object : LoadDistancesInteractor.Callback {
             override fun onDistanceListLoaded(distanceList: List<Distance>) {
                 if (distanceList.isNotEmpty()) {
                     val distanceSelectionDialogFragment = DistanceSelectionDialogFragment()
                     distanceSelectionDialogFragment.setDistanceList(distanceList)
                     distanceSelectionDialogFragment.setOnDialogActionListener { position ->
                         val distance = distanceList[position]
-                        getPositionListUseCase.execute(distance.id!!, object : GetPositionListUseCase.Callback {
+                        getPositionListUseCase.execute(distance.id!!, object : GetPositionListInteractor.Callback {
                             override fun onPositionListLoaded(positionList: List<Position>) {
                                 coordinates.clear()
                                 coordinates.addAll(Utils.convertPositionListToLatLngList(positionList))
@@ -613,24 +586,6 @@ class MainActivity :
         } catch (e: ActivityNotFoundException) {
             Timber.tag(TAG).e(Exception("Unable to open Play Store, rooted device?"))
         }
-    }
-
-    private fun openFeedbackActivity() {
-        Timber.tag(TAG).d("openFeedbackActivity")
-
-        FeedbackPresenter(object : Feedback.View {
-            override fun showError() {
-                Utils.toastIt(R.string.toast_send_feedback_error, appContext)
-            }
-
-            override fun showEmailClient(intent: Intent) {
-                startActivity(intent)
-            }
-
-            override fun context(): Context {
-                return appContext
-            }
-        }, packageManager.get(), deviceInfo.get()).start()
     }
 
     /**

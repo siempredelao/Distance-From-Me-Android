@@ -21,8 +21,8 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.domain.model.AddressCollection
 import org.junit.Before
 import org.junit.Test
@@ -40,9 +40,9 @@ class AddressPresenterTest {
     @Mock
     lateinit var addressView: Address.View
     @Mock
-    lateinit var getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase
+    lateinit var getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor
     @Mock
-    lateinit var getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase
+    lateinit var getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor
     @Mock
     lateinit var connectionManager: ConnectionManager
 
@@ -268,28 +268,28 @@ class AddressPresenterTest {
     private fun executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName: String,
                                                                             addressCollection: AddressCollection) {
         doAnswer {
-                (it.arguments[2] as GetAddressCoordinatesByNameUseCase.Callback).onAddressLoaded(addressCollection)
+                (it.arguments[2] as GetAddressCoordinatesByNameInteractor.Callback).onAddressLoaded(addressCollection)
         }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
     }
 
     private fun executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName: String,
                                                                     errorMessage: String) {
         doAnswer {
-                (it.arguments[2] as GetAddressCoordinatesByNameUseCase.Callback).onError(errorMessage)
+                (it.arguments[2] as GetAddressCoordinatesByNameInteractor.Callback).onError(errorMessage)
         }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
     }
 
     private fun executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
                                                                             addressCollection: AddressCollection) {
         doAnswer {
-                (it.arguments[2] as GetAddressNameByCoordinatesUseCase.Callback).onAddressLoaded(addressCollection)
+                (it.arguments[2] as GetAddressNameByCoordinatesInteractor.Callback).onAddressLoaded(addressCollection)
         }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
     }
 
     private fun executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
                                                                     errorMessage: String) {
         doAnswer {
-                (it.arguments[2] as GetAddressNameByCoordinatesUseCase.Callback).onError(errorMessage)
+                (it.arguments[2] as GetAddressNameByCoordinatesInteractor.Callback).onError(errorMessage)
         }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
     }
 

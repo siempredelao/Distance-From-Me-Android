@@ -23,7 +23,7 @@ import gc.david.dfm.faq.model.Faq
  */
 class FaqsPresenter(
         private val faqsView: Faqs.View,
-        private val getFaqsUseCase: GetFaqsUseCase
+        private val getFaqsUseCase: GetFaqsInteractor
 ) : Faqs.Presenter {
 
     init {
@@ -33,7 +33,7 @@ class FaqsPresenter(
     override fun start() {
         faqsView.showLoading()
 
-        getFaqsUseCase.execute(object : GetFaqsUseCase.Callback {
+        getFaqsUseCase.execute(object : GetFaqsInteractor.Callback {
             override fun onFaqsLoaded(faqs: Set<Faq>) {
                 faqsView.hideLoading()
                 faqsView.setupList()

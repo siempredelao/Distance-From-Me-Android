@@ -16,22 +16,23 @@
 
 package gc.david.dfm.faq
 
-import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
+import gc.david.dfm.faq.model.Faq
 
 /**
  * Created by david on 17.12.16.
  */
 class GetFaqsInteractor(
-        private val executor: Executor,
-        private val mainThread: MainThread,
-        private val repository: GetFaqsRepository
-) : Interactor, GetFaqsUseCase {
+        private val executor: NewThreadExecutor,
+        private val mainThread: NewMainThread,
+        private val repository: NewGetFaqsDiskDataSource
+) : Interactor {
 
-    private lateinit var callback: GetFaqsUseCase.Callback
+    private lateinit var callback: Callback
 
-    override fun execute(callback: GetFaqsUseCase.Callback) {
+    fun execute(callback: Callback) {
         this.callback = callback
         this.executor.run(this)
     }
@@ -44,5 +45,13 @@ class GetFaqsInteractor(
         } catch (exception: Exception) {
             mainThread.post(Runnable { callback.onError() })
         }
+    }
+
+    interface Callback {
+
+        fun onFaqsLoaded(faqs: Set<Faq>)
+
+        fun onError()
+
     }
 }
