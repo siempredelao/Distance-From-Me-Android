@@ -18,8 +18,6 @@ package gc.david.dfm.elevation.data.mapper
 
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.domain.model.Elevation
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Created by david on 13.01.17.
@@ -28,8 +26,7 @@ import javax.inject.Singleton
  * Mapper class used to transform [ElevationEntity] in the Data layer
  * to [Elevation] in the Domain layer.
  */
-@Singleton
-class ElevationEntityDataMapper @Inject constructor() {
+class ElevationEntityDataMapper {
 
     fun transform(elevationEntity: ElevationEntity): Elevation {
         val elevationList = elevationEntity.results.map { it.elevation }

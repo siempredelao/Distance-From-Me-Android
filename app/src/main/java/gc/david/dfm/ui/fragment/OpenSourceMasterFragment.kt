@@ -26,31 +26,25 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.DFMApplication
 import gc.david.dfm.R
 import gc.david.dfm.adapter.OpenSourceLibraryAdapter
-import gc.david.dfm.dagger.DaggerOpenSourceComponent
-import gc.david.dfm.dagger.OpenSourceModule
-import gc.david.dfm.dagger.RootModule
 import gc.david.dfm.databinding.FragmentOpensourcelibraryMasterBinding
-import gc.david.dfm.opensource.domain.OpenSourceUseCase
+import gc.david.dfm.opensource.domain.OpenSourceInteractor
 import gc.david.dfm.opensource.presentation.OpenSource
 import gc.david.dfm.opensource.presentation.OpenSourcePresenter
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 import gc.david.dfm.ui.animation.DetailsTransition
+import org.koin.android.ext.android.inject
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Created by david on 24.01.17.
  */
 class OpenSourceMasterFragment : Fragment(), OpenSource.View {
 
-    @Inject
-    lateinit var openSourceUseCase: OpenSourceUseCase
-    @Inject
-    lateinit var openSourceLibraryMapper: OpenSourceLibraryMapper
+    val openSourceUseCase: OpenSourceInteractor by inject()
+    val openSourceLibraryMapper: OpenSourceLibraryMapper by inject()
 
     private lateinit var binding: FragmentOpensourcelibraryMasterBinding
     private lateinit var presenter: OpenSource.Presenter
@@ -85,12 +79,6 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        DaggerOpenSourceComponent.builder()
-                .rootModule(RootModule(requireActivity().application as DFMApplication))
-                .openSourceModule(OpenSourceModule())
-                .build()
-                .inject(this)
 
         adapter = OpenSourceLibraryAdapter(listener)
 

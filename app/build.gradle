@@ -94,8 +94,6 @@ dependencies {
 	implementation Dependencies.playServicesLocation
 	implementation Dependencies.graphview
 	implementation Dependencies.crashlytics
-	implementation Dependencies.dagger
-	kapt Dependencies.daggerCompiler
 	implementation Dependencies.okhttp
 	implementation Dependencies.gson
 	implementation Dependencies.constraintLayout
@@ -107,6 +105,8 @@ dependencies {
     implementation Dependencies.roomKtx
     kapt Dependencies.roomCompiler
 	implementation Dependencies.timber
+	implementation Dependencies.koin
+	implementation Dependencies.koinViewModel
 
     testImplementation TestDependencies.junit
 	testImplementation TestDependencies.mockito

@@ -18,11 +18,11 @@ package gc.david.dfm.showinfo.presentation
 
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
-import gc.david.dfm.distance.domain.InsertDistanceUseCase
+import gc.david.dfm.distance.domain.InsertDistanceInteractor
 import java.util.*
 
 /**
@@ -30,9 +30,9 @@ import java.util.*
  */
 class ShowInfoPresenter(
         private val showInfoView: ShowInfo.View,
-        private val getOriginAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
-        private val getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
-        private val insertDistanceUseCase: InsertDistanceUseCase,
+        private val getOriginAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor,
+        private val getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor,
+        private val insertDistanceUseCase: InsertDistanceInteractor,
         private val connectionManager: ConnectionManager
 ) : ShowInfo.Presenter {
 
@@ -47,10 +47,10 @@ class ShowInfoPresenter(
         }
     }
 
-    private fun getOriginAddress(getAddressUseCase: GetAddressNameByCoordinatesUseCase,
+    private fun getOriginAddress(getAddressUseCase: GetAddressNameByCoordinatesInteractor,
                                  latLng: LatLng,
                                  isOrigin: Boolean) {
-        getAddressUseCase.execute(latLng, 1, object : GetAddressNameByCoordinatesUseCase.Callback {
+        getAddressUseCase.execute(latLng, 1, object : GetAddressNameByCoordinatesInteractor.Callback {
             override fun onAddressLoaded(addressCollection: AddressCollection) {
                 showInfoView.hideProgress()
 
@@ -77,7 +77,7 @@ class ShowInfoPresenter(
             Position(id = null, latitude = it.latitude, longitude = it.longitude, distanceId = -1L) // FIXME
         }
 
-        insertDistanceUseCase.execute(distanceAsDistance, positionList, object : InsertDistanceUseCase.Callback {
+        insertDistanceUseCase.execute(distanceAsDistance, positionList, object : InsertDistanceInteractor.Callback {
             override fun onInsert() {
                 if (name.isNotEmpty()) {
                     showInfoView.showSuccessfulSaveWithName(name)

@@ -20,14 +20,14 @@ import com.google.android.gms.maps.model.LatLng
 
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
-import gc.david.dfm.elevation.domain.ElevationUseCase
+import gc.david.dfm.elevation.domain.ElevationInteractor
 
 /**
  * Created by david on 06.01.17.
  */
 class ElevationPresenter(
         private val elevationView: Elevation.View,
-        private val elevationUseCase: ElevationUseCase,
+        private val elevationUseCase: ElevationInteractor,
         private val connectionManager: ConnectionManager,
         private val preferencesProvider: PreferencesProvider
 ) : Elevation.Presenter {
@@ -42,7 +42,7 @@ class ElevationPresenter(
         stopPendingUseCase = false
 
         if (preferencesProvider.shouldShowElevationChart() && connectionManager.isOnline()) {
-            elevationUseCase.execute(coordinates, ELEVATION_SAMPLES, object : ElevationUseCase.Callback {
+            elevationUseCase.execute(coordinates, ELEVATION_SAMPLES, object : ElevationInteractor.Callback {
                 override fun onElevationLoaded(elevation: gc.david.dfm.elevation.domain.model.Elevation) {
                     if (!stopPendingUseCase) {
                         elevationView.buildChart(elevation.results)

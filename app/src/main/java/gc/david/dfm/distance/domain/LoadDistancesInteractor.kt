@@ -18,22 +18,23 @@ package gc.david.dfm.distance.domain
 
 import gc.david.dfm.database.Distance
 import gc.david.dfm.distance.data.DistanceRepository
-import gc.david.dfm.executor.Executor
+import gc.david.dfm.distance.data.NewDistanceLocalDataSource
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
 
 /**
  * Created by david on 16.01.17.
  */
 class LoadDistancesInteractor(
-        private val executor: Executor,
-        private val mainThread: MainThread,
-        private val repository: DistanceRepository
-) : Interactor, LoadDistancesUseCase {
+        private val executor: NewThreadExecutor,
+        private val mainThread: NewMainThread,
+        private val repository: NewDistanceLocalDataSource
+) : Interactor {
 
-    private lateinit var callback: LoadDistancesUseCase.Callback
+    private lateinit var callback: Callback
 
-    override fun execute(callback: LoadDistancesUseCase.Callback) {
+    fun execute(callback: Callback) {
         this.callback = callback
         this.executor.run(this)
     }
@@ -48,5 +49,13 @@ class LoadDistancesInteractor(
                 mainThread.post(Runnable { callback.onError() })
             }
         })
+    }
+
+    interface Callback {
+
+        fun onDistanceListLoaded(distanceList: List<Distance>)
+
+        fun onError()
+
     }
 }

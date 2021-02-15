@@ -17,7 +17,7 @@
 package gc.david.dfm.opensource.presentation
 
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
-import gc.david.dfm.opensource.domain.OpenSourceUseCase
+import gc.david.dfm.opensource.domain.OpenSourceInteractor
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 
 /**
@@ -25,7 +25,7 @@ import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
  */
 class OpenSourcePresenter(
         private val openSourceView: OpenSource.View,
-        private val openSourceUseCase: OpenSourceUseCase,
+        private val openSourceUseCase: OpenSourceInteractor,
         private val openSourceLibraryMapper: OpenSourceLibraryMapper
 ) : OpenSource.Presenter {
 
@@ -36,7 +36,7 @@ class OpenSourcePresenter(
     override fun start() {
         openSourceView.showLoading()
 
-        openSourceUseCase.execute(object : OpenSourceUseCase.Callback {
+        openSourceUseCase.execute(object : OpenSourceInteractor.Callback {
             override fun onOpenSourceLibrariesLoaded(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>) {
                 openSourceView.hideLoading()
                 openSourceView.setupList()

@@ -19,8 +19,8 @@ package gc.david.dfm.address.presentation
 import com.google.android.gms.maps.model.LatLng
 
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.domain.model.AddressCollection
 
 /**
@@ -28,8 +28,8 @@ import gc.david.dfm.address.domain.model.AddressCollection
  */
 class AddressPresenter(
         private val addressView: Address.View,
-        private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase,
-        private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
+        private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor,
+        private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor,
         private val connectionManager: ConnectionManager
 ) : Address.Presenter {
 
@@ -48,7 +48,7 @@ class AddressPresenter(
     private fun onSearchPositionByNameWithConnectionAvailable(locationName: String) {
         addressView.showProgressDialog()
 
-        getAddressCoordinatesByNameUseCase.execute(locationName, MAX_BY_NAME, object : GetAddressCoordinatesByNameUseCase.Callback {
+        getAddressCoordinatesByNameUseCase.execute(locationName, MAX_BY_NAME, object : GetAddressCoordinatesByNameInteractor.Callback {
             override fun onAddressLoaded(addressCollection: AddressCollection) {
                 addressView.hideProgressDialog()
 
@@ -82,7 +82,7 @@ class AddressPresenter(
     private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: LatLng) {
         addressView.showProgressDialog()
 
-        getAddressNameByCoordinatesUseCase.execute(coordinates, MAX_BY_COORD, object : GetAddressNameByCoordinatesUseCase.Callback {
+        getAddressNameByCoordinatesUseCase.execute(coordinates, MAX_BY_COORD, object : GetAddressNameByCoordinatesInteractor.Callback {
             override fun onAddressLoaded(addressCollection: AddressCollection) {
                 addressView.hideProgressDialog()
 

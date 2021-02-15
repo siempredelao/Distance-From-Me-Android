@@ -22,7 +22,7 @@ import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
-import gc.david.dfm.elevation.domain.ElevationUseCase
+import gc.david.dfm.elevation.domain.ElevationInteractor
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
@@ -38,7 +38,7 @@ class ElevationPresenterTest {
     @Mock
     lateinit var elevationView: Elevation.View
     @Mock
-    lateinit var elevationUseCase: ElevationUseCase
+    lateinit var elevationUseCase: ElevationInteractor
     @Mock
     lateinit var connectionManager: ConnectionManager
     @Mock
@@ -95,7 +95,7 @@ class ElevationPresenterTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         doAnswer {
-                (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
+                (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation)
         }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
@@ -111,7 +111,7 @@ class ElevationPresenterTest {
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(ArrayList())
         doAnswer {
                 elevationPresenter.onReset() // reset called before thread finishes
-                (it.arguments[2] as ElevationUseCase.Callback).onElevationLoaded(elevation)
+                (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation)
         }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)
@@ -126,7 +126,7 @@ class ElevationPresenterTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val errorMessage = "fake error message"
         doAnswer {
-                (it.arguments[2] as ElevationUseCase.Callback).onError(errorMessage)
+                (it.arguments[2] as ElevationInteractor.Callback).onError(errorMessage)
         }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         elevationPresenter.buildChart(coordinateList)

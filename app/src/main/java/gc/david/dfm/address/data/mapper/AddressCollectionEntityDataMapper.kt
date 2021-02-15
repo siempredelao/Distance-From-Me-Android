@@ -20,8 +20,6 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.AddressCollection
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Created by david on 13.01.17.
@@ -30,8 +28,7 @@ import javax.inject.Singleton
  * Mapper class used to transform [AddressCollectionEntity] in the Data layer
  * to [AddressCollection] in the Domain layer.
  */
-@Singleton
-class AddressCollectionEntityDataMapper @Inject constructor() {
+class AddressCollectionEntityDataMapper {
 
     fun transform(addressCollectionEntity: AddressCollectionEntity): AddressCollection {
         val addressList = addressCollectionEntity.results.map {

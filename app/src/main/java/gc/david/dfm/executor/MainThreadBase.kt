@@ -24,11 +24,11 @@ import android.os.Looper
  *
  * @author Pedro Vicente Gómez Sánchez
  */
-class MainThreadBase : MainThread {
+class NewMainThread {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    override fun post(runnable: Runnable) {
+    fun post(runnable: Runnable) {
         handler.post(runnable)
     }
 }

@@ -16,9 +16,10 @@
 
 package gc.david.dfm.opensource.domain
 
-import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
+import gc.david.dfm.opensource.data.NewOpenSourceDiskDataSource
 import gc.david.dfm.opensource.data.OpenSourceRepository
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 
@@ -26,14 +27,14 @@ import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
  * Created by david on 25.01.17.
  */
 class OpenSourceInteractor(
-        private val executor: Executor,
-        private val mainThread: MainThread,
-        private val repository: OpenSourceRepository
-) : Interactor, OpenSourceUseCase {
+        private val executor: NewThreadExecutor,
+        private val mainThread: NewMainThread,
+        private val repository: NewOpenSourceDiskDataSource
+) : Interactor {
 
-    private lateinit var callback: OpenSourceUseCase.Callback
+    private lateinit var callback: Callback
 
-    override fun execute(callback: OpenSourceUseCase.Callback) {
+    fun execute(callback: Callback) {
         this.callback = callback
         this.executor.run(this)
     }
@@ -48,5 +49,13 @@ class OpenSourceInteractor(
                 mainThread.post(Runnable { callback.onError(message) })
             }
         })
+    }
+
+    interface Callback {
+
+        fun onOpenSourceLibrariesLoaded(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>)
+
+        fun onError(errorMessage: String)
+
     }
 }

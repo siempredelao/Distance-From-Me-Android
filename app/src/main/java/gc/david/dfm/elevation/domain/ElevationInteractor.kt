@@ -17,30 +17,31 @@
 package gc.david.dfm.elevation.domain
 
 import com.google.android.gms.maps.model.LatLng
-
 import gc.david.dfm.elevation.data.ElevationRepository
+import gc.david.dfm.elevation.data.NewElevationRemoteDataSource
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
-import gc.david.dfm.executor.Executor
+import gc.david.dfm.elevation.domain.model.Elevation
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
 
 /**
  * Created by david on 05.01.17.
  */
 class ElevationInteractor(
-        private val executor: Executor,
-        private val mainThread: MainThread,
+        private val executor: NewThreadExecutor,
+        private val mainThread: NewMainThread,
         private val mapper: ElevationEntityDataMapper,
-        private val repository: ElevationRepository
-) : Interactor, ElevationUseCase {
+        private val repository: NewElevationRemoteDataSource
+) : Interactor {
 
-    private lateinit var callback: ElevationUseCase.Callback
+    private lateinit var callback: Callback
     private lateinit var coordinateList: List<LatLng>
     private var maxSamples: Int = 0
 
-    override fun execute(coordinateList: List<LatLng>, maxSamples: Int, callback: ElevationUseCase.Callback) {
+    fun execute(coordinateList: List<LatLng>, maxSamples: Int, callback: Callback) {
         this.coordinateList = coordinateList
         this.maxSamples = maxSamples
         this.callback = callback
@@ -77,5 +78,13 @@ class ElevationInteractor(
 
     private fun getCoordinatesPath(coordinateList: List<LatLng>): String {
         return coordinateList.joinToString("|") { "${it.latitude},${it.longitude}" }
+    }
+
+    interface Callback {
+
+        fun onElevationLoaded(elevation: Elevation)
+
+        fun onError(errorMessage: String)
+
     }
 }

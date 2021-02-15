@@ -33,22 +33,18 @@ import java.util.concurrent.TimeUnit
  * @author Pedro Vicente Gómez Sánchez
  * @author Fernando Cejas
  */
-class ThreadExecutor : Executor {
+class NewThreadExecutor {
 
-    private val threadPoolExecutor: ThreadPoolExecutor
+    private val threadPoolExecutor: ThreadPoolExecutor = ThreadPoolExecutor(
+            CORE_POOL_SIZE,
+            MAX_POOL_SIZE,
+            KEEP_ALIVE_TIME.toLong(),
+            TIME_UNIT,
+            WORK_QUEUE,
+            THREAD_FACTORY
+    )
 
-    init {
-        threadPoolExecutor = ThreadPoolExecutor(
-                CORE_POOL_SIZE,
-                MAX_POOL_SIZE,
-                KEEP_ALIVE_TIME.toLong(),
-                TIME_UNIT,
-                WORK_QUEUE,
-                THREAD_FACTORY
-        )
-    }
-
-    override fun run(interactor: Interactor) {
+    fun run(interactor: Interactor) {
         threadPoolExecutor.submit { interactor.run() }
     }
 

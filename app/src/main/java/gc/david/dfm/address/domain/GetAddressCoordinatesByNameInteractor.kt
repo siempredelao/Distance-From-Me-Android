@@ -17,29 +17,30 @@
 package gc.david.dfm.address.domain
 
 import gc.david.dfm.address.data.AddressRepository
+import gc.david.dfm.address.data.NewAddressRemoteDataSource
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.data.model.GeocodingStatus
 import gc.david.dfm.address.domain.model.AddressCollection
-import gc.david.dfm.executor.Executor
 import gc.david.dfm.executor.Interactor
-import gc.david.dfm.executor.MainThread
+import gc.david.dfm.executor.NewMainThread
+import gc.david.dfm.executor.NewThreadExecutor
 
 /**
  * Created by david on 12.01.17.
  */
 class GetAddressCoordinatesByNameInteractor(
-        private val executor: Executor,
-        private val mainThread: MainThread,
+        private val executor: NewThreadExecutor,
+        private val mainThread: NewMainThread,
         private val mapper: AddressCollectionEntityDataMapper,
-        private val repository: AddressRepository
-) : Interactor, GetAddressCoordinatesByNameUseCase {
+        private val repository: NewAddressRemoteDataSource
+) : Interactor {
 
     private lateinit var locationName: String
     private var maxResults: Int = 0
-    private lateinit var callback: GetAddressCoordinatesByNameUseCase.Callback
+    private lateinit var callback: Callback
 
-    override fun execute(locationName: String, maxResults: Int, callback: GetAddressCoordinatesByNameUseCase.Callback) {
+    fun execute(locationName: String, maxResults: Int, callback: Callback) {
         this.locationName = locationName
         this.maxResults = maxResults
         this.callback = callback
@@ -74,5 +75,13 @@ class GetAddressCoordinatesByNameInteractor(
             return addressCollection.copy(addressList = addressList.take(maxResults))
         }
         return addressCollection
+    }
+
+    interface Callback {
+
+        fun onAddressLoaded(addressCollection: AddressCollection)
+
+        fun onError(errorMessage: String)
+
     }
 }
