@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.feedback
+package gc.david.dfm
 
 import android.content.Context
-import android.content.Intent
+import androidx.annotation.StringRes
+import javax.inject.Inject
+import javax.inject.Singleton
 
-/**
- * Created by david on 07.12.16.
- */
-interface Feedback {
+@Singleton
+class ResourceProvider @Inject constructor(private val context: Context) {
 
-    interface View {
-        fun showError()
-
-        fun showEmailClient(intent: Intent)
-
-        fun context(): Context
-    }
-
-    interface Presenter {
-        fun start()
-    }
-
+    fun get(@StringRes stringId: Int): String = context.getString(stringId)
 }

@@ -17,16 +17,14 @@
 package gc.david.dfm.di
 
 import androidx.room.Room
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DefaultConnectionManager
-import gc.david.dfm.DefaultPreferencesProvider
-import gc.david.dfm.PreferencesProvider
+import gc.david.dfm.*
 import gc.david.dfm.address.data.AddressRemoteDataSource
 import gc.david.dfm.address.data.AddressRepository
 import gc.david.dfm.address.data.NewAddressRemoteDataSource
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
+import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.distance.data.DistanceLocalDataSource
 import gc.david.dfm.distance.data.DistanceRepository
@@ -40,12 +38,10 @@ import gc.david.dfm.elevation.data.ElevationRepository
 import gc.david.dfm.elevation.data.NewElevationRemoteDataSource
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.domain.ElevationInteractor
+import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
-import gc.david.dfm.faq.GetFaqsDiskDataSource
-import gc.david.dfm.faq.GetFaqsInteractor
-import gc.david.dfm.faq.GetFaqsRepository
-import gc.david.dfm.faq.NewGetFaqsDiskDataSource
+import gc.david.dfm.faq.*
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
@@ -54,7 +50,12 @@ import gc.david.dfm.opensource.data.NewOpenSourceDiskDataSource
 import gc.david.dfm.opensource.data.OpenSourceDiskDataSource
 import gc.david.dfm.opensource.data.OpenSourceRepository
 import gc.david.dfm.opensource.domain.OpenSourceInteractor
+import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
+import gc.david.dfm.settings.presentation.SettingsViewModel
+import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
+import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
+import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
@@ -65,10 +66,18 @@ val appModule = module {
     single<PreferencesProvider> { DefaultPreferencesProvider(get()) }
     single { NewMainThread() }
     single { NewThreadExecutor() }
+    single { ResourceProvider(get()) }
 }
 
 val viewModelModule = module {
-    // TODO
+
+    viewModel { FaqViewModel(get(), get()) }
+    viewModel { OpenSourceViewModel(get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
+    viewModel { SaveDistanceViewModel(get(), get()) }
+    viewModel { ElevationViewModel(get(), get(), get()) }
+    viewModel { AddressViewModel(get(), get(), get(), get()) }
 }
 
 val useCaseModule = module {

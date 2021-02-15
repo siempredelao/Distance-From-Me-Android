@@ -71,6 +71,28 @@ object Utils {
                 .show()
     }
 
+    fun showAlertDialog(action: String,
+                        title: String,
+                        message: String,
+                        positiveButton: String,
+                        negativeButton: String,
+                        activity: Activity) {
+        Timber.tag(TAG).d("showAlertDialog")
+
+        AlertDialog.Builder(activity).apply {
+            setTitle(title)
+            setMessage(message)
+            setCancelable(false)
+            setPositiveButton(positiveButton) { _, _ ->
+                val optionsIntent = Intent(action)
+                activity.startActivity(optionsIntent)
+            }
+            setNegativeButton(negativeButton) { dialog, _ -> dialog.cancel() }
+        }
+                .create()
+                .show()
+    }
+
     fun dumpIntentToString(intent: Intent?): String {
         if (intent == null) {
             return "intent is null"

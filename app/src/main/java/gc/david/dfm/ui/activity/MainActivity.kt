@@ -29,6 +29,7 @@ import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -47,24 +48,20 @@ import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.adapter.systemService
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
-import gc.david.dfm.address.presentation.Address
-import gc.david.dfm.address.presentation.AddressPresenter
+import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.distance.domain.GetPositionListInteractor
 import gc.david.dfm.distance.domain.LoadDistancesInteractor
-import gc.david.dfm.elevation.domain.ElevationInteractor
-import gc.david.dfm.elevation.presentation.Elevation
-import gc.david.dfm.elevation.presentation.ElevationPresenter
+import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
 import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.*
 import java.util.regex.Matcher
@@ -76,21 +73,16 @@ class MainActivity :
         OnMapReadyCallback,
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMapClickListener,
-        GoogleMap.OnInfoWindowClickListener,
-        Elevation.View,
-        Address.View {
+        GoogleMap.OnInfoWindowClickListener {
 
     val appContext: Context by inject()
-    val elevationUseCase: ElevationInteractor by inject()
     val connectionManager: ConnectionManager by inject()
-    val preferencesProvider: PreferencesProvider by inject()
-    val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor by inject()
-    val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor by inject()
     val loadDistancesUseCase: LoadDistancesInteractor by inject()
     val getPositionListUseCase: GetPositionListInteractor by inject()
 
-    private lateinit var elevationPresenter: Elevation.Presenter
-    private lateinit var addressPresenter: Address.Presenter
+    private val elevationViewModel: ElevationViewModel by viewModel()
+    private val addressViewModel: AddressViewModel by viewModel()
+
     private lateinit var binding: ActivityMainBinding
 
     private val locationReceiver = object : BroadcastReceiver() {
@@ -128,7 +120,7 @@ class MainActivity :
         get() = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
 
-    override fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
+    private fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
 
     private val americanOrEuropeanLocale: Locale
         get() {
@@ -136,46 +128,8 @@ class MainActivity :
             return if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
-
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater).apply {
-            setContentView(root)
-            fabMyLocation.setOnClickListener { onMyLocationClick() }
-            fabShowChart.setOnClickListener { onShowChartClick() }
-        }
-
-        setSupportActionBar(binding.tbMain.tbMain)
-
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
-            val upArrow = appContext.getDrawable(R.drawable.ic_menu_white_24dp)
-            setHomeAsUpIndicator(upArrow)
-        }
-
-        elevationPresenter = ElevationPresenter(
-                this,
-                elevationUseCase,
-                connectionManager,
-                preferencesProvider)
-        addressPresenter = AddressPresenter(
-                this,
-                getAddressCoordinatesByNameUseCase,
-                getAddressNameByCoordinatesUseCase,
-                connectionManager)
-
-        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
-        supportMapFragment.getMapAsync(this)
-
-        if (!connectionManager.isOnline()) {
-            showConnectionProblemsDialog()
-        }
-
-        handleIntents(intent)
-
-        binding.nvDrawer.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener { menuItem ->
+    private val onNavigationItemSelectedListener: NavigationView.OnNavigationItemSelectedListener
+        get() = NavigationView.OnNavigationItemSelectedListener { menuItem ->
             binding.drawerLayout.closeDrawers()
             when (menuItem.itemId) {
                 R.id.menu_current_position -> {
@@ -186,7 +140,7 @@ class MainActivity :
                                 "This feature needs location permissions.",
                                 Snackbar.LENGTH_INDEFINITE)
                                 .setAction("Settings") {
-                                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                     intent.data = Uri.parse("package:$packageName")
                                     startActivity(intent)
                                 }
@@ -217,9 +171,70 @@ class MainActivity :
                 }
             }
             false
-        })
+        }
 
-        binding.elevationChartView.setOnCloseListener { elevationPresenter.onCloseChart() }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
+
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            fabMyLocation.setOnClickListener { onMyLocationClick() }
+            fabShowChart.setOnClickListener { onShowChartClick() }
+
+            setSupportActionBar(tbMain.tbMain)
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                setHomeButtonEnabled(true)
+                val upArrow = appContext.getDrawable(R.drawable.ic_menu_white_24dp)
+                setHomeAsUpIndicator(upArrow)
+            }
+
+            nvDrawer.setNavigationItemSelectedListener(onNavigationItemSelectedListener)
+            elevationChartView.setOnCloseListener { animateHideChart() }
+        }
+
+        with(elevationViewModel) {
+            elevationSamples.observe(this@MainActivity, { elevationSamples ->
+                buildChart(elevationSamples)
+            })
+            hideChartEvent.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let { hideChart() }
+            })
+        }
+        with(addressViewModel) {
+            connectionIssueEvent.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let {
+                    Utils.showAlertDialog(Settings.ACTION_SETTINGS,
+                            it.title,
+                            it.description,
+                            it.positiveMessage,
+                            it.negativeMessage,
+                            this@MainActivity)
+                }
+            })
+            progressVisibility.observe(this@MainActivity, { visible ->
+                if (visible) showProgressDialog() else hideProgressDialog()
+            })
+            errorMessage.observe(this@MainActivity, { message ->
+                Utils.toastIt(message, appContext)
+            })
+            addressFoundEvent.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let { showPositionByName(it) }
+            })
+            multipleAddressesFoundEvent.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let { showAddressSelectionDialog(it) }
+            })
+        }
+
+        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
+        supportMapFragment.getMapAsync(this)
+
+        if (!connectionManager.isOnline()) {
+            showConnectionProblemsDialog()
+        }
+
+        handleIntents(intent)
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -350,7 +365,7 @@ class MainActivity :
 
         googleMap?.clear()
 
-        elevationPresenter.onReset()
+        hideChart()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -376,7 +391,7 @@ class MainActivity :
         // busquemos nos inicie una nueva instancia de la aplicación
         val query = intent.getStringExtra(SearchManager.QUERY)
         if (currentLocation != null) {
-            addressPresenter.searchPositionByName(query)
+            addressViewModel.onAddressSearch(query)
         }
         searchMenuItem?.collapseActionView()
     }
@@ -407,7 +422,7 @@ class MainActivity :
                     destination = destination.replace("q=", "")
 
                     // TODO check this ugly workaround
-                    addressPresenter.searchPositionByName(destination)
+                    addressViewModel.onAddressSearch(destination)
                     searchMenuItem?.collapseActionView()
                     mustShowPositionWhenComingFromOutside = true
                 }
@@ -635,7 +650,7 @@ class MainActivity :
     public override fun onDestroy() {
         Timber.tag(TAG).d("onDestroy")
 
-        elevationPresenter.onReset()
+        hideChart()
         super.onDestroy()
     }
 
@@ -655,7 +670,7 @@ class MainActivity :
                 Timber.tag(TAG).d("onLocationChanged mustShowPositionWhenComingFromOutside")
 
                 if (currentLocation != null && sendDestinationPosition != null) {
-                    addressPresenter.searchPositionByCoordinates(sendDestinationPosition!!)
+                    addressViewModel.onAddressSearch(sendDestinationPosition!!)
 
                     mustShowPositionWhenComingFromOutside = false
                 }
@@ -685,7 +700,7 @@ class MainActivity :
 
         moveCameraZoom(coordinates)
 
-        elevationPresenter.buildChart(coordinates)
+        elevationViewModel.onCoordinatesSelected(coordinates)
     }
 
     private fun addMarkers(coordinates: List<LatLng>,
@@ -758,45 +773,43 @@ class MainActivity :
                 0)
     }
 
-    override fun setPresenter(presenter: Elevation.Presenter) {
-        this.elevationPresenter = presenter
-    }
-
-    override fun hideChart() {
+    private fun hideChart() {
         binding.elevationChartView.isInvisible = true
         binding.fabShowChart.isInvisible = true
         fixMapPadding()
     }
 
-    override fun showChart() {
+    private fun showChart() {
         binding.elevationChartView.isVisible = true
         fixMapPadding()
     }
 
-    override fun buildChart(elevationList: List<Double>) {
+    private fun buildChart(elevationList: List<Double>) {
         val locale = americanOrEuropeanLocale
 
         val normalizedElevation = elevationList.map { Haversine.normalizeAltitudeByLocale(it, locale) }
         binding.elevationChartView.setElevationProfile(normalizedElevation)
         binding.elevationChartView.setTitle(Haversine.getAltitudeUnitByLocale(locale))
 
-        elevationPresenter.onChartBuilt()
+        if (!isMinimiseButtonShown()) {
+            showChart()
+        }
     }
 
-    override fun animateHideChart() {
+    private fun animateHideChart() {
         AnimatorUtil.replaceViews(binding.elevationChartView, binding.fabShowChart)
     }
 
-    override fun animateShowChart() {
+    private fun animateShowChart() {
         AnimatorUtil.replaceViews(binding.fabShowChart, binding.elevationChartView)
     }
 
-    override fun logError(errorMessage: String) {
+    private fun logError(errorMessage: String) {
         Timber.tag(TAG).e(Exception(errorMessage))
     }
 
     private fun onShowChartClick() {
-        elevationPresenter.onOpenChart()
+        animateShowChart()
     }
 
     private fun onMyLocationClick() {
@@ -805,14 +818,11 @@ class MainActivity :
         }
     }
 
-    override fun setPresenter(presenter: Address.Presenter) {
-        this.addressPresenter = presenter
-    }
-
-    override fun showConnectionProblemsDialog() {
+    private fun showConnectionProblemsDialog() {
         Timber.tag(TAG).d("showConnectionProblemsDialog")
 
-        Utils.showAlertDialog(android.provider.Settings.ACTION_SETTINGS,
+        // TODO duplicated in AddressViewModel :(
+        Utils.showAlertDialog(Settings.ACTION_SETTINGS,
                 R.string.dialog_connection_problems_title,
                 R.string.dialog_connection_problems_message,
                 R.string.dialog_connection_problems_positive_button,
@@ -820,7 +830,7 @@ class MainActivity :
                 this)
     }
 
-    override fun showProgressDialog() {
+    private fun showProgressDialog() {
         progressDialog = ProgressDialog(this).apply {
             setTitle(R.string.progressdialog_search_position_title)
             setMessage(getString(R.string.progressdialog_search_position_message))
@@ -830,31 +840,22 @@ class MainActivity :
         progressDialog!!.show()
     }
 
-    override fun hideProgressDialog() {
+    private fun hideProgressDialog() {
         if (progressDialog?.isShowing == true) {
             progressDialog!!.dismiss()
         }
     }
 
-    override fun showCallError(errorMessage: String) {
-        logError(errorMessage)
-        Utils.toastIt(R.string.toast_no_find_address, appContext)
-    }
-
-    override fun showNoMatchesMessage() {
-        Utils.toastIt(R.string.toast_no_results, appContext)
-    }
-
-    override fun showAddressSelectionDialog(addressList: List<gc.david.dfm.address.domain.model.Address>) {
+    private fun showAddressSelectionDialog(addressList: List<gc.david.dfm.address.domain.model.Address>) {
         val addressSuggestionsDialogFragment = AddressSuggestionsDialogFragment()
         addressSuggestionsDialogFragment.setAddressList(addressList)
         addressSuggestionsDialogFragment.setOnDialogActionListener {
-            position -> addressPresenter.selectAddressInDialog(addressList[position])
+            position -> addressViewModel.onAddressSelected(addressList[position])
         }
         addressSuggestionsDialogFragment.show(supportFragmentManager, null)
     }
 
-    override fun showPositionByName(address: gc.david.dfm.address.domain.model.Address) {
+    private fun showPositionByName(address: gc.david.dfm.address.domain.model.Address) {
         Timber.tag(TAG).d("showPositionByName $selectedDistanceMode")
 
         val addressCoordinates = address.coordinates
@@ -901,16 +902,6 @@ class MainActivity :
         }
     }
 
-    override fun showPositionByCoordinates(address: gc.david.dfm.address.domain.model.Address) {
-        currentLocation?.let {
-            drawAndShowMultipleDistances(
-                    listOf(LatLng(it.latitude, it.longitude),
-                    address.coordinates),
-                    address.formattedAddress + "\n",
-                    false)
-        }
-    }
-
     private enum class DistanceMode {
         DISTANCE_FROM_CURRENT_POINT,
         DISTANCE_FROM_ANY_POINT
@@ -918,7 +909,7 @@ class MainActivity :
 
     companion object {
 
-        private val TAG = "MainActivity"
+        private const val TAG = "MainActivity"
         private val PERMISSIONS = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
         private const val PERMISSIONS_REQUEST_CODE = 2
     }

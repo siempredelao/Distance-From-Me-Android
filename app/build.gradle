@@ -107,10 +107,14 @@ dependencies {
 	implementation Dependencies.timber
 	implementation Dependencies.koin
 	implementation Dependencies.koinViewModel
+	implementation Dependencies.lifecycleViewModel
+	implementation Dependencies.lifecycleRuntime
+	implementation Dependencies.activityKtx
 
     testImplementation TestDependencies.junit
 	testImplementation TestDependencies.mockito
     testImplementation TestDependencies.mockitoInline
     testImplementation TestDependencies.mockitoKotlin
+	testImplementation TestDependencies.archCompTesting
 }
 

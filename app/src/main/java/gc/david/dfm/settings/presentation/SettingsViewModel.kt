@@ -16,25 +16,36 @@
 
 package gc.david.dfm.settings.presentation
 
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import gc.david.dfm.R
+import gc.david.dfm.ResourceProvider
 import gc.david.dfm.distance.domain.ClearDistancesInteractor
+import timber.log.Timber
 
-/**
- * Created by david on 24.01.17.
- */
-class SettingsPresenter(
-        private val settingsView: Settings.View,
-        private val clearDistancesUseCase: ClearDistancesInteractor
-) : Settings.Presenter {
+class SettingsViewModel(
+        private val clearDistancesUseCase: ClearDistancesInteractor,
+        private val resourceProvider: ResourceProvider
+) : ViewModel() {
 
-    override fun onClearData() {
+    val resultMessage = MutableLiveData<String>()
+
+    fun onClearData() {
+        Timber.tag(TAG).d("onClearData")
+
         clearDistancesUseCase.execute(object : ClearDistancesInteractor.Callback {
             override fun onClear() {
-                settingsView.showClearDataSuccessMessage()
+                resultMessage.value = resourceProvider.get(R.string.toast_distances_deleted)
             }
 
             override fun onError() {
-                settingsView.showClearDataErrorMessage()
+                Timber.tag(TAG).e(Exception("Unable to clear database."))
             }
         })
+    }
+
+    companion object {
+
+        private const val TAG = "SettingsViewModel"
     }
 }

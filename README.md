@@ -6,7 +6,7 @@ Master: [![Build Status](https://api.travis-ci.org/siempredelao/Distance-From-Me
 
 ## What is it?
 *Distance From Me* is an Android application whose objective is to calculate straight-line distances.
-Code is organised by features (still in progress, not 100%) following MVP architecture.
+Code is organised by features (still in progress, not 100%), following MVVM + Clean architecture.
 
 ## Features
 * Searches places by keyboard and by voice.

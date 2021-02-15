@@ -29,10 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.R
 import gc.david.dfm.adapter.OpenSourceLibraryAdapter
 import gc.david.dfm.databinding.FragmentOpensourcelibraryMasterBinding
-import gc.david.dfm.opensource.domain.OpenSourceInteractor
-import gc.david.dfm.opensource.presentation.OpenSource
-import gc.david.dfm.opensource.presentation.OpenSourcePresenter
-import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
+import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 import gc.david.dfm.ui.animation.DetailsTransition
 import org.koin.android.ext.android.inject
@@ -41,17 +38,15 @@ import timber.log.Timber
 /**
  * Created by david on 24.01.17.
  */
-class OpenSourceMasterFragment : Fragment(), OpenSource.View {
-
-    val openSourceUseCase: OpenSourceInteractor by inject()
-    val openSourceLibraryMapper: OpenSourceLibraryMapper by inject()
+class OpenSourceMasterFragment : Fragment() {
 
     private lateinit var binding: FragmentOpensourcelibraryMasterBinding
-    private lateinit var presenter: OpenSource.Presenter
     private lateinit var adapter: OpenSourceLibraryAdapter
-    
+
+    private val viewModel: OpenSourceViewModel by inject()
+
     private val listener = object : OnItemClickListener {
-        override fun onItemClick(openSourceLibraryModel: OpenSourceLibraryModel,
+        override fun onItemClick(model: OpenSourceLibraryModel,
                                  viewHolder: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder) {
             val openSourceDetailFragment = OpenSourceDetailFragment().apply {
                 val changeBoundsTransition = DetailsTransition()
@@ -62,7 +57,7 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
                 sharedElementEnterTransition = changeBoundsTransition
                 enterTransition = fadeTransition
                 sharedElementReturnTransition = changeBoundsTransition
-                arguments = bundleOf(OpenSourceDetailFragment.LIBRARY_KEY to openSourceLibraryModel)
+                arguments = bundleOf(OpenSourceDetailFragment.LIBRARY_KEY to model)
             }
 
             requireActivity().supportFragmentManager
@@ -80,58 +75,34 @@ class OpenSourceMasterFragment : Fragment(), OpenSource.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        adapter = OpenSourceLibraryAdapter(listener)
-
-        presenter = OpenSourcePresenter(this, openSourceUseCase, openSourceLibraryMapper)
-        presenter.start()
+        with(viewModel) {
+            progressVisibility.observe(this@OpenSourceMasterFragment, { visible ->
+                binding.progressBar.isVisible = visible
+                binding.recyclerView.isVisible = !visible
+            })
+            openSourceList.observe(this@OpenSourceMasterFragment, { list ->
+                adapter.add(list)
+            })
+            errorMessage.observe(this@OpenSourceMasterFragment, { message ->
+                Timber.tag(TAG).e(Exception(message))
+                Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_LONG).show()
+            })
+            onStart()
+        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentOpensourcelibraryMasterBinding.inflate(layoutInflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = FragmentOpensourcelibraryMasterBinding.inflate(layoutInflater, container, false).apply {
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            adapter = OpenSourceLibraryAdapter(listener)
+            recyclerView.adapter = adapter
+        }
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (adapter.itemCount != 0) {
-            hideLoading()
-            setupList()
-        }
-    }
-
-    override fun setPresenter(presenter: OpenSource.Presenter) {
-        this.presenter = presenter
-    }
-
-    override fun showLoading() {
-        if (view != null) { // Workaround: at this point, onCreateView could not have been executed
-            binding.progressBar.isVisible = true
-            binding.recyclerView.isVisible = false
-        }
-    }
-
-    override fun hideLoading() {
-        binding.progressBar.isVisible = false
-        binding.recyclerView.isVisible = true
-    }
-
-    override fun add(openSourceLibraryModelList: List<OpenSourceLibraryModel>) {
-        adapter.add(openSourceLibraryModelList)
-    }
-
-    override fun showError(errorMessage: String) {
-        Timber.tag(TAG).e(Exception(errorMessage))
-
-        Snackbar.make(binding.recyclerView, R.string.opensourcelibrary_error_message, Snackbar.LENGTH_LONG).show()
-    }
-
-    override fun setupList() {
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
     }
 
     interface OnItemClickListener {
 
-        fun onItemClick(openSourceLibraryModel: OpenSourceLibraryModel, item: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder)
+        fun onItemClick(model: OpenSourceLibraryModel, viewHolder: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder)
     }
 
     companion object {
