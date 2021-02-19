@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.model
+package gc.david.dfm.elevation.domain
+
+import gc.david.dfm.elevation.data.model.ElevationEntity
 
 /**
- * Created by david on 14.12.16.
+ * Created by david on 05.01.17.
  */
-class Faq(val question: String, val answer: String)
+interface ElevationRepository {
+
+    interface Callback {
+
+        fun onSuccess(elevationEntity: ElevationEntity)
+
+        fun onError(message: String)
+
+    }
+
+    fun getElevation(coordinatesPath: String, maxSamples: Int, callback: Callback)
+}

@@ -19,8 +19,6 @@ package gc.david.dfm.opensource.domain
 import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
-import gc.david.dfm.opensource.data.NewOpenSourceDiskDataSource
-import gc.david.dfm.opensource.data.OpenSourceRepository
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 
 /**
@@ -29,7 +27,7 @@ import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 class OpenSourceInteractor(
         private val executor: NewThreadExecutor,
         private val mainThread: NewMainThread,
-        private val repository: NewOpenSourceDiskDataSource
+        private val repository: OpenSourceRepository
 ) : Interactor {
 
     private lateinit var callback: Callback

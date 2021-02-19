@@ -21,7 +21,7 @@ import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import gc.david.dfm.databinding.ViewFeedbackCardItemBinding
-import gc.david.dfm.faq.model.Faq
+import gc.david.dfm.faq.data.model.Faq
 
 /**
  * Created by david on 14.12.16.

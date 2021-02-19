@@ -17,7 +17,6 @@
 package gc.david.dfm.address.domain
 
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.address.data.AddressRepository
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.data.model.GeocodingStatus

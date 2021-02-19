@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import gc.david.dfm.R
 import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.address.domain.AddressRepository
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import timber.log.Timber
@@ -29,58 +30,7 @@ import java.io.IOException
 /**
  * Created by david on 12.01.17.
  */
-class AddressRemoteDataSource(context: Context) : AddressRepository {
-
-    private val client = OkHttpClient()
-    private val gson = Gson()
-    private val geocodeApiKey = context.resources.getString(R.string.maps_geocode_api_key)
-
-    override fun getNameByCoordinates(coordinates: LatLng, callback: AddressRepository.Callback) {
-        executeRequest(getNameByCoordinatesUrl(coordinates), callback)
-    }
-
-    override fun getCoordinatesByName(name: String, callback: AddressRepository.Callback) {
-        executeRequest(getCoordinatesByNameUrl(name), callback)
-    }
-
-    private fun executeRequest(url: String, callback: AddressRepository.Callback) {
-        val request = Request.Builder().url(url).header("content-type", "application/json").build()
-
-        try {
-            val response = client.newCall(request).execute()
-            val addressCollectionEntity =
-                    gson.fromJson(response.body!!.charStream(), AddressCollectionEntity::class.java)
-            callback.onSuccess(addressCollectionEntity)
-        } catch (exception: IOException) {
-            callback.onError(exception.message ?: "AddressRemoteDataSource error")
-        }
-
-    }
-
-    private fun getNameByCoordinatesUrl(coordinates: LatLng): String {
-        val parameter = "latlng=${coordinates.latitude},${coordinates.longitude}"
-        Timber.tag(TAG).d(parameter)
-        return getUrl(parameter)
-    }
-
-    private fun getCoordinatesByNameUrl(name: String): String {
-        val parameterValue = name.replace(" ", "+")
-        val parameter = "address=$parameterValue"
-        Timber.tag(TAG).d(parameter)
-        return getUrl(parameter)
-    }
-
-    private fun getUrl(parameter: String): String {
-        return "https://maps.googleapis.com/maps/api/geocode/json?$parameter&key=$geocodeApiKey"
-    }
-
-    companion object {
-
-        private const val TAG = "AddressRemoteDataSource"
-    }
-}
-
-class NewAddressRemoteDataSource(context: Context) {
+class AddressRemoteDataSource(context: Context) {
 
     private val client = OkHttpClient()
     private val gson = Gson()

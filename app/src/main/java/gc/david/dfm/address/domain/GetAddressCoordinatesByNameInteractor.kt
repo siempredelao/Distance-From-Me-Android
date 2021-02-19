@@ -16,8 +16,6 @@
 
 package gc.david.dfm.address.domain
 
-import gc.david.dfm.address.data.AddressRepository
-import gc.david.dfm.address.data.NewAddressRemoteDataSource
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.data.model.GeocodingStatus
@@ -33,7 +31,7 @@ class GetAddressCoordinatesByNameInteractor(
         private val executor: NewThreadExecutor,
         private val mainThread: NewMainThread,
         private val mapper: AddressCollectionEntityDataMapper,
-        private val repository: NewAddressRemoteDataSource
+        private val repository: AddressRepository
 ) : Interactor {
 
     private lateinit var locationName: String

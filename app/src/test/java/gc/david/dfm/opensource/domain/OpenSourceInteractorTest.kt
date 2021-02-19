@@ -21,8 +21,6 @@ import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
-import gc.david.dfm.opensource.data.NewOpenSourceDiskDataSource
-import gc.david.dfm.opensource.data.OpenSourceRepository
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import org.junit.Before
 import org.junit.Test
@@ -41,7 +39,7 @@ class OpenSourceInteractorTest {
     @Mock
     lateinit var mainThread: NewMainThread
     @Mock
-    lateinit var repository: NewOpenSourceDiskDataSource
+    lateinit var repository: OpenSourceRepository
     @Mock
     lateinit var callback: OpenSourceInteractor.Callback
 

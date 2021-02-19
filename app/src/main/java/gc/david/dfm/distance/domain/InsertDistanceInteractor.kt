@@ -18,8 +18,6 @@ package gc.david.dfm.distance.domain
 
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
-import gc.david.dfm.distance.data.DistanceRepository
-import gc.david.dfm.distance.data.NewDistanceLocalDataSource
 import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
@@ -30,7 +28,7 @@ import gc.david.dfm.executor.NewThreadExecutor
 class InsertDistanceInteractor(
         private val executor: NewThreadExecutor,
         private val mainThread: NewMainThread,
-        private val repository: NewDistanceLocalDataSource
+        private val repository: DistanceRepository
 ) : Interactor {
 
     private lateinit var callback: Callback

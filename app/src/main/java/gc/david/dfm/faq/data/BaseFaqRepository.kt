@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq
+package gc.david.dfm.faq.data
 
-import gc.david.dfm.faq.model.Faq
+import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.domain.FaqRepository
 
-/**
- * Created by david on 19.12.16.
- */
-interface GetFaqsRepository {
+class BaseFaqRepository(private val diskDataSource: FaqDiskDataSource) : FaqRepository {
 
-    fun getFaqs(): Set<Faq>
-
+    override fun getFaqs(): Set<Faq> {
+        return diskDataSource.getFaqs()
+    }
 }
