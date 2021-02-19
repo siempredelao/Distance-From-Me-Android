@@ -75,6 +75,9 @@ class OpenSourceMasterFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Keep adapter initialization here so the transition backwards (detail->master) works
+        adapter = OpenSourceLibraryAdapter(listener)
+
         with(viewModel) {
             progressVisibility.observe(this@OpenSourceMasterFragment, { visible ->
                 binding.progressBar.isVisible = visible
@@ -94,7 +97,6 @@ class OpenSourceMasterFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentOpensourcelibraryMasterBinding.inflate(layoutInflater, container, false).apply {
             recyclerView.layoutManager = LinearLayoutManager(context)
-            adapter = OpenSourceLibraryAdapter(listener)
             recyclerView.adapter = adapter
         }
         return binding.root
