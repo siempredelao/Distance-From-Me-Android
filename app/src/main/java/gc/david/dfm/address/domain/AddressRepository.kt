@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.elevation.data
+package gc.david.dfm.address.domain
 
-import gc.david.dfm.elevation.data.model.ElevationEntity
+import com.google.android.gms.maps.model.LatLng
+
+import gc.david.dfm.address.data.model.AddressCollectionEntity
 
 /**
- * Created by david on 05.01.17.
+ * Created by david on 12.01.17.
  */
-interface ElevationRepository {
+interface AddressRepository {
 
     interface Callback {
 
-        fun onSuccess(elevationEntity: ElevationEntity)
+        fun onSuccess(addressCollectionEntity: AddressCollectionEntity)
 
         fun onError(message: String)
 
     }
 
-    fun getElevation(coordinatesPath: String, maxSamples: Int, callback: Callback)
+    fun getNameByCoordinates(coordinates: LatLng, callback: Callback)
+
+    fun getCoordinatesByName(name: String, callback: Callback)
+
 }

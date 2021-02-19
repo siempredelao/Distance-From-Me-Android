@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq
+package gc.david.dfm.faq.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.faq.model.Faq
+import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.domain.GetFaqsInteractor
 
 class FaqViewModel(
         private val getFaqsUseCase: GetFaqsInteractor,

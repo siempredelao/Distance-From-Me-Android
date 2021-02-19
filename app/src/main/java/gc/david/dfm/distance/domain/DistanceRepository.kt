@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.data
+package gc.david.dfm.distance.domain
 
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position

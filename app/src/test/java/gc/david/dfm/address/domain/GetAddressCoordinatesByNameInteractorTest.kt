@@ -19,8 +19,6 @@ package gc.david.dfm.address.domain
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.whenever
-import gc.david.dfm.address.data.AddressRepository
-import gc.david.dfm.address.data.NewAddressRemoteDataSource
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.*
 import gc.david.dfm.address.domain.model.Address
@@ -50,7 +48,7 @@ class GetAddressCoordinatesByNameInteractorTest {
     @Mock
     lateinit var dataMapper: AddressCollectionEntityDataMapper
     @Mock
-    lateinit var repository: NewAddressRemoteDataSource
+    lateinit var repository: AddressRepository
     @Mock
     lateinit var callback: GetAddressCoordinatesByNameInteractor.Callback
 

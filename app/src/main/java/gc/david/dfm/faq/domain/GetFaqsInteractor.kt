@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq
+package gc.david.dfm.faq.domain
 
 import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
-import gc.david.dfm.faq.model.Faq
+import gc.david.dfm.faq.data.model.Faq
 
 /**
  * Created by david on 17.12.16.
@@ -27,7 +27,7 @@ import gc.david.dfm.faq.model.Faq
 class GetFaqsInteractor(
         private val executor: NewThreadExecutor,
         private val mainThread: NewMainThread,
-        private val repository: NewGetFaqsDiskDataSource
+        private val repository: FaqRepository
 ) : Interactor {
 
     private lateinit var callback: Callback

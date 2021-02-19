@@ -20,8 +20,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.whenever
-import gc.david.dfm.elevation.data.ElevationRepository
-import gc.david.dfm.elevation.data.NewElevationRemoteDataSource
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
@@ -51,7 +49,7 @@ class ElevationInteractorTest {
     @Mock
     lateinit var elevationEntityDataMapper: ElevationEntityDataMapper
     @Mock
-    lateinit var repository: NewElevationRemoteDataSource
+    lateinit var repository: ElevationRepository
     @Mock
     lateinit var callback: ElevationInteractor.Callback
 

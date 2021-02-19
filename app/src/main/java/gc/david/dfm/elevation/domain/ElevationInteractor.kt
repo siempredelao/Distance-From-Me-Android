@@ -17,8 +17,6 @@
 package gc.david.dfm.elevation.domain
 
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.elevation.data.ElevationRepository
-import gc.david.dfm.elevation.data.NewElevationRemoteDataSource
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
@@ -34,7 +32,7 @@ class ElevationInteractor(
         private val executor: NewThreadExecutor,
         private val mainThread: NewMainThread,
         private val mapper: ElevationEntityDataMapper,
-        private val repository: NewElevationRemoteDataSource
+        private val repository: ElevationRepository
 ) : Interactor {
 
     private lateinit var callback: Callback

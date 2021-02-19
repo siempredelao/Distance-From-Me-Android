@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.adapter.FAQAdapter
 import gc.david.dfm.databinding.ActivityHelpAndFeedbackBinding
-import gc.david.dfm.faq.FaqViewModel
+import gc.david.dfm.faq.presentation.FaqViewModel
 import org.koin.android.ext.android.inject
 
 class HelpAndFeedbackActivity : AppCompatActivity() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.data
+package gc.david.dfm.opensource.domain
 
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 

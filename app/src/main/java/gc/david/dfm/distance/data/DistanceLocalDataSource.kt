@@ -19,41 +19,12 @@ package gc.david.dfm.distance.data
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
+import gc.david.dfm.distance.domain.DistanceRepository
 
 /**
  * Created by david on 16.01.17.
  */
-class DistanceLocalDataSource(private val database: DFMDatabase) : DistanceRepository {
-
-    override fun insert(distance: Distance, positionList: List<Position>, callback: DistanceRepository.Callback) {
-        val rowID = database.distanceDao().insert(distance)
-        if (rowID == -1L) {
-            callback.onFailure()
-        } else {
-            val positionListWithDistanceId = positionList.map { it.apply { distanceId = rowID } }
-            database.positionDao().insertMany(positionListWithDistanceId)
-            callback.onSuccess()
-        }
-    }
-
-    override fun loadDistances(callback: DistanceRepository.LoadDistancesCallback) {
-        callback.onSuccess(database.distanceDao().loadAll())
-    }
-
-    override fun clear(callback: DistanceRepository.Callback) {
-        with(database) {
-            distanceDao().deleteAll()
-            positionDao().deleteAll()
-        }
-        callback.onSuccess()
-    }
-
-    override fun getPositionListById(distanceId: Long, callback: DistanceRepository.LoadPositionsByIdCallback) {
-        callback.onSuccess(database.positionDao().loadAllById(distanceId))
-    }
-}
-
-class NewDistanceLocalDataSource(private val database: DFMDatabase) {
+class DistanceLocalDataSource(private val database: DFMDatabase) {
 
     fun insert(distance: Distance, positionList: List<Position>, callback: DistanceRepository.Callback) {
         val rowID = database.distanceDao().insert(distance)
