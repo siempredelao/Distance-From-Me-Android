@@ -27,13 +27,10 @@ class DefaultUnitInitializer : Initializer {
         get() = Haversine.isAmericanLocale(Locale.getDefault())
 
     override fun init(application: Application) {
-        val defaultUnit = DFMPreferences.getMeasureUnitPreference(application)
-        if (defaultUnit == null) {
-            DFMPreferences.setMeasureUnitPreference(
-                    application,
-                    if (isAmericanLocale) DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
-                    else DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE
-            )
-        }
+        DFMPreferences.setMeasureUnitPreference(
+                application,
+                if (isAmericanLocale) DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
+                else DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE
+        )
     }
 }

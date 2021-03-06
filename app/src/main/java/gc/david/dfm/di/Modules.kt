@@ -27,7 +27,9 @@ import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.distance.data.BaseDistanceRepository
+import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceLocalDataSource
+import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.domain.*
 import gc.david.dfm.elevation.data.BaseElevationRepository
 import gc.david.dfm.elevation.data.ElevationRemoteDataSource
@@ -46,6 +48,7 @@ import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
+import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.opensource.data.BaseOpenSourceRepository
 import gc.david.dfm.opensource.data.OpenSourceDiskDataSource
 import gc.david.dfm.opensource.domain.OpenSourceInteractor
@@ -55,6 +58,7 @@ import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.settings.presentation.SettingsViewModel
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
+import gc.david.dfm.ui.activity.MapDrawer
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -67,6 +71,9 @@ val appModule = module {
     single { NewMainThread() }
     single { NewThreadExecutor() }
     single { ResourceProvider(get()) }
+    single { MapDrawer(get()) }
+    single { DistanceModeProvider() }
+    single { CurrentLocationProvider() }
 }
 
 val viewModelModule = module {
@@ -78,6 +85,7 @@ val viewModelModule = module {
     viewModel { SaveDistanceViewModel(get(), get()) }
     viewModel { ElevationViewModel(get(), get(), get()) }
     viewModel { AddressViewModel(get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val useCaseModule = module {

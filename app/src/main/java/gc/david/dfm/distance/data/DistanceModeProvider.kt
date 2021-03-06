@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.distance.data
 
-/**
- * Created by david on 10.01.17.
- */
-interface PreferencesProvider {
+import javax.inject.Inject
+import javax.inject.Singleton
 
-    fun shouldShowElevationChart(): Boolean
+// Temporal solution, this should be a repository instead
+@Singleton
+class DistanceModeProvider @Inject constructor() {
 
-    fun getMeasureUnitPreference(): String
+    private var currentMode = DistanceMode.FROM_CURRENT_POINT
 
+    fun get() : DistanceMode {
+        return currentMode
+    }
+
+    fun set(mode: DistanceMode) {
+        currentMode = mode
+    }
 }
