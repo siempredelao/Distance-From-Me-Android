@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.distance.data
 
-/**
- * Created by david on 10.01.17.
- */
-interface PreferencesProvider {
-
-    fun shouldShowElevationChart(): Boolean
-
-    fun getMeasureUnitPreference(): String
-
-}
+enum class DistanceMode { FROM_CURRENT_POINT, FROM_ANY_POINT }

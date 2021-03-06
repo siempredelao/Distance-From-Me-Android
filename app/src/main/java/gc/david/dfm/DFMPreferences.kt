@@ -36,8 +36,8 @@ object DFMPreferences {
     const val CLEAR_DATABASE_KEY = "bbdd"
 
 
-    fun getMeasureUnitPreference(context: Context): String? {
-        return getPreferences(context).getString(MEASURE_UNIT_KEY, null)
+    fun getMeasureUnitPreference(context: Context): String {
+        return getPreferences(context).getString(MEASURE_UNIT_KEY, MEASURE_EUROPEAN_UNIT_VALUE)!!
     }
 
     fun setMeasureUnitPreference(context: Context, unit: String) {

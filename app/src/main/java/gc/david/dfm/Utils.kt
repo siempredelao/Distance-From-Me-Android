@@ -20,6 +20,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.StringRes
@@ -33,7 +34,7 @@ import timber.log.Timber
  */
 object Utils {
 
-    private val TAG = "Utils"
+    private const val TAG = "Utils"
 
     fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
 
@@ -47,28 +48,6 @@ object Utils {
         Timber.tag(TAG).d("toastIt message=%s", context.getString(stringRes))
 
         Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
-    }
-
-    fun showAlertDialog(action: String,
-                        @StringRes title: Int,
-                        @StringRes message: Int,
-                        @StringRes positiveButton: Int,
-                        @StringRes negativeButton: Int,
-                        activity: Activity) {
-        Timber.tag(TAG).d("showAlertDialog")
-
-        AlertDialog.Builder(activity).apply {
-            setTitle(title)
-            setMessage(message)
-            setCancelable(false)
-            setPositiveButton(positiveButton) { _, _ ->
-                val optionsIntent = Intent(action)
-                activity.startActivity(optionsIntent)
-            }
-            setNegativeButton(negativeButton) { dialog, _ -> dialog.cancel() }
-        }
-                .create()
-                .show()
     }
 
     fun showAlertDialog(action: String,
@@ -130,7 +109,33 @@ object Utils {
         return distanceInMetres
     }
 
+    fun calculateDistanceInMetres2(coordinates: List<Position>): Double {
+        var distanceInMetres = 0.0
+        for (i in 0 until coordinates.size - 1) {
+            distanceInMetres += Haversine.getDistance(
+                    coordinates[i].latitude,
+                    coordinates[i].longitude,
+                    coordinates[i + 1].latitude,
+                    coordinates[i + 1].longitude)
+        }
+        return distanceInMetres
+    }
+
     fun convertPositionListToLatLngList(positionList: List<Position>): List<LatLng> {
         return positionList.map { LatLng(it.latitude, it.longitude) }
     }
+
+    fun Position.toLatLng() = LatLng(latitude, longitude)
+
+    fun List<Position>.toLatLng() = map { it.toLatLng() }
+
+    data class Point(val lat: Double, val lon: Double) {
+        override fun toString(): String {
+            return "P($lat, $lon)"
+        }
+    }
+
+    fun LatLng.toPoint() = Point(latitude, longitude)
+    fun Position.toPoint() = Point(latitude, longitude)
+    fun Location.toPoint() = Point(latitude, longitude)
 }

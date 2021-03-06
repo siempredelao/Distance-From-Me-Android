@@ -21,7 +21,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.SearchManager
 import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.graphics.Color
 import android.location.Location
 import android.net.Uri
 import android.os.Build.VERSION.SDK_INT
@@ -44,16 +43,16 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
+import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.adapter.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.Distance
-import gc.david.dfm.database.Position
 import gc.david.dfm.databinding.ActivityMainBinding
-import gc.david.dfm.distance.domain.GetPositionListInteractor
-import gc.david.dfm.distance.domain.LoadDistancesInteractor
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.inappreview.InAppReviewHandler
+import gc.david.dfm.main.presentation.MainViewModel
+import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.animation.AnimatorUtil
@@ -63,9 +62,6 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-import kotlin.collections.ArrayList
 
 class MainActivity :
         AppCompatActivity(),
@@ -75,10 +71,8 @@ class MainActivity :
         GoogleMap.OnInfoWindowClickListener {
 
     private val appContext: Context by inject()
-    private val connectionManager: ConnectionManager by inject()
-    private val loadDistancesUseCase: LoadDistancesInteractor by inject()
-    private val getPositionListUseCase: GetPositionListInteractor by inject()
-
+    private val mapDrawer: MapDrawer by inject()
+    private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
 
@@ -97,22 +91,7 @@ class MainActivity :
     }
 
     private var googleMap: GoogleMap? = null
-    private var currentLocation: Location? = null
-    // Moves to current position if app has just started
-    private var appHasJustStarted = true
-    private var distanceMeasuredAsText = ""
-    private var searchMenuItem: MenuItem? = null
-    // Show position if we come from other app (p.e. Whatsapp)
-    private var mustShowPositionWhenComingFromOutside = false
-    private var sendDestinationPosition: LatLng? = null
-    private val coordinates = ArrayList<LatLng>()
-    private var calculatingDistance: Boolean = false
-
-    private val selectedDistanceMode: DistanceMode
-        get() = if (binding.nvDrawer.menu.findItem(R.id.menu_current_position).isChecked)
-            DistanceMode.DISTANCE_FROM_CURRENT_POINT
-        else
-            DistanceMode.DISTANCE_FROM_ANY_POINT
+    private var drawDistanceModel = DrawDistanceModel.EMPTY
 
     private val isLocationPermissionGranted: Boolean
         get() = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
@@ -131,8 +110,8 @@ class MainActivity :
             binding.drawerLayout.closeDrawers()
             when (menuItem.itemId) {
                 R.id.menu_current_position -> {
+                    mainViewModel.onDistanceFromCurrentPositionSet()
                     menuItem.isChecked = true
-                    onStartingPointSelected()
                     if (SDK_INT >= M && !isLocationPermissionGranted) {
                         Snackbar.make(binding.drawerLayout,
                                 "This feature needs location permissions.",
@@ -147,8 +126,8 @@ class MainActivity :
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.menu_any_position -> {
+                    mainViewModel.onDistanceFromAnyPositionSet()
                     menuItem.isChecked = true
-                    onStartingPointSelected()
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.menu_rate_app -> {
@@ -184,14 +163,26 @@ class MainActivity :
             supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
                 setHomeButtonEnabled(true)
-                val upArrow = appContext.getDrawable(R.drawable.ic_menu_white_24dp)
+                val upArrow = ContextCompat.getDrawable(appContext, R.drawable.ic_menu_white_24dp)
                 setHomeAsUpIndicator(upArrow)
             }
 
             nvDrawer.setNavigationItemSelectedListener(onNavigationItemSelectedListener)
             elevationChartView.setOnCloseListener { animateHideChart() }
+
+            val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
+            supportMapFragment.getMapAsync(this@MainActivity)
         }
 
+        observeElevationViewModel()
+        observeAddressViewModel()
+        observeMainViewModel()
+        mainViewModel.onStart()
+
+        handleIntents(intent)
+    }
+
+    private fun observeElevationViewModel() {
         with(elevationViewModel) {
             elevationSamples.observe(this@MainActivity, { elevationSamples ->
                 buildChart(elevationSamples)
@@ -200,15 +191,20 @@ class MainActivity :
                 event.getContentIfNotHandled()?.let { hideChart() }
             })
         }
+    }
+
+    private fun observeAddressViewModel() {
         with(addressViewModel) {
             connectionIssueEvent.observe(this@MainActivity, { event ->
                 event.getContentIfNotHandled()?.let {
-                    Utils.showAlertDialog(Settings.ACTION_SETTINGS,
-                            it.title,
-                            it.description,
-                            it.positiveMessage,
-                            it.negativeMessage,
-                            this@MainActivity)
+                    Utils.showAlertDialog(
+                        Settings.ACTION_SETTINGS,
+                        it.title,
+                        it.description,
+                        it.positiveMessage,
+                        it.negativeMessage,
+                        this@MainActivity
+                    )
                 }
             })
             progressVisibility.observe(this@MainActivity, { visible ->
@@ -224,15 +220,64 @@ class MainActivity :
                 event.getContentIfNotHandled()?.let { showAddressSelectionDialog(it) }
             })
         }
+    }
 
-        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
-        supportMapFragment.getMapAsync(this)
-
-        if (!connectionManager.isOnline()) {
-            showConnectionProblemsDialog()
+    private fun observeMainViewModel() {
+        with(mainViewModel) {
+            connectionIssueEvent.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let {
+                    Utils.showAlertDialog(
+                        Settings.ACTION_SETTINGS,
+                        it.title,
+                        it.description,
+                        it.positiveMessage,
+                        it.negativeMessage,
+                        this@MainActivity
+                    )
+                }
+            })
+            errorMessage.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
+            })
+            showLoadDistancesItem.observe(this@MainActivity, { visible ->
+                val loadItem = binding.tbMain.tbMain.menu.findItem(R.id.action_load)
+                loadItem?.isVisible = visible
+            })
+            showForceCrashItem.observe(this@MainActivity, { visible ->
+                val crashItem = binding.tbMain.tbMain.menu.findItem(R.id.action_crash)
+                crashItem?.isVisible = visible
+            })
+            selectFromDistancesLoaded.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let { showLoadedDistancesDialog(it) }
+            })
+            drawDistance.observe(this@MainActivity, { model ->
+                drawAndShowMultipleDistances(model)
+            })
+            drawPoints.observe(this@MainActivity, { list ->
+                googleMap?.let { map ->
+                    map.clear()
+                    list.forEach { map.addMarker(MarkerOptions().position(it)) }
+                }
+            })
+            zoomMapInto.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let {
+                    // 17 is a good zoom level for this action
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
+                }
+            })
+            centerMapInto.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let {
+                    googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
+                }
+            })
+            searchAddress.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let {
+                    addressViewModel.onAddressSearch(it)
+                }
+            })
+            resetMap.observe(this@MainActivity, { googleMap?.clear() })
+            hideChart.observe(this@MainActivity, { hideChart() })
         }
-
-        handleIntents(intent)
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -245,7 +290,7 @@ class MainActivity :
             setInfoWindowAdapter(MarkerInfoWindowAdapter(this@MainActivity))
         }
 
-        onStartingPointSelected()
+        resetMap()
 
         if (SDK_INT >= M && !isLocationPermissionGranted) {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
@@ -264,7 +309,7 @@ class MainActivity :
                 Timber.tag(TAG).d("onRequestPermissionsResult INTERRUPTED")
                 binding.fabMyLocation.isVisible = false
                 binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-                onStartingPointSelected()
+                resetMap()
             } else {
                 // no need to check both permissions, they fall under location group
                 if (grantResults.first() == PERMISSION_GRANTED) {
@@ -280,90 +325,31 @@ class MainActivity :
                     Timber.tag(TAG).d("onRequestPermissionsResult DENIED")
                     binding.fabMyLocation.isVisible = false
                     binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-                    onStartingPointSelected()
+                    resetMap()
                 }
             }
         }
     }
 
     override fun onMapLongClick(point: LatLng) {
-        Timber.tag(TAG).d("onMapLongClick")
-
-        calculatingDistance = true
-
-        if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-            if (coordinates.isEmpty()) {
-                Utils.toastIt(R.string.toast_first_point_needed, appContext)
-            } else {
-                coordinates.add(point)
-                drawAndShowMultipleDistances(coordinates, "", false)
-            }
-        } else {
-            currentLocation?.let { // Without current location, we cannot calculate any distance
-                if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT && coordinates.isEmpty()) {
-                    coordinates.add(LatLng(it.latitude, it.longitude))
-                }
-                coordinates.add(point)
-                drawAndShowMultipleDistances(coordinates, "", false)
-            }
-        }
-
-        calculatingDistance = false
+        mainViewModel.onMapLongClick(point)
     }
 
     override fun onMapClick(point: LatLng) {
-        Timber.tag(TAG).d("onMapClick")
-
-        if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-            if (!calculatingDistance) {
-                coordinates.clear()
-            }
-
-            calculatingDistance = true
-
-            if (coordinates.isEmpty()) {
-                googleMap?.clear()
-            }
-            coordinates.add(point)
-            googleMap?.addMarker(MarkerOptions().position(point))
-        } else {
-            currentLocation?.let { // Without current location, we cannot calculate any distance
-                if (!calculatingDistance) {
-                    coordinates.clear()
-                }
-                calculatingDistance = true
-
-                if (coordinates.isEmpty()) {
-                    googleMap?.clear()
-                    coordinates.add(LatLng(it.latitude, it.longitude))
-                }
-                coordinates.add(point)
-                googleMap?.addMarker(MarkerOptions().position(point))
-
-            }
-        }
+        mainViewModel.onMapClick(point)
     }
 
     override fun onInfoWindowClick(marker: Marker) {
         Timber.tag(TAG).d("onInfoWindowClick")
 
-        ShowInfoActivity.open(this, coordinates, distanceMeasuredAsText)
+        with(drawDistanceModel) {
+            ShowInfoActivity.open(this@MainActivity, positionList, formattedDistance)
+        }
     }
 
-    private fun onStartingPointSelected() {
-        if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_CURRENT_POINT) {
-            Timber.tag(TAG).d("onStartingPointSelected Distance from current point")
-        } else {
-            Timber.tag(TAG).d("onStartingPointSelected Distance from any point")
-        }
-
-        calculatingDistance = false
-
-        coordinates.clear()
-
-        googleMap?.clear()
-
-        hideChart()
+    private fun resetMap() {
+        Timber.tag(TAG).d("resetMap")
+        mainViewModel.resetMap()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -374,113 +360,28 @@ class MainActivity :
         handleIntents(intent)
     }
 
+    //region intent handling
     private fun handleIntents(intent: Intent?) {
         intent ?: return
-        when(intent.action) {
+        when (intent.action) {
             Intent.ACTION_SEARCH -> handleSearchIntent(intent)
-            Intent.ACTION_VIEW -> handleViewPositionIntent(intent)
         }
     }
 
     private fun handleSearchIntent(intent: Intent) {
-        Timber.tag(TAG).d("handleSearchIntent")
-
-        // Para controlar instancias únicas, no queremos que cada vez que
-        // busquemos nos inicie una nueva instancia de la aplicación
         val query = intent.getStringExtra(SearchManager.QUERY) ?: return
-        if (currentLocation != null) {
-            addressViewModel.onAddressSearch(query)
-        }
-        searchMenuItem?.collapseActionView()
+        mainViewModel.handleSearchIntent(query)
+        binding.tbMain.tbMain.menu.findItem(R.id.action_search).collapseActionView()
     }
+    //endregion
 
-    private fun handleViewPositionIntent(intent: Intent) {
-        val uri = intent.data ?: return
-        Timber.tag(TAG).d("handleViewPositionIntent uri=$uri")
-
-        when(uri.scheme) {
-            "geo" -> handleGeoSchemeIntent(uri)
-            "http", "https" -> handleHttpSchemeIntent(uri)
-            else -> {
-                Timber.tag(TAG).e(Exception("Unable to parse query $uri"))
-                Utils.toastIt("Unable to parse address", this)
-            }
-        }
-    }
-
-    private fun handleGeoSchemeIntent(uri: Uri) {
-        val schemeSpecificPart = uri.schemeSpecificPart
-        val matcher = getMatcherForUri(schemeSpecificPart)
-        if (matcher.find()) {
-            if (matcher.group(1) == "0" && matcher.group(2) == "0") {
-                if (matcher.find()) { // Manage geo:0,0?q=lat,lng(label)
-                    setDestinationPosition(matcher)
-                } else { // Manage geo:0,0?q=my+street+address
-                    var destination = Uri.decode(uri.query).replace('+', ' ')
-                    destination = destination.replace("q=", "")
-
-                    // TODO check this ugly workaround
-                    addressViewModel.onAddressSearch(destination)
-                    searchMenuItem?.collapseActionView()
-                    mustShowPositionWhenComingFromOutside = true
-                }
-            } else { // Manage geo:latitude,longitude or geo:latitude,longitude?z=zoom
-                setDestinationPosition(matcher)
-            }
-        } else {
-            val noSuchFieldException = NoSuchFieldException("Error al obtener las coordenadas. Matcher = $matcher")
-            Timber.tag(TAG).e(noSuchFieldException)
-            Utils.toastIt("Unable to parse address", this)
-        }
-    }
-
-    private fun handleHttpSchemeIntent(uri: Uri) {
-        if (uri.host == "maps.google.com") {
-            // Manage maps.google.com?q=latitude,longitude
-            handleMapsHostIntent(uri)
-        }
-    }
-
-    private fun handleMapsHostIntent(uri: Uri) {
-        val queryParameter = uri.getQueryParameter("q")
-        if (queryParameter != null) {
-            val matcher = getMatcherForUri(queryParameter)
-            if (matcher.find()) {
-                setDestinationPosition(matcher)
-            } else {
-                val noSuchFieldException = NoSuchFieldException("Error al obtener las coordenadas. Matcher = $matcher")
-                Timber.tag(TAG).e(noSuchFieldException)
-                Utils.toastIt("Unable to parse address", this)
-            }
-        } else {
-            val noSuchFieldException = NoSuchFieldException("Query sin parámetro q.")
-            Timber.tag(TAG).e(noSuchFieldException)
-            Utils.toastIt("Unable to parse address", this)
-        }
-    }
-
-    private fun setDestinationPosition(matcher: Matcher) {
-        Timber.tag(TAG).d("setDestinationPosition")
-
-        sendDestinationPosition = LatLng(java.lang.Double.valueOf(matcher.group(1)), java.lang.Double.valueOf(matcher.group(2)))
-        mustShowPositionWhenComingFromOutside = true
-    }
-
-    private fun getMatcherForUri(schemeSpecificPart: String): Matcher {
-        Timber.tag(TAG).d("getMatcherForUri scheme=$schemeSpecificPart")
-
-        val regex = "(-?\\d+(\\.\\d+)?),(-?\\d+(\\.\\d+)?)"
-        val pattern = Pattern.compile(regex)
-        return pattern.matcher(schemeSpecificPart)
-    }
-
+    //region menu handing
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
 
-        searchMenuItem = menu.findItem(R.id.action_search).apply {
+        menu.findItem(R.id.action_search).apply {
             with(actionView as SearchView) {
                 val searchManager = systemService<SearchManager>(Context.SEARCH_SERVICE)
-                // Indicamos que la activity actual sea la buscadora
                 setSearchableInfo(searchManager.getSearchableInfo(componentName))
                 isSubmitButtonEnabled = false
                 isQueryRefinementEnabled = true
@@ -488,23 +389,12 @@ class MainActivity :
             }
         }
 
-        // TODO: 16.01.17 move this to presenter
-        val loadItem = menu.findItem(R.id.action_load)
-        loadDistancesUseCase.execute(object : LoadDistancesInteractor.Callback {
-            override fun onDistanceListLoaded(distanceList: List<Distance>) {
-                if (distanceList.isEmpty()) {
-                    loadItem.isVisible = false
-                }
-            }
-
-            override fun onError() {
-                loadItem.isVisible = false
-            }
-        })
-
-        menu.findItem(R.id.action_crash).isVisible = !Utils.isReleaseBuild()
-
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        mainViewModel.onMenuReady()
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -520,16 +410,18 @@ class MainActivity :
             }
             R.id.action_load -> {
                 Timber.tag(TAG).d("onOptionsItemSelected load distances from ddbb")
-                loadDistancesFromDB()
+                mainViewModel.onLoadDistancesClick()
                 return true
             }
             R.id.action_crash -> {
                 Timber.tag(TAG).d("onOptionsItemSelected crash")
-                throw RuntimeException("User forced crash")
+                mainViewModel.onForceCrashClick()
+                return true
             }
             else -> return super.onOptionsItemSelected(item)
         }
     }
+    //endregion menu handling
 
     override fun onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -539,36 +431,16 @@ class MainActivity :
         }
     }
 
-    private fun loadDistancesFromDB() {
-        // TODO: 16.01.17 move this to presenter
-        loadDistancesUseCase.execute(object : LoadDistancesInteractor.Callback {
-            override fun onDistanceListLoaded(distanceList: List<Distance>) {
-                if (distanceList.isNotEmpty()) {
-                    val distanceSelectionDialogFragment = DistanceSelectionDialogFragment()
-                    distanceSelectionDialogFragment.setDistanceList(distanceList)
-                    distanceSelectionDialogFragment.setOnDialogActionListener { position ->
-                        val distance = distanceList[position]
-                        getPositionListUseCase.execute(distance.id!!, object : GetPositionListInteractor.Callback {
-                            override fun onPositionListLoaded(positionList: List<Position>) {
-                                coordinates.clear()
-                                coordinates.addAll(Utils.convertPositionListToLatLngList(positionList))
-
-                                drawAndShowMultipleDistances(coordinates, distance.name + "\n", true)
-                            }
-
-                            override fun onError() {
-                                Timber.tag(TAG).e(Exception("Unable to get position by id."))
-                            }
-                        })
+    private fun showLoadedDistancesDialog(distances: List<Distance>) {
+        DistanceSelectionDialogFragment()
+                .apply {
+                    setDistanceList(distances)
+                    setOnDialogActionListener { position ->
+                        val distance = distances[position]
+                        mainViewModel.onDistanceToShowSelected(distance)
                     }
-                    distanceSelectionDialogFragment.show(supportFragmentManager, null)
                 }
-            }
-
-            override fun onError() {
-                Timber.tag(TAG).e(Exception("Unable to load distances."))
-            }
-        })
+                .show(supportFragmentManager, null)
     }
 
     private fun showRateDialog() {
@@ -577,10 +449,6 @@ class MainActivity :
         InAppReviewHandler.rateApp(this)
     }
 
-    /**
-     * Called when the Activity is no longer visible at all. Stop updates and
-     * disconnect.
-     */
     public override fun onStop() {
         Timber.tag(TAG).d("onStop")
 
@@ -611,14 +479,9 @@ class MainActivity :
         }
     }
 
-    /**
-     * Called when the system detects that this Activity is now visible.
-     */
     public override fun onResume() {
-        Timber.tag(TAG).d("onResume")
-
         super.onResume()
-        invalidateOptionsMenu()
+        mainViewModel.onResume()
     }
 
     public override fun onDestroy() {
@@ -629,114 +492,24 @@ class MainActivity :
     }
 
     fun onLocationChanged(location: Location) {
-        Timber.tag(TAG).d("onLocationChanged")
+        mainViewModel.onLocationChanged(location)
+    }
 
-        if (currentLocation != null) {
-            currentLocation!!.set(location)
-        } else {
-            currentLocation = Location(location)
-        }
+    private fun drawAndShowMultipleDistances(model: DrawDistanceModel) {
+        Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
 
-        if (appHasJustStarted) {
-            Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
-
-            if (mustShowPositionWhenComingFromOutside) {
-                Timber.tag(TAG).d("onLocationChanged mustShowPositionWhenComingFromOutside")
-
-                if (currentLocation != null && sendDestinationPosition != null) {
-                    addressViewModel.onAddressSearch(sendDestinationPosition!!)
-
-                    mustShowPositionWhenComingFromOutside = false
-                }
-            } else {
-                Timber.tag(TAG).d("onLocationChanged NOT mustShowPositionWhenComingFromOutside")
-
-                val latlng = LatLng(location.latitude, location.longitude)
-                // 17 is a good zoom level for this action
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17F))
-            }
-            appHasJustStarted = false
+        drawDistanceModel = model
+        elevationViewModel.onCoordinatesSelected(model.positionList)
+        googleMap?.let {
+            mapDrawer.drawDistance(
+                it,
+                model,
+                DFMPreferences.getAnimationPreference(baseContext)
+            )
         }
     }
 
-    private fun drawAndShowMultipleDistances(coordinates: List<LatLng>,
-                                             message: String,
-                                             isLoadingFromDB: Boolean) {
-        Timber.tag(TAG).d("drawAndShowMultipleDistances")
-
-        googleMap?.clear()
-
-        distanceMeasuredAsText = calculateDistance(coordinates)
-
-        addMarkers(coordinates, distanceMeasuredAsText, message, isLoadingFromDB)
-
-        addLines(coordinates, isLoadingFromDB)
-
-        moveCameraZoom(coordinates)
-
-        elevationViewModel.onCoordinatesSelected(coordinates)
-    }
-
-    private fun addMarkers(coordinates: List<LatLng>,
-                           distance: String,
-                           message: String,
-                           isLoadingFromDB: Boolean) {
-        for (i in coordinates.indices) {
-            if (i == 0
-                    && (isLoadingFromDB || selectedDistanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT)
-                    || i == coordinates.size - 1) {
-                val coordinate = coordinates[i]
-                val marker = addMarker(coordinate)
-
-                if (i == coordinates.size - 1) {
-                    marker.title = message + distance
-                    marker.showInfoWindow()
-                }
-            }
-        }
-    }
-
-    private fun addMarker(coordinate: LatLng): Marker {
-        return googleMap!!.addMarker(MarkerOptions().position(coordinate))!!
-    }
-
-    private fun addLines(coordinates: List<LatLng>, isLoadingFromDB: Boolean) {
-        for (i in 0 until coordinates.size - 1) {
-            addLine(coordinates[i], coordinates[i + 1], isLoadingFromDB)
-        }
-    }
-
-    private fun addLine(start: LatLng, end: LatLng, isLoadingFromDB: Boolean) {
-        val lineOptions = PolylineOptions().add(start).add(end)
-        lineOptions.width(resources.getDimension(R.dimen.map_line_width))
-        lineOptions.color(if (isLoadingFromDB) Color.YELLOW else Color.GREEN)
-        googleMap?.addPolyline(lineOptions)
-    }
-
-    private fun calculateDistance(coordinates: List<LatLng>): String {
-        val distanceInMetres = Utils.calculateDistanceInMetres(coordinates)
-
-        return Haversine.normalizeDistance(distanceInMetres, americanOrEuropeanLocale)
-    }
-
-    private fun moveCameraZoom(coordinatesList: List<LatLng>) {
-        when (DFMPreferences.getAnimationPreference(baseContext)) {
-            DFMPreferences.ANIMATION_CENTRE_VALUE -> {
-                val latLngBoundsBuilder = LatLngBounds.Builder()
-                coordinatesList.forEach { latLngBoundsBuilder.include(it) }
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBoundsBuilder.build(), 100))
-            }
-            DFMPreferences.ANIMATION_DESTINATION_VALUE -> {
-                val lastCoordinates = coordinatesList[coordinatesList.size - 1]
-                googleMap?.animateCamera(
-                        CameraUpdateFactory.newLatLng(
-                                LatLng(lastCoordinates.latitude, lastCoordinates.longitude)))
-            }
-            DFMPreferences.NO_ANIMATION_DESTINATION_VALUE -> {
-                // nothing
-            }
-        }
-    }
+    private fun toString(list: MutableList<LatLng>) = list.joinToString { it.toPoint().toString() }
 
     private fun fixMapPadding() {
         Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
@@ -778,30 +551,12 @@ class MainActivity :
         AnimatorUtil.replaceViews(binding.fabShowChart, binding.elevationChartView)
     }
 
-    private fun logError(errorMessage: String) {
-        Timber.tag(TAG).e(Exception(errorMessage))
-    }
-
     private fun onShowChartClick() {
         animateShowChart()
     }
 
     private fun onMyLocationClick() {
-        currentLocation?.let {
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLng(LatLng(it.latitude, it.longitude)))
-        }
-    }
-
-    private fun showConnectionProblemsDialog() {
-        Timber.tag(TAG).d("showConnectionProblemsDialog")
-
-        // TODO duplicated in AddressViewModel :(
-        Utils.showAlertDialog(Settings.ACTION_SETTINGS,
-                R.string.dialog_connection_problems_title,
-                R.string.dialog_connection_problems_message,
-                R.string.dialog_connection_problems_positive_button,
-                R.string.dialog_connection_problems_negative_button,
-                this)
+        mainViewModel.onMyLocationButtonClick()
     }
 
     private fun showAddressSelectionDialog(addressList: List<gc.david.dfm.address.domain.model.Address>) {
@@ -814,55 +569,10 @@ class MainActivity :
     }
 
     private fun showPositionByName(address: gc.david.dfm.address.domain.model.Address) {
-        Timber.tag(TAG).d("showPositionByName $selectedDistanceMode")
+        Timber.tag(TAG).d("showPositionByName $address")
 
         val addressCoordinates = address.coordinates
-        if (selectedDistanceMode == DistanceMode.DISTANCE_FROM_ANY_POINT) {
-            coordinates.add(addressCoordinates)
-            if (coordinates.isEmpty()) {
-                Timber.tag(TAG).d("showPositionByName empty coordinates list")
-
-                // add marker
-                addMarker(addressCoordinates).apply {
-                    title = address.formattedAddress
-                    showInfoWindow()
-                }
-                // moveCamera
-                googleMap?.animateCamera(
-                        CameraUpdateFactory.newLatLng(
-                                LatLng(addressCoordinates.latitude, addressCoordinates.longitude)))
-                distanceMeasuredAsText = ""
-                // That means we are looking for a first position, so we want to calculate a distance starting
-                // from here
-                calculatingDistance = true
-            } else {
-                drawAndShowMultipleDistances(coordinates, address.formattedAddress + "\n", false)
-            }
-        } else {
-            if (!appHasJustStarted) {
-                Timber.tag(TAG).d("showPositionByName appHasJustStarted")
-
-                if (coordinates.isEmpty()) {
-                    Timber.tag(TAG).d("showPositionByName empty coordinates list")
-
-                    currentLocation?.let {
-                        coordinates.add(LatLng(it.latitude, it.longitude))
-                    }
-                }
-                coordinates.add(addressCoordinates)
-                drawAndShowMultipleDistances(this.coordinates, address.formattedAddress + "\n", false)
-            } else {
-                Timber.tag(TAG).d("showPositionByName NOT appHasJustStarted")
-
-                // Coming from View Action Intent
-                sendDestinationPosition = addressCoordinates
-            }
-        }
-    }
-
-    private enum class DistanceMode {
-        DISTANCE_FROM_CURRENT_POINT,
-        DISTANCE_FROM_ANY_POINT
+        mainViewModel.onPositionByNameResolved(addressCoordinates)
     }
 
     companion object {

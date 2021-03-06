@@ -14,20 +14,30 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.distance.data
 
-import android.content.Context
+import android.location.Location
+import gc.david.dfm.Utils
+import gc.david.dfm.Utils.toPoint
+import javax.inject.Inject
+import javax.inject.Singleton
 
-/**
- * Created by david on 10.01.17.
- */
-class DefaultPreferencesProvider(private val context: Context) : PreferencesProvider {
+// Temporal solution, this should be a repository instead
+@Singleton
+class CurrentLocationProvider @Inject constructor() {
 
-    override fun shouldShowElevationChart(): Boolean {
-        return DFMPreferences.shouldShowElevationChart(context)
+    private var currentLocation: Utils.Point = UNDEFINED
+
+    fun get() : Utils.Point {
+        return currentLocation
     }
 
-    override fun getMeasureUnitPreference(): String {
-        return DFMPreferences.getMeasureUnitPreference(context)
+    fun set(location: Location) {
+        currentLocation = location.toPoint()
+    }
+
+    companion object {
+
+        val UNDEFINED = Utils.Point(Double.MAX_VALUE, Double.MIN_VALUE)
     }
 }
