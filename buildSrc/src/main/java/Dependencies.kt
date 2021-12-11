@@ -17,7 +17,7 @@
 object SdkVersions {
 
     const val min = 22
-    const val target = 28
+    const val target = 31
 }
 
 object AppVersions {
