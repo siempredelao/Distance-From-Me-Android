@@ -389,7 +389,7 @@ class MainActivity :
 
         // Para controlar instancias únicas, no queremos que cada vez que
         // busquemos nos inicie una nueva instancia de la aplicación
-        val query = intent.getStringExtra(SearchManager.QUERY)
+        val query = intent.getStringExtra(SearchManager.QUERY) ?: return
         if (currentLocation != null) {
             addressViewModel.onAddressSearch(query)
         }

@@ -90,7 +90,7 @@ class ShowInfoActivity : AppCompatActivity() {
         val positionsList =
                 intent.getParcelableArrayListExtra<LatLng>(POSITIONS_LIST_EXTRA_KEY)
                         ?: error("No positions available")
-        val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)
+        val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)!!
         viewModel.onStart(positionsList, distance)
     }
 
