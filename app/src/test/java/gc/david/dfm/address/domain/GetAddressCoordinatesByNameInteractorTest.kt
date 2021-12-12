@@ -28,11 +28,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.*
 
@@ -41,25 +40,17 @@ import java.util.*
  */
 class GetAddressCoordinatesByNameInteractorTest {
 
-    @Mock
-    lateinit var executor: NewThreadExecutor
-    @Mock
-    lateinit var mainThread: NewMainThread
-    @Mock
-    lateinit var dataMapper: AddressCollectionEntityDataMapper
-    @Mock
-    lateinit var repository: AddressRepository
-    @Mock
-    lateinit var callback: GetAddressCoordinatesByNameInteractor.Callback
+    private val executor = mock<NewThreadExecutor>()
+    private val mainThread = mock<NewMainThread>()
+    private val dataMapper = mock<AddressCollectionEntityDataMapper>()
+    private val repository = mock<AddressRepository>()
+    private val callback = mock<GetAddressCoordinatesByNameInteractor.Callback>()
 
-    private lateinit var getAddressInteractor: GetAddressCoordinatesByNameInteractor
+    private val getAddressInteractor =
+        GetAddressCoordinatesByNameInteractor(executor, mainThread, dataMapper, repository)
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        getAddressInteractor = GetAddressCoordinatesByNameInteractor(executor, mainThread, dataMapper, repository)
-
         doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(anyOrNull())
         doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(anyOrNull())
     }
@@ -70,7 +61,6 @@ class GetAddressCoordinatesByNameInteractorTest {
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
         }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
-
         val addressCollection = AddressCollection(mutableListOf())
         whenever(dataMapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
 
@@ -91,7 +81,6 @@ class GetAddressCoordinatesByNameInteractorTest {
         doAnswer {
                 (it.arguments[1] as AddressRepository.Callback).onSuccess(addressCollectionEntity)
         }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
-
         val address = Address(LOCATION_NAME, LatLng(latitude, longitude))
         val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
@@ -116,9 +105,8 @@ class GetAddressCoordinatesByNameInteractorTest {
 
     @Test
     fun `returns error callback when repository error callback`() {
-        doAnswer {
-                (it.arguments[1] as AddressRepository.Callback).onError(ERROR_MESSAGE)
-        }.whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
+        doAnswer { (it.arguments[1] as AddressRepository.Callback).onError(ERROR_MESSAGE) }
+            .whenever(repository).getCoordinatesByName(anyString(), anyOrNull())
 
 
         getAddressInteractor.execute(LOCATION_NAME, anyInt(), callback)

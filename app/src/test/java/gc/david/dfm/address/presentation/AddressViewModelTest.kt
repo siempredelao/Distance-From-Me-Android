@@ -25,47 +25,36 @@ import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
 import gc.david.dfm.address.domain.model.AddressCollection
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 15.01.17.
  */
-@RunWith(MockitoJUnitRunner::class)
 class AddressViewModelTest {
 
-    @Mock
-    lateinit var getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor
-    @Mock
-    lateinit var getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor
-    @Mock
-    lateinit var connectionManager: ConnectionManager
-    @Mock
-    lateinit var resourceProvider: ResourceProvider
+    private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameInteractor>()
+    private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesInteractor>()
+    private val connectionManager = mock<ConnectionManager>()
+    private val resourceProvider = mock<ResourceProvider>()
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: AddressViewModel
-
-    @Before
-    fun setUp() {
-        viewModel = AddressViewModel(
-                getAddressCoordinatesByNameUseCase,
-                getAddressNameByCoordinatesUseCase,
-                connectionManager,
-                resourceProvider)
-    }
+    private val viewModel =
+        AddressViewModel(
+            getAddressCoordinatesByNameUseCase,
+            getAddressNameByCoordinatesUseCase,
+            connectionManager,
+            resourceProvider
+        )
 
     @Test
     fun `shows connection problems dialog when no connection available in position by name`() {

@@ -23,41 +23,30 @@ import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.ElevationInteractor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 11.01.17.
  */
-@RunWith(MockitoJUnitRunner::class)
 class ElevationViewModelTest {
 
-    @Mock
-    lateinit var elevationUseCase: ElevationInteractor
-    @Mock
-    lateinit var connectionManager: ConnectionManager
-    @Mock
-    lateinit var preferencesProvider: PreferencesProvider
+    private val elevationUseCase = mock<ElevationInteractor>()
+    private val connectionManager = mock<ConnectionManager>()
+    private val preferencesProvider = mock<PreferencesProvider>()
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: ElevationViewModel
-
-    @Before
-    fun setUp() {
-        viewModel = ElevationViewModel(elevationUseCase, connectionManager, preferencesProvider)
-    }
+    private val viewModel =
+        ElevationViewModel(elevationUseCase, connectionManager, preferencesProvider)
 
     @Test
     fun `hides chart when show elevation chart preference is false`() {
@@ -97,9 +86,8 @@ class ElevationViewModelTest {
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
-        doAnswer {
-                (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation)
-        }.whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
+        doAnswer { (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation) }
+            .whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
 
         viewModel.onCoordinatesSelected(coordinateList)
 

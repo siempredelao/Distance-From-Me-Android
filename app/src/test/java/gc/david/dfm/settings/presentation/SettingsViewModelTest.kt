@@ -20,42 +20,30 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import gc.david.dfm.ResourceProvider
 import gc.david.dfm.distance.domain.ClearDistancesInteractor
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 24.01.17.
  */
-@RunWith(MockitoJUnitRunner::class)
 class SettingsViewModelTest {
 
-    @Mock
-    lateinit var clearDistancesUseCase: ClearDistancesInteractor
-    @Mock
-    lateinit var resourceProvider: ResourceProvider
+    private val clearDistancesUseCase = mock<ClearDistancesInteractor>()
+    private val resourceProvider = mock<ResourceProvider>()
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: SettingsViewModel
-
-    @Before
-    fun setUp() {
-        viewModel = SettingsViewModel(clearDistancesUseCase, resourceProvider)
-    }
+    private val viewModel = SettingsViewModel(clearDistancesUseCase, resourceProvider)
 
     @Test
     fun `shows success message when use case succeeds`() {
-        doAnswer {
-                (it.arguments[0] as ClearDistancesInteractor.Callback).onClear()
-        }.whenever(clearDistancesUseCase).execute(any())
+        doAnswer { (it.arguments[0] as ClearDistancesInteractor.Callback).onClear() }
+            .whenever(clearDistancesUseCase).execute(any())
         val successMessage = "success"
         whenever(resourceProvider.get(any())).thenReturn(successMessage)
 

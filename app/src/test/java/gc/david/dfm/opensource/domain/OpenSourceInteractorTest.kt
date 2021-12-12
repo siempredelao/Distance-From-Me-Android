@@ -22,11 +22,10 @@ import gc.david.dfm.executor.NewThreadExecutor
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
@@ -34,23 +33,15 @@ import org.mockito.kotlin.whenever
  */
 class OpenSourceInteractorTest {
 
-    @Mock
-    lateinit var executor: NewThreadExecutor
-    @Mock
-    lateinit var mainThread: NewMainThread
-    @Mock
-    lateinit var repository: OpenSourceRepository
-    @Mock
-    lateinit var callback: OpenSourceInteractor.Callback
+    private val executor = mock<NewThreadExecutor>()
+    private val mainThread = mock<NewMainThread>()
+    private val repository = mock<OpenSourceRepository>()
+    private val callback = mock<OpenSourceInteractor.Callback>()
 
-    private lateinit var openSourceInteractor: OpenSourceInteractor
+    private val openSourceInteractor = OpenSourceInteractor(executor, mainThread, repository)
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        openSourceInteractor = OpenSourceInteractor(executor, mainThread, repository)
-
         doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
         doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
     }
@@ -58,7 +49,6 @@ class OpenSourceInteractorTest {
     @Test
     fun `returns open source library list on success`() {
         val openSourceLibraryEntityList = emptyList<OpenSourceLibraryEntity>()
-
         doAnswer {
                 (it.arguments[0] as OpenSourceRepository.Callback).onSuccess(openSourceLibraryEntityList)
         }.whenever(repository).getOpenSourceLibraries(any())
@@ -71,7 +61,6 @@ class OpenSourceInteractorTest {
     @Test
     fun `returns error message on failure`() {
         val errorMessage = "fake error message"
-
         doAnswer {
                 (it.arguments[0] as OpenSourceRepository.Callback).onError(errorMessage)
         }.whenever(repository).getOpenSourceLibraries(any())
