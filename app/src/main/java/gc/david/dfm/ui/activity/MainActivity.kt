@@ -723,7 +723,7 @@ class MainActivity :
     }
 
     private fun addMarker(coordinate: LatLng): Marker {
-        return googleMap!!.addMarker(MarkerOptions().position(coordinate))
+        return googleMap!!.addMarker(MarkerOptions().position(coordinate))!!
     }
 
     private fun addLines(coordinates: List<LatLng>, isLoadingFromDB: Boolean) {

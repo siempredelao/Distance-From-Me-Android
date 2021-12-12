@@ -53,7 +53,7 @@ class GeofencingService :
     }
 
     override fun onConnected(bundle: Bundle?) {
-        val lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
+        val lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient!!)
         if (lastKnownLocation != null) {
             sendUpdate(lastKnownLocation)
         }
@@ -82,7 +82,8 @@ class GeofencingService :
     }
 
     private fun stopLocationUpdates() {
-        if (googleApiClient?.isConnected == true) {
+        val googleApiClient = googleApiClient ?: return
+        if (googleApiClient.isConnected) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this)
         }
     }

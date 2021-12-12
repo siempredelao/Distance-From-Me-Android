@@ -28,15 +28,15 @@ object AppVersions {
 
 object LibraryVersions {
 
-    const val activityKtx = "1.2.0"
-    const val archCompTesting = "1.1.1"
+    const val activityKtx = "1.4.0"
+    const val archCompTesting = "2.1.0"
     const val cardView = "1.0.0"
-    const val collectionKtx = "1.1.0"
-    const val constraintLayout = "2.0.4"
-    const val coreKtx = "1.3.2"
+    const val collectionKtx = "1.2.0"
+    const val constraintLayout = "2.1.2"
+    const val coreKtx = "1.7.0"
     const val crashlytics = "18.2.5"
     const val crashlyticsPlugin = "2.7.1"
-    const val googleServices = "4.3.5"
+    const val googleServices = "4.3.10"
     const val gradle = "7.0.3"
     const val graphview = "4.2.2"
     const val gson = "2.8.6"
@@ -44,14 +44,15 @@ object LibraryVersions {
     const val koin = "2.2.2"
     const val kotlin = "1.6.0"
     const val leakCanary = "2.7"
-    const val lifecycle = "2.3.0"
-    const val materialComponents = "1.3.0"
+    const val lifecycle = "2.4.0"
+    const val materialComponents = "1.4.0"
     const val mockito = "3.7.7"
     const val mockitoKotlin = "2.2.0"
     const val okhttp = "4.9.0"
-    const val playServices = "17.0.0"
+    const val playServicesLocation = "19.0.0"
+    const val playServicesMaps = "18.0.1"
     const val preference = "1.0.0"
-    const val room = "2.2.6"
+    const val room = "2.3.0"
     const val timber = "4.7.1"
 }
 
@@ -76,8 +77,8 @@ object Dependencies {
     const val lifecycleRuntime = "androidx.lifecycle:lifecycle-runtime-ktx:${LibraryVersions.lifecycle}"
     const val materialComponents = "com.google.android.material:material:${LibraryVersions.materialComponents}"
     const val okhttp = "com.squareup.okhttp3:okhttp:${LibraryVersions.okhttp}"
-    const val playServicesLocation = "com.google.android.gms:play-services-location:${LibraryVersions.playServices}"
-    const val playServicesMaps = "com.google.android.gms:play-services-maps:${LibraryVersions.playServices}"
+    const val playServicesLocation = "com.google.android.gms:play-services-location:${LibraryVersions.playServicesLocation}"
+    const val playServicesMaps = "com.google.android.gms:play-services-maps:${LibraryVersions.playServicesMaps}"
     const val preference = "androidx.preference:preference:${LibraryVersions.preference}"
     const val roomCompiler = "androidx.room:room-compiler:${LibraryVersions.room}"
     const val roomKtx = "androidx.room:room-ktx:${LibraryVersions.room}"
@@ -87,7 +88,7 @@ object Dependencies {
 
 object TestDependencies {
 
-    const val archCompTesting = "android.arch.core:core-testing:${LibraryVersions.archCompTesting}"
+    const val archCompTesting = "androidx.arch.core:core-testing:${LibraryVersions.archCompTesting}"
     const val junit = "junit:junit:${LibraryVersions.junit}"
     const val mockito = "org.mockito:mockito-core:${LibraryVersions.mockito}"
     const val mockitoInline = "org.mockito:mockito-inline:${LibraryVersions.mockito}"
