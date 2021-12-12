@@ -82,7 +82,7 @@ class ElevationInteractor(
 
         fun onElevationLoaded(elevation: Elevation)
 
-        fun onError(errorMessage: String)
+        fun onError(message: String)
 
     }
 }

@@ -75,10 +75,10 @@ class ShowInfoViewModel(
                 }
             }
 
-            override fun onError(errorMessage: String) {
+            override fun onError(message: String) {
                 progressVisibility.value = false
 
-                showError(errorMessage, isOrigin)
+                showError(message, isOrigin)
             }
         })
     }

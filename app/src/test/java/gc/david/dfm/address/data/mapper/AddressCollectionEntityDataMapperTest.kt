@@ -17,9 +17,7 @@
 package gc.david.dfm.address.data.mapper
 
 import gc.david.dfm.address.data.model.*
-import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThat
 import org.junit.Test
 
 /**
@@ -44,8 +42,8 @@ class AddressCollectionEntityDataMapperTest {
 
         assertEquals(1, addressCollection.addressList.size)
         val address = addressCollection.addressList[0]
-        assertThat(address.coordinates.latitude, `is`(latitude))
-        assertThat(address.coordinates.longitude, `is`(longitude))
-        assertThat(address.formattedAddress, `is`(fakeAddress))
+        assertEquals(address.coordinates.latitude, latitude, 0.0)
+        assertEquals(address.coordinates.longitude, longitude, 0.0)
+        assertEquals(address.formattedAddress, fakeAddress)
     }
 }
