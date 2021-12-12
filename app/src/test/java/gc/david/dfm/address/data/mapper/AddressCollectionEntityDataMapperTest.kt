@@ -27,6 +27,8 @@ import org.junit.Test
  */
 class AddressCollectionEntityDataMapperTest {
 
+    private val mapper = AddressCollectionEntityDataMapper()
+
     @Test
     fun `transforms address collection entity to address collection`() {
         val fakeAddress = "address"
@@ -38,7 +40,7 @@ class AddressCollectionEntityDataMapperTest {
         val results = mutableListOf(result)
         val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
 
-        val addressCollection = AddressCollectionEntityDataMapper().transform(addressCollectionEntity)
+        val addressCollection = mapper.transform(addressCollectionEntity)
 
         assertEquals(1, addressCollection.addressList.size)
         val address = addressCollection.addressList[0]

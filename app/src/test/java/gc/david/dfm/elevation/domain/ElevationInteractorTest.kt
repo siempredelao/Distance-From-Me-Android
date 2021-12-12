@@ -29,12 +29,11 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
-import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
@@ -42,25 +41,17 @@ import org.mockito.kotlin.whenever
  */
 class ElevationInteractorTest {
 
-    @Mock
-    lateinit var executor: NewThreadExecutor
-    @Mock
-    lateinit var mainThread: NewMainThread
-    @Mock
-    lateinit var elevationEntityDataMapper: ElevationEntityDataMapper
-    @Mock
-    lateinit var repository: ElevationRepository
-    @Mock
-    lateinit var callback: ElevationInteractor.Callback
+    private val executor = mock<NewThreadExecutor>()
+    private val mainThread = mock<NewMainThread>()
+    private val elevationEntityDataMapper = mock<ElevationEntityDataMapper>()
+    private val repository = mock<ElevationRepository>()
+    private val callback = mock<ElevationInteractor.Callback>()
 
-    private lateinit var elevationInteractor: ElevationInteractor
+    private val elevationInteractor =
+        ElevationInteractor(executor, mainThread, elevationEntityDataMapper, repository)
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
-
-        elevationInteractor = ElevationInteractor(executor, mainThread, elevationEntityDataMapper, repository)
-
         doAnswer { (it.arguments[0] as Interactor).run() }.whenever(executor).run(any())
         doAnswer { (it.arguments[0] as Runnable).run() }.whenever(mainThread).post(any())
     }
@@ -97,9 +88,8 @@ class ElevationInteractorTest {
     fun `shows error when elevation model is not correct`() {
         val coordinateList = mutableListOf(LatLng(0.0, 0.0))
         val errorMessage = "fake error message"
-        doAnswer {
-                (it.arguments[2] as ElevationRepository.Callback).onError(errorMessage)
-        }.whenever(repository).getElevation(anyString(), anyInt(), any())
+        doAnswer { (it.arguments[2] as ElevationRepository.Callback).onError(errorMessage) }
+            .whenever(repository).getElevation(anyString(), anyInt(), any())
 
         elevationInteractor.execute(coordinateList, anyInt(), callback)
 

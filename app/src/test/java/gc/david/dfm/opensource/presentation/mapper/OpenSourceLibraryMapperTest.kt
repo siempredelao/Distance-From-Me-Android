@@ -25,6 +25,8 @@ import org.junit.Test
  */
 class OpenSourceLibraryMapperTest {
 
+    private val mapper = OpenSourceLibraryMapper()
+
     @Test
     fun `transforms open source library entity to open source library model`() {
         val libraryName = "fake name"
@@ -41,11 +43,9 @@ class OpenSourceLibraryMapperTest {
                 libraryLicense,
                 libraryYear,
                 libraryDescription)
-
         val openSourceLibraryEntityList = mutableListOf(openSourceLibraryEntity)
 
-        val openSourceLibraryModelList =
-                OpenSourceLibraryMapper().transform(openSourceLibraryEntityList)
+        val openSourceLibraryModelList = mapper.transform(openSourceLibraryEntityList)
 
         assertEquals(1, openSourceLibraryModelList.size)
         val openSourceLibraryModel = openSourceLibraryModelList[0]
