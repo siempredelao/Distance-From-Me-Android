@@ -30,7 +30,7 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.Utils
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 class SaveDistanceDialogFragment : DialogFragment() {

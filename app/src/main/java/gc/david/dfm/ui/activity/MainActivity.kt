@@ -61,7 +61,7 @@ import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.*
 import java.util.regex.Matcher

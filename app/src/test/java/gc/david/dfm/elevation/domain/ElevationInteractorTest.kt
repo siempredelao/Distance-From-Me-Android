@@ -17,9 +17,6 @@
 package gc.david.dfm.elevation.domain
 
 import com.google.android.gms.maps.model.LatLng
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
@@ -36,6 +33,9 @@ import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 11.01.17.

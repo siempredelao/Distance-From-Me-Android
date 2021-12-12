@@ -16,8 +16,6 @@
 
 package gc.david.dfm.opensource.domain
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.executor.Interactor
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
@@ -28,6 +26,8 @@ import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 26.01.17.

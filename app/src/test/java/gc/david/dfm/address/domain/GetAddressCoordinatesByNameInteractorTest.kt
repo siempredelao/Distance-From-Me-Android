@@ -17,8 +17,6 @@
 package gc.david.dfm.address.domain
 
 import com.google.android.gms.maps.model.LatLng
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.*
 import gc.david.dfm.address.domain.model.Address
@@ -34,6 +32,8 @@ import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.whenever
 import java.util.*
 
 /**
