@@ -17,8 +17,6 @@
 package gc.david.dfm.settings.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import gc.david.dfm.ResourceProvider
 import gc.david.dfm.distance.domain.ClearDistancesInteractor
 import org.junit.Assert.assertEquals
@@ -29,6 +27,8 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.doAnswer
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 24.01.17.

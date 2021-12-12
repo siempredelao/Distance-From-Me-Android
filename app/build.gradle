@@ -105,7 +105,7 @@ dependencies {
     kapt Dependencies.roomCompiler
 	implementation Dependencies.timber
 	implementation Dependencies.koin
-	implementation Dependencies.koinViewModel
+	implementation Dependencies.koinAndroid
 	implementation Dependencies.lifecycleViewModel
 	implementation Dependencies.lifecycleRuntime
 	implementation Dependencies.activityKtx

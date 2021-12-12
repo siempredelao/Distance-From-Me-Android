@@ -55,7 +55,7 @@ import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.settings.presentation.SettingsViewModel
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
