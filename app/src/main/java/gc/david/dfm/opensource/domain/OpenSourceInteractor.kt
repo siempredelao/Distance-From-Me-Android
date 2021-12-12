@@ -53,7 +53,7 @@ class OpenSourceInteractor(
 
         fun onOpenSourceLibrariesLoaded(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>)
 
-        fun onError(errorMessage: String)
+        fun onError(message: String)
 
     }
 }

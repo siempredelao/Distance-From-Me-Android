@@ -79,7 +79,7 @@ class GetAddressCoordinatesByNameInteractor(
 
         fun onAddressLoaded(addressCollection: AddressCollection)
 
-        fun onError(errorMessage: String)
+        fun onError(message: String)
 
     }
 }

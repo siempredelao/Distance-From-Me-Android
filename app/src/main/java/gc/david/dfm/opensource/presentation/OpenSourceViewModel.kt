@@ -44,7 +44,7 @@ class OpenSourceViewModel(
                 openSourceList.value = openSourceLibraryMapper.transform(openSourceLibraryEntityList)
             }
 
-            override fun onError(error: String) {
+            override fun onError(message: String) {
                 progressVisibility.value = false
                 errorMessage.value = resourceProvider.get(R.string.opensourcelibrary_error_message)
             }
