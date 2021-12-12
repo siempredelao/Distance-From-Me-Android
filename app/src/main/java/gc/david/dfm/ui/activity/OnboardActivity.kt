@@ -50,7 +50,7 @@ class OnboardActivity : AppCompatActivity() {
                 val googlePlayServicesRequestCode = 9000
                 googleApiAvailabilityInstance
                         .getErrorDialog(this, resultCode, googlePlayServicesRequestCode)
-                        .show()
+                        ?.show()
             } else {
                 Timber.tag(TAG).e("checkPlayServices device not supported, finishing")
                 Utils.toastIt("This device is not supported by Google Play Services.", this)
