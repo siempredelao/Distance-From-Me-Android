@@ -42,11 +42,11 @@ class LoggingInitializer(private val context: Context) : Initializer {
 
 class ReleaseTree(private val context: Context) : Timber.Tree() {
 
-    override fun log(priority: Int, tag: String?, message: String, throwable: Throwable?) {
+    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         if (priority < MIN_LOG_LEVEL) return
 
-        if (throwable != null) {
-            exception(throwable)
+        if (t != null) {
+            exception(t)
         } else {
             val logTag = tag ?: DEFAULT_TAG
             log("$logTag: $message")
