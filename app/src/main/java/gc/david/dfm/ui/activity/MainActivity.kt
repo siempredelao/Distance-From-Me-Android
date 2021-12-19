@@ -214,8 +214,8 @@ class MainActivity :
             progressVisibility.observe(this@MainActivity, { visible ->
                 binding.progressView.isVisible = visible
             })
-            errorMessage.observe(this@MainActivity, { message ->
-                Utils.toastIt(message, appContext)
+            errorMessage.observe(this@MainActivity, { event ->
+                event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
             })
             addressFoundEvent.observe(this@MainActivity, { event ->
                 event.getContentIfNotHandled()?.let { showPositionByName(it) }

@@ -37,7 +37,7 @@ class AddressViewModel(
 
     val progressVisibility = MutableLiveData<Boolean>()
     val connectionIssueEvent = MutableLiveData<Event<ConnectionIssuesData>>()
-    val errorMessage = MutableLiveData<String>() // TODO transform this to Event
+    val errorMessage = MutableLiveData<Event<String>>()
     val addressFoundEvent = MutableLiveData<Event<Address>>()
     val multipleAddressesFoundEvent = MutableLiveData<Event<List<Address>>>()
 
@@ -66,7 +66,7 @@ class AddressViewModel(
 
                 when {
                     addressCollection.addressList.isEmpty() ->
-                        errorMessage.value = resourceProvider.get(R.string.toast_no_results)
+                        errorMessage.value = Event(resourceProvider.get(R.string.toast_no_results))
 
                     addressCollection.addressList.size == 1 ->
                         addressFoundEvent.value = Event(addressCollection.addressList.first())
@@ -78,7 +78,7 @@ class AddressViewModel(
 
             override fun onError(message: String) {
                 progressVisibility.value = false
-                errorMessage.value = message
+                errorMessage.value = Event(message)
             }
         })
     }
@@ -105,7 +105,7 @@ class AddressViewModel(
 
                 when {
                     addressCollection.addressList.isEmpty() ->
-                        errorMessage.value = resourceProvider.get(R.string.toast_no_results)
+                        errorMessage.value = Event(resourceProvider.get(R.string.toast_no_results))
 
                     else ->
                         addressFoundEvent.value = Event(addressCollection.addressList.first())
@@ -114,7 +114,7 @@ class AddressViewModel(
 
             override fun onError(message: String) {
                 progressVisibility.value = false
-                errorMessage.value = message
+                errorMessage.value = Event(message)
             }
         })
     }

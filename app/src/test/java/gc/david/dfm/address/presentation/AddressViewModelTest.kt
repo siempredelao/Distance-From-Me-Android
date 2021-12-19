@@ -110,7 +110,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(locationName)
 
-        assertEquals(message, viewModel.errorMessage.value)
+        assertEquals(message, viewModel.errorMessage.value!!.peekContent())
     }
 
     @Test
@@ -162,7 +162,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(locationName)
 
-        assertEquals(errorMessage, viewModel.errorMessage.value)
+        assertEquals(errorMessage, viewModel.errorMessage.value!!.peekContent())
     }
 
     @Test
@@ -228,7 +228,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(coordinates)
 
-        assertEquals(message, viewModel.errorMessage.value)
+        assertEquals(message, viewModel.errorMessage.value!!.peekContent())
     }
 
     @Test
@@ -266,7 +266,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(coordinates)
 
-        assertEquals(errorMessage, viewModel.errorMessage.value)
+        assertEquals(errorMessage, viewModel.errorMessage.value!!.peekContent())
     }
 
     private fun executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName: String,

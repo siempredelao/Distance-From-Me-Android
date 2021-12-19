@@ -38,7 +38,7 @@ class ShowInfoViewModel(
     val destinationAddress = MutableLiveData<String>()
     val distanceMessage = MutableLiveData<String>()
     val progressVisibility = MutableLiveData<Boolean>()
-    val errorMessage = MutableLiveData<String>() // TODO transform this to Event
+    val errorMessage = MutableLiveData<Event<String>>()
     val showShareDialogEvent = MutableLiveData<Event<ShareDialogData>>()
     val saveDistanceEvent = MutableLiveData<Event<SaveDistanceData>>()
 
@@ -48,7 +48,7 @@ class ShowInfoViewModel(
         this.inputParams = InputParams(positionsList, distance)
 
         if (!connectionManager.isOnline()) {
-            errorMessage.value = resourceProvider.get(R.string.toast_network_problems)
+            errorMessage.value = Event(resourceProvider.get(R.string.toast_network_problems))
             return
         }
 
