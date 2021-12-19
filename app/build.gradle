@@ -110,6 +110,7 @@ dependencies {
 	implementation Dependencies.lifecycleRuntime
 	implementation Dependencies.activityKtx
 	implementation Dependencies.lottie
+	implementation Dependencies.playCore
 
     testImplementation TestDependencies.junit
 	testImplementation TestDependencies.mockito
