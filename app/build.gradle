@@ -109,6 +109,7 @@ dependencies {
 	implementation Dependencies.lifecycleViewModel
 	implementation Dependencies.lifecycleRuntime
 	implementation Dependencies.activityKtx
+	implementation Dependencies.lottie
 
     testImplementation TestDependencies.junit
 	testImplementation TestDependencies.mockito
