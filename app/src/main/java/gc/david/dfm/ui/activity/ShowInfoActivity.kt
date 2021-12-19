@@ -64,8 +64,8 @@ class ShowInfoActivity : AppCompatActivity() {
             distanceMessage.observe(this@ShowInfoActivity, { distance ->
                 binding.textViewDistance.text = distance
             })
-            errorMessage.observe(this@ShowInfoActivity, { message ->
-                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+            errorMessage.observe(this@ShowInfoActivity, { event ->
+                event.getContentIfNotHandled()?.let { Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show() }
             })
             progressVisibility.observe(this@ShowInfoActivity, { visible ->
                 if (visible) showProgress() else hideProgress()
