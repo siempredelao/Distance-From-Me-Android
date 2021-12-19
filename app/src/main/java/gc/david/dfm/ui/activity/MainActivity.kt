@@ -18,7 +18,6 @@ package gc.david.dfm.ui.activity
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.app.AlertDialog
 import android.app.SearchManager
 import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -54,6 +53,7 @@ import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.distance.domain.GetPositionListInteractor
 import gc.david.dfm.distance.domain.LoadDistancesInteractor
 import gc.david.dfm.elevation.presentation.ElevationViewModel
+import gc.david.dfm.inappreview.InAppReviewHandler
 import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.animation.AnimatorUtil
@@ -74,10 +74,10 @@ class MainActivity :
         GoogleMap.OnMapClickListener,
         GoogleMap.OnInfoWindowClickListener {
 
-    val appContext: Context by inject()
-    val connectionManager: ConnectionManager by inject()
-    val loadDistancesUseCase: LoadDistancesInteractor by inject()
-    val getPositionListUseCase: GetPositionListInteractor by inject()
+    private val appContext: Context by inject()
+    private val connectionManager: ConnectionManager by inject()
+    private val loadDistancesUseCase: LoadDistancesInteractor by inject()
+    private val getPositionListUseCase: GetPositionListInteractor by inject()
 
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
@@ -574,31 +574,7 @@ class MainActivity :
     private fun showRateDialog() {
         Timber.tag(TAG).d("showRateDialog")
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.dialog_rate_app_title)
-                .setMessage(R.string.dialog_rate_app_message)
-                .setPositiveButton(getString(R.string.dialog_rate_app_positive_button)
-                ) { dialog, _ ->
-                    dialog.dismiss()
-                    openPlayStoreAppPage()
-                }
-//                .setNegativeButton(getString(R.string.dialog_rate_app_negative_button)
-//                ) { dialog, _ ->
-//                    dialog.dismiss()
-//                    openFeedbackActivity()
-//                }
-                .create()
-                .show()
-    }
-
-    private fun openPlayStoreAppPage() {
-        Timber.tag(TAG).d("openPlayStoreAppPage")
-
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")))
-        } catch (e: ActivityNotFoundException) {
-            Timber.tag(TAG).e(Exception("Unable to open Play Store, rooted device?"))
-        }
+        InAppReviewHandler.rateApp(this)
     }
 
     /**
