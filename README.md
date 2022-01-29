@@ -14,9 +14,7 @@ Code is organised by features (still in progress, not 100%), following MVVM + Cl
 * Calculates distances from current position or from any position.
 * Allows to show elevation profile.
 * Loads and saves distances.
-* Captures positions from other apps and calculates its distance from current position.
 * Shares distances with friends.
-* Easy access to the dev team by email.
 * Shortcut to Play Store to rate app.
 * Some FAQ.
 * Languages: English, Spanish, French, German, Italian, Portuguese and Catalan.
@@ -40,7 +38,7 @@ Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md
 
 ## License
 ```
-   Copyright (c) 2021 David Aguiar Gonzalez
+   Copyright (c) 2022 David Aguiar Gonzalez
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
