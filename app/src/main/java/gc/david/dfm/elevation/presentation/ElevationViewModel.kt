@@ -20,10 +20,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
+import gc.david.dfm.DFMPreferences
 import gc.david.dfm.Event
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.ElevationInteractor
+import gc.david.dfm.elevation.presentation.model.ElevationModel
+import gc.david.dfm.map.Haversine
 import timber.log.Timber
+import java.util.*
 
 class ElevationViewModel(
         private val elevationUseCase: ElevationInteractor,
@@ -31,8 +35,14 @@ class ElevationViewModel(
         private val preferencesProvider: PreferencesProvider
 ) : ViewModel() {
 
-    val elevationSamples = MutableLiveData<List<Double>>()
+    val elevationSamples = MutableLiveData<ElevationModel>()
     val hideChartEvent = MutableLiveData<Event<Unit>>()
+
+    private val locale: Locale
+        get() {
+            val defaultUnit = preferencesProvider.getMeasureUnitPreference()
+            return if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
+        }
 
     fun onCoordinatesSelected(coordinates: List<LatLng>) {
         if (!preferencesProvider.shouldShowElevationChart() || !connectionManager.isOnline()) {
@@ -42,7 +52,10 @@ class ElevationViewModel(
 
         elevationUseCase.execute(coordinates, ELEVATION_SAMPLES, object : ElevationInteractor.Callback {
             override fun onElevationLoaded(elevation: gc.david.dfm.elevation.domain.model.Elevation) {
-                elevationSamples.value = elevation.results
+                val normalizedElevationList =
+                    elevation.results.map { Haversine.normalizeAltitudeByLocale(it, locale) }
+                val altitudeUnit = Haversine.getAltitudeUnitByLocale(locale)
+                elevationSamples.value = ElevationModel(normalizedElevationList, altitudeUnit)
             }
 
             override fun onError(message: String) {

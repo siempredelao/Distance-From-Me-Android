@@ -50,10 +50,10 @@ import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
+import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.inappreview.InAppReviewHandler
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
-import gc.david.dfm.map.Haversine
 import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
@@ -98,12 +98,6 @@ class MainActivity :
                 && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
 
     private fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
-
-    private val americanOrEuropeanLocale: Locale
-        get() {
-            val defaultUnit = DFMPreferences.getMeasureUnitPreference(baseContext)
-            return if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
-        }
 
     private val onNavigationItemSelectedListener: NavigationView.OnNavigationItemSelectedListener
         get() = NavigationView.OnNavigationItemSelectedListener { menuItem ->
@@ -184,8 +178,8 @@ class MainActivity :
 
     private fun observeElevationViewModel() {
         with(elevationViewModel) {
-            elevationSamples.observe(this@MainActivity, { elevationSamples ->
-                buildChart(elevationSamples)
+            elevationSamples.observe(this@MainActivity, { elevationModel ->
+                buildChart(elevationModel)
             })
             hideChartEvent.observe(this@MainActivity, { event ->
                 event.getContentIfNotHandled()?.let { hideChart() }
@@ -531,12 +525,9 @@ class MainActivity :
         fixMapPadding()
     }
 
-    private fun buildChart(elevationList: List<Double>) {
-        val locale = americanOrEuropeanLocale
-
-        val normalizedElevation = elevationList.map { Haversine.normalizeAltitudeByLocale(it, locale) }
-        binding.elevationChartView.setElevationProfile(normalizedElevation)
-        binding.elevationChartView.setTitle(Haversine.getAltitudeUnitByLocale(locale))
+    private fun buildChart(elevationModel: ElevationModel) {
+        binding.elevationChartView.setElevationProfile(elevationModel.elevationList)
+        binding.elevationChartView.setTitle(elevationModel.altitudeUnit)
 
         if (!isMinimiseButtonShown()) {
             showChart()
