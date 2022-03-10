@@ -21,7 +21,7 @@ import gc.david.dfm.faq.domain.FaqRepository
 
 class BaseFaqRepository(private val diskDataSource: FaqDiskDataSource) : FaqRepository {
 
-    override fun getFaqs(): Set<Faq> {
+    override suspend fun getFaqs(): Set<Faq> {
         return diskDataSource.getFaqs()
     }
 }

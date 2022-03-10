@@ -18,11 +18,16 @@ package gc.david.dfm.faq.domain
 
 import gc.david.dfm.faq.data.model.Faq
 
-/**
- * Created by david on 19.12.16.
- */
-interface FaqRepository {
+class GetFaqsUseCase(
+    private val repository: FaqRepository
+) {
 
-    suspend fun getFaqs(): Set<Faq>
-
+    suspend operator fun invoke(): Result<Set<Faq>> {
+        return try {
+            val faqs = repository.getFaqs()
+            Result.success(faqs)
+        } catch (exception: Throwable) {
+            Result.failure(exception)
+        }
+    }
 }

@@ -42,7 +42,7 @@ import gc.david.dfm.executor.NewThreadExecutor
 import gc.david.dfm.faq.data.BaseFaqRepository
 import gc.david.dfm.faq.data.FaqDiskDataSource
 import gc.david.dfm.faq.domain.FaqRepository
-import gc.david.dfm.faq.domain.GetFaqsInteractor
+import gc.david.dfm.faq.domain.GetFaqsUseCase
 import gc.david.dfm.faq.presentation.FaqViewModel
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
@@ -94,11 +94,11 @@ val useCaseModule = module {
     factory { ElevationInteractor(get(), get(), get(), get()) }
     factory { GetAddressCoordinatesByNameInteractor(get(), get(), get(), get()) }
     factory { GetAddressNameByCoordinatesInteractor(get(), get(), get(), get()) }
-    factory { GetFaqsInteractor(get(), get(), get()) }
     factory { GetPositionListInteractor(get(), get(), get()) }
     factory { InsertDistanceInteractor(get(), get(), get()) }
     factory { LoadDistancesInteractor(get(), get(), get()) }
     factory { GetOpenSourceLibrariesUseCase(get()) }
+    factory { GetFaqsUseCase(get()) }
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }
