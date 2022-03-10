@@ -24,6 +24,7 @@ import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 /**
  * Created by david on 05.02.17.
  */
+// TODO transform to mapper on the presentation layer
 object LicensePrinter {
 
     private const val APACHE_2_0_LICENSE_CODE = "Apache-2.0"

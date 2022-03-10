@@ -36,19 +36,18 @@ class OpenSourceLibraryMapperTest {
         val libraryLicense = "fake license"
         val libraryYear = "fake year"
         val libraryDescription = "fake description"
-        val openSourceLibraryEntity = OpenSourceLibraryEntity(libraryName,
-                libraryAuthor,
-                libraryVersion,
-                libraryLink,
-                libraryLicense,
-                libraryYear,
-                libraryDescription)
-        val openSourceLibraryEntityList = mutableListOf(openSourceLibraryEntity)
+        val openSourceLibraryEntity = OpenSourceLibraryEntity(
+            libraryName,
+            libraryAuthor,
+            libraryVersion,
+            libraryLink,
+            libraryLicense,
+            libraryYear,
+            libraryDescription
+        )
 
-        val openSourceLibraryModelList = mapper.transform(openSourceLibraryEntityList)
+        val openSourceLibraryModel = mapper.transform(openSourceLibraryEntity)
 
-        assertEquals(1, openSourceLibraryModelList.size)
-        val openSourceLibraryModel = openSourceLibraryModelList[0]
         assertEquals(libraryName, openSourceLibraryModel.name)
         assertEquals(libraryAuthor, openSourceLibraryModel.author)
         assertEquals(libraryVersion, openSourceLibraryModel.version)
