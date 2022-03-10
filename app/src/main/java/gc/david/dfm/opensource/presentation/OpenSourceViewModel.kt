@@ -21,13 +21,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.opensource.domain.OpenSourceUseCase
+import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
-    private val openSourceUseCase: OpenSourceUseCase,
+    private val getOpenSourceLibrariesUseCase: GetOpenSourceLibrariesUseCase,
     private val openSourceLibraryMapper: OpenSourceLibraryMapper,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class OpenSourceViewModel(
         progressVisibility.value = true
 
         viewModelScope.launch {
-            val result = openSourceUseCase()
+            val result = getOpenSourceLibrariesUseCase()
             if (result.isSuccess) {
                 progressVisibility.postValue(false)
                 openSourceList.postValue(result.getOrThrow().map(openSourceLibraryMapper::transform))
