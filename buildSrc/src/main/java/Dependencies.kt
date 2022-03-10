@@ -34,6 +34,8 @@ object LibraryVersions {
     const val collectionKtx = "1.2.0"
     const val constraintLayout = "2.1.2"
     const val coreKtx = "1.7.0"
+    const val coroutines = "1.3.9"
+    const val coroutinesTest = "1.6.0"
     const val crashlytics = "18.2.5"
     const val crashlyticsPlugin = "2.7.1"
     const val googleServices = "4.3.10"
@@ -65,6 +67,7 @@ object Dependencies {
     const val collectionKtx = "androidx.collection:collection-ktx:${LibraryVersions.collectionKtx}"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:${LibraryVersions.constraintLayout}"
     const val coreKtx = "androidx.core:core-ktx:${LibraryVersions.coreKtx}"
+    const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${LibraryVersions.coroutines}"
     const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx:${LibraryVersions.crashlytics}"
     const val crashlyticsPlugin = "com.google.firebase:firebase-crashlytics-gradle:${LibraryVersions.crashlyticsPlugin}"
     const val googleServicesPlugin = "com.google.gms:google-services:${LibraryVersions.googleServices}"
@@ -93,6 +96,7 @@ object Dependencies {
 object TestDependencies {
 
     const val archCompTesting = "androidx.arch.core:core-testing:${LibraryVersions.archCompTesting}"
+    const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${LibraryVersions.coroutinesTest}"
     const val junit = "junit:junit:${LibraryVersions.junit}"
     const val mockito = "org.mockito:mockito-core:${LibraryVersions.mockito}"
     const val mockitoInline = "org.mockito:mockito-inline:${LibraryVersions.mockito}"
