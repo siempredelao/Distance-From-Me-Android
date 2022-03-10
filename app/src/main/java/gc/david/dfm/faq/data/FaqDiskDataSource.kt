@@ -17,6 +17,7 @@
 package gc.david.dfm.faq.data
 
 import gc.david.dfm.faq.data.model.Faq
+import kotlinx.coroutines.delay
 
 /**
  * Created by david on 19.12.16.
@@ -41,16 +42,10 @@ class FaqDiskDataSource {
             Faq("Why my GPS position is not accurate?",
                     "This issue could be related to your device GPS sensor."))
 
-    fun getFaqs(): Set<Faq> {
+    suspend fun getFaqs(): Set<Faq> {
         waitToMakeThisFeatureMoreInteresting()
         return questionsAndAnswers
     }
 
-    private fun waitToMakeThisFeatureMoreInteresting() {
-        try {
-            Thread.sleep(500)
-        } catch (e: InterruptedException) {
-            // nothing
-        }
-    }
+    private suspend fun waitToMakeThisFeatureMoreInteresting() = delay(1500L)
 }

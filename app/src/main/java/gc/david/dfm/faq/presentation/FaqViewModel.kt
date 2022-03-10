@@ -18,14 +18,16 @@ package gc.david.dfm.faq.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
 import gc.david.dfm.faq.data.model.Faq
-import gc.david.dfm.faq.domain.GetFaqsInteractor
+import gc.david.dfm.faq.domain.GetFaqsUseCase
+import kotlinx.coroutines.launch
 
 class FaqViewModel(
-        private val getFaqsUseCase: GetFaqsInteractor,
-        private val resourceProvider: ResourceProvider
+    private val getFaqsUseCase: GetFaqsUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     val progressVisibility = MutableLiveData<Boolean>()
@@ -35,16 +37,15 @@ class FaqViewModel(
     fun onStart() {
         progressVisibility.value = true
 
-        getFaqsUseCase.execute(object : GetFaqsInteractor.Callback {
-            override fun onFaqsLoaded(faqs: Set<Faq>) {
-                progressVisibility.value = false
-                faqList.value = faqs
-            }
+        viewModelScope.launch {
+            val result = getFaqsUseCase()
+            progressVisibility.postValue(false)
 
-            override fun onError() {
-                progressVisibility.value = false
-                errorMessage.value = resourceProvider.get(R.string.faq_error_message)
+            if (result.isSuccess) {
+                faqList.postValue(result.getOrThrow())
+            } else {
+                errorMessage.postValue(resourceProvider.get(R.string.faq_error_message))
             }
-        })
+        }
     }
 }
