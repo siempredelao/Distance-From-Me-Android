@@ -111,11 +111,13 @@ dependencies {
 	implementation Dependencies.activityKtx
 	implementation Dependencies.lottie
 	implementation Dependencies.playCore
+	implementation Dependencies.coroutines
 
     testImplementation TestDependencies.junit
 	testImplementation TestDependencies.mockito
     testImplementation TestDependencies.mockitoInline
     testImplementation TestDependencies.mockitoKotlin
 	testImplementation TestDependencies.archCompTesting
+	testImplementation TestDependencies.coroutinesTest
 }
 
