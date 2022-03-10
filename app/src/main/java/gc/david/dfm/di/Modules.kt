@@ -51,8 +51,8 @@ import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.opensource.data.BaseOpenSourceRepository
 import gc.david.dfm.opensource.data.OpenSourceDiskDataSource
+import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.OpenSourceRepository
-import gc.david.dfm.opensource.domain.OpenSourceUseCase
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.settings.presentation.SettingsViewModel
@@ -98,7 +98,7 @@ val useCaseModule = module {
     factory { GetPositionListInteractor(get(), get(), get()) }
     factory { InsertDistanceInteractor(get(), get(), get()) }
     factory { LoadDistancesInteractor(get(), get(), get()) }
-    factory { OpenSourceUseCase(get()) }
+    factory { GetOpenSourceLibrariesUseCase(get()) }
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }

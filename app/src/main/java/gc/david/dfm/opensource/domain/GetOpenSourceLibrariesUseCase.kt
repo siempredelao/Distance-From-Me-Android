@@ -21,7 +21,7 @@ import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 /**
  * Created by david on 25.01.17.
  */
-class OpenSourceUseCase(private val repository: OpenSourceRepository) {
+class GetOpenSourceLibrariesUseCase(private val repository: OpenSourceRepository) {
 
     suspend operator fun invoke(): Result<List<OpenSourceLibraryEntity>> {
         return try {

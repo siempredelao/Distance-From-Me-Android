@@ -28,11 +28,11 @@ import org.mockito.kotlin.whenever
  * Created by david on 26.01.17.
  */
 @ExperimentalCoroutinesApi
-class OpenSourceUseCaseTest {
+class GetOpenSourceLibrariesUseCaseTest {
 
     private val repository = mock<OpenSourceRepository>()
 
-    private val useCase = OpenSourceUseCase(repository)
+    private val useCase = GetOpenSourceLibrariesUseCase(repository)
 
     @Test
     fun `returns open source library list on success`() = runTest {

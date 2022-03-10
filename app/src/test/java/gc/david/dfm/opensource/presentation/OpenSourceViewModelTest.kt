@@ -21,7 +21,7 @@ import gc.david.dfm.CoroutineDispatcherRule
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
-import gc.david.dfm.opensource.domain.OpenSourceUseCase
+import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +37,7 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class OpenSourceViewModelTest {
 
-    private val useCase = mock<OpenSourceUseCase>()
+    private val useCase = mock<GetOpenSourceLibrariesUseCase>()
     private val mapper = mock<OpenSourceLibraryMapper>()
     private val resourceProvider = mock<ResourceProvider>()
 
