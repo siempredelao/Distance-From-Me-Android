@@ -22,15 +22,22 @@ import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 /**
  * Created by david on 25.01.17.
  *
- *
  * Mapper class used to transform [OpenSourceLibraryEntity] in the Domain layer
  * to [OpenSourceLibraryModel] in the Presentation layer.
  */
 class OpenSourceLibraryMapper {
 
-    fun transform(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>): List<OpenSourceLibraryModel> {
-        return openSourceLibraryEntityList.map {
-            OpenSourceLibraryModel(it.name, it.author, it.version, it.link, it.licenseCode, it.licenseYear, it.description)
+    fun transform(entity: OpenSourceLibraryEntity): OpenSourceLibraryModel {
+        return with(entity) {
+            OpenSourceLibraryModel(
+                name,
+                author,
+                version,
+                link,
+                licenseCode,
+                licenseYear,
+                description
+            )
         }
     }
 }

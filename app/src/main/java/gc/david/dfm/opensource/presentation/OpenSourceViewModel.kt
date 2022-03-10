@@ -18,17 +18,18 @@ package gc.david.dfm.opensource.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
-import gc.david.dfm.opensource.domain.OpenSourceInteractor
+import gc.david.dfm.opensource.domain.OpenSourceUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
-        private val openSourceUseCase: OpenSourceInteractor,
-        private val openSourceLibraryMapper: OpenSourceLibraryMapper,
-        private val resourceProvider: ResourceProvider
+    private val openSourceUseCase: OpenSourceUseCase,
+    private val openSourceLibraryMapper: OpenSourceLibraryMapper,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     val progressVisibility = MutableLiveData<Boolean>()
@@ -38,16 +39,15 @@ class OpenSourceViewModel(
     fun onStart() {
         progressVisibility.value = true
 
-        openSourceUseCase.execute(object : OpenSourceInteractor.Callback {
-            override fun onOpenSourceLibrariesLoaded(openSourceLibraryEntityList: List<OpenSourceLibraryEntity>) {
-                progressVisibility.value = false
-                openSourceList.value = openSourceLibraryMapper.transform(openSourceLibraryEntityList)
+        viewModelScope.launch {
+            val result = openSourceUseCase()
+            if (result.isSuccess) {
+                progressVisibility.postValue(false)
+                openSourceList.postValue(result.getOrThrow().map(openSourceLibraryMapper::transform))
+            } else {
+                progressVisibility.postValue(false)
+                errorMessage.postValue(resourceProvider.get(R.string.opensourcelibrary_error_message))
             }
-
-            override fun onError(message: String) {
-                progressVisibility.value = false
-                errorMessage.value = resourceProvider.get(R.string.opensourcelibrary_error_message)
-            }
-        })
+        }
     }
 }

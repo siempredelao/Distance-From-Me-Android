@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.ElevationInteractor
+import gc.david.dfm.elevation.presentation.model.ElevationModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -91,6 +92,7 @@ class ElevationViewModelTest {
 
         viewModel.onCoordinatesSelected(coordinateList)
 
-        assertEquals(elevation.results, viewModel.elevationSamples.value)
+        val expectedElevationModel = ElevationModel(elevation.results, "m")
+        assertEquals(expectedElevationModel, viewModel.elevationSamples.value)
     }
 }
