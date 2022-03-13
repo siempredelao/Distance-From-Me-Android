@@ -21,11 +21,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import gc.david.dfm.R
 import gc.david.dfm.address.data.model.AddressCollectionEntity
-import gc.david.dfm.address.domain.AddressRepository
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.*
 import timber.log.Timber
 import java.io.IOException
+import kotlin.coroutines.resumeWithException
 
 /**
  * Created by david on 12.01.17.
@@ -36,26 +36,21 @@ class AddressRemoteDataSource(context: Context) {
     private val gson = Gson()
     private val geocodeApiKey = context.resources.getString(R.string.maps_geocode_api_key)
 
-    fun getNameByCoordinates(coordinates: LatLng, callback: AddressRepository.Callback) {
-        executeRequest(getNameByCoordinatesUrl(coordinates), callback)
+    suspend fun getNameByCoordinates(coordinates: LatLng): AddressCollectionEntity {
+        return executeRequest(getNameByCoordinatesUrl(coordinates))
     }
 
-    fun getCoordinatesByName(name: String, callback: AddressRepository.Callback) {
-        executeRequest(getCoordinatesByNameUrl(name), callback)
+    suspend fun getCoordinatesByName(name: String): AddressCollectionEntity {
+        return executeRequest(getCoordinatesByNameUrl(name))
     }
 
-    private fun executeRequest(url: String, callback: AddressRepository.Callback) {
+    private suspend fun executeRequest(url: String): AddressCollectionEntity {
         val request = Request.Builder().url(url).header("content-type", "application/json").build()
 
-        try {
-            val response = client.newCall(request).execute()
-            val addressCollectionEntity =
-                    gson.fromJson(response.body!!.charStream(), AddressCollectionEntity::class.java)
-            callback.onSuccess(addressCollectionEntity)
-        } catch (exception: IOException) {
-            callback.onError(exception.message ?: "AddressRemoteDataSource error")
-        }
-
+        val response = client.newCall(request).await()
+        val addressCollectionEntity =
+                gson.fromJson(response.body!!.charStream(), AddressCollectionEntity::class.java)
+        return addressCollectionEntity
     }
 
     private fun getNameByCoordinatesUrl(coordinates: LatLng): String {
@@ -73,6 +68,22 @@ class AddressRemoteDataSource(context: Context) {
 
     private fun getUrl(parameter: String): String {
         return "https://maps.googleapis.com/maps/api/geocode/json?$parameter&key=$geocodeApiKey"
+    }
+
+    // OkHttp does not provide any coroutines functionality, so we have to build our own one
+    private suspend fun Call.await(): Response {
+        return suspendCancellableCoroutine { continuation ->
+            enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    @Suppress("EXPERIMENTAL_API_USAGE")
+                    continuation.resume(response, {})
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+                    continuation.resumeWithException(e)
+                }
+            })
+        }
     }
 
     companion object {

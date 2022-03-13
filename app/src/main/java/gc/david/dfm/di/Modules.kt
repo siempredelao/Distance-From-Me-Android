@@ -22,8 +22,8 @@ import gc.david.dfm.address.data.AddressRemoteDataSource
 import gc.david.dfm.address.data.BaseAddressRepository
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.domain.AddressRepository
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.distance.data.BaseDistanceRepository
@@ -81,7 +81,7 @@ val viewModelModule = module {
     viewModel { FaqViewModel(get(), get()) }
     viewModel { OpenSourceViewModel(get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
+    viewModel { ShowInfoViewModel(get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
     viewModel { ElevationViewModel(get(), get(), get()) }
     viewModel { AddressViewModel(get(), get(), get(), get()) }
@@ -92,13 +92,13 @@ val useCaseModule = module {
     // Use cases
     factory { ClearDistancesInteractor(get(), get(), get()) }
     factory { ElevationInteractor(get(), get(), get(), get()) }
-    factory { GetAddressCoordinatesByNameInteractor(get(), get(), get(), get()) }
-    factory { GetAddressNameByCoordinatesInteractor(get(), get(), get(), get()) }
     factory { GetPositionListInteractor(get(), get(), get()) }
     factory { InsertDistanceInteractor(get(), get(), get()) }
     factory { LoadDistancesInteractor(get(), get(), get()) }
     factory { GetOpenSourceLibrariesUseCase(get()) }
     factory { GetFaqsUseCase(get()) }
+    factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
+    factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }

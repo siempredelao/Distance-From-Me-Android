@@ -19,34 +19,33 @@ package gc.david.dfm.address.presentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
+import gc.david.dfm.CoroutineDispatcherRule
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.Mockito.doAnswer
+import org.junit.rules.TestRule
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 15.01.17.
  */
+@ExperimentalCoroutinesApi
 class AddressViewModelTest {
 
-    private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameInteractor>()
-    private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesInteractor>()
+    private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameUseCase>()
+    private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
-
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
 
     private val viewModel =
         AddressViewModel(
@@ -56,111 +55,101 @@ class AddressViewModelTest {
             resourceProvider
         )
 
+    @get:Rule val instantTaskRule: TestRule = InstantTaskExecutorRule()
+    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
+
     @Test
     fun `shows connection problems dialog when no connection available in position by name`() {
         whenever(connectionManager.isOnline()).thenReturn(false)
-        val locationName = LOCATION_NAME
         whenever(resourceProvider.get(any())).thenReturn("random string")
 
-        viewModel.onAddressSearch(locationName)
+        viewModel.onAddressSearch(LOCATION_NAME)
 
         assertTrue(viewModel.connectionIssueEvent.value != null)
     }
 
     @Test
-    fun `shows progress dialog when connection available in position by name`() {
+    fun `executes coordinates by name use case when connection available`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
 
         viewModel.onAddressSearch(locationName)
 
-        assertEquals(true, viewModel.progressVisibility.value)
+        verify(getAddressCoordinatesByNameUseCase)(locationName)
     }
 
     @Test
-    fun `executes coordinates by name use case when connection available`() {
+    fun `hides progress dialog when position by name use case succeeds`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
-
-        viewModel.onAddressSearch(locationName)
-
-        verify(getAddressCoordinatesByNameUseCase).execute(any(), anyInt(), any())
-    }
-
-    @Test
-    fun `hides progress dialog when position by name use case succeeds`() {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
         val addressCollection = EMPTY_ADDRESS_COLLECTION
-        executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
+        getAddressCoordinatesByNameSuccess(addressCollection)
 
-        viewModel.onAddressSearch(locationName)
+        viewModel.onAddressSearch(LOCATION_NAME)
 
         assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
-    fun `shows no matches when position by name use case return zero results`() {
+    fun `shows no matches when position by name use case return zero results`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
         val addressCollection = EMPTY_ADDRESS_COLLECTION
-        executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
+        getAddressCoordinatesByNameSuccess(addressCollection)
         val message = "no matches"
         whenever(resourceProvider.get(any())).thenReturn(message)
 
-        viewModel.onAddressSearch(locationName)
+        viewModel.onAddressSearch(LOCATION_NAME)
 
         assertEquals(message, viewModel.errorMessage.value!!.peekContent())
     }
 
     @Test
-    fun `shows position by name when use case return one result`() {
+    fun `shows position by name when use case return one result`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
         val address = ADDRESS
         val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
-        executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
+        getAddressCoordinatesByNameSuccess(addressCollection)
 
-        viewModel.onAddressSearch(locationName)
+        viewModel.onAddressSearch(LOCATION_NAME)
 
         assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
     }
 
     @Test
-    fun `shows address selection dialog when position by name use case return several results`() {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
-        val address = ADDRESS
-        val addressList = mutableListOf(address, address)
-        val addressCollection = AddressCollection(addressList)
-        executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName, addressCollection)
+    fun `shows address selection dialog when position by name use case return several results`() =
+        runTest {
+            whenever(connectionManager.isOnline()).thenReturn(true)
+            val address = ADDRESS
+            val addressList = mutableListOf(address, address)
+            val addressCollection = AddressCollection(addressList)
+            getAddressCoordinatesByNameSuccess(addressCollection)
 
-        viewModel.onAddressSearch(locationName)
+            viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(addressCollection.addressList, viewModel.multipleAddressesFoundEvent.value!!.peekContent())
-    }
+            assertEquals(
+                addressCollection.addressList,
+                viewModel.multipleAddressesFoundEvent.value!!.peekContent()
+            )
+        }
 
     @Test
-    fun `hides progress dialog when position by name use case fails`() {
+    fun `hides progress dialog when position by name use case fails`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
         val errorMessage = ERROR_MESSAGE
-        executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
+        getAddressCoordinatesByNameFailure(errorMessage)
 
-        viewModel.onAddressSearch(locationName)
+        viewModel.onAddressSearch(LOCATION_NAME)
 
         assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
-    fun `shows error when position by name use case fails`() {
+    fun `shows error when position by name use case fails`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val locationName = LOCATION_NAME
         val errorMessage = ERROR_MESSAGE
-        executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName, errorMessage)
+        getAddressCoordinatesByNameFailure(errorMessage)
 
-        viewModel.onAddressSearch(locationName)
+        viewModel.onAddressSearch(LOCATION_NAME)
 
         assertEquals(errorMessage, viewModel.errorMessage.value!!.peekContent())
     }
@@ -177,124 +166,99 @@ class AddressViewModelTest {
     @Test
     fun `shows connection problems dialog when no connection available in position by coordinates`() {
         whenever(connectionManager.isOnline()).thenReturn(false)
-        val coordinates = COORDINATES
         whenever(resourceProvider.get(any())).thenReturn("random string")
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
         assertTrue(viewModel.connectionIssueEvent.value != null)
     }
 
     @Test
-    fun `shows progress dialog when connection available in position by coordinates`() {
+    fun `executes name by coordinates use case when connection available`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(true, viewModel.progressVisibility.value)
+        verify(getAddressNameByCoordinatesUseCase)(any())
     }
 
     @Test
-    fun `executes name by coordinates use case when connection available`() {
+    fun `hides progress dialog when use case succeeds in position by coordinates`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
-
-        viewModel.onAddressSearch(coordinates)
-
-        verify(getAddressNameByCoordinatesUseCase).execute(any(), anyInt(), any())
-    }
-
-    @Test
-    fun `hides progress dialog when use case succeeds in position by coordinates`() {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
         val addressCollection = EMPTY_ADDRESS_COLLECTION
-        executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
+        getAddressNameByCoordinatesSuccess(addressCollection)
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
         assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
-    fun `shows no matches when position by coordinates use case return zero results`() {
+    fun `shows no matches when position by coordinates use case return zero results`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
         val addressCollection = EMPTY_ADDRESS_COLLECTION
-        executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
+        getAddressNameByCoordinatesSuccess(addressCollection)
         val message = "no matches"
         whenever(resourceProvider.get(any())).thenReturn(message)
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
         assertEquals(message, viewModel.errorMessage.value!!.peekContent())
     }
 
     @Test
-    fun `shows position by coordinates when use case return one result`() {
+    fun `shows position by coordinates when use case return one result`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
         val address = ADDRESS
         val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
-        executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates, addressCollection)
+        getAddressNameByCoordinatesSuccess(addressCollection)
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
         assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
     }
 
     @Test
-    fun `hides progress dialog when position by coordinates use case fails`() {
+    fun `hides progress dialog when position by coordinates use case fails`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
         val errorMessage = ERROR_MESSAGE
-        executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
+        getAddressNameByCoordinatesFailure(errorMessage)
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
         assertEquals(false, viewModel.progressVisibility.value)
     }
 
     @Test
-    fun `shows error when position by coordinates use case fails`() {
+    fun `shows error when position by coordinates use case fails`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val coordinates = COORDINATES
         val errorMessage = ERROR_MESSAGE
-        executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates, errorMessage)
+        getAddressNameByCoordinatesFailure(errorMessage)
 
-        viewModel.onAddressSearch(coordinates)
+        viewModel.onAddressSearch(COORDINATES)
 
         assertEquals(errorMessage, viewModel.errorMessage.value!!.peekContent())
     }
 
-    private fun executeOnAddressLoadedAfterCoordinatesByNameUseCaseCallback(locationName: String,
-                                                                            addressCollection: AddressCollection) {
-        doAnswer {
-                (it.arguments[2] as GetAddressCoordinatesByNameInteractor.Callback).onAddressLoaded(addressCollection)
-        }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
+    private suspend fun getAddressCoordinatesByNameSuccess(addressCollection: AddressCollection) {
+        whenever(getAddressCoordinatesByNameUseCase(any()))
+            .thenReturn(Result.success(addressCollection))
     }
 
-    private fun executeOnErrorAfterCoordinatesByNameUseCaseCallback(locationName: String,
-                                                                    errorMessage: String) {
-        doAnswer {
-                (it.arguments[2] as GetAddressCoordinatesByNameInteractor.Callback).onError(errorMessage)
-        }.whenever(getAddressCoordinatesByNameUseCase).execute(eq(locationName), anyInt(), any())
+    private suspend fun getAddressCoordinatesByNameFailure(errorMessage: String) {
+        whenever(getAddressCoordinatesByNameUseCase(any()))
+            .thenReturn(Result.failure(Exception(errorMessage)))
     }
 
-    private fun executeOnAddressLoadedAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
-                                                                            addressCollection: AddressCollection) {
-        doAnswer {
-                (it.arguments[2] as GetAddressNameByCoordinatesInteractor.Callback).onAddressLoaded(addressCollection)
-        }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
+    private suspend fun getAddressNameByCoordinatesSuccess(addressCollection: AddressCollection) {
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(addressCollection))
     }
 
-    private fun executeOnErrorAfterNameByCoordinatesUseCaseCallback(coordinates: LatLng,
-                                                                    errorMessage: String) {
-        doAnswer {
-                (it.arguments[2] as GetAddressNameByCoordinatesInteractor.Callback).onError(errorMessage)
-        }.whenever(getAddressNameByCoordinatesUseCase).execute(eq(coordinates), anyInt(), any())
+    private suspend fun getAddressNameByCoordinatesFailure(errorMessage: String) {
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.failure(Exception(errorMessage)))
     }
 
     companion object {

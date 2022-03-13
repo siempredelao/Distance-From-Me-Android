@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit
  * @author Pedro Vicente Gómez Sánchez
  * @author Fernando Cejas
  */
+@Deprecated("Remove after coroutines migration")
 class NewThreadExecutor {
 
     private val threadPoolExecutor: ThreadPoolExecutor = ThreadPoolExecutor(

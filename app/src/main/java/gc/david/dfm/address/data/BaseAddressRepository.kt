@@ -17,16 +17,17 @@
 package gc.david.dfm.address.data
 
 import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.AddressRepository
 
 class BaseAddressRepository(private val remoteDataSource: AddressRemoteDataSource)
     : AddressRepository {
 
-    override fun getNameByCoordinates(coordinates: LatLng, callback: AddressRepository.Callback) {
-        remoteDataSource.getNameByCoordinates(coordinates, callback)
+    override suspend fun getNameByCoordinates(coordinates: LatLng): AddressCollectionEntity {
+        return remoteDataSource.getNameByCoordinates(coordinates)
     }
 
-    override fun getCoordinatesByName(name: String, callback: AddressRepository.Callback) {
-        remoteDataSource.getCoordinatesByName(name, callback)
+    override suspend fun getCoordinatesByName(name: String): AddressCollectionEntity {
+        return remoteDataSource.getCoordinatesByName(name)
     }
 }

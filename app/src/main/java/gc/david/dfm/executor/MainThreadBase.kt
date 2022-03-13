@@ -24,6 +24,7 @@ import android.os.Looper
  *
  * @author Pedro Vicente Gómez Sánchez
  */
+@Deprecated("Remove after coroutines migration")
 class NewMainThread {
 
     private val handler = Handler(Looper.getMainLooper())
