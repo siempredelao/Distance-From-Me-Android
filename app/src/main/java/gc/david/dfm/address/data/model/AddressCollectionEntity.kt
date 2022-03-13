@@ -19,10 +19,38 @@ package gc.david.dfm.address.data.model
 class AddressCollectionEntity(val results: List<Result> = emptyList(), val status: GeocodingStatus)
 
 enum class GeocodingStatus {
+    /**
+     * No errors occurred; the address was successfully parsed and at least one geocode was returned.
+     */
     OK,
+
+    /**
+     * The geocode was successful but returned no results. This may occur if the geocoder was passed a non-existent address.
+     */
     ZERO_RESULTS,
+
+    /**
+     * The query (address, components or latlng) is missing.
+     */
     INVALID_REQUEST,
+
+    /**
+     * We are over our quota.
+     */
     OVER_QUERY_LIMIT,
+
+    /**
+     * The request was denied. The web page is not allowed to use the geocoder.
+     */
     REQUEST_DENIED,
-    UNKNOWN_ERROR
+
+    /**
+     * The request could not be processed due to a server error. The request may succeed if you try again.
+     */
+    UNKNOWN_ERROR,
+
+    /**
+     * The request timed out or there was a problem contacting the Google servers. The request may succeed if you try again.
+     */
+    ERROR
 }

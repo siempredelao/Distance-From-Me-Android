@@ -17,7 +17,6 @@
 package gc.david.dfm.address.domain
 
 import com.google.android.gms.maps.model.LatLng
-
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 
 /**
@@ -25,16 +24,8 @@ import gc.david.dfm.address.data.model.AddressCollectionEntity
  */
 interface AddressRepository {
 
-    interface Callback {
+    suspend fun getNameByCoordinates(coordinates: LatLng): AddressCollectionEntity
 
-        fun onSuccess(addressCollectionEntity: AddressCollectionEntity)
-
-        fun onError(message: String)
-
-    }
-
-    fun getNameByCoordinates(coordinates: LatLng, callback: Callback)
-
-    fun getCoordinatesByName(name: String, callback: Callback)
+    suspend fun getCoordinatesByName(name: String): AddressCollectionEntity
 
 }

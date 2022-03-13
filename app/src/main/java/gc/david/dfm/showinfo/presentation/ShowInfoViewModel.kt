@@ -18,20 +18,22 @@ package gc.david.dfm.showinfo.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.Event
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ShowInfoViewModel(
-       private val getOriginAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor,
-       private val getDestinationAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor,
-       private val resourceProvider: ResourceProvider,
-       private val connectionManager: ConnectionManager
+    private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
+    private val resourceProvider: ResourceProvider,
+    private val connectionManager: ConnectionManager
 ) : ViewModel() {
 
     val originAddress = MutableLiveData<String>()
@@ -53,33 +55,39 @@ class ShowInfoViewModel(
         }
 
         progressVisibility.value = true
-        getAddressByLatLng(getOriginAddressNameByCoordinatesUseCase, positionsList.first(), true)
-        getAddressByLatLng(getDestinationAddressNameByCoordinatesUseCase, positionsList.last(), false)
+        viewModelScope.launch {
+            val originPosition = positionsList.first()
+            val destinationPosition = positionsList.last()
+            val originAddressDeferred =
+                async { getAddressNameByCoordinatesUseCase(originPosition) }
+            val destinationAddressDeferred =
+                async { getAddressNameByCoordinatesUseCase(destinationPosition) }
+            val (originAddressResult, destinationAddressResult) =
+                originAddressDeferred.await() to destinationAddressDeferred.await()
+            progressVisibility.postValue(false)
+
+            getAddressByLatLng(originAddressResult, positionsList.first(), true)
+            getAddressByLatLng(destinationAddressResult, positionsList.last(), false)
+        }
 
         val get = resourceProvider.get(R.string.info_distance_title)
         distanceMessage.value = String.format(get, distance)
     }
 
-    private fun getAddressByLatLng(getAddressUseCase: GetAddressNameByCoordinatesInteractor,
-                                 latLng: LatLng,
-                                 isOrigin: Boolean) {
-        getAddressUseCase.execute(latLng, 1, object : GetAddressNameByCoordinatesInteractor.Callback {
-            override fun onAddressLoaded(addressCollection: AddressCollection) {
-                progressVisibility.value = false
-
-                val addressList = addressCollection.addressList
-                if (addressList.isEmpty()) {
-                    showNoMatchesMessage(isOrigin)
-                } else {
-                    setAddress(addressList.first().formattedAddress, latLng, isOrigin)
-                }
+    private fun getAddressByLatLng(
+        result: Result<AddressCollection>,
+        latLng: LatLng,
+        isOrigin: Boolean
+    ) {
+        result.fold({
+            val addressList = it.addressList
+            if (addressList.isEmpty()) {
+                showNoMatchesMessage(isOrigin)
+            } else {
+                setAddress(addressList.first().formattedAddress, latLng, isOrigin)
             }
-
-            override fun onError(message: String) {
-                progressVisibility.value = false
-
-                showError(message, isOrigin)
-            }
+        }, {
+            showError(it.message.orEmpty(), isOrigin)
         })
     }
 
@@ -99,6 +107,7 @@ class ShowInfoViewModel(
         }
     }
 
+    // TODO: move to mapper class
     private fun formatAddress(address: String?, latitude: Double, longitude: Double): String {
         return "$address\n\n($latitude,$longitude)"
     }
@@ -129,7 +138,8 @@ ${inputParams.distance}"""
     }
 
     fun onSave() {
-        saveDistanceEvent.value = Event(SaveDistanceData(inputParams.positionsList, inputParams.distance))
+        saveDistanceEvent.value =
+            Event(SaveDistanceData(inputParams.positionsList, inputParams.distance))
     }
 
     companion object {

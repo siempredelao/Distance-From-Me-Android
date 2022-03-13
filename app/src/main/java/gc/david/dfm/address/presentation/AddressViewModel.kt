@@ -18,21 +18,22 @@ package gc.david.dfm.address.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.Event
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameInteractor
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesInteractor
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.AddressCollection
+import kotlinx.coroutines.launch
 
 class AddressViewModel(
-        private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameInteractor,
-        private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesInteractor,
-        private val connectionManager: ConnectionManager,
-        private val resourceProvider: ResourceProvider
+    private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase,
+    private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
+    private val connectionManager: ConnectionManager,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     val progressVisibility = MutableLiveData<Boolean>()
@@ -51,36 +52,32 @@ class AddressViewModel(
     }
 
     private fun getConnectionIssuesData() = ConnectionIssuesData(
-            resourceProvider.get(R.string.dialog_connection_problems_title),
-            resourceProvider.get(R.string.dialog_connection_problems_message),
-            resourceProvider.get(R.string.dialog_connection_problems_positive_button),
-            resourceProvider.get(R.string.dialog_connection_problems_negative_button)
+        resourceProvider.get(R.string.dialog_connection_problems_title),
+        resourceProvider.get(R.string.dialog_connection_problems_message),
+        resourceProvider.get(R.string.dialog_connection_problems_positive_button),
+        resourceProvider.get(R.string.dialog_connection_problems_negative_button)
     )
 
     private fun onSearchPositionByNameWithConnectionAvailable(locationName: String) {
         progressVisibility.value = true
 
-        getAddressCoordinatesByNameUseCase.execute(locationName, MAX_BY_NAME, object : GetAddressCoordinatesByNameInteractor.Callback {
-            override fun onAddressLoaded(addressCollection: AddressCollection) {
-                progressVisibility.value = false
+        viewModelScope.launch {
+            val result = getAddressCoordinatesByNameUseCase(locationName)
+            progressVisibility.postValue(false)
 
+            result.fold({
                 when {
-                    addressCollection.addressList.isEmpty() ->
-                        errorMessage.value = Event(resourceProvider.get(R.string.toast_no_results))
-
-                    addressCollection.addressList.size == 1 ->
-                        addressFoundEvent.value = Event(addressCollection.addressList.first())
-
+                    it.addressList.isEmpty() ->
+                        errorMessage.postValue(Event(resourceProvider.get(R.string.toast_no_results)))
+                    it.addressList.size == 1 ->
+                        addressFoundEvent.postValue(Event(it.addressList.first()))
                     else ->
-                        multipleAddressesFoundEvent.value = Event(addressCollection.addressList)
+                        multipleAddressesFoundEvent.postValue(Event(it.addressList))
                 }
-            }
-
-            override fun onError(message: String) {
-                progressVisibility.value = false
-                errorMessage.value = Event(message)
-            }
-        })
+            }, {
+                errorMessage.postValue(Event(it.message.orEmpty()))
+            })
+        }
     }
 
     fun onAddressSelected(address: Address) {
@@ -99,31 +96,27 @@ class AddressViewModel(
     private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: LatLng) {
         progressVisibility.value = true
 
-        getAddressNameByCoordinatesUseCase.execute(coordinates, MAX_BY_COORD, object : GetAddressNameByCoordinatesInteractor.Callback {
-            override fun onAddressLoaded(addressCollection: AddressCollection) {
-                progressVisibility.value = false
+        viewModelScope.launch {
+            val result = getAddressNameByCoordinatesUseCase(coordinates)
+            progressVisibility.postValue(false)
 
+            result.fold({
                 when {
-                    addressCollection.addressList.isEmpty() ->
-                        errorMessage.value = Event(resourceProvider.get(R.string.toast_no_results))
-
+                    it.addressList.isEmpty() ->
+                        errorMessage.postValue(Event(resourceProvider.get(R.string.toast_no_results)))
                     else ->
-                        addressFoundEvent.value = Event(addressCollection.addressList.first())
+                        addressFoundEvent.postValue(Event(it.addressList.first()))
                 }
-            }
-
-            override fun onError(message: String) {
-                progressVisibility.value = false
-                errorMessage.value = Event(message)
-            }
-        })
-    }
-
-    companion object {
-
-        private const val MAX_BY_NAME = 5
-        private const val MAX_BY_COORD = 1
+            }, {
+                errorMessage.postValue(Event(it.message.orEmpty()))
+            })
+        }
     }
 }
 
-data class ConnectionIssuesData(val title: String, val description: String, val positiveMessage: String, val negativeMessage: String)
+data class ConnectionIssuesData(
+    val title: String,
+    val description: String,
+    val positiveMessage: String,
+    val negativeMessage: String
+)

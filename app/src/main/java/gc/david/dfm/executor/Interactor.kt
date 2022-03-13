@@ -30,6 +30,7 @@ package gc.david.dfm.executor
  *
  * @author Pedro Vicente Gómez Sánchez
  */
+@Deprecated("Remove after coroutines migration")
 interface Interactor {
 
     fun run()
