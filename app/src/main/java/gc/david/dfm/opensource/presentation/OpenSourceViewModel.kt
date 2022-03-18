@@ -41,13 +41,13 @@ class OpenSourceViewModel(
 
         viewModelScope.launch {
             val result = getOpenSourceLibrariesUseCase()
-            if (result.isSuccess) {
-                progressVisibility.postValue(false)
-                openSourceList.postValue(result.getOrThrow().map(openSourceLibraryMapper::transform))
-            } else {
-                progressVisibility.postValue(false)
+            progressVisibility.postValue(false)
+
+            result.fold({
+                openSourceList.postValue(it.map(openSourceLibraryMapper::transform))
+            },{
                 errorMessage.postValue(resourceProvider.get(R.string.opensourcelibrary_error_message))
-            }
+            })
         }
     }
 }

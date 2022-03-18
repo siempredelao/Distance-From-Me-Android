@@ -41,11 +41,11 @@ class FaqViewModel(
             val result = getFaqsUseCase()
             progressVisibility.postValue(false)
 
-            if (result.isSuccess) {
-                faqList.postValue(result.getOrThrow())
-            } else {
+            result.fold({
+                faqList.postValue(it)
+            }, {
                 errorMessage.postValue(resourceProvider.get(R.string.faq_error_message))
-            }
+            })
         }
     }
 }
