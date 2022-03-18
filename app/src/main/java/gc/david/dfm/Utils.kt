@@ -27,7 +27,13 @@ import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.database.Position
 import gc.david.dfm.map.Haversine
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
 import timber.log.Timber
+import java.io.IOException
+import kotlin.coroutines.resumeWithException
 
 /**
  * Created by David on 15/10/2014.
@@ -138,4 +144,22 @@ object Utils {
     fun LatLng.toPoint() = Point(latitude, longitude)
     fun Position.toPoint() = Point(latitude, longitude)
     fun Location.toPoint() = Point(latitude, longitude)
+}
+
+
+// TODO move to network layer once modularization is done
+// OkHttp does not provide any coroutines functionality, so we have to build our own one
+suspend fun Call.await(): Response {
+    return suspendCancellableCoroutine { continuation ->
+        enqueue(object : Callback {
+            override fun onResponse(call: Call, response: Response) {
+                @Suppress("EXPERIMENTAL_API_USAGE")
+                continuation.resume(response, {})
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                continuation.resumeWithException(e)
+            }
+        })
+    }
 }

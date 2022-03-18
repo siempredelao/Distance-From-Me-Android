@@ -16,12 +16,14 @@
 
 package gc.david.dfm.elevation.data
 
+import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.domain.ElevationRepository
 
-class BaseElevationRepository(private val remoteDataSource: ElevationRemoteDataSource)
-    : ElevationRepository {
+class BaseElevationRepository(
+    private val remoteDataSource: ElevationRemoteDataSource
+) : ElevationRepository {
 
-    override fun getElevation(coordinatesPath: String, maxSamples: Int, callback: ElevationRepository.Callback) {
-        remoteDataSource.getElevation(coordinatesPath, maxSamples, callback)
+    override suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
+        return remoteDataSource.getElevation(coordinatesPath, maxSamples)
     }
 }

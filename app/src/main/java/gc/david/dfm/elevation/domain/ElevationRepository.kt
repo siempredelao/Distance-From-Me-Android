@@ -23,13 +23,5 @@ import gc.david.dfm.elevation.data.model.ElevationEntity
  */
 interface ElevationRepository {
 
-    interface Callback {
-
-        fun onSuccess(elevationEntity: ElevationEntity)
-
-        fun onError(message: String)
-
-    }
-
-    fun getElevation(coordinatesPath: String, maxSamples: Int, callback: Callback)
+    suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity
 }

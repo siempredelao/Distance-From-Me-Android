@@ -18,21 +18,23 @@ package gc.david.dfm.elevation.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.DFMPreferences
 import gc.david.dfm.Event
 import gc.david.dfm.PreferencesProvider
-import gc.david.dfm.elevation.domain.ElevationInteractor
+import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.map.Haversine
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
 class ElevationViewModel(
-        private val elevationUseCase: ElevationInteractor,
-        private val connectionManager: ConnectionManager,
-        private val preferencesProvider: PreferencesProvider
+    private val getElevationByCoordinatesUseCase: GetElevationByCoordinatesUseCase,
+    private val connectionManager: ConnectionManager,
+    private val preferencesProvider: PreferencesProvider
 ) : ViewModel() {
 
     val elevationSamples = MutableLiveData<ElevationModel>()
@@ -50,23 +52,20 @@ class ElevationViewModel(
             return
         }
 
-        elevationUseCase.execute(coordinates, ELEVATION_SAMPLES, object : ElevationInteractor.Callback {
-            override fun onElevationLoaded(elevation: gc.david.dfm.elevation.domain.model.Elevation) {
+        viewModelScope.launch {
+            getElevationByCoordinatesUseCase(coordinates).fold({
                 val normalizedElevationList =
-                    elevation.results.map { Haversine.normalizeAltitudeByLocale(it, locale) }
+                    it.results.map { Haversine.normalizeAltitudeByLocale(it, locale) }
                 val altitudeUnit = Haversine.getAltitudeUnitByLocale(locale)
                 elevationSamples.value = ElevationModel(normalizedElevationList, altitudeUnit)
-            }
-
-            override fun onError(message: String) {
-                Timber.tag(TAG).e(Exception(message))
-            }
-        })
+            }, {
+                Timber.tag(TAG).e(it)
+            })
+        }
     }
 
     companion object {
 
         private const val TAG = "ElevationViewModel"
-        private const val ELEVATION_SAMPLES = 100
     }
 }

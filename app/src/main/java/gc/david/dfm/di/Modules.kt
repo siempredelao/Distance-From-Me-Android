@@ -34,8 +34,8 @@ import gc.david.dfm.distance.domain.*
 import gc.david.dfm.elevation.data.BaseElevationRepository
 import gc.david.dfm.elevation.data.ElevationRemoteDataSource
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
-import gc.david.dfm.elevation.domain.ElevationInteractor
 import gc.david.dfm.elevation.domain.ElevationRepository
+import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.executor.NewMainThread
 import gc.david.dfm.executor.NewThreadExecutor
@@ -91,7 +91,6 @@ val viewModelModule = module {
 val useCaseModule = module {
     // Use cases
     factory { ClearDistancesInteractor(get(), get(), get()) }
-    factory { ElevationInteractor(get(), get(), get(), get()) }
     factory { GetPositionListInteractor(get(), get(), get()) }
     factory { InsertDistanceInteractor(get(), get(), get()) }
     factory { LoadDistancesInteractor(get(), get(), get()) }
@@ -99,6 +98,7 @@ val useCaseModule = module {
     factory { GetFaqsUseCase(get()) }
     factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
     factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
+    factory { GetElevationByCoordinatesUseCase(get(), get()) }
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }
