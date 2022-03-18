@@ -19,35 +19,37 @@ package gc.david.dfm.elevation.presentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
+import gc.david.dfm.CoroutineDispatcherRule
 import gc.david.dfm.PreferencesProvider
-import gc.david.dfm.elevation.domain.ElevationInteractor
+import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.Mockito.doAnswer
+import org.junit.rules.TestRule
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 11.01.17.
  */
+@ExperimentalCoroutinesApi
 class ElevationViewModelTest {
 
-    private val elevationUseCase = mock<ElevationInteractor>()
+    private val getElevationByCoordinatesUseCase = mock<GetElevationByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val preferencesProvider = mock<PreferencesProvider>()
 
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
-
     private val viewModel =
-        ElevationViewModel(elevationUseCase, connectionManager, preferencesProvider)
+        ElevationViewModel(getElevationByCoordinatesUseCase, connectionManager, preferencesProvider)
+
+    @get:Rule var instantTaskRule: TestRule = InstantTaskExecutorRule()
+    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
     fun `hides chart when show elevation chart preference is false`() {
@@ -71,24 +73,23 @@ class ElevationViewModelTest {
     }
 
     @Test
-    fun `executes use case when preference is activated and connection available`() {
+    fun `executes use case when preference is activated and connection available`() = runTest {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
 
         viewModel.onCoordinatesSelected(coordinateList)
 
-        verify(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
+        verify(getElevationByCoordinatesUseCase).invoke(coordinateList)
     }
 
     @Test
-    fun `returns elevation samples when use case returns data`() {
+    fun `returns elevation samples when use case returns data`() = runTest {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
-        doAnswer { (it.arguments[2] as ElevationInteractor.Callback).onElevationLoaded(elevation) }
-            .whenever(elevationUseCase).execute(eq(coordinateList), anyInt(), any())
+        whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.success(elevation))
 
         viewModel.onCoordinatesSelected(coordinateList)
 

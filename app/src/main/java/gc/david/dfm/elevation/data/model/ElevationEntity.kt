@@ -19,10 +19,28 @@ package gc.david.dfm.elevation.data.model
 class ElevationEntity(val results: List<Result> = emptyList(), val status: ElevationStatus)
 
 enum class ElevationStatus {
+    /**
+     * The service request was successful.
+     */
     OK,
-    ZERO_RESULTS,
+
+    /**
+     * The service request was malformed.
+     */
     INVALID_REQUEST,
+
+    /**
+     * The requestor has exceeded quota.
+     */
     OVER_QUERY_LIMIT,
+
+    /**
+     * The service did not complete the request, likely because on an invalid parameter.
+     */
     REQUEST_DENIED,
+
+    /**
+     * Unknown error.
+     */
     UNKNOWN_ERROR
 }
