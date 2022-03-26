@@ -31,8 +31,8 @@ class BaseDistanceRepository(private val localDataSource: DistanceLocalDataSourc
         localDataSource.loadDistances(callback)
     }
 
-    override fun clear(callback: DistanceRepository.Callback) {
-        localDataSource.clear(callback)
+    override suspend fun clear() {
+        localDataSource.clear()
     }
 
     override fun getPositionListById(distanceId: Long, callback: DistanceRepository.LoadPositionsByIdCallback) {

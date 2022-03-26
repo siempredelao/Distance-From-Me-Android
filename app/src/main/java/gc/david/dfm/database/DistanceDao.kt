@@ -27,7 +27,7 @@ interface DistanceDao {
     fun loadAll(): List<Distance>
 
     @Query("DELETE FROM DISTANCE")
-    fun deleteAll()
+    suspend fun deleteAll()
 
     @Insert
     fun insert(distance: Distance): Long
