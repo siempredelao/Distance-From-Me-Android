@@ -31,7 +31,6 @@ import gc.david.dfm.R
 import gc.david.dfm.Utils
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
 
 class SaveDistanceDialogFragment : DialogFragment() {
 
@@ -59,6 +58,8 @@ class SaveDistanceDialogFragment : DialogFragment() {
                 .setTitle(getString(R.string.alias_dialog_title))
                 .setView(editTextAlias)
                 .setPositiveButton(getString(R.string.alias_dialog_accept)) { _, _ ->
+                    // TODO transform to real DialogFragment
+                    //  and check that save operation is finished before the dialog is closed
                     viewModel.onSave(editTextAlias.text.toString())
                 }
                 .create()

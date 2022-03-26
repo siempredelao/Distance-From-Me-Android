@@ -42,7 +42,7 @@ interface DistanceRepository {
         fun onFailure()
     }
 
-    fun insert(distance: Distance, positionList: List<Position>, callback: Callback)
+    suspend fun insert(distance: Distance, positionList: List<Position>)
 
     fun loadDistances(callback: LoadDistancesCallback)
 

@@ -26,14 +26,14 @@ import gc.david.dfm.distance.domain.DistanceRepository
  */
 class DistanceLocalDataSource(private val database: DFMDatabase) {
 
-    fun insert(distance: Distance, positionList: List<Position>, callback: DistanceRepository.Callback) {
+    suspend fun insert(distance: Distance, positionList: List<Position>) {
         val rowID = database.distanceDao().insert(distance)
         if (rowID == -1L) {
-            callback.onFailure()
+            throw Exception() // TODO return a custom exception instead
         } else {
             val positionListWithDistanceId = positionList.map { it.apply { distanceId = rowID } }
             database.positionDao().insertMany(positionListWithDistanceId)
-            callback.onSuccess()
+            return Unit
         }
     }
 

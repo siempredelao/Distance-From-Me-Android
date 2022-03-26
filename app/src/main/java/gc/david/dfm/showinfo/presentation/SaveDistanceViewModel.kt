@@ -18,18 +18,20 @@ package gc.david.dfm.showinfo.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
-import gc.david.dfm.distance.domain.InsertDistanceInteractor
+import gc.david.dfm.distance.domain.SaveDistanceUseCase
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
 class SaveDistanceViewModel(
-        private val insertDistanceUseCase: InsertDistanceInteractor,
-        private val resourceProvider: ResourceProvider
+    private val saveDistanceUseCase: SaveDistanceUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     val errorMessage = MutableLiveData<String>()
@@ -47,21 +49,21 @@ class SaveDistanceViewModel(
             Position(id = null, latitude = it.latitude, longitude = it.longitude, distanceId = -1L) // FIXME
         }
 
-        insertDistanceUseCase.execute(distanceAsDistance, positionList, object : InsertDistanceInteractor.Callback {
-            override fun onInsert() {
+        viewModelScope.launch {
+            val result = saveDistanceUseCase(distanceAsDistance, positionList)
+
+            result.fold({
                 if (name.isNotEmpty()) {
                     val message = resourceProvider.get(R.string.alias_dialog_with_name_toast)
                     errorMessage.value = String.format(message, name)
                 } else {
                     errorMessage.value = resourceProvider.get(R.string.alias_dialog_no_name_toast)
                 }
-            }
-
-            override fun onError() {
+            },{
                 Timber.tag(TAG).d(Exception("Unable to insert distance into database."))
                 errorMessage.value = "Unable to save distance. Try again later." // TODO translate
-            }
-        })
+            })
+        }
     }
 
     data class InputParams(val positionsList: List<LatLng>, val distance: String)

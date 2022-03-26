@@ -23,8 +23,8 @@ import gc.david.dfm.distance.domain.DistanceRepository
 class BaseDistanceRepository(private val localDataSource: DistanceLocalDataSource)
     : DistanceRepository {
 
-    override fun insert(distance: Distance, positionList: List<Position>, callback: DistanceRepository.Callback) {
-        localDataSource.insert(distance, positionList, callback)
+    override suspend fun insert(distance: Distance, positionList: List<Position>) {
+        localDataSource.insert(distance, positionList)
     }
 
     override fun loadDistances(callback: DistanceRepository.LoadDistancesCallback) {
