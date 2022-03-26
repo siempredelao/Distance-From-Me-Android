@@ -37,7 +37,7 @@ class SettingsViewModel(
 
         viewModelScope.launch {
             clearDistancesUseCase().fold({
-                resultMessage.value = resourceProvider.get(R.string.toast_distances_deleted)
+                resultMessage.postValue(resourceProvider.get(R.string.toast_distances_deleted))
             },{
                 Timber.tag(TAG).e(Exception("Unable to clear database."))
             })

@@ -55,13 +55,13 @@ class SaveDistanceViewModel(
             result.fold({
                 if (name.isNotEmpty()) {
                     val message = resourceProvider.get(R.string.alias_dialog_with_name_toast)
-                    errorMessage.value = String.format(message, name)
+                    errorMessage.postValue(String.format(message, name))
                 } else {
-                    errorMessage.value = resourceProvider.get(R.string.alias_dialog_no_name_toast)
+                    errorMessage.postValue(resourceProvider.get(R.string.alias_dialog_no_name_toast))
                 }
             },{
-                Timber.tag(TAG).d(Exception("Unable to insert distance into database."))
-                errorMessage.value = "Unable to save distance. Try again later." // TODO translate
+                Timber.tag(TAG).e(it , "Unable to insert distance into database.")
+                errorMessage.postValue("Unable to save distance. Try again later.") // TODO translate
             })
         }
     }

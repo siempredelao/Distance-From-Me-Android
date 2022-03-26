@@ -19,7 +19,6 @@ package gc.david.dfm.distance.data
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
-import gc.david.dfm.distance.domain.DistanceRepository
 
 /**
  * Created by david on 16.01.17.
@@ -33,12 +32,12 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
         } else {
             val positionListWithDistanceId = positionList.map { it.apply { distanceId = rowID } }
             database.positionDao().insertMany(positionListWithDistanceId)
-            return Unit
+            return
         }
     }
 
-    fun loadDistances(callback: DistanceRepository.LoadDistancesCallback) {
-        callback.onSuccess(database.distanceDao().loadAll())
+    suspend fun loadDistances(): List<Distance> {
+        return database.distanceDao().loadAll()
     }
 
     suspend fun clear() {
@@ -48,7 +47,7 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
         }
     }
 
-    fun getPositionListById(distanceId: Long, callback: DistanceRepository.LoadPositionsByIdCallback) {
-        callback.onSuccess(database.positionDao().loadAllById(distanceId))
+    suspend fun getPositionListById(distanceId: Long): List<Position> {
+        return database.positionDao().loadAllById(distanceId)
     }
 }

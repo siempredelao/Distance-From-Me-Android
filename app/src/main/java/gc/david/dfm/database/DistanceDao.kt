@@ -24,7 +24,7 @@ import androidx.room.Query
 interface DistanceDao {
 
     @Query("SELECT * FROM DISTANCE")
-    fun loadAll(): List<Distance>
+    suspend fun loadAll(): List<Distance>
 
     @Query("DELETE FROM DISTANCE")
     suspend fun deleteAll()

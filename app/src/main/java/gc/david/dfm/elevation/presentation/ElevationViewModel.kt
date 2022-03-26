@@ -57,7 +57,7 @@ class ElevationViewModel(
                 val normalizedElevationList =
                     it.results.map { Haversine.normalizeAltitudeByLocale(it, locale) }
                 val altitudeUnit = Haversine.getAltitudeUnitByLocale(locale)
-                elevationSamples.value = ElevationModel(normalizedElevationList, altitudeUnit)
+                elevationSamples.postValue(ElevationModel(normalizedElevationList, altitudeUnit))
             }, {
                 Timber.tag(TAG).e(it)
             })
