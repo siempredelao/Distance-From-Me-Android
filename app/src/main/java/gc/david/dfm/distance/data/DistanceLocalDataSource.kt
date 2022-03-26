@@ -41,12 +41,11 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
         callback.onSuccess(database.distanceDao().loadAll())
     }
 
-    fun clear(callback: DistanceRepository.Callback) {
+    suspend fun clear() {
         with(database) {
             distanceDao().deleteAll()
             positionDao().deleteAll()
         }
-        callback.onSuccess()
     }
 
     fun getPositionListById(distanceId: Long, callback: DistanceRepository.LoadPositionsByIdCallback) {

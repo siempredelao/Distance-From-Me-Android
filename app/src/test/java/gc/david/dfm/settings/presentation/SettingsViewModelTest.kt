@@ -17,12 +17,15 @@
 package gc.david.dfm.settings.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import gc.david.dfm.CoroutineDispatcherRule
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.distance.domain.ClearDistancesInteractor
+import gc.david.dfm.distance.domain.ClearDistancesUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.doAnswer
+import org.junit.rules.TestRule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -30,20 +33,20 @@ import org.mockito.kotlin.whenever
 /**
  * Created by david on 24.01.17.
  */
+@ExperimentalCoroutinesApi
 class SettingsViewModelTest {
 
-    private val clearDistancesUseCase = mock<ClearDistancesInteractor>()
+    private val clearDistancesUseCase = mock<ClearDistancesUseCase>()
     private val resourceProvider = mock<ResourceProvider>()
-
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
 
     private val viewModel = SettingsViewModel(clearDistancesUseCase, resourceProvider)
 
+    @get:Rule var instantTaskRule: TestRule = InstantTaskExecutorRule()
+    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
+
     @Test
-    fun `shows success message when use case succeeds`() {
-        doAnswer { (it.arguments[0] as ClearDistancesInteractor.Callback).onClear() }
-            .whenever(clearDistancesUseCase).execute(any())
+    fun `onClearData Given use case succeeds Then shows success message`() = runTest {
+        whenever(clearDistancesUseCase()).thenReturn(Result.success(Unit))
         val successMessage = "success"
         whenever(resourceProvider.get(any())).thenReturn(successMessage)
 

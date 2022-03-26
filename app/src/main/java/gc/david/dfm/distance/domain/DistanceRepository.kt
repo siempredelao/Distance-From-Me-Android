@@ -46,7 +46,7 @@ interface DistanceRepository {
 
     fun loadDistances(callback: LoadDistancesCallback)
 
-    fun clear(callback: Callback)
+    suspend fun clear()
 
     fun getPositionListById(distanceId: Long, callback: LoadPositionsByIdCallback)
 }

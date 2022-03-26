@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.distance.domain
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+class ClearDistancesUseCase(
+    private val repository: DistanceRepository
+) {
 
-@Dao
-interface PositionDao {
-
-    @Query("SELECT * FROM POSITION WHERE DISTANCE_ID=:distanceId")
-    fun loadAllById(distanceId: Long): List<Position>
-
-    @Query("DELETE FROM POSITION")
-    suspend fun deleteAll()
-
-    @Insert
-    fun insertMany(positions: List<Position>)
+    suspend operator fun invoke(): Result<Unit> {
+        return try {
+            repository.clear()
+            Result.success(Unit)
+        } catch (exception: Throwable) {
+            Result.failure(exception)
+        }
+    }
 }

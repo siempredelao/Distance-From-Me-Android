@@ -18,14 +18,16 @@ package gc.david.dfm.settings.presentation
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.distance.domain.ClearDistancesInteractor
+import gc.david.dfm.distance.domain.ClearDistancesUseCase
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SettingsViewModel(
-        private val clearDistancesUseCase: ClearDistancesInteractor,
-        private val resourceProvider: ResourceProvider
+    private val clearDistancesUseCase: ClearDistancesUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     val resultMessage = MutableLiveData<String>()
@@ -33,15 +35,13 @@ class SettingsViewModel(
     fun onClearData() {
         Timber.tag(TAG).d("onClearData")
 
-        clearDistancesUseCase.execute(object : ClearDistancesInteractor.Callback {
-            override fun onClear() {
+        viewModelScope.launch {
+            clearDistancesUseCase().fold({
                 resultMessage.value = resourceProvider.get(R.string.toast_distances_deleted)
-            }
-
-            override fun onError() {
+            },{
                 Timber.tag(TAG).e(Exception("Unable to clear database."))
-            }
-        })
+            })
+        }
     }
 
     companion object {

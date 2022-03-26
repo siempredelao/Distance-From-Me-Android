@@ -56,7 +56,7 @@ object LibraryVersions {
     const val playServicesLocation = "19.0.0"
     const val playServicesMaps = "18.0.1"
     const val preference = "1.0.0"
-    const val room = "2.3.0"
+    const val room = "2.4.2"
     const val timber = "5.0.1"
 }
 
