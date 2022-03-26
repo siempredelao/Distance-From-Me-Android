@@ -16,19 +16,21 @@
 
 package gc.david.dfm.distance.domain
 
-import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
 
 /**
  * Created by david on 16.01.17.
  */
-interface DistanceRepository {
+class GetPositionListUseCase(
+    private val repository: DistanceRepository
+) {
 
-    suspend fun insert(distance: Distance, positionList: List<Position>)
-
-    suspend fun loadDistances(): List<Distance>
-
-    suspend fun clear()
-
-    suspend fun getPositionListById(distanceId: Long): List<Position>
+    suspend operator fun invoke(distanceId: Long): Result<List<Position>> {
+        return try {
+            val positionList = repository.getPositionListById(distanceId)
+            Result.success(positionList)
+        } catch (exception: Throwable) {
+            Result.failure(exception)
+        }
+    }
 }

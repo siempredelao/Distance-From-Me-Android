@@ -68,8 +68,8 @@ val appModule = module {
     single { arrayOf(DefaultUnitInitializer(), FirebaseInitializer(), LoggingInitializer(get())) }
     single { Initializers(get()) }
     single<PreferencesProvider> { DefaultPreferencesProvider(get()) }
-    single { NewMainThread() }
-    single { NewThreadExecutor() }
+    single { NewMainThread() } // TODO remove
+    single { NewThreadExecutor() } // TODO remove
     single { ResourceProvider(get()) }
     single { MapDrawer(get()) }
     single { DistanceModeProvider() }
@@ -90,8 +90,6 @@ val viewModelModule = module {
 
 val useCaseModule = module {
     // Use cases
-    factory { GetPositionListInteractor(get(), get(), get()) }
-    factory { LoadDistancesInteractor(get(), get(), get()) }
     factory { GetOpenSourceLibrariesUseCase(get()) }
     factory { GetFaqsUseCase(get()) }
     factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
@@ -99,6 +97,8 @@ val useCaseModule = module {
     factory { GetElevationByCoordinatesUseCase(get(), get()) }
     factory { ClearDistancesUseCase(get()) }
     factory { SaveDistanceUseCase(get()) }
+    factory { GetPositionListUseCase(get()) }
+    factory { GetDistancesUseCase(get()) }
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }

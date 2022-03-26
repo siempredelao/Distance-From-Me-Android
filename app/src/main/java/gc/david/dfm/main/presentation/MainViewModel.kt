@@ -19,26 +19,27 @@ package gc.david.dfm.main.presentation
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.*
 import gc.david.dfm.Utils.toLatLng
 import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.address.presentation.ConnectionIssuesData
 import gc.david.dfm.database.Distance
-import gc.david.dfm.database.Position
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.domain.GetPositionListInteractor
-import gc.david.dfm.distance.domain.LoadDistancesInteractor
+import gc.david.dfm.distance.domain.GetDistancesUseCase
+import gc.david.dfm.distance.domain.GetPositionListUseCase
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.map.Haversine
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
 class MainViewModel(
-    private val loadDistancesUseCase: LoadDistancesInteractor,
-    private val getPositionListUseCase: GetPositionListInteractor,
+    private val getDistancesUseCase: GetDistancesUseCase,
+    private val getPositionListUseCase: GetPositionListUseCase,
     private val connectionManager: ConnectionManager,
     private val resourceProvider: ResourceProvider,
     private val preferencesProvider: PreferencesProvider,
@@ -100,54 +101,55 @@ class MainViewModel(
     }
 
     private fun loadDistancesItem() {
-        loadDistancesUseCase.execute(object : LoadDistancesInteractor.Callback {
-            override fun onDistanceListLoaded(distanceList: List<Distance>) {
-                showLoadDistancesItem.value = distanceList.isNotEmpty()
-            }
+        viewModelScope.launch {
+            val result = getDistancesUseCase()
 
-            override fun onError() {
-                showLoadDistancesItem.value = false
-            }
-        })
+            result.fold({
+                showLoadDistancesItem.postValue(it.isNotEmpty())
+            },{
+                showLoadDistancesItem.postValue(false)
+            })
+        }
     }
 
     /**
      * Triggered when the user taps on the "Show distances" menu item.
      */
     fun onLoadDistancesClick() {
-        loadDistancesUseCase.execute(object : LoadDistancesInteractor.Callback {
-            override fun onDistanceListLoaded(distanceList: List<Distance>) {
-                selectFromDistancesLoaded.value = Event(distanceList)
-            }
+        viewModelScope.launch {
+            val result = getDistancesUseCase()
 
-            override fun onError() {
+            result.fold({
+                selectFromDistancesLoaded.postValue(Event(it))
+            },{
                 Timber.tag(TAG).e(Exception("Unable to load distances."))
-            }
-        })
+            })
+        }
     }
 
     /**
      * Triggered when the user selects a distance from the loaded distances dialog.
      */
     fun onDistanceToShowSelected(distance: Distance) {
-        getPositionListUseCase.execute(distance.id!!, object : GetPositionListInteractor.Callback {
-            override fun onPositionListLoaded(positionList: List<Position>) {
-                val distanceInMetres = Utils.calculateDistanceInMetres2(positionList)
-                drawDistance.value =
+        viewModelScope.launch {
+            val result = getPositionListUseCase(distance.id!!)
+
+            result.fold({
+                val distanceInMetres = Utils.calculateDistanceInMetres2(it)
+                drawDistance.postValue(
                     DrawDistanceModel(
-                        positionList.toLatLng().toMutableList(),
+                        it.toLatLng().toMutableList(),
                         distance.name + "\n",
                         distanceInMetres,
                         Haversine.normalizeDistance(distanceInMetres, locale),
                         DrawDistanceModel.Source.DATABASE,
                         distanceModeProvider.get()
                     )
-            }
-
-            override fun onError() {
+                )
+            },{
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
-            }
-        })
+            })
+        }
     }
 
     fun onDistanceFromCurrentPositionSet() {

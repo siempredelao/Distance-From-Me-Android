@@ -24,7 +24,7 @@ import androidx.room.Query
 interface PositionDao {
 
     @Query("SELECT * FROM POSITION WHERE DISTANCE_ID=:distanceId")
-    fun loadAllById(distanceId: Long): List<Position>
+    suspend fun loadAllById(distanceId: Long): List<Position>
 
     @Query("DELETE FROM POSITION")
     suspend fun deleteAll()
