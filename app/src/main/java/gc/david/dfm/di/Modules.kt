@@ -37,8 +37,6 @@ import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.domain.ElevationRepository
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.ElevationViewModel
-import gc.david.dfm.executor.NewMainThread
-import gc.david.dfm.executor.NewThreadExecutor
 import gc.david.dfm.faq.data.BaseFaqRepository
 import gc.david.dfm.faq.data.FaqDiskDataSource
 import gc.david.dfm.faq.domain.FaqRepository
@@ -68,8 +66,6 @@ val appModule = module {
     single { arrayOf(DefaultUnitInitializer(), FirebaseInitializer(), LoggingInitializer(get())) }
     single { Initializers(get()) }
     single<PreferencesProvider> { DefaultPreferencesProvider(get()) }
-    single { NewMainThread() } // TODO remove
-    single { NewThreadExecutor() } // TODO remove
     single { ResourceProvider(get()) }
     single { MapDrawer(get()) }
     single { DistanceModeProvider() }
