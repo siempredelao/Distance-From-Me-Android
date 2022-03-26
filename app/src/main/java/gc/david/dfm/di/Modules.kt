@@ -91,7 +91,6 @@ val viewModelModule = module {
 val useCaseModule = module {
     // Use cases
     factory { GetPositionListInteractor(get(), get(), get()) }
-    factory { InsertDistanceInteractor(get(), get(), get()) }
     factory { LoadDistancesInteractor(get(), get(), get()) }
     factory { GetOpenSourceLibrariesUseCase(get()) }
     factory { GetFaqsUseCase(get()) }
@@ -99,6 +98,7 @@ val useCaseModule = module {
     factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
     factory { GetElevationByCoordinatesUseCase(get(), get()) }
     factory { ClearDistancesUseCase(get()) }
+    factory { SaveDistanceUseCase(get()) }
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }

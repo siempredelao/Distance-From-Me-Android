@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.distance.domain
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import gc.david.dfm.database.Distance
+import gc.david.dfm.database.Position
 
-@Dao
-interface DistanceDao {
+/**
+ * Created by david on 16.01.17.
+ */
+class SaveDistanceUseCase(
+    private val repository: DistanceRepository
+) {
 
-    @Query("SELECT * FROM DISTANCE")
-    fun loadAll(): List<Distance>
-
-    @Query("DELETE FROM DISTANCE")
-    suspend fun deleteAll()
-
-    @Insert
-    suspend fun insert(distance: Distance): Long
-
+    suspend operator fun invoke(distance: Distance, positionList: List<Position>): Result<Unit> {
+        return try {
+            repository.insert(distance, positionList)
+            Result.success(Unit)
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
+    }
 }

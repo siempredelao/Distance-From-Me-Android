@@ -30,5 +30,5 @@ interface PositionDao {
     suspend fun deleteAll()
 
     @Insert
-    fun insertMany(positions: List<Position>)
+    suspend fun insertMany(positions: List<Position>)
 }
