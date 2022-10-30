@@ -16,16 +16,23 @@
 
 package gc.david.dfm.opensource.presentation.mapper
 
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+import gc.david.dfm.opensource.domain.License
+import gc.david.dfm.opensource.domain.OpenSourceLibrary
+import gc.david.dfm.opensource.presentation.LicenseMapper
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 /**
  * Created by david on 26.01.17.
  */
 class OpenSourceLibraryMapperTest {
 
-    private val mapper = OpenSourceLibraryMapper()
+    private val licenseMapper: LicenseMapper = mock()
+
+    private val mapper = OpenSourceLibraryMapper(licenseMapper)
 
     @Test
     fun `transforms open source library entity to open source library model`() {
@@ -33,27 +40,34 @@ class OpenSourceLibraryMapperTest {
         val libraryAuthor = "fake author"
         val libraryVersion = "fake version"
         val libraryLink = "fake link"
-        val libraryLicense = "fake license"
+        val libraryLicense = License.MIT
         val libraryYear = "fake year"
         val libraryDescription = "fake description"
-        val openSourceLibraryEntity = OpenSourceLibraryEntity(
+        val openSourceLibrary = OpenSourceLibrary(
             libraryName,
+            libraryDescription,
             libraryAuthor,
             libraryVersion,
             libraryLink,
             libraryLicense,
-            libraryYear,
-            libraryDescription
+            libraryYear
         )
+        val mappedLicenseDescription = "mapped license description"
+        whenever(licenseMapper.invoke(libraryLicense, libraryYear, libraryAuthor))
+            .thenReturn(mappedLicenseDescription)
 
-        val openSourceLibraryModel = mapper.transform(openSourceLibraryEntity)
+        val actualUiModel = mapper.invoke(openSourceLibrary)
 
-        assertEquals(libraryName, openSourceLibraryModel.name)
-        assertEquals(libraryAuthor, openSourceLibraryModel.author)
-        assertEquals(libraryVersion, openSourceLibraryModel.version)
-        assertEquals(libraryLink, openSourceLibraryModel.link)
-        assertEquals(libraryLicense, openSourceLibraryModel.license)
-        assertEquals(libraryYear, openSourceLibraryModel.year)
-        assertEquals(libraryDescription, openSourceLibraryModel.description)
+        val expectedUiModel = OpenSourceLibraryUiModel(
+            name = libraryName,
+            description = libraryDescription,
+            author = libraryAuthor,
+            version = "vfake version",
+            link = libraryLink,
+            licenseTitle = "${License.MIT.code} license",
+            licenseDescription = mappedLicenseDescription,
+            year = libraryYear
+        )
+        assertEquals(expectedUiModel, actualUiModel)
     }
 }

@@ -20,36 +20,45 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import gc.david.dfm.databinding.ViewOpensourcelibraryItemBinding
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.ui.fragment.OpenSourceMasterFragment.OnItemClickListener
 
 /**
  * Created by david on 24.01.17.
  */
 class OpenSourceLibraryAdapter(
-        private val onItemClickListener: OnItemClickListener
+    private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder>() {
 
-    private val openSourceLibraryModelList = mutableListOf<OpenSourceLibraryModel>()
+    private val openSourceLibraryModelList = mutableListOf<OpenSourceLibraryUiModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpenSourceLibraryViewHolder {
-        val binding = ViewOpensourcelibraryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ViewOpensourcelibraryItemBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return OpenSourceLibraryViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: OpenSourceLibraryViewHolder, position: Int) {
         holder.onBind(openSourceLibraryModelList[position])
 
-        holder.itemView.setOnClickListener { onItemClickListener.onItemClick(openSourceLibraryModelList[holder.adapterPosition], holder) }
+        holder.itemView.setOnClickListener {
+            onItemClickListener.onItemClick(
+                openSourceLibraryModelList[holder.adapterPosition],
+                holder
+            )
+        }
 
         holder.binding.textViewName.transitionName = position.toString() + "_id"
         holder.binding.textViewLicense.transitionName = position.toString() + "_content"
     }
 
-    fun add(openSourceLibraryModels: List<OpenSourceLibraryModel>) {
-        val previousSize = openSourceLibraryModels.size
-        openSourceLibraryModelList.addAll(openSourceLibraryModels)
-        notifyItemRangeInserted(previousSize, openSourceLibraryModels.size)
+    fun add(openSourceLibraryUiModels: List<OpenSourceLibraryUiModel>) {
+        val previousSize = openSourceLibraryUiModels.size
+        openSourceLibraryModelList.addAll(openSourceLibraryUiModels)
+        notifyItemRangeInserted(previousSize, openSourceLibraryUiModels.size)
     }
 
     override fun getItemCount(): Int {
@@ -57,14 +66,14 @@ class OpenSourceLibraryAdapter(
     }
 
     class OpenSourceLibraryViewHolder(
-            val binding: ViewOpensourcelibraryItemBinding
+        val binding: ViewOpensourcelibraryItemBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        internal fun onBind(openSourceLibraryModel: OpenSourceLibraryModel) = with(binding) {
-            textViewName.text = openSourceLibraryModel.name
-            textViewVersion.text = String.format("v%s", openSourceLibraryModel.version)
-            textViewDescription.text = openSourceLibraryModel.description
-            textViewLicense.text = String.format("%s license", openSourceLibraryModel.license)
+        internal fun onBind(openSourceLibraryUiModel: OpenSourceLibraryUiModel) = with(binding) {
+            textViewName.text = openSourceLibraryUiModel.name
+            textViewVersion.text = openSourceLibraryUiModel.version
+            textViewDescription.text = openSourceLibraryUiModel.description
+            textViewLicense.text = openSourceLibraryUiModel.licenseTitle
         }
     }
 }

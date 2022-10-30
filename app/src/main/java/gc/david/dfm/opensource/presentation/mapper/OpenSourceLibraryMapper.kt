@@ -16,27 +16,35 @@
 
 package gc.david.dfm.opensource.presentation.mapper
 
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import gc.david.dfm.opensource.domain.OpenSourceLibrary
+import gc.david.dfm.opensource.presentation.LicenseMapper
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 
 /**
  * Created by david on 25.01.17.
  *
- * Mapper class used to transform [OpenSourceLibraryEntity] in the Domain layer
- * to [OpenSourceLibraryModel] in the Presentation layer.
+ * Mapper class used to transform [OpenSourceLibrary] in the Domain layer
+ * to [OpenSourceLibraryUiModel] in the Presentation layer.
  */
-class OpenSourceLibraryMapper {
+class OpenSourceLibraryMapper(
+    private val licenseMapper: LicenseMapper
+) {
 
-    fun transform(entity: OpenSourceLibraryEntity): OpenSourceLibraryModel {
-        return with(entity) {
-            OpenSourceLibraryModel(
+    operator fun invoke(libraries: List<OpenSourceLibrary>): List<OpenSourceLibraryUiModel> {
+        return libraries.map(this::invoke)
+    }
+
+    operator fun invoke(library: OpenSourceLibrary): OpenSourceLibraryUiModel {
+        return with(library) {
+            OpenSourceLibraryUiModel(
                 name,
+                description,
                 author,
-                version,
+                "v${library.version}",
                 link,
-                licenseCode,
-                licenseYear,
-                description
+                "${library.license.code} license",
+                licenseMapper(library.license, library.year, library.author),
+                year
             )
         }
     }

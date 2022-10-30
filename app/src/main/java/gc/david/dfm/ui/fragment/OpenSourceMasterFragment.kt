@@ -30,7 +30,7 @@ import gc.david.dfm.R
 import gc.david.dfm.adapter.OpenSourceLibraryAdapter
 import gc.david.dfm.databinding.FragmentOpensourcelibraryMasterBinding
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.ui.animation.DetailsTransition
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -46,8 +46,11 @@ class OpenSourceMasterFragment : Fragment() {
     private val viewModel: OpenSourceViewModel by inject()
 
     private val listener = object : OnItemClickListener {
-        override fun onItemClick(model: OpenSourceLibraryModel,
-                                 viewHolder: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder) {
+
+        override fun onItemClick(
+            uiModel: OpenSourceLibraryUiModel,
+            viewHolder: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder
+        ) {
             val openSourceDetailFragment = OpenSourceDetailFragment().apply {
                 val changeBoundsTransition = DetailsTransition()
                 val fadeTransition = Fade()
@@ -57,18 +60,22 @@ class OpenSourceMasterFragment : Fragment() {
                 sharedElementEnterTransition = changeBoundsTransition
                 enterTransition = fadeTransition
                 sharedElementReturnTransition = changeBoundsTransition
-                arguments = bundleOf(OpenSourceDetailFragment.LIBRARY_KEY to model)
+                arguments = bundleOf(OpenSourceDetailFragment.LIBRARY_KEY to uiModel)
             }
 
             requireActivity().supportFragmentManager
-                    .beginTransaction()
-                    .addSharedElement(viewHolder.binding.textViewName,
-                            getString(R.string.transition_opensourcelibrary_name))
-                    .addSharedElement(viewHolder.binding.textViewLicense,
-                            getString(R.string.transition_opensourcelibrary_description))
-                    .replace(R.id.container, openSourceDetailFragment)
-                    .addToBackStack(null)
-                    .commit()
+                .beginTransaction()
+                .addSharedElement(
+                    viewHolder.binding.textViewName,
+                    getString(R.string.transition_opensourcelibrary_name)
+                )
+                .addSharedElement(
+                    viewHolder.binding.textViewLicense,
+                    getString(R.string.transition_opensourcelibrary_description)
+                )
+                .replace(R.id.container, openSourceDetailFragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
 
@@ -94,17 +101,25 @@ class OpenSourceMasterFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentOpensourcelibraryMasterBinding.inflate(layoutInflater, container, false).apply {
-            recyclerView.layoutManager = LinearLayoutManager(context)
-            recyclerView.adapter = adapter
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding =
+            FragmentOpensourcelibraryMasterBinding.inflate(layoutInflater, container, false).apply {
+                recyclerView.layoutManager = LinearLayoutManager(context)
+                recyclerView.adapter = adapter
+            }
         return binding.root
     }
 
     interface OnItemClickListener {
 
-        fun onItemClick(model: OpenSourceLibraryModel, viewHolder: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder)
+        fun onItemClick(
+            uiModel: OpenSourceLibraryUiModel,
+            viewHolder: OpenSourceLibraryAdapter.OpenSourceLibraryViewHolder
+        )
     }
 
     companion object {
