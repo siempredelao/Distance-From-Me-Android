@@ -24,8 +24,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import gc.david.dfm.R
 import gc.david.dfm.databinding.FragmentOpensourcelibraryDetailBinding
-import gc.david.dfm.opensource.presentation.LicensePrinter
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 
 /**
  * Created by david on 24.01.17.
@@ -33,14 +32,14 @@ import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
 class OpenSourceDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentOpensourcelibraryDetailBinding
-    private lateinit var openSourceLibraryModel: OpenSourceLibraryModel
+    private lateinit var openSourceLibraryUiModel: OpenSourceLibraryUiModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val arguments = checkNotNull(arguments)
-        openSourceLibraryModel = arguments.getParcelable(LIBRARY_KEY) ?: error("No model available")
+        val arguments = requireArguments()
+        openSourceLibraryUiModel = arguments.getParcelable(LIBRARY_KEY) ?: error("No model available")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -56,7 +55,7 @@ class OpenSourceDetailFragment : Fragment() {
         return when (item.itemId) {
             R.id.action_open_license_browser -> {
                 val openBrowserIntent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse(openSourceLibraryModel.link))
+                        Intent(Intent.ACTION_VIEW, Uri.parse(openSourceLibraryUiModel.link))
                 startActivity(openBrowserIntent)
                 true
             }
@@ -65,8 +64,8 @@ class OpenSourceDetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.textViewTitle.text = openSourceLibraryModel.name
-        binding.textViewDescription.text = LicensePrinter.print(openSourceLibraryModel, requireContext())
+        binding.textViewTitle.text = openSourceLibraryUiModel.name
+        binding.textViewDescription.text = openSourceLibraryUiModel.licenseDescription
         binding.textViewDescription.movementMethod = ScrollingMovementMethod.getInstance()
     }
 

@@ -31,17 +31,20 @@ import org.mockito.kotlin.whenever
 class GetOpenSourceLibrariesUseCaseTest {
 
     private val repository = mock<OpenSourceRepository>()
+    private val mapper = mock<OpenSourceLibraryMapper>()
 
-    private val useCase = GetOpenSourceLibrariesUseCase(repository)
+    private val useCase = GetOpenSourceLibrariesUseCase(repository, mapper)
 
     @Test
-    fun `returns open source library list on success`() = runTest {
+    fun `returns mapped open source library list on success`() = runTest {
         val openSourceLibraryEntityList = emptyList<OpenSourceLibraryEntity>()
         whenever(repository.getOpenSourceLibraries()).thenReturn(openSourceLibraryEntityList)
+        val openSourceLibraryList = emptyList<OpenSourceLibrary>()
+        whenever(mapper.invoke(openSourceLibraryEntityList)).thenReturn(openSourceLibraryList)
 
         val result = useCase.invoke()
 
-        assertEquals(Result.success(openSourceLibraryEntityList), result)
+        assertEquals(Result.success(openSourceLibraryList), result)
     }
 
     @Test

@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.data.model
+package gc.david.dfm.opensource.domain
 
-/**
- * Created by david on 25.01.17.
- */
-class OpenSourceLibraryEntity(
+import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+
+data class OpenSourceLibrary(
     val name: String,
     val description: String,
     val author: String,
     val version: String,
     val link: String,
-    val licenseCode: String,
-    val licenseYear: String
-) {
+    val license: License,
+    val year: String
+)
+
+enum class License(val code: String) {
+    APACHE_V2(OpenSourceLibraryEntity.APACHE_2_0_LICENSE_CODE),
+    MIT(OpenSourceLibraryEntity.MIT_LICENSE_CODE),
+    EPL_1_0(OpenSourceLibraryEntity.EPL_1_0_LICENSE_CODE),
+    COPYRIGHT(OpenSourceLibraryEntity.COPYRIGHT_LICENSE_CODE);
 
     companion object {
 
-        const val APACHE_2_0_LICENSE_CODE = "Apache-2.0"
-        const val MIT_LICENSE_CODE = "MIT"
-        const val EPL_1_0_LICENSE_CODE = "EPL-1.0"
-        const val COPYRIGHT_LICENSE_CODE = "Copyright"
+        fun fromCode(code: String) =
+            values().find { it.code == code } ?: error("Invalid license with code $code")
     }
 }

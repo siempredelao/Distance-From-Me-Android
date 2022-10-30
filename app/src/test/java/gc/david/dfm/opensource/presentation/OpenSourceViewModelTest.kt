@@ -20,10 +20,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import gc.david.dfm.CoroutineDispatcherRule
 import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
+import gc.david.dfm.opensource.domain.License
+import gc.david.dfm.opensource.domain.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -48,10 +49,10 @@ class OpenSourceViewModelTest {
 
     @Test
     fun `onStart Given use case succeeds Then returns result mapped as presentation models`() = runTest {
-        val libraryEntities = listOf(DUMMY_LIBRARY_ENTITY)
+        val libraryEntities = listOf(DUMMY_LIBRARY)
         whenever(useCase()).thenReturn(Result.success(libraryEntities))
-        val libraryModel = DUMMY_LIBRARY_MODEL
-        whenever(mapper.transform(DUMMY_LIBRARY_ENTITY)).thenReturn(libraryModel)
+        val libraryModel = DUMMY_LIBRARY_UI_MODEL
+        whenever(mapper(libraryEntities)).thenReturn(listOf(libraryModel))
 
         viewModel.onStart()
 
@@ -73,8 +74,9 @@ class OpenSourceViewModelTest {
 
     companion object {
 
-        private val DUMMY_LIBRARY_ENTITY = OpenSourceLibraryEntity("", "", "", "", "", "", "")
-        private val DUMMY_LIBRARY_MODEL = OpenSourceLibraryModel("", "", "", "", "", "", "")
+        private val DUMMY_LIBRARY = OpenSourceLibrary("", "", "", "", "", License.MIT, "")
+        private val DUMMY_LIBRARY_UI_MODEL =
+            OpenSourceLibraryUiModel("", "", "", "", "", "", "", "")
     }
 }
 

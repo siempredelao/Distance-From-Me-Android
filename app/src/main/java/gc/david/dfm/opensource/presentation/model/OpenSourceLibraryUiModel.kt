@@ -23,10 +23,13 @@ import kotlinx.parcelize.Parcelize
  * Created by david on 25.01.17.
  */
 @Parcelize
-data class OpenSourceLibraryModel(val name: String,
-                                  val author: String,
-                                  val version: String,
-                                  val link: String,
-                                  val license: String,
-                                  val year: String,
-                                  val description: String) : Parcelable
+data class OpenSourceLibraryUiModel(
+    val name: String,
+    val description: String,
+    val author: String,
+    val version: String,
+    val link: String,
+    val licenseTitle: String,
+    val licenseDescription: String,
+    val year: String
+) : Parcelable

@@ -51,14 +51,16 @@ import gc.david.dfm.opensource.data.BaseOpenSourceRepository
 import gc.david.dfm.opensource.data.OpenSourceDiskDataSource
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.OpenSourceRepository
+import gc.david.dfm.opensource.presentation.LicenseMapper
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
-import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.settings.presentation.SettingsViewModel
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import gc.david.dfm.ui.activity.MapDrawer
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import gc.david.dfm.opensource.domain.OpenSourceLibraryMapper as OpenSourceLibraryDomainMapper
+import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper as OpenSourceLibraryUiMapper
 
 val appModule = module {
 
@@ -86,7 +88,7 @@ val viewModelModule = module {
 
 val useCaseModule = module {
     // Use cases
-    factory { GetOpenSourceLibrariesUseCase(get()) }
+    factory { GetOpenSourceLibrariesUseCase(get(), get()) }
     factory { GetFaqsUseCase(get()) }
     factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
     factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
@@ -99,7 +101,9 @@ val useCaseModule = module {
     // Mappers
     factory { AddressCollectionEntityDataMapper() }
     factory { ElevationEntityDataMapper() }
-    factory { OpenSourceLibraryMapper() }
+    factory { OpenSourceLibraryUiMapper(get()) }
+    factory { OpenSourceLibraryDomainMapper() }
+    factory { LicenseMapper(get()) }
 }
 
 val repositoryModule = module {

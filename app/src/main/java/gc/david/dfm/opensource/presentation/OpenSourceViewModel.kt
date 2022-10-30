@@ -23,7 +23,7 @@ import gc.david.dfm.R
 import gc.david.dfm.ResourceProvider
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
@@ -33,7 +33,7 @@ class OpenSourceViewModel(
 ) : ViewModel() {
 
     val progressVisibility = MutableLiveData<Boolean>()
-    val openSourceList = MutableLiveData<List<OpenSourceLibraryModel>>()
+    val openSourceList = MutableLiveData<List<OpenSourceLibraryUiModel>>()
     val errorMessage = MutableLiveData<String>()
 
     fun onStart() {
@@ -44,7 +44,7 @@ class OpenSourceViewModel(
             progressVisibility.postValue(false)
 
             result.fold({
-                openSourceList.postValue(it.map(openSourceLibraryMapper::transform))
+                openSourceList.postValue(openSourceLibraryMapper(it))
             },{
                 errorMessage.postValue(resourceProvider.get(R.string.opensourcelibrary_error_message))
             })
