@@ -18,10 +18,11 @@ import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 plugins {
 	id("com.android.application")
 	id("org.jetbrains.kotlin.android")
-	id("org.jetbrains.kotlin.kapt")
+	id("com.google.devtools.ksp")
 	id("org.jetbrains.kotlin.plugin.parcelize")
 	id("com.google.gms.google-services")
 	id("com.google.firebase.crashlytics")
+	id("androidx.room")
 }
 
 android {
@@ -36,12 +37,10 @@ android {
 		versionName = AppVersions.name
 		versionCode = AppVersions.code
 		resourceConfigurations.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
+	}
 
-		javaCompileOptions {
-			annotationProcessorOptions {
-				arguments["room.schemaLocation"] = "$projectDir/schemas"
-			}
-		}
+	room {
+		schemaDirectory("$projectDir/schemas")
 	}
 
 	buildTypes {
@@ -58,8 +57,8 @@ android {
 //			proguardFiles(*proguards.toList().toTypedArray())
 
 //			if (System.getenv("TRAVIS")) {
-//				resValue "string", "maps_api_key", "guess_it"
-//				resValue "string", "maps_geocode_api_key", "guess_it"
+//				buildConfigField("String", "maps_api_key", "guess_it")
+//				buildConfigField("String", "maps_geocode_api_key", "guess_it")
 //			}
 
 			configure<CrashlyticsExtension> {
@@ -85,6 +84,7 @@ android {
 
 	buildFeatures {
 		viewBinding = true
+		buildConfig = true
 	}
 
 	compileOptions {
@@ -114,7 +114,7 @@ dependencies {
 	implementation(Dependencies.coreKtx)
     implementation(Dependencies.roomRuntime)
     implementation(Dependencies.roomKtx)
-    kapt(Dependencies.roomCompiler)
+    ksp(Dependencies.roomCompiler)
 	implementation(Dependencies.timber)
 	implementation(Dependencies.koin)
 	implementation(Dependencies.koinAndroid)

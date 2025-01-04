@@ -17,7 +17,7 @@
 object SdkVersions {
 
     const val min = 22
-    const val target = 31
+    const val target = 35
 }
 
 object AppVersions {
@@ -39,12 +39,12 @@ object LibraryVersions {
     const val crashlytics = "18.2.5"
     const val crashlyticsPlugin = "2.7.1"
     const val googleServices = "4.3.10"
-    const val gradle = "7.0.3"
+    const val gradle = "8.5.2"
     const val graphview = "4.2.2"
     const val gson = "2.8.9"
     const val junit = "4.13.2"
     const val koin = "3.1.4"
-    const val kotlin = "1.6.0"
+    const val kotlin = "2.1.0"
     const val leakCanary = "2.7"
     const val lifecycle = "2.4.0"
     const val lottie = "3.4.0"
@@ -56,7 +56,7 @@ object LibraryVersions {
     const val playServicesLocation = "19.0.0"
     const val playServicesMaps = "18.0.1"
     const val preference = "1.0.0"
-    const val room = "2.4.2"
+    const val room = "2.6.1"
     const val timber = "5.0.1"
 }
 
