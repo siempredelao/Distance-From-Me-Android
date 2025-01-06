@@ -56,7 +56,7 @@ android {
 //			}
 //			proguardFiles(*proguards.toList().toTypedArray())
 
-//			if (System.getenv("TRAVIS")) {
+//			if (isCi()) {
 //				buildConfigField("String", "maps_api_key", "guess_it")
 //				buildConfigField("String", "maps_geocode_api_key", "guess_it")
 //			}
