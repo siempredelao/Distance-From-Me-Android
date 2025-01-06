@@ -16,26 +16,26 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 
 plugins {
-	id("com.android.application")
-	id("org.jetbrains.kotlin.android")
-	id("com.google.devtools.ksp")
-	id("org.jetbrains.kotlin.plugin.parcelize")
-	id("com.google.gms.google-services")
-	id("com.google.firebase.crashlytics")
-	id("androidx.room")
+	alias(libs.plugins.android.application)
+	alias(libs.plugins.jetbrains.kotlin.android)
+	alias(libs.plugins.ksp)
+	id("kotlin-parcelize")
+	alias(libs.plugins.google.services)
+	alias(libs.plugins.crashlytics)
+	alias(libs.plugins.room)
 }
 
 android {
 
 	namespace = "gc.david.dfm"
-	compileSdk = SdkVersions.target
+	compileSdk = libs.versions.targetSdk.get().toInt()
 
 	defaultConfig {
 		applicationId = "gc.david.dfm"
-		minSdk = SdkVersions.min
-		targetSdk = SdkVersions.target
-		versionName = AppVersions.name
-		versionCode = AppVersions.code
+		minSdk = libs.versions.minSdk.get().toInt()
+		targetSdk = libs.versions.targetSdk.get().toInt()
+		versionName = libs.versions.appVersionName.get()
+		versionCode = libs.versions.appVersionCode.get().toInt()
 		resourceConfigurations.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
 	}
 
@@ -99,36 +99,36 @@ android {
 
 dependencies {
 
-	implementation(Dependencies.materialComponents)
-	implementation(Dependencies.preference)
-	implementation(Dependencies.playServicesMaps)
-	implementation(Dependencies.playServicesLocation)
-	implementation(Dependencies.graphview)
-	implementation(Dependencies.crashlytics)
-	implementation(Dependencies.okhttp)
-	implementation(Dependencies.gson)
-	implementation(Dependencies.constraintLayout)
-	debugImplementation(Dependencies.leakCanary)
-	implementation(Dependencies.cardView)
-	implementation(Dependencies.collectionKtx)
-	implementation(Dependencies.coreKtx)
-    implementation(Dependencies.roomRuntime)
-    implementation(Dependencies.roomKtx)
-    ksp(Dependencies.roomCompiler)
-	implementation(Dependencies.timber)
-	implementation(Dependencies.koin)
-	implementation(Dependencies.koinAndroid)
-	implementation(Dependencies.lifecycleViewModel)
-	implementation(Dependencies.lifecycleRuntime)
-	implementation(Dependencies.activityKtx)
-	implementation(Dependencies.lottie)
-	implementation(Dependencies.playCore)
-	implementation(Dependencies.coroutines)
+	implementation(libs.androidx.activity.ktx)
+	implementation(libs.androidx.cardview)
+	implementation(libs.androidx.collection.ktx)
+	implementation(libs.androidx.constraintlayout)
+	implementation(libs.androidx.core.ktx)
+	implementation(libs.androidx.preference)
+	implementation(libs.coroutines)
+	implementation(libs.crashlytics)
+	implementation(libs.graphview)
+	implementation(libs.gson)
+	implementation(libs.koin)
+	implementation(libs.koin.android)
+	debugImplementation(libs.leakcanary)
+	implementation(libs.lifecycle.runtime)
+	implementation(libs.lifecycle.viewmodel)
+	implementation(libs.lottie)
+	implementation(libs.material.components)
+	implementation(libs.okhttp)
+	implementation(libs.play.core)
+	implementation(libs.playservices.location)
+	implementation(libs.playservices.maps)
+	ksp(libs.room.compiler)
+	implementation(libs.room.ktx)
+	implementation(libs.room.runtime)
+	implementation(libs.timber)
 
-    testImplementation(TestDependencies.junit)
-	testImplementation(TestDependencies.mockito)
-    testImplementation(TestDependencies.mockitoInline)
-    testImplementation(TestDependencies.mockitoKotlin)
-	testImplementation(TestDependencies.archCompTesting)
-	testImplementation(TestDependencies.coroutinesTest)
+	testImplementation(libs.androidx.arch.core.testing)
+	testImplementation(libs.coroutines.test)
+	testImplementation(libs.junit)
+	testImplementation(libs.mockito)
+	testImplementation(libs.mockito.inline)
+	testImplementation(libs.mockito.kotlin)
 }
