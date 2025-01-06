@@ -14,23 +14,6 @@
  * limitations under the License.
  */
 
-//import org.gradle.api.tasks.testing.logging.TestLogEvent
-//import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-//buildscript {
-//    repositories {
-//        mavenCentral()
-//        google()
-//    }
-//    dependencies {
-//        classpath Dependencies.gradlePlugin
-//        classpath Dependencies.kotlinGradle
-//        classpath Dependencies.googleServicesPlugin
-//        classpath Dependencies.crashlyticsPlugin
-//    }
-//}
-
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
@@ -39,49 +22,3 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.room) apply false
 }
-
-//plugins {
-//    id("com.hellofresh.gradle.deblibs") version "2.2.0"
-//}
-
-//allprojects {
-//    repositories {
-//        mavenCentral()
-//        google()
-//    }
-
-//    // Log unit test execution events into console + results
-//    tasks.withType(Test) {
-//        testLogging {
-//            // set options for log level LIFECYCLE
-//            events TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.STANDARD_OUT
-//            showExceptions true
-//            exceptionFormat TestExceptionFormat.FULL
-//            showCauses true
-//            showStackTraces true
-//
-//            // set options for log level DEBUG and INFO
-//            debug {
-//                events TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED, TestLogEvent.STANDARD_OUT, TestLogEvent.STANDARD_ERROR
-//                exceptionFormat TestExceptionFormat.FULL
-//            }
-//            info.events = debug.events
-//            info.exceptionFormat = debug.exceptionFormat
-//
-//            afterSuite { desc, result ->
-//                if (!desc.parent) { // will match the outermost suite
-//                    def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-//                    def startItem = '|  ', endItem = '  |'
-//                    def repeatLength = startItem.length() + output.length() + endItem.length()
-//                    println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
-//                }
-//            }
-//        }
-//    }
-//}
-
-//deblibs {
-//    projectName = "Distance From Me"
-//    githubRepo = "siempredelao/Distance-From-Me-Android"
-//    // githubToken = ...
-//}
