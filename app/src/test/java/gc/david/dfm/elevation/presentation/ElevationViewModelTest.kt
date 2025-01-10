@@ -77,6 +77,7 @@ class ElevationViewModelTest {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.failure(Throwable()))
 
         viewModel.onCoordinatesSelected(coordinateList)
 

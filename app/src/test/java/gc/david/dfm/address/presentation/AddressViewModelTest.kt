@@ -72,6 +72,7 @@ class AddressViewModelTest {
     fun `executes coordinates by name use case when connection available`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val locationName = LOCATION_NAME
+        getAddressCoordinatesByNameFailure("Failure")
 
         viewModel.onAddressSearch(locationName)
 
@@ -176,6 +177,7 @@ class AddressViewModelTest {
     @Test
     fun `executes name by coordinates use case when connection available`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
+        getAddressNameByCoordinatesFailure("Failure")
 
         viewModel.onAddressSearch(COORDINATES)
 
