@@ -117,7 +117,7 @@ dependencies {
 	implementation(libs.lottie)
 	implementation(libs.material.components)
 	implementation(libs.okhttp)
-	implementation(libs.play.core)
+	implementation(libs.play.review)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	ksp(libs.room.compiler)

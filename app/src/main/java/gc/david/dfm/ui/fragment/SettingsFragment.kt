@@ -32,8 +32,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
 
-        val bbddPreference = findPreference(DFMPreferences.CLEAR_DATABASE_KEY)
-        bbddPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        val bbddPreference : Preference? = findPreference(DFMPreferences.CLEAR_DATABASE_KEY)
+        bbddPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             viewModel.onClearData()
             false
         }

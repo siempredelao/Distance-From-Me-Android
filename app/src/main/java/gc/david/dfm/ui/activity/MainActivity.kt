@@ -23,6 +23,7 @@ import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
@@ -313,7 +314,7 @@ class MainActivity :
                     googleMap?.isMyLocationEnabled = true
                     binding.fabMyLocation.isVisible = true
 
-                    registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
+                    registerLocationReceiver()
                     startService(Intent(this, GeofencingService::class.java))
                 } else {
                     Timber.tag(TAG).d("onRequestPermissionsResult DENIED")
@@ -323,6 +324,7 @@ class MainActivity :
                 }
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onMapLongClick(point: LatLng) {
@@ -448,7 +450,7 @@ class MainActivity :
 
         super.onStop()
         try {
-            unregisterReceiver(locationReceiver)
+            unregisterLocationReceiver()
         } catch (exception: IllegalArgumentException) {
             Timber.tag(TAG).d("onStop receiver not registered, do nothing")
         }
@@ -464,7 +466,7 @@ class MainActivity :
 
         super.onStart()
         if (isLocationPermissionGranted) {
-            registerReceiver(locationReceiver, IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION))
+            registerLocationReceiver()
             startService(Intent(this, GeofencingService::class.java))
             googleMap?.isMyLocationEnabled = true
             binding.fabMyLocation.isVisible = true
@@ -564,6 +566,25 @@ class MainActivity :
 
         val addressCoordinates = address.coordinates
         mainViewModel.onPositionByNameResolved(addressCoordinates)
+    }
+
+    private fun registerLocationReceiver() {
+        if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(
+                locationReceiver,
+                IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION),
+                RECEIVER_EXPORTED
+            )
+        } else {
+            registerReceiver(
+                locationReceiver,
+                IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION)
+            )
+        }
+    }
+
+    private fun unregisterLocationReceiver() {
+        unregisterReceiver(locationReceiver)
     }
 
     companion object {

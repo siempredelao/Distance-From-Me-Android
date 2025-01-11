@@ -21,9 +21,9 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.tasks.Task
 import gc.david.dfm.R
 import timber.log.Timber
 
@@ -49,7 +49,7 @@ object InAppReviewHandler {
                 Timber.tag(TAG).d("showRateApp success")
                 val reviewInfo: ReviewInfo = task.result
                 val flow: Task<Void> = reviewManager.launchReviewFlow(activity, reviewInfo)
-                flow.addOnCompleteListener { Timber.tag("asdf").i("Review process finished") }
+                flow.addOnCompleteListener { Timber.tag(TAG).i("Review process finished") }
             } else {
                 Timber.tag(TAG).d("showRateApp failure")
                 // There was some problem, continue regardless of the result.

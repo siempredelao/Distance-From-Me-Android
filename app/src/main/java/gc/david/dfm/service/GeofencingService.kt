@@ -50,27 +50,30 @@ class GeofencingService : Service() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                sendUpdate(locationResult.lastLocation)
+                locationResult.lastLocation?.let { sendUpdate(it) }
             }
         }
 
         fusedLocationClient
             .lastLocation
-            .addOnSuccessListener {
-                    lastKnownLocation -> sendUpdate(lastKnownLocation)
-            }
+            .addOnSuccessListener { lastKnownLocation -> sendUpdate(lastKnownLocation) }
             .addOnFailureListener {
                 Timber.tag(TAG).e("Error trying to get last GPS location")
             }
 
-        locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS
+        locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS
+        ).apply {
             // Set the interval ceiling to one minute
-            fastestInterval = LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS
-            fusedLocationClient
-                .requestLocationUpdates(this, locationCallback!!, Looper.getMainLooper())
+            setMinUpdateIntervalMillis(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS)
         }
+            .build()
+            .also {
+                // Start location tracking
+                fusedLocationClient
+                    .requestLocationUpdates(it, locationCallback!!, Looper.getMainLooper())
+            }
 
         return START_STICKY
     }
