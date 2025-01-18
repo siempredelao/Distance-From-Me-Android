@@ -114,10 +114,6 @@
 
     <!-- ACTIVITY FEEDBACK -->
     <string name="toast_send_feedback_error">There are no email clients installed</string>
-    <string name="feedback_device_info_comments" translatable="false">%s\n\nYour comments:\n</string>
-    <string name="feedback_email_subject" translatable="false">[Distance From Me] Feedback</string>
-
-    <string name="faq_error_message" translatable="false">Unable to get questions, try again later.</string>
 
     <string name="transition_opensourcelibrary_name" translatable="false">transition_opensourcelibrary_name</string>
     <string name="transition_opensourcelibrary_description" translatable="false">transition_opensourcelibrary_description</string>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.common
 
 import android.content.Context
 import androidx.annotation.StringRes

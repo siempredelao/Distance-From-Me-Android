@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.activity
+package gc.david.dfm.faq.presentation.activity
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.adapter.FAQAdapter
-import gc.david.dfm.databinding.ActivityHelpAndFeedbackBinding
-import gc.david.dfm.faq.presentation.FaqViewModel
+import gc.david.dfm.faq.databinding.ActivityHelpAndFeedbackBinding
+import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
 import org.koin.android.ext.android.inject
 
 class HelpAndFeedbackActivity : AppCompatActivity() {
@@ -40,7 +40,7 @@ class HelpAndFeedbackActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHelpAndFeedbackBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(tbMain.tbMain)
+            setSupportActionBar(tbMain as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             recyclerView.layoutManager = LinearLayoutManager(this@HelpAndFeedbackActivity)
             recyclerView.itemAnimator = DefaultItemAnimator().apply { addDuration = 1000 }

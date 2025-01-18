@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import gc.david.dfm.R
 import gc.david.dfm.databinding.ActivityAboutBinding
 import gc.david.dfm.ui.fragment.OpenSourceMasterFragment
@@ -34,10 +35,9 @@ class AboutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivityAboutBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(tbMain.tbMain)
+            setSupportActionBar(tbMain as Toolbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()

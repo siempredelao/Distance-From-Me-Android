@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.presentation
+package gc.david.dfm.faq.presentation.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.R
-import gc.david.dfm.ResourceProvider
+import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.faq.R
 import gc.david.dfm.faq.data.model.Faq
 import gc.david.dfm.faq.domain.GetFaqsUseCase
 import kotlinx.coroutines.launch
 
-class FaqViewModel(
+internal class FaqViewModel(
     private val getFaqsUseCase: GetFaqsUseCase,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {

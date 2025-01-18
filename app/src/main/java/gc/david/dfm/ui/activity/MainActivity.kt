@@ -32,6 +32,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
@@ -52,6 +53,7 @@ import gc.david.dfm.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel
+import gc.david.dfm.faq.presentation.activity.HelpAndFeedbackActivity
 import gc.david.dfm.inappreview.InAppReviewHandler
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
@@ -154,7 +156,7 @@ class MainActivity :
             fabMyLocation.setOnClickListener { onMyLocationClick() }
             fabShowChart.setOnClickListener { onShowChartClick() }
 
-            setSupportActionBar(tbMain.tbMain)
+            setSupportActionBar(tbMain as Toolbar)
             supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
                 setHomeButtonEnabled(true)
@@ -235,11 +237,11 @@ class MainActivity :
                 event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
             })
             showLoadDistancesItem.observe(this@MainActivity, { visible ->
-                val loadItem = binding.tbMain.tbMain.menu.findItem(R.id.action_load)
+                val loadItem = (binding.tbMain as Toolbar).menu.findItem(R.id.action_load)
                 loadItem?.isVisible = visible
             })
             showForceCrashItem.observe(this@MainActivity, { visible ->
-                val crashItem = binding.tbMain.tbMain.menu.findItem(R.id.action_crash)
+                val crashItem = (binding.tbMain as Toolbar).menu.findItem(R.id.action_crash)
                 crashItem?.isVisible = visible
             })
             selectFromDistancesLoaded.observe(this@MainActivity, { event ->
@@ -367,7 +369,7 @@ class MainActivity :
     private fun handleSearchIntent(intent: Intent) {
         val query = intent.getStringExtra(SearchManager.QUERY) ?: return
         mainViewModel.handleSearchIntent(query)
-        binding.tbMain.tbMain.menu.findItem(R.id.action_search).collapseActionView()
+        (binding.tbMain as Toolbar).menu.findItem(R.id.action_search).collapseActionView()
     }
     //endregion
 

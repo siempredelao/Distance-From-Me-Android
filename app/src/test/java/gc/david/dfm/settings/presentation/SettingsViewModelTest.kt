@@ -17,8 +17,8 @@
 package gc.david.dfm.settings.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import gc.david.dfm.CoroutineDispatcherRule
-import gc.david.dfm.ResourceProvider
+import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.distance.domain.ClearDistancesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

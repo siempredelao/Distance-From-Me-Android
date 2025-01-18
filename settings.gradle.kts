@@ -30,3 +30,6 @@ dependencyResolutionManagement {
 }
 
 include(":app")
+include(":common")
+include(":faq")
+include(":test-support")

@@ -20,6 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import gc.david.dfm.R
 import gc.david.dfm.databinding.ActivitySettingsBinding
 import gc.david.dfm.ui.fragment.SettingsFragment
@@ -30,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivitySettingsBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(tbMain.tbMain)
+            setSupportActionBar(tbMain as Toolbar)
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

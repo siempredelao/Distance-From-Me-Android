@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.testsupport
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

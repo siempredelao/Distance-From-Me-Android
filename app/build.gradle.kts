@@ -124,6 +124,8 @@ dependencies {
 	implementation(libs.room.ktx)
 	implementation(libs.room.runtime)
 	implementation(libs.timber)
+	implementation(project(":faq"))
+	implementation(project(":common"))
 
 	testImplementation(libs.androidx.arch.core.testing)
 	testImplementation(libs.coroutines.test)
@@ -131,4 +133,5 @@ dependencies {
 	testImplementation(libs.mockito)
 	testImplementation(libs.mockito.inline)
 	testImplementation(libs.mockito.kotlin)
+	testImplementation(project(":test-support"))
 }

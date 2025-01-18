@@ -41,7 +41,6 @@ import gc.david.dfm.faq.data.BaseFaqRepository
 import gc.david.dfm.faq.data.FaqDiskDataSource
 import gc.david.dfm.faq.domain.FaqRepository
 import gc.david.dfm.faq.domain.GetFaqsUseCase
-import gc.david.dfm.faq.presentation.FaqViewModel
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
@@ -68,7 +67,6 @@ val appModule = module {
     single { arrayOf(DefaultUnitInitializer(), FirebaseInitializer(), LoggingInitializer(get())) }
     single { Initializers(get()) }
     single<PreferencesProvider> { DefaultPreferencesProvider(get()) }
-    single { ResourceProvider(get()) }
     single { MapDrawer(get()) }
     single { DistanceModeProvider() }
     single { CurrentLocationProvider() }
@@ -76,7 +74,6 @@ val appModule = module {
 
 val viewModelModule = module {
 
-    viewModel { FaqViewModel(get(), get()) }
     viewModel { OpenSourceViewModel(get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ShowInfoViewModel(get(), get(), get()) }

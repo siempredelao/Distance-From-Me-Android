@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.adapter
+package gc.david.dfm.faq.presentation.activity
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
-import gc.david.dfm.databinding.ViewFeedbackCardItemBinding
 import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.databinding.ViewFeedbackCardItemBinding
 
 /**
  * Created by david on 14.12.16.

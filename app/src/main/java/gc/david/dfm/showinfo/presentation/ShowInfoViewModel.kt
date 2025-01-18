@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.Event
 import gc.david.dfm.R
-import gc.david.dfm.ResourceProvider
+import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
 import kotlinx.coroutines.async

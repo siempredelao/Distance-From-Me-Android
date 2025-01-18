@@ -19,8 +19,8 @@ package gc.david.dfm.address.presentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.CoroutineDispatcherRule
-import gc.david.dfm.ResourceProvider
+import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection

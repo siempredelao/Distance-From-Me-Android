@@ -23,6 +23,7 @@ import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.R
@@ -50,7 +51,7 @@ class ShowInfoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityShowInfoBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(tbMain.tbMain)
+            setSupportActionBar(tbMain as Toolbar)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
 

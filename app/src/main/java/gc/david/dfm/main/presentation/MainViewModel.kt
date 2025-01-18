@@ -25,6 +25,7 @@ import gc.david.dfm.*
 import gc.david.dfm.Utils.toLatLng
 import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.address.presentation.ConnectionIssuesData
+import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.database.Distance
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceMode

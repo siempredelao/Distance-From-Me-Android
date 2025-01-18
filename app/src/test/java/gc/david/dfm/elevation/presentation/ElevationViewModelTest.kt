@@ -19,7 +19,7 @@ package gc.david.dfm.elevation.presentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.CoroutineDispatcherRule
+import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel

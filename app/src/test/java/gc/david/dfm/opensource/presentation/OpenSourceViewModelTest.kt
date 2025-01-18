@@ -17,14 +17,14 @@
 package gc.david.dfm.opensource.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import gc.david.dfm.CoroutineDispatcherRule
 import gc.david.dfm.R
-import gc.david.dfm.ResourceProvider
+import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.License
 import gc.david.dfm.opensource.domain.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
+import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

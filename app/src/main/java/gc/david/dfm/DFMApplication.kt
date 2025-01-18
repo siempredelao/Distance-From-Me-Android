@@ -17,8 +17,14 @@
 package gc.david.dfm
 
 import android.app.Application
-import gc.david.dfm.di.*
-import gc.david.dfm.initializers.*
+import gc.david.dfm.common.commonModule
+import gc.david.dfm.di.appModule
+import gc.david.dfm.di.repositoryModule
+import gc.david.dfm.di.storageModule
+import gc.david.dfm.di.useCaseModule
+import gc.david.dfm.di.viewModelModule
+import gc.david.dfm.faq.faqModule
+import gc.david.dfm.initializers.Initializers
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -35,11 +41,15 @@ class DFMApplication : Application() {
 
         startKoin {
             androidContext(this@DFMApplication)
-            modules(appModule,
-                    viewModelModule,
-                    useCaseModule,
-                    repositoryModule,
-                    storageModule)
+            modules(
+                appModule,
+                viewModelModule,
+                useCaseModule,
+                repositoryModule,
+                storageModule,
+                commonModule,
+                faqModule
+            )
         }
 
         initializers.init(this)
