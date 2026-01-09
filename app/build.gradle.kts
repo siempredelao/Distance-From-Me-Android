@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 David Aguiar Gonzalez
+ * Copyright (c) 2026 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	alias(libs.plugins.android.application)
@@ -36,7 +37,7 @@ android {
 		targetSdk = libs.versions.targetSdk.get().toInt()
 		versionName = libs.versions.appVersionName.get()
 		versionCode = libs.versions.appVersionCode.get().toInt()
-		resourceConfigurations.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
+		androidResources.localeFilters.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
 	}
 
 	room {
@@ -92,8 +93,11 @@ android {
 		targetCompatibility = JavaVersion.VERSION_11
 	}
 
-	kotlinOptions {
-		jvmTarget = "11"
+}
+
+kotlin {
+	compilerOptions {
+		jvmTarget.set(JvmTarget.JVM_11)
 	}
 }
 
