@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 David Aguiar Gonzalez
+ * Copyright (c) 2026 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class GeofencingService : Service() {
 
         fusedLocationClient
             .lastLocation
-            .addOnSuccessListener { lastKnownLocation -> sendUpdate(lastKnownLocation) }
+            .addOnSuccessListener { lastKnownLocation -> lastKnownLocation?.let { sendUpdate(it) } }
             .addOnFailureListener {
                 Timber.tag(TAG).e("Error trying to get last GPS location")
             }
