@@ -24,6 +24,7 @@ import android.text.InputType
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.maps.model.LatLng
@@ -69,7 +70,9 @@ class SaveDistanceDialogFragment : DialogFragment() {
         if (bundle == null || bundle.isEmpty) {
             error("Arguments should not be empty.")
         }
-        val positionsList = requireNotNull(bundle.getParcelableArrayList<LatLng>(BUNDLE_POSITION_LIST))
+        val positionsList = requireNotNull(
+            BundleCompat.getParcelableArrayList(bundle, BUNDLE_POSITION_LIST, LatLng::class.java)
+        )
         val distance = requireNotNull(bundle.getString(BUNDLE_DISTANCE))
 
         viewModel.onStart(positionsList, distance)

@@ -23,6 +23,7 @@ import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.appcompat.widget.Toolbar
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
@@ -89,8 +90,12 @@ class ShowInfoActivity : AppCompatActivity() {
         Timber.tag(TAG).d("loadData")
 
         val positionsList =
-                intent.getParcelableArrayListExtra<LatLng>(POSITIONS_LIST_EXTRA_KEY)
-                        ?: error("No positions available")
+            IntentCompat.getParcelableArrayListExtra(
+                intent,
+                POSITIONS_LIST_EXTRA_KEY,
+                LatLng::class.java
+            )
+                ?: error("No positions available")
         val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)!!
         viewModel.onStart(positionsList, distance)
     }

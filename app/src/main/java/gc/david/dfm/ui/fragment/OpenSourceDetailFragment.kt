@@ -21,6 +21,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.*
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import gc.david.dfm.R
 import gc.david.dfm.databinding.FragmentOpensourcelibraryDetailBinding
@@ -39,7 +40,9 @@ class OpenSourceDetailFragment : Fragment() {
         setHasOptionsMenu(true)
 
         val arguments = requireArguments()
-        openSourceLibraryUiModel = arguments.getParcelable(LIBRARY_KEY) ?: error("No model available")
+        openSourceLibraryUiModel =
+            BundleCompat.getParcelable(arguments, LIBRARY_KEY, OpenSourceLibraryUiModel::class.java)
+                ?: error("No model available")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
