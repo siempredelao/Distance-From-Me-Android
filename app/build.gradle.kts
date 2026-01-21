@@ -29,7 +29,7 @@ plugins {
 android {
 
 	namespace = "gc.david.dfm"
-	compileSdk = libs.versions.targetSdk.get().toInt()
+	compileSdk = libs.versions.compileSdk.get().toInt()
 
 	defaultConfig {
 		applicationId = "gc.david.dfm"
