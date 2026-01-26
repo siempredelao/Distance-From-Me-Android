@@ -77,7 +77,6 @@ dependencies {
     testImplementation(libs.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.mockito.kotlin)
     testImplementation(project(":test-support"))
 }

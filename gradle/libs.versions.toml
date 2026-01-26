@@ -31,7 +31,7 @@ leakCanary = "2.14"
 lifecycle = "2.10.0"
 lottie = "5.2.0"
 materialComponents = "1.13.0"
-mockito = "4.8.0"
+mockito = "5.22.0"
 mockitoKotlin = "4.0.0"
 okhttp = "4.12.0"
 playReview = "2.0.2"
@@ -74,7 +74,6 @@ androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", versi
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 junit = { module = "junit:junit", version.ref = "junit" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 
 [plugins]
