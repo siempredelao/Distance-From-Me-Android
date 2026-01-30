@@ -38,6 +38,10 @@
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme">
 
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".ui.activity.OnboardActivity"
             android:exported="true"
