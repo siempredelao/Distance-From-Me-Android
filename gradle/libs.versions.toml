@@ -9,7 +9,7 @@ appVersionCode = "30"
 appVersionName = "3.5"
 
 # Library versions
-activityKtx = "1.9.3"
+activityKtx = "1.12.4"
 archCompTesting = "2.2.0"
 cardView = "1.0.0"
 collectionKtx = "1.5.0"
