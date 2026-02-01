@@ -32,7 +32,7 @@ import gc.david.dfm.databinding.FragmentOpensourcelibraryMasterBinding
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.ui.animation.DetailsTransition
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 /**
@@ -43,7 +43,7 @@ class OpenSourceMasterFragment : Fragment() {
     private lateinit var binding: FragmentOpensourcelibraryMasterBinding
     private lateinit var adapter: OpenSourceLibraryAdapter
 
-    private val viewModel: OpenSourceViewModel by inject()
+    private val viewModel: OpenSourceViewModel by viewModel()
 
     private val listener = object : OnItemClickListener {
 

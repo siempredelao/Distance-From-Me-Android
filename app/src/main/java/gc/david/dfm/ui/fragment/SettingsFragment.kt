@@ -23,11 +23,11 @@ import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.DFMPreferences
 import gc.david.dfm.R
 import gc.david.dfm.settings.presentation.SettingsViewModel
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    val viewModel: SettingsViewModel by inject()
+    val viewModel: SettingsViewModel by viewModel()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)

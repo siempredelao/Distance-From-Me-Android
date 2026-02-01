@@ -21,7 +21,7 @@ import gc.david.dfm.faq.data.FaqDiskDataSource
 import gc.david.dfm.faq.domain.FaqRepository
 import gc.david.dfm.faq.domain.GetFaqsUseCase
 import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val faqModule = module {

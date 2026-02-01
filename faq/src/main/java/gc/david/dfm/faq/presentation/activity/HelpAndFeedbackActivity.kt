@@ -27,14 +27,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.faq.databinding.ActivityHelpAndFeedbackBinding
 import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
-import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HelpAndFeedbackActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHelpAndFeedbackBinding
     private lateinit var faqAdapter: FAQAdapter
 
-    private val viewModel: FaqViewModel by inject()
+    private val viewModel: FaqViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
