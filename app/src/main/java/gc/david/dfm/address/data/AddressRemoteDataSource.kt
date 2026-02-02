@@ -48,7 +48,7 @@ class AddressRemoteDataSource(context: Context) {
 
         val response = client.newCall(request).await()
         val addressCollectionEntity =
-                gson.fromJson(response.body!!.charStream(), AddressCollectionEntity::class.java)
+                gson.fromJson(response.body.charStream(), AddressCollectionEntity::class.java)
         return addressCollectionEntity
     }
 

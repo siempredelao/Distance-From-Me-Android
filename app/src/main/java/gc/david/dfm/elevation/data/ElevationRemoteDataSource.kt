@@ -43,7 +43,7 @@ class ElevationRemoteDataSource(context: Context) {
                 .build()
         val response = client.newCall(request).await()
         val elevationEntity =
-                gson.fromJson(response.body!!.charStream(), ElevationEntity::class.java)
+                gson.fromJson(response.body.charStream(), ElevationEntity::class.java)
         return elevationEntity
     }
 
