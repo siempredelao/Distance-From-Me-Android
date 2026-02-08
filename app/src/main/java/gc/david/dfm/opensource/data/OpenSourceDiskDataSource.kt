@@ -39,7 +39,7 @@ class OpenSourceDiskDataSource {
             "Room",
             "The Room persistence library provides an abstraction layer over SQLite to allow for more robust database access while harnessing the full power of SQLite.",
             "The Android Open Source Project",
-            "2.6.1",
+            "2.8.4",
             "https://developer.android.com/topic/libraries/architecture/room",
             "Apache-2.0",
             "2016"
@@ -48,7 +48,7 @@ class OpenSourceDiskDataSource {
             "Firebase Crashlytics",
             "The most powerful, yet lightest weight crash reporting solution.",
             "Google",
-            "19.3.0",
+            "19.4.4",
             "https://firebase.google.com/docs/crashlytics",
             "Copyright",
             "2017"
@@ -57,17 +57,17 @@ class OpenSourceDiskDataSource {
             "Koin",
             "A pragmatic lightweight dependency injection framework for Kotlin developers.",
             "Arnaud GIULIANI",
-            "3.1.4",
+            "4.1.0",
             "https://github.com/InsertKoinIO/koin",
             "Apache-2.0",
-            "2017-2023"
+            "2017-2025"
         )
         private val OKHTTP = OpenSourceLibraryEntity(
             "OkHttp",
             "An HTTP+HTTP/2 client for Android and Java applications.",
             "Square, Inc.",
-            "4.12.0",
-            "http://square.github.io/okhttp/",
+            "5.3.2",
+            "https://square.github.io/okhttp/",
             "Apache-2.0",
             "2019"
         )
@@ -75,7 +75,7 @@ class OpenSourceDiskDataSource {
             "Gson",
             "A Java serialization/deserialization library that can convert Java Objects into JSON and back.",
             "Google Inc.",
-            "2.11.0",
+            "2.13.2",
             "https://github.com/google/gson",
             "Apache-2.0",
             "2008"
@@ -84,7 +84,7 @@ class OpenSourceDiskDataSource {
             "ConstraintLayout",
             "ConstraintLayout allows you to create large and complex layouts with a flat view hierarchy (no nested view groups).",
             "The Android Open Source Project",
-            "2.2.0",
+            "2.2.1",
             "https://developer.android.com/training/constraint-layout/index.html",
             "Apache-2.0",
             "2007-2017"
@@ -93,7 +93,7 @@ class OpenSourceDiskDataSource {
             "LeakCanary",
             "A memory leak detection library for Android and Java.",
             "Square, Inc.",
-            "2.9.1",
+            "2.14",
             "https://github.com/square/leakcanary",
             "Apache-2.0",
             "2015"
@@ -111,8 +111,8 @@ class OpenSourceDiskDataSource {
             "Mockito",
             "Most popular Mocking framework for unit tests written in Java.",
             "Mockito contributors",
-            "4.8.0",
-            "http://site.mockito.org/",
+            "5.22.0",
+            "https://site.mockito.org/",
             "MIT",
             "2007"
         )
