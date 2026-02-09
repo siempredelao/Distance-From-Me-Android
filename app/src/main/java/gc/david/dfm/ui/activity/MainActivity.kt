@@ -25,7 +25,6 @@ import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -109,7 +108,7 @@ class MainActivity :
                 R.id.menu_current_position -> {
                     mainViewModel.onDistanceFromCurrentPositionSet()
                     menuItem.isChecked = true
-                    if (SDK_INT >= M && !isLocationPermissionGranted) {
+                    if (!isLocationPermissionGranted) {
                         Snackbar.make(binding.drawerLayout,
                                 "This feature needs location permissions.",
                                 Snackbar.LENGTH_INDEFINITE)
@@ -289,7 +288,7 @@ class MainActivity :
 
         resetMap()
 
-        if (SDK_INT >= M && !isLocationPermissionGranted) {
+        if (!isLocationPermissionGranted) {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
         } else {
             Utils.toastIt(R.string.toast_loading_position, appContext)
