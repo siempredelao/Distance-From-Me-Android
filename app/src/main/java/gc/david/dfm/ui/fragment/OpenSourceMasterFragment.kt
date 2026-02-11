@@ -86,17 +86,17 @@ class OpenSourceMasterFragment : Fragment() {
         adapter = OpenSourceLibraryAdapter(listener)
 
         with(viewModel) {
-            progressVisibility.observe(this@OpenSourceMasterFragment, { visible ->
+            progressVisibility.observe(this@OpenSourceMasterFragment) { visible ->
                 binding.progressBar.isVisible = visible
                 binding.recyclerView.isVisible = !visible
-            })
-            openSourceList.observe(this@OpenSourceMasterFragment, { list ->
+            }
+            openSourceList.observe(this@OpenSourceMasterFragment) { list ->
                 adapter.add(list)
-            })
-            errorMessage.observe(this@OpenSourceMasterFragment, { message ->
+            }
+            errorMessage.observe(this@OpenSourceMasterFragment) { message ->
                 Timber.tag(TAG).e(Exception(message))
                 Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_LONG).show()
-            })
+            }
             onStart()
         }
     }

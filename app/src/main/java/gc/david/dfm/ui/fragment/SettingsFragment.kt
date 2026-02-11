@@ -39,9 +39,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         with(viewModel) {
-            resultMessage.observe(this@SettingsFragment, {
+            resultMessage.observe(this@SettingsFragment) {
                 Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
-            })
+            }
         }
     }
 }

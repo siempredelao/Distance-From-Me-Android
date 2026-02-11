@@ -57,27 +57,27 @@ class ShowInfoActivity : AppCompatActivity() {
         }
 
         with(viewModel) {
-            originAddress.observe(this@ShowInfoActivity, { originAddress ->
+            originAddress.observe(this@ShowInfoActivity) { originAddress ->
                 binding.textViewOriginAddress.text = originAddress
-            })
-            destinationAddress.observe(this@ShowInfoActivity, { destinationAddress ->
+            }
+            destinationAddress.observe(this@ShowInfoActivity) { destinationAddress ->
                 binding.textViewDestinationAddress.text = destinationAddress
-            })
-            distanceMessage.observe(this@ShowInfoActivity, { distance ->
+            }
+            distanceMessage.observe(this@ShowInfoActivity) { distance ->
                 binding.textViewDistance.text = distance
-            })
-            errorMessage.observe(this@ShowInfoActivity, { event ->
+            }
+            errorMessage.observe(this@ShowInfoActivity) { event ->
                 event.getContentIfNotHandled()?.let { Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show() }
-            })
-            progressVisibility.observe(this@ShowInfoActivity, { visible ->
+            }
+            progressVisibility.observe(this@ShowInfoActivity) { visible ->
                 if (visible) showProgress() else hideProgress()
-            })
-            showShareDialogEvent.observe(this@ShowInfoActivity, { event ->
+            }
+            showShareDialogEvent.observe(this@ShowInfoActivity) { event ->
                 event.getContentIfNotHandled()?.let { showShareDialog(it) }
-            })
-            saveDistanceEvent.observe(this@ShowInfoActivity, { event ->
+            }
+            saveDistanceEvent.observe(this@ShowInfoActivity) { event ->
                 event.getContentIfNotHandled()?.let { storeDataLocally(it) }
-            })
+            }
         }
 
         if (savedInstanceState == null) {

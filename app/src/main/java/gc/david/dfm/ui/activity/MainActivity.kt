@@ -180,18 +180,18 @@ class MainActivity :
 
     private fun observeElevationViewModel() {
         with(elevationViewModel) {
-            elevationSamples.observe(this@MainActivity, { elevationModel ->
+            elevationSamples.observe(this@MainActivity) { elevationModel ->
                 buildChart(elevationModel)
-            })
-            hideChartEvent.observe(this@MainActivity, { event ->
+            }
+            hideChartEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { hideChart() }
-            })
+            }
         }
     }
 
     private fun observeAddressViewModel() {
         with(addressViewModel) {
-            connectionIssueEvent.observe(this@MainActivity, { event ->
+            connectionIssueEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
                     Utils.showAlertDialog(
                         Settings.ACTION_SETTINGS,
@@ -202,25 +202,25 @@ class MainActivity :
                         this@MainActivity
                     )
                 }
-            })
-            progressVisibility.observe(this@MainActivity, { visible ->
+            }
+            progressVisibility.observe(this@MainActivity) { visible ->
                 binding.progressView.isVisible = visible
-            })
-            errorMessage.observe(this@MainActivity, { event ->
+            }
+            errorMessage.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
-            })
-            addressFoundEvent.observe(this@MainActivity, { event ->
+            }
+            addressFoundEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { showPositionByName(it) }
-            })
-            multipleAddressesFoundEvent.observe(this@MainActivity, { event ->
+            }
+            multipleAddressesFoundEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { showAddressSelectionDialog(it) }
-            })
+            }
         }
     }
 
     private fun observeMainViewModel() {
         with(mainViewModel) {
-            connectionIssueEvent.observe(this@MainActivity, { event ->
+            connectionIssueEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
                     Utils.showAlertDialog(
                         Settings.ACTION_SETTINGS,
@@ -231,48 +231,47 @@ class MainActivity :
                         this@MainActivity
                     )
                 }
-            })
-            errorMessage.observe(this@MainActivity, { event ->
+            }
+            errorMessage.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
-            })
-            showLoadDistancesItem.observe(this@MainActivity, { visible ->
+            }
+            showLoadDistancesItem.observe(this@MainActivity) { visible ->
                 val loadItem = (binding.tbMain as Toolbar).menu.findItem(R.id.action_load)
                 loadItem?.isVisible = visible
-            })
-            showForceCrashItem.observe(this@MainActivity, { visible ->
+            }
+            showForceCrashItem.observe(this@MainActivity) { visible ->
                 val crashItem = (binding.tbMain as Toolbar).menu.findItem(R.id.action_crash)
                 crashItem?.isVisible = visible
-            })
-            selectFromDistancesLoaded.observe(this@MainActivity, { event ->
+            }
+            selectFromDistancesLoaded.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { showLoadedDistancesDialog(it) }
-            })
-            drawDistance.observe(this@MainActivity, { model ->
+            }
+            drawDistance.observe(this@MainActivity) { model ->
                 drawAndShowMultipleDistances(model)
-            })
-            drawPoints.observe(this@MainActivity, { list ->
+            }
+            drawPoints.observe(this@MainActivity) { list ->
                 googleMap?.let { map ->
                     map.clear()
                     list.forEach { map.addMarker(MarkerOptions().position(it)) }
                 }
-            })
-            zoomMapInto.observe(this@MainActivity, { event ->
+            }
+            zoomMapInto.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
-                    // 17 is a good zoom level for this action
                     googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
                 }
-            })
-            centerMapInto.observe(this@MainActivity, { event ->
+            }
+            centerMapInto.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
                     googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
                 }
-            })
-            searchAddress.observe(this@MainActivity, { event ->
+            }
+            searchAddress.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
                     addressViewModel.onAddressSearch(it)
                 }
-            })
-            resetMap.observe(this@MainActivity, { googleMap?.clear() })
-            hideChart.observe(this@MainActivity, { hideChart() })
+            }
+            resetMap.observe(this@MainActivity) { googleMap?.clear() }
+            hideChart.observe(this@MainActivity) { hideChart() }
         }
     }
 

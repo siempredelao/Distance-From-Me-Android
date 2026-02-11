@@ -41,9 +41,9 @@ class SaveDistanceDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         parseBundle(arguments)
         with(viewModel) {
-            errorMessage.observe(this@SaveDistanceDialogFragment, { message ->
+            errorMessage.observe(this@SaveDistanceDialogFragment) { message ->
                 Utils.toastIt(message, requireContext())
-            })
+            }
         }
     }
 

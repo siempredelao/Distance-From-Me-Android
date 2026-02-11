@@ -49,16 +49,16 @@ class HelpAndFeedbackActivity : AppCompatActivity() {
         }
 
         with(viewModel) {
-            progressVisibility.observe(this@HelpAndFeedbackActivity, { visible ->
+            progressVisibility.observe(this@HelpAndFeedbackActivity) { visible ->
                 binding.progressBar.isVisible = visible
                 binding.recyclerView.isVisible = !visible
-            })
-            faqList.observe(this@HelpAndFeedbackActivity, { faqs ->
+            }
+            faqList.observe(this@HelpAndFeedbackActivity) { faqs ->
                 faqAdapter.addAll(faqs)
-            })
-            errorMessage.observe(this@HelpAndFeedbackActivity, { message ->
+            }
+            errorMessage.observe(this@HelpAndFeedbackActivity) { message ->
                 Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_LONG).show()
-            })
+            }
             onStart()
         }
     }
