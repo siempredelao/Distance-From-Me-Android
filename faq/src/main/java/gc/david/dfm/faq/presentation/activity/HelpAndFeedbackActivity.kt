@@ -63,6 +63,11 @@ class HelpAndFeedbackActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
+    }
+
     companion object {
 
         fun open(activity: Activity) {

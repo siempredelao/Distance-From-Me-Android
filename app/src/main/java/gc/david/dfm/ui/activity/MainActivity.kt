@@ -29,6 +29,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -168,6 +169,15 @@ class MainActivity :
 
             val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
             supportMapFragment.getMapAsync(this@MainActivity)
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            }
         }
 
         observeElevationViewModel()
@@ -418,14 +428,6 @@ class MainActivity :
         }
     }
     //endregion menu handling
-
-    override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
 
     private fun showLoadedDistancesDialog(distances: List<Distance>) {
         DistanceSelectionDialogFragment()
