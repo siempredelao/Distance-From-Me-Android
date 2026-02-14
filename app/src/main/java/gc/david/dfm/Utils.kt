@@ -153,8 +153,7 @@ suspend fun Call.await(): Response {
     return suspendCancellableCoroutine { continuation ->
         enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
-                @Suppress("EXPERIMENTAL_API_USAGE")
-                continuation.resume(response, {})
+                continuation.resume(response) { _, _, _ -> call.cancel() }
             }
 
             override fun onFailure(call: Call, e: IOException) {
