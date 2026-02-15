@@ -167,8 +167,8 @@ class MainActivity :
             nvDrawer.setNavigationItemSelectedListener(onNavigationItemSelectedListener)
             elevationChartView.setOnCloseListener { animateHideChart() }
 
-            val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map2) as SupportMapFragment
-            supportMapFragment.getMapAsync(this@MainActivity)
+            val mapFragment = map2.getFragment<SupportMapFragment>()
+            mapFragment.getMapAsync(this@MainActivity)
         }
 
         onBackPressedDispatcher.addCallback(this) {
