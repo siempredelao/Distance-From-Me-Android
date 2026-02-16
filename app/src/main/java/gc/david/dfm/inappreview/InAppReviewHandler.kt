@@ -82,7 +82,7 @@ object InAppReviewHandler {
         try {
             activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")))
         } catch (e: ActivityNotFoundException) {
-            Timber.tag(TAG).e(Exception("Unable to open Play Store, rooted device?"))
+            Timber.tag(TAG).e(e, "Unable to open Play Store, rooted device?")
         }
     }
 }
