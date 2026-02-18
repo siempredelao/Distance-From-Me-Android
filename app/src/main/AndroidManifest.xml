@@ -74,31 +74,20 @@
             android:name=".ui.activity.ShowInfoActivity"
             android:configChanges="screenSize|keyboardHidden"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.MainActivity" />
-        </activity>
+            android:parentActivityName=".ui.activity.MainActivity" />
 
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.MainActivity" />
-        </activity>
+            android:parentActivityName=".ui.activity.MainActivity" />
 
         <activity
             android:name=".ui.activity.AboutActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName=".ui.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.activity.MainActivity" />
-        </activity>
+            android:parentActivityName=".ui.activity.MainActivity" />
+
 
         <service
             android:name=".service.GeofencingService"
