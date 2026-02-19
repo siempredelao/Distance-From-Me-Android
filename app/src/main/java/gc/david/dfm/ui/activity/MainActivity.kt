@@ -159,7 +159,6 @@ class MainActivity :
             setSupportActionBar(tbMain as Toolbar)
             supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
-                setHomeButtonEnabled(true)
                 val upArrow = ContextCompat.getDrawable(appContext, R.drawable.ic_menu_white_24dp)
                 setHomeAsUpIndicator(upArrow)
             }
