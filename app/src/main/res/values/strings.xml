@@ -28,6 +28,9 @@
     <string name="menu_about_title" translatable="false">Open source</string>
     <string name="menu_open_license_browser_title" translatable="false">Open in browser</string>
 
+    <string name="snackbar_location_permission_needed">This feature needs location permissions.</string>
+    <string name="snackbar_location_permission_action">Settings</string>
+
     <string name="toast_loading_position">Searching your position. Please, wait</string>
     <string name="toast_no_find_address">No backend service available or very poor network signal. Try again in a while</string>
     <string name="toast_no_results">No matches were found</string>

@@ -111,9 +111,9 @@ class MainActivity :
                     menuItem.isChecked = true
                     if (!isLocationPermissionGranted) {
                         Snackbar.make(binding.drawerLayout,
-                                "This feature needs location permissions.",
+                                R.string.snackbar_location_permission_needed,
                                 Snackbar.LENGTH_INDEFINITE)
-                                .setAction("Settings") {
+                                .setAction(R.string.snackbar_location_permission_action) {
                                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                     intent.data = Uri.parse("package:$packageName")
                                     startActivity(intent)
