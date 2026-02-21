@@ -51,6 +51,9 @@
     <string name="navigation_drawer_starting_point_current_position_item">Current position</string>
     <string name="navigation_drawer_starting_point_any_position_item">Any position</string>
 
+    <string name="fab_show_chart_description">Show elevation chart</string>
+    <string name="fab_my_location_description">My location</string>
+
     <string name="elevation_chart_title">Elevation profile (%s)</string>
     <string name="toast_first_point_needed">Starting point needed. Please select a point.</string>
 
