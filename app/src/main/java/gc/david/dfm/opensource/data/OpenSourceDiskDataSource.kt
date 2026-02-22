@@ -31,7 +31,7 @@ class OpenSourceDiskDataSource {
             "Android Graph Library for creating zoomable and scrollable line and bar graphs.",
             "Jonas Gehring",
             "4.2.2",
-            "http://www.android-graphview.org/",
+            "https://github.com/jjoe64/GraphView",
             "Apache-2.0",
             "2016"
         )
@@ -103,7 +103,7 @@ class OpenSourceDiskDataSource {
             "JUnit is a simple framework to write repeatable tests. It is an instance of the xUnit architecture for unit testing frameworks.",
             "JUnit",
             "4.13.2",
-            "http://junit.org/junit4/",
+            "https://junit.org/junit4/",
             "EPL-1.0",
             "2002-2021"
         )
