@@ -92,6 +92,7 @@ class GeofencingService : Service() {
         if (!isLocationUpdate(location.toLatLng(), previousLatLng)) return
 
         val locationIntent = Intent(GEOFENCE_RECEIVER_ACTION).apply {
+            setPackage(applicationContext.packageName)
             val bundle =
                 bundleOf(
                     GEOFENCE_RECEIVER_LATITUDE_KEY to location.latitude,

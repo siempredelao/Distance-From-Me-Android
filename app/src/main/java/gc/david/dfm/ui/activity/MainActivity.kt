@@ -23,8 +23,6 @@ import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import android.net.Uri
-import android.os.Build
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -570,18 +568,12 @@ class MainActivity :
     }
 
     private fun registerLocationReceiver() {
-        if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(
-                locationReceiver,
-                IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION),
-                RECEIVER_EXPORTED
-            )
-        } else {
-            registerReceiver(
-                locationReceiver,
-                IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION)
-            )
-        }
+        ContextCompat.registerReceiver(
+            this,
+            locationReceiver,
+            IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     private fun unregisterLocationReceiver() {
