@@ -22,7 +22,7 @@ import android.app.SearchManager
 import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
-import android.net.Uri
+import androidx.core.net.toUri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -113,7 +113,7 @@ class MainActivity :
                                 Snackbar.LENGTH_INDEFINITE)
                                 .setAction(R.string.snackbar_location_permission_action) {
                                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                    intent.data = Uri.parse("package:$packageName")
+                                    intent.data = "package:$packageName".toUri()
                                     startActivity(intent)
                                 }
                                 .show()

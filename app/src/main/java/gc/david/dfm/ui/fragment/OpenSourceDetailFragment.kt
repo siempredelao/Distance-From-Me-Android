@@ -17,7 +17,7 @@
 package gc.david.dfm.ui.fragment
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.*
@@ -58,7 +58,7 @@ class OpenSourceDetailFragment : Fragment() {
         return when (item.itemId) {
             R.id.action_open_license_browser -> {
                 val openBrowserIntent =
-                        Intent(Intent.ACTION_VIEW, Uri.parse(openSourceLibraryUiModel.link))
+                        Intent(Intent.ACTION_VIEW, openSourceLibraryUiModel.link.toUri())
                 startActivity(openBrowserIntent)
                 true
             }

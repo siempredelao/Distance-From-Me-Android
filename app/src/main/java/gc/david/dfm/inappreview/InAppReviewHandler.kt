@@ -20,7 +20,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -80,7 +80,7 @@ object InAppReviewHandler {
         Timber.tag(TAG).d("openPlayStoreAppPage")
 
         try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=gc.david.dfm")))
+            activity.startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=gc.david.dfm".toUri()))
         } catch (e: ActivityNotFoundException) {
             Timber.tag(TAG).e(e, "Unable to open Play Store, rooted device?")
         }
