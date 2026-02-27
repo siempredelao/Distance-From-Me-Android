@@ -20,7 +20,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +39,7 @@ class HelpAndFeedbackActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHelpAndFeedbackBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(tbMain as Toolbar)
+            setSupportActionBar(tbMain.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             recyclerView.layoutManager = LinearLayoutManager(this@HelpAndFeedbackActivity)
             recyclerView.itemAnimator = DefaultItemAnimator().apply { addDuration = 1000 }

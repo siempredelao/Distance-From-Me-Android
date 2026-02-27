@@ -30,7 +30,6 @@ import android.view.MenuItem
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
@@ -154,7 +153,7 @@ class MainActivity :
             fabMyLocation.setOnClickListener { onMyLocationClick() }
             fabShowChart.setOnClickListener { onShowChartClick() }
 
-            setSupportActionBar(tbMain as Toolbar)
+            setSupportActionBar(tbMain.root)
             supportActionBar?.apply {
                 setDisplayHomeAsUpEnabled(true)
                 val upArrow = ContextCompat.getDrawable(appContext, R.drawable.ic_menu_white_24dp)
@@ -243,11 +242,11 @@ class MainActivity :
                 event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
             }
             showLoadDistancesItem.observe(this@MainActivity) { visible ->
-                val loadItem = (binding.tbMain as Toolbar).menu.findItem(R.id.action_load)
+                val loadItem = binding.tbMain.root.menu.findItem(R.id.action_load)
                 loadItem?.isVisible = visible
             }
             showForceCrashItem.observe(this@MainActivity) { visible ->
-                val crashItem = (binding.tbMain as Toolbar).menu.findItem(R.id.action_crash)
+                val crashItem = binding.tbMain.root.menu.findItem(R.id.action_crash)
                 crashItem?.isVisible = visible
             }
             selectFromDistancesLoaded.observe(this@MainActivity) { event ->
@@ -374,7 +373,7 @@ class MainActivity :
     private fun handleSearchIntent(intent: Intent) {
         val query = intent.getStringExtra(SearchManager.QUERY) ?: return
         mainViewModel.handleSearchIntent(query)
-        (binding.tbMain as Toolbar).menu.findItem(R.id.action_search).collapseActionView()
+        binding.tbMain.root.menu.findItem(R.id.action_search).collapseActionView()
     }
     //endregion
 
