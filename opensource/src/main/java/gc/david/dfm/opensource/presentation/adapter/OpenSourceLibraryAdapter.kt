@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.adapter
+package gc.david.dfm.opensource.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import gc.david.dfm.databinding.ViewOpensourcelibraryItemBinding
+import gc.david.dfm.opensource.databinding.ViewOpensourcelibraryItemBinding
+import gc.david.dfm.opensource.presentation.fragment.OpenSourceMasterFragment.OnItemClickListener
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
-import gc.david.dfm.ui.fragment.OpenSourceMasterFragment.OnItemClickListener
 
 /**
  * Created by david on 24.01.17.

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.activity
+package gc.david.dfm.opensource.presentation.activity
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import gc.david.dfm.R
-import gc.david.dfm.databinding.ActivityAboutBinding
-import gc.david.dfm.ui.fragment.OpenSourceMasterFragment
+import gc.david.dfm.opensource.R
+import gc.david.dfm.opensource.databinding.ActivityAboutBinding
+import gc.david.dfm.opensource.presentation.fragment.OpenSourceMasterFragment
 
 /**
  * Created by david on 24.01.17.

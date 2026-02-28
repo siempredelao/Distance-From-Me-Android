@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.animation
+package gc.david.dfm.opensource.presentation.animation
 
 import android.transition.ChangeBounds
 import android.transition.ChangeTransform

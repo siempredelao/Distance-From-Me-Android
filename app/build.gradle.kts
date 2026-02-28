@@ -128,8 +128,9 @@ dependencies {
 	implementation(libs.room.ktx)
 	implementation(libs.room.runtime)
 	implementation(libs.timber)
-	implementation(project(":faq"))
-	implementation(project(":common"))
+    implementation(project(":common"))
+    implementation(project(":faq"))
+    implementation(project(":opensource"))
 
 	testImplementation(libs.androidx.arch.core.testing)
 	testImplementation(libs.coroutines.test)

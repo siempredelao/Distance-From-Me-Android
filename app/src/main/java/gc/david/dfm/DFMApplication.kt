@@ -24,6 +24,7 @@ import gc.david.dfm.di.storageModule
 import gc.david.dfm.di.useCaseModule
 import gc.david.dfm.di.viewModelModule
 import gc.david.dfm.faq.faqModule
+import gc.david.dfm.opensource.openSourceModule
 import gc.david.dfm.initializers.Initializers
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -48,7 +49,8 @@ class DFMApplication : Application() {
                 repositoryModule,
                 storageModule,
                 commonModule,
-                faqModule
+                faqModule,
+                openSourceModule
             )
         }
 

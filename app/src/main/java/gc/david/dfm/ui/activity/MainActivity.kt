@@ -51,6 +51,7 @@ import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.faq.presentation.activity.HelpAndFeedbackActivity
+import gc.david.dfm.opensource.presentation.activity.AboutActivity
 import gc.david.dfm.inappreview.InAppReviewHandler
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.model.DrawDistanceModel

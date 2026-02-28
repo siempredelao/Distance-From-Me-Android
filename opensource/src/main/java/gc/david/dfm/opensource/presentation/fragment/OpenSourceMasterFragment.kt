@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.fragment
+package gc.david.dfm.opensource.presentation.fragment
 
 import android.os.Bundle
 import android.transition.Fade
@@ -26,12 +26,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.R
-import gc.david.dfm.adapter.OpenSourceLibraryAdapter
-import gc.david.dfm.databinding.FragmentOpensourcelibraryMasterBinding
+import gc.david.dfm.opensource.R
+import gc.david.dfm.opensource.databinding.FragmentOpensourcelibraryMasterBinding
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
+import gc.david.dfm.opensource.presentation.adapter.OpenSourceLibraryAdapter
+import gc.david.dfm.opensource.presentation.animation.DetailsTransition
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
-import gc.david.dfm.ui.animation.DetailsTransition
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 

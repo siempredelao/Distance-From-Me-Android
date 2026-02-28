@@ -17,7 +17,7 @@
 package gc.david.dfm.opensource.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import gc.david.dfm.R
+import gc.david.dfm.opensource.R
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.License

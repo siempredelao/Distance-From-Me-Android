@@ -19,7 +19,7 @@ package gc.david.dfm.opensource.presentation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.R
+import gc.david.dfm.opensource.R
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper

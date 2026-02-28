@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.fragment
+package gc.david.dfm.opensource.presentation.fragment
 
 import android.content.Intent
-import androidx.core.net.toUri
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.*
+import androidx.core.net.toUri
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
-import gc.david.dfm.R
-import gc.david.dfm.databinding.FragmentOpensourcelibraryDetailBinding
+import gc.david.dfm.opensource.R
+import gc.david.dfm.opensource.databinding.FragmentOpensourcelibraryDetailBinding
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 
 /**

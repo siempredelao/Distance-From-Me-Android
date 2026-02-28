@@ -46,21 +46,12 @@ import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.main.presentation.MainViewModel
-import gc.david.dfm.opensource.data.BaseOpenSourceRepository
-import gc.david.dfm.opensource.data.OpenSourceDiskDataSource
-import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
-import gc.david.dfm.opensource.domain.OpenSourceRepository
-import gc.david.dfm.opensource.presentation.LicenseMapper
-import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import gc.david.dfm.settings.presentation.SettingsViewModel
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import gc.david.dfm.ui.activity.MapDrawer
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import gc.david.dfm.opensource.domain.OpenSourceLibraryMapper as OpenSourceLibraryDomainMapper
-import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper as OpenSourceLibraryUiMapper
-
 val appModule = module {
 
     single<ConnectionManager> { DefaultConnectionManager(get()) }
@@ -74,7 +65,6 @@ val appModule = module {
 
 val viewModelModule = module {
 
-    viewModel { OpenSourceViewModel(get(), get(), get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ShowInfoViewModel(get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
@@ -85,7 +75,6 @@ val viewModelModule = module {
 
 val useCaseModule = module {
     // Use cases
-    factory { GetOpenSourceLibrariesUseCase(get(), get()) }
     factory { GetFaqsUseCase(get()) }
     factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
     factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
@@ -98,9 +87,6 @@ val useCaseModule = module {
     // Mappers
     factory { AddressCollectionEntityDataMapper() }
     factory { ElevationEntityDataMapper() }
-    factory { OpenSourceLibraryUiMapper(get()) }
-    factory { OpenSourceLibraryDomainMapper() }
-    factory { LicenseMapper(get()) }
 }
 
 val repositoryModule = module {
@@ -108,13 +94,11 @@ val repositoryModule = module {
     single<DistanceRepository> { BaseDistanceRepository(get()) }
     single<AddressRepository> { BaseAddressRepository(get()) }
     single<ElevationRepository> { BaseElevationRepository(get()) }
-    single<OpenSourceRepository> { BaseOpenSourceRepository(get()) }
     single<FaqRepository> { BaseFaqRepository(get()) }
 
     single { DistanceLocalDataSource(get()) }
     single { AddressRemoteDataSource(get()) }
     single { ElevationRemoteDataSource(get()) }
-    single { OpenSourceDiskDataSource() }
     single { FaqDiskDataSource() }
 }
 

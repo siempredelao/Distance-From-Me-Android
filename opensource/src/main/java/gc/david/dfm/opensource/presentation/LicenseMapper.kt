@@ -16,7 +16,7 @@
 
 package gc.david.dfm.opensource.presentation
 
-import gc.david.dfm.R
+import gc.david.dfm.opensource.R
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.opensource.domain.License
 
