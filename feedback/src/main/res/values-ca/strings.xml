@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_rate_app_title">Puntua aquesta aplicació</string>
+    <string name="dialog_rate_app_message">Si Distance From Me li sembla una bona aplicació, per favor, valore-la amb 5 estrelles y escriga un comentari adequat. Si no és així, també pot comunicar-se amb l\'equip de desenvolupament per a queixar-se d\'algun error o fer algun suggeriment.</string>
+    <string name="dialog_rate_app_positive_button">Obrir Play Store</string>
+    <string name="dialog_rate_app_negative_button">Conta\'ns!</string>
+</resources>

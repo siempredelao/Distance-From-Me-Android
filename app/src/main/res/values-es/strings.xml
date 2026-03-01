@@ -29,10 +29,6 @@
     <string name="dialog_select_address_title">Elija una dirección</string>
     <string name="dialog_load_distances_title">Elija una distancia</string>
     <string name="menu_rate_app_title">Valorar aplicación</string>
-    <string name="dialog_rate_app_title">Valorar esta aplicación</string>
-    <string name="dialog_rate_app_message">Si Distance From Me le parece una buena aplicación, le facilitamos el acceso a Google Play Store para que pueda escribir un comentario. En cualquier caso, puede comunicarse con el equipo de desarrollo si tiene alguna sugerencia, problema,\u2026</string>
-    <string name="dialog_rate_app_positive_button">Ir a Play Store</string>
-    <string name="dialog_rate_app_negative_button">¡Cuéntanos!</string>
     <string name="toast_send_feedback_error">No hay clientes de email disponibles</string>
     <string name="menu_settings_title">Preferencias</string>
     <string name="toast_distances_deleted">Distancias eliminadas</string>

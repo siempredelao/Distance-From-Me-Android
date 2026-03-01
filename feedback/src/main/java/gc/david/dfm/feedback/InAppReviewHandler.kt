@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.inappreview
+package gc.david.dfm.feedback
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -24,7 +24,7 @@ import androidx.core.net.toUri
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
-import gc.david.dfm.R
+import gc.david.dfm.feedback.R
 import timber.log.Timber
 
 object InAppReviewHandler {
@@ -52,7 +52,6 @@ object InAppReviewHandler {
                 flow.addOnCompleteListener { Timber.tag(TAG).i("Review process finished") }
             } else {
                 Timber.tag(TAG).d("showRateApp failure")
-                // There was some problem, continue regardless of the result.
                 showRateAppFallbackDialog(activity)
             }
         }

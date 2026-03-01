@@ -29,10 +29,6 @@
     <string name="dialog_select_address_title">Triï una adreça</string>
     <string name="dialog_load_distances_title">Triï una distància</string>
     <string name="menu_rate_app_title">Puntua aplicació</string>
-    <string name="dialog_rate_app_title">Puntua aquesta aplicació</string>
-    <string name="dialog_rate_app_message">Si Distance From Me li sembla una bona aplicació, per favor, valore-la amb 5 estrelles y escriga un comentari adequat. Si no és així, també pot comunicar-se amb l\'equip de desenvolupament per a queixar-se d\'algun error o fer algun suggeriment.</string>
-    <string name="dialog_rate_app_positive_button">Obrir Play Store</string>
-    <string name="dialog_rate_app_negative_button">Conta\'ns!</string>
     <string name="toast_send_feedback_error">No hi ha clients d\'email disponibles</string>
     <string name="menu_settings_title">Preferències</string>
     <string name="toast_distances_deleted">Distàncies eliminades</string>

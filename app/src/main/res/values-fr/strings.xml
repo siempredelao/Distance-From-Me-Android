@@ -29,10 +29,6 @@
     <string name="dialog_select_address_title">Choisissez une direction</string>
     <string name="dialog_load_distances_title">Choisissez une distance</string>
     <string name="menu_rate_app_title">Noter application</string>
-    <string name="dialog_rate_app_title">Noter cette application</string>
-    <string name="dialog_rate_app_message">Si Distance From Me vous plaît, donnez-lui 5 étoiles et laissez un joli commentaire, s\'il vous plaît. Autrement vous pouvez aussi vous plaindre à propos de quelque erreur ou écrire une suggestion par email à l\'équipe de développement.</string>
-    <string name="dialog_rate_app_positive_button">Aller à Play Store</string>
-    <string name="dialog_rate_app_negative_button">Dites-nous!</string>
     <string name="toast_send_feedback_error">Pas de client de messagerie installé</string>
     <string name="menu_settings_title">Paramètres</string>
     <string name="toast_distances_deleted">Distances éliminées</string>

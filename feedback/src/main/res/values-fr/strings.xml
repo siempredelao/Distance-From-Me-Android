@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_rate_app_title">Noter cette application</string>
+    <string name="dialog_rate_app_message">Si Distance From Me vous plaît, donnez-lui 5 étoiles et laissez un joli commentaire, s\'il vous plaît. Autrement vous pouvez aussi vous plaindre à propos de quelque erreur ou écrire une suggestion par email à l\'équipe de développement.</string>
+    <string name="dialog_rate_app_positive_button">Aller à Play Store</string>
+    <string name="dialog_rate_app_negative_button">Dites-nous!</string>
+</resources>

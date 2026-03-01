@@ -32,5 +32,6 @@ dependencyResolutionManagement {
 include(":app")
 include(":common")
 include(":faq")
+include(":feedback")
 include(":opensource")
 include(":test-support")

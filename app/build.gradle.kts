@@ -121,7 +121,6 @@ dependencies {
 	implementation(libs.lottie)
 	implementation(libs.material.components)
 	implementation(libs.okhttp)
-	implementation(libs.play.review)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	ksp(libs.room.compiler)
@@ -130,6 +129,7 @@ dependencies {
 	implementation(libs.timber)
     implementation(project(":common"))
     implementation(project(":faq"))
+    implementation(project(":feedback"))
     implementation(project(":opensource"))
 
 	testImplementation(libs.androidx.arch.core.testing)
