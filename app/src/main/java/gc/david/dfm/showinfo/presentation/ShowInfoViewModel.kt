@@ -33,7 +33,8 @@ import timber.log.Timber
 class ShowInfoViewModel(
     private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
     private val resourceProvider: ResourceProvider,
-    private val connectionManager: ConnectionManager
+    private val connectionManager: ConnectionManager,
+    private val addressFormatter: AddressFormatter
 ) : ViewModel() {
 
     val originAddress = MutableLiveData<String>()
@@ -100,16 +101,12 @@ class ShowInfoViewModel(
     }
 
     private fun setAddress(address: String, latLng: LatLng, isOrigin: Boolean) {
+        val formatted = addressFormatter.format(address, latLng.latitude, latLng.longitude)
         if (isOrigin) {
-            originAddress.value = formatAddress(address, latLng.latitude, latLng.longitude)
+            originAddress.value = formatted
         } else {
-            destinationAddress.value = formatAddress(address, latLng.latitude, latLng.longitude)
+            destinationAddress.value = formatted
         }
-    }
-
-    // TODO: move to mapper class
-    private fun formatAddress(address: String?, latitude: Double, longitude: Double): String {
-        return "$address\n\n($latitude,$longitude)"
     }
 
     private fun showError(errorMessage: String, isOrigin: Boolean) {

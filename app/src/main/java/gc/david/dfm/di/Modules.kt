@@ -47,6 +47,7 @@ import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.settings.presentation.SettingsViewModel
+import gc.david.dfm.showinfo.presentation.AddressFormatter
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import gc.david.dfm.ui.activity.MapDrawer
@@ -66,7 +67,7 @@ val appModule = module {
 val viewModelModule = module {
 
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { ShowInfoViewModel(get(), get(), get()) }
+    viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
     viewModel { ElevationViewModel(get(), get(), get()) }
     viewModel { AddressViewModel(get(), get(), get(), get()) }
@@ -87,6 +88,7 @@ val useCaseModule = module {
     // Mappers
     factory { AddressCollectionEntityDataMapper() }
     factory { ElevationEntityDataMapper() }
+    factory { AddressFormatter() }
 }
 
 val repositoryModule = module {
