@@ -59,6 +59,7 @@
     <string name="alias_dialog_accept">Acettare</string>
     <string name="alias_dialog_with_name_toast">Distanza \"%s\" salvata correttamente</string>
     <string name="alias_dialog_no_name_toast">Distanza salvata correttamente</string>
+    <string name="save_distance_error">Impossibile salvare la distanza. Riprova più tardi.</string>
     <string name="preference_centre_map_title">Centra la mappa</string>
     <string name="dialog_connection_problems_title">Problema di connessione</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsiasi posizione</string>

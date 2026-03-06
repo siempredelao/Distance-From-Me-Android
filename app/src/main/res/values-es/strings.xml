@@ -59,6 +59,7 @@
     <string name="alias_dialog_accept">Aceptar</string>
     <string name="alias_dialog_with_name_toast">Distancia \"%s\" almacenada correctamente</string>
     <string name="alias_dialog_no_name_toast">Distancia almacenada correctamente</string>
+    <string name="save_distance_error">No se pudo guardar la distancia. Inténtelo de nuevo más tarde.</string>
     <string name="toast_first_point_needed">Por favor, señale un punto inicial.</string>
     <string name="no_animation_item">Sin animación</string>
     <string name="navigation_drawer_starting_point_any_position_item">Cualquier posición</string>

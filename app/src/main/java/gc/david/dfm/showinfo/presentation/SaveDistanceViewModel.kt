@@ -60,8 +60,8 @@ class SaveDistanceViewModel(
                     errorMessage.postValue(resourceProvider.get(R.string.alias_dialog_no_name_toast))
                 }
             },{
-                Timber.tag(TAG).e(it , "Unable to insert distance into database.")
-                errorMessage.postValue("Unable to save distance. Try again later.") // TODO translate
+                Timber.tag(TAG).e(it, "Unable to insert distance into database.")
+                errorMessage.postValue(resourceProvider.get(R.string.save_distance_error))
             })
         }
     }

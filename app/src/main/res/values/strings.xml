@@ -109,6 +109,7 @@
     <string name="alias_dialog_accept">Accept</string>
     <string name="alias_dialog_with_name_toast">Distance \"%s\" correctly saved</string>
     <string name="alias_dialog_no_name_toast">Distance correctly saved</string>
+    <string name="save_distance_error">Unable to save distance. Try again later.</string>
 
 
     <!-- ACTIVITY FEEDBACK -->
