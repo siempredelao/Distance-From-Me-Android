@@ -121,6 +121,7 @@ dependencies {
 	implementation(libs.lottie)
 	implementation(libs.material.components)
 	implementation(libs.okhttp)
+	implementation(libs.okhttp.coroutines)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	ksp(libs.room.compiler)

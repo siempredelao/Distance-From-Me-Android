@@ -19,10 +19,10 @@ package gc.david.dfm.elevation.data
 import android.content.Context
 import com.google.gson.Gson
 import gc.david.dfm.R
-import gc.david.dfm.await
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.coroutines.executeAsync
 import timber.log.Timber
 
 /**
@@ -41,7 +41,7 @@ class ElevationRemoteDataSource(context: Context) {
         val request = Request.Builder().url(url)
                 .header("content-type", "application/json")
                 .build()
-        val response = client.newCall(request).await()
+        val response = client.newCall(request).executeAsync()
         val elevationEntity =
                 gson.fromJson(response.body.charStream(), ElevationEntity::class.java)
         return elevationEntity

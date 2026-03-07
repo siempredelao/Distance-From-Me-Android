@@ -61,6 +61,7 @@ lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", v
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 material-components = { module = "com.google.android.material:material", version.ref = "materialComponents" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-coroutines = { module = "com.squareup.okhttp3:okhttp-coroutines", version.ref = "okhttp" }
 play-review = { module = "com.google.android.play:review", version.ref = "playReview"}
 playservices-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 playservices-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
