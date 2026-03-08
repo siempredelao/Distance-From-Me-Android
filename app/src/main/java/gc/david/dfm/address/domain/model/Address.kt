@@ -21,4 +21,5 @@ import com.google.android.gms.maps.model.LatLng
 /**
  * Created by david on 13.01.17.
  */
-class Address(val formattedAddress: String, val coordinates: LatLng)
+data class Address(val formattedAddress: String, val coordinates: LatLng)
+    
