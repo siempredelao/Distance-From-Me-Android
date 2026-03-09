@@ -35,22 +35,22 @@ enum class GeocodingStatus {
     INVALID_REQUEST,
 
     /**
-     * We are over our quota.
+     * The API request exceeded the daily quota limit, billing is not enabled, or the API key is invalid.
+     */
+    OVER_DAILY_LIMIT,
+
+    /**
+     * Too many requests have been sent in a short time period.
      */
     OVER_QUERY_LIMIT,
 
     /**
-     * The request was denied. The web page is not allowed to use the geocoder.
+     * The request was denied by the server.
      */
     REQUEST_DENIED,
 
     /**
      * The request could not be processed due to a server error. The request may succeed if you try again.
      */
-    UNKNOWN_ERROR,
-
-    /**
-     * The request timed out or there was a problem contacting the Google servers. The request may succeed if you try again.
-     */
-    ERROR
+    UNKNOWN_ERROR
 }

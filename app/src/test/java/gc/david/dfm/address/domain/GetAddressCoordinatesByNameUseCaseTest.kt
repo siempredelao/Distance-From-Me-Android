@@ -24,6 +24,7 @@ import gc.david.dfm.address.domain.model.AddressCollection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.mock
@@ -83,7 +84,7 @@ class GetAddressCoordinatesByNameUseCaseTest {
 
         val result = useCase.invoke(LOCATION_NAME)
 
-        assertEquals(GeocodingStatus.INVALID_REQUEST.toString(), result.exceptionOrNull()!!.message)
+        assertTrue(result.exceptionOrNull() is GeocodingException.InvalidRequest)
     }
 
     @Test

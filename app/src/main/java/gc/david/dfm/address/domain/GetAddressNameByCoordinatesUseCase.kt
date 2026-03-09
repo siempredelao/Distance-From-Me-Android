@@ -38,8 +38,7 @@ class GetAddressNameByCoordinatesUseCase(
                 val limitedAddressCollection = limitAmountOfAddresses(addressCollection)
                 Result.success(limitedAddressCollection)
             } else {
-                // TODO transform to different meaningful exceptions
-                Result.failure(Exception(addressCollectionEntity.status.toString()))
+                Result.failure(GeocodingException.from(addressCollectionEntity.status))
             }
         } catch (exception: Throwable) {
             Result.failure(exception)
