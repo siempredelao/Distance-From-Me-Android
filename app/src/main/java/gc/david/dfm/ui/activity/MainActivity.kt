@@ -44,7 +44,7 @@ import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
 import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
-import gc.david.dfm.adapter.systemService
+import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding

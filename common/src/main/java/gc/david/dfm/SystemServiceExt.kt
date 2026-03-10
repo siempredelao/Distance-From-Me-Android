@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm
 
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DefaultConnectionManager
-import gc.david.dfm.DefaultGeocodeApiKeyProvider
-import gc.david.dfm.GeocodeApiKeyProvider
-import org.koin.dsl.module
+import android.content.Context
 
-val commonModule = module {
-
-    single { ResourceProvider(get()) }
-    single<ConnectionManager> { DefaultConnectionManager(get()) }
-    single<GeocodeApiKeyProvider> { DefaultGeocodeApiKeyProvider(get()) }
+inline fun <reified T> Context.systemService(name: String): T {
+    return getSystemService(name) as T
 }
-

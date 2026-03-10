@@ -16,20 +16,7 @@
 
 package gc.david.dfm
 
-import android.content.Context
-import android.net.ConnectivityManager
-import gc.david.dfm.adapter.systemService
+interface GeocodeApiKeyProvider {
 
-/**
- * Created by david on 10.01.17.
- */
-class DefaultConnectionManager(private val context: Context) : ConnectionManager {
-
-    override fun isOnline(): Boolean = isOnline(context)
-
-    private fun isOnline(context: Context): Boolean {
-        val connectivityManager = context.systemService<ConnectivityManager>(Context.CONNECTIVITY_SERVICE)
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo?.isConnected == true
-    }
+    fun getApiKey(): String
 }

@@ -17,7 +17,6 @@
 package gc.david.dfm.adapter
 
 import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,9 +65,4 @@ class DistanceAdapter(
 
         private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     }
-}
-
-// TODO move to utils or some better place
-inline fun <reified T> Context.systemService(name: String): T {
-    return getSystemService(name) as T
 }

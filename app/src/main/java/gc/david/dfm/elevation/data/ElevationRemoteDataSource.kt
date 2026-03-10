@@ -16,23 +16,19 @@
 
 package gc.david.dfm.elevation.data
 
-import android.content.Context
 import com.google.gson.Gson
-import gc.david.dfm.R
+import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
 import timber.log.Timber
 
-/**
- * Created by david on 05.01.17.
- */
-class ElevationRemoteDataSource(context: Context) {
+class ElevationRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
 
     private val client = OkHttpClient()
     private val gson = Gson()
-    private val geocodeApiKey: String = context.resources.getString(R.string.maps_geocode_api_key)
+    private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
         val urlNoKey = "https://maps.googleapis.com/maps/api/elevation/json?path=$coordinatesPath&samples=$maxSamples"

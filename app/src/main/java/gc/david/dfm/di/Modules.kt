@@ -55,7 +55,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 val appModule = module {
 
-    single<ConnectionManager> { DefaultConnectionManager(get()) }
     single { arrayOf(DefaultUnitInitializer(), FirebaseInitializer(), LoggingInitializer(get())) }
     single { Initializers(get()) }
     single<PreferencesProvider> { DefaultPreferencesProvider(get()) }

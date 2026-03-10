@@ -18,9 +18,7 @@ package gc.david.dfm
 
 import android.content.Context
 
-/**
- * Created by david on 10.01.17.
- */
+// TODO Consider moving to :common once DFMPreferences is decoupled from app-specific configuration
 class DefaultPreferencesProvider(private val context: Context) : PreferencesProvider {
 
     override fun shouldShowElevationChart(): Boolean {

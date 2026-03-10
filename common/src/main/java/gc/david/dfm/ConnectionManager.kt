@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm
 
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DefaultConnectionManager
-import gc.david.dfm.DefaultGeocodeApiKeyProvider
-import gc.david.dfm.GeocodeApiKeyProvider
-import org.koin.dsl.module
+interface ConnectionManager {
 
-val commonModule = module {
-
-    single { ResourceProvider(get()) }
-    single<ConnectionManager> { DefaultConnectionManager(get()) }
-    single<GeocodeApiKeyProvider> { DefaultGeocodeApiKeyProvider(get()) }
+    fun isOnline(): Boolean
 }
-

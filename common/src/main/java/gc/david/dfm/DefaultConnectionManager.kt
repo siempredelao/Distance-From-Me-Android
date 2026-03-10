@@ -16,10 +16,16 @@
 
 package gc.david.dfm
 
-/**
- * Created by david on 10.01.17.
- */
-interface ConnectionManager {
+import android.content.Context
+import android.net.ConnectivityManager
 
-    fun isOnline(): Boolean
+class DefaultConnectionManager(private val context: Context) : ConnectionManager {
+
+    override fun isOnline(): Boolean = isOnline(context)
+
+    private fun isOnline(context: Context): Boolean {
+        val connectivityManager = context.systemService<ConnectivityManager>(Context.CONNECTIVITY_SERVICE)
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo?.isConnected == true
+    }
 }

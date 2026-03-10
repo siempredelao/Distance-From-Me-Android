@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm
 
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DefaultConnectionManager
-import gc.david.dfm.DefaultGeocodeApiKeyProvider
-import gc.david.dfm.GeocodeApiKeyProvider
-import org.koin.dsl.module
+interface PreferencesProvider {
 
-val commonModule = module {
+    fun shouldShowElevationChart(): Boolean
 
-    single { ResourceProvider(get()) }
-    single<ConnectionManager> { DefaultConnectionManager(get()) }
-    single<GeocodeApiKeyProvider> { DefaultGeocodeApiKeyProvider(get()) }
+    fun getMeasureUnitPreference(): String
 }
-

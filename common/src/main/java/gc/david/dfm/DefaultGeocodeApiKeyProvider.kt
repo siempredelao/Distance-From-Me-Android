@@ -16,13 +16,12 @@
 
 package gc.david.dfm
 
-/**
- * Created by david on 10.01.17.
- */
-interface PreferencesProvider {
+import android.content.Context
+import gc.david.dfm.common.R
 
-    fun shouldShowElevationChart(): Boolean
+class DefaultGeocodeApiKeyProvider(context: Context) : GeocodeApiKeyProvider {
 
-    fun getMeasureUnitPreference(): String
+    private val apiKey = context.getString(R.string.maps_geocode_api_key)
 
+    override fun getApiKey(): String = apiKey
 }
