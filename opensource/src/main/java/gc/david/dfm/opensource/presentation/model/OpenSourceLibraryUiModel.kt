@@ -16,13 +16,6 @@
 
 package gc.david.dfm.opensource.presentation.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-/**
- * Created by david on 25.01.17.
- */
-@Parcelize
 data class OpenSourceLibraryUiModel(
     val name: String,
     val description: String,
@@ -32,4 +25,4 @@ data class OpenSourceLibraryUiModel(
     val licenseTitle: String,
     val licenseDescription: String,
     val year: String
-) : Parcelable
+)

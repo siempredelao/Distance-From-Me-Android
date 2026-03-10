@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.presentation.animation
+package gc.david.dfm.opensource.presentation.model
 
-import android.transition.ChangeBounds
-import android.transition.ChangeTransform
-import android.transition.TransitionSet
+sealed interface OpenSourceUiState {
 
-/**
- * Created by david on 25.01.17.
- */
-class DetailsTransition : TransitionSet() {
+    data object Loading : OpenSourceUiState
 
-    init {
-        ordering = ORDERING_TOGETHER
-        addTransition(ChangeBounds()).addTransition(ChangeTransform())
-    }
+    data class Content(val libraries: List<OpenSourceLibraryUiModel>) : OpenSourceUiState
+
+    data class Error(val message: String) : OpenSourceUiState
 }

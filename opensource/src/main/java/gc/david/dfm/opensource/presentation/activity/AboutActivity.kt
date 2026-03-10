@@ -19,40 +19,70 @@ package gc.david.dfm.opensource.presentation.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import gc.david.dfm.opensource.R
-import gc.david.dfm.opensource.databinding.ActivityAboutBinding
-import gc.david.dfm.opensource.presentation.fragment.OpenSourceMasterFragment
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.core.net.toUri
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.opensource.presentation.OpenSourceViewModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
+import gc.david.dfm.opensource.presentation.ui.OpenSourceDetailScreen
+import gc.david.dfm.opensource.presentation.ui.OpenSourceListScreen
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Created by david on 24.01.17.
- */
-class AboutActivity : AppCompatActivity() {
+class AboutActivity : ComponentActivity() {
 
+    private val viewModel: OpenSourceViewModel by viewModel()
+
+    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ActivityAboutBinding.inflate(layoutInflater).apply {
-            setContentView(root)
-            setSupportActionBar(tbMain.root)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
+        setContent {
+            val uiState by viewModel.uiState.observeAsState(OpenSourceUiState.Loading)
+            val navController = rememberNavController()
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                    .add(R.id.container, OpenSourceMasterFragment())
-                    .commit()
-        }
-    }
+            DfmTheme {
+                SharedTransitionLayout {
+                    NavHost(navController = navController, startDestination = "list") {
+                        composable("list") {
+                            OpenSourceListScreen(
+                                uiState = uiState,
+                                animatedVisibilityScope = this@composable,
+                                onLibraryClick = { index -> navController.navigate("detail/$index") },
+                                onBack = { onBackPressedDispatcher.onBackPressed() },
+                            )
+                        }
+                        composable("detail/{index}") { backStackEntry ->
+                            val index = backStackEntry.arguments
+                                ?.getString("index")
+                                ?.toIntOrNull()
+                                ?: return@composable
+                            val library = (uiState as? OpenSourceUiState.Content)
+                                ?.libraries
+                                ?.getOrNull(index)
+                                ?: return@composable
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressedDispatcher.onBackPressed()
-                true
+                            OpenSourceDetailScreen(
+                                library = library,
+                                index = index,
+                                animatedVisibilityScope = this@composable,
+                                onBack = { navController.popBackStack() },
+                                onOpenInBrowser = { url ->
+                                    startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+                                },
+                            )
+                        }
+                    }
+                }
             }
-            else -> super.onOptionsItemSelected(item)
         }
+        viewModel.onStart()
     }
 
     companion object {

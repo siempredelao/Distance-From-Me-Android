@@ -16,14 +16,15 @@
 
 package gc.david.dfm.opensource.presentation
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.opensource.R
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
-import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
@@ -32,22 +33,25 @@ class OpenSourceViewModel(
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
-    val progressVisibility = MutableLiveData<Boolean>()
-    val openSourceList = MutableLiveData<List<OpenSourceLibraryUiModel>>()
-    val errorMessage = MutableLiveData<String>()
+    private val _uiState = MutableLiveData<OpenSourceUiState>(OpenSourceUiState.Loading)
+    val uiState: LiveData<OpenSourceUiState> = _uiState
 
     fun onStart() {
-        progressVisibility.value = true
+        _uiState.value = OpenSourceUiState.Loading
 
         viewModelScope.launch {
             val result = getOpenSourceLibrariesUseCase()
-            progressVisibility.postValue(false)
 
-            result.fold({
-                openSourceList.postValue(openSourceLibraryMapper(it))
-            },{
-                errorMessage.postValue(resourceProvider.get(R.string.opensourcelibrary_error_message))
-            })
+            result.fold(
+                onSuccess = { libraries ->
+                    _uiState.postValue(OpenSourceUiState.Content(openSourceLibraryMapper(libraries)))
+                },
+                onFailure = {
+                    _uiState.postValue(
+                        OpenSourceUiState.Error(resourceProvider.get(R.string.opensourcelibrary_error_message))
+                    )
+                }
+            )
         }
     }
 }

@@ -17,17 +17,19 @@
 package gc.david.dfm.opensource.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import gc.david.dfm.opensource.R
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.License
 import gc.david.dfm.opensource.domain.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
+import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -48,7 +50,7 @@ class OpenSourceViewModelTest {
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
-    fun `onStart Given use case succeeds Then returns result mapped as presentation models`() = runTest {
+    fun `onStart Given use case succeeds Then returns Content with mapped models`() = runTest {
         val libraryEntities = listOf(DUMMY_LIBRARY)
         whenever(useCase()).thenReturn(Result.success(libraryEntities))
         val libraryModel = DUMMY_LIBRARY_UI_MODEL
@@ -57,11 +59,12 @@ class OpenSourceViewModelTest {
         viewModel.onStart()
 
         verify(useCase)()
-        assertEquals(listOf(libraryModel), viewModel.openSourceList.value)
+        val state = viewModel.uiState.value
+        assertEquals(OpenSourceUiState.Content(listOf(libraryModel)), state)
     }
 
     @Test
-    fun `onStart Given use case fails Then returns error message`() = runTest {
+    fun `onStart Given use case fails Then returns Error with message`() = runTest {
         whenever(useCase()).thenReturn(Result.failure(Throwable()))
         val errorMessage = "error message"
         whenever(resourceProvider.get(R.string.opensourcelibrary_error_message)).thenReturn(errorMessage)
@@ -69,7 +72,8 @@ class OpenSourceViewModelTest {
         viewModel.onStart()
 
         verify(useCase)()
-        assertEquals(errorMessage, viewModel.errorMessage.value)
+        val state = viewModel.uiState.value
+        assertEquals(OpenSourceUiState.Error(errorMessage), state)
     }
 
     companion object {
@@ -79,4 +83,3 @@ class OpenSourceViewModelTest {
             OpenSourceLibraryUiModel("", "", "", "", "", "", "", "")
     }
 }
-

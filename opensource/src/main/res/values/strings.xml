@@ -16,10 +16,9 @@
   -->
 
 <resources>
-    <string name="menu_open_license_browser_title" translatable="false">Open in browser</string>
-
-    <string name="transition_opensourcelibrary_name" translatable="false">transition_opensourcelibrary_name</string>
-    <string name="transition_opensourcelibrary_description" translatable="false">transition_opensourcelibrary_description</string>
+    <string name="opensource_title">Open source licenses</string>
+    <string name="opensource_navigate_back">Navigate back</string>
+    <string name="opensource_open_in_browser">Open in browser</string>
     <string name="opensourcelibrary_error_message" translatable="false">Unable to get open source libraries, try again later.</string>
 
     <!-- Licenses -->
