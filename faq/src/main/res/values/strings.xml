@@ -17,6 +17,8 @@
 
 <resources>
 
+    <string name="faq_title">Help &amp; feedback</string>
+    <string name="faq_navigate_back">Navigate back</string>
     <string name="faq_error_message" translatable="false">Unable to get questions, try again later.</string>
 
 </resources>

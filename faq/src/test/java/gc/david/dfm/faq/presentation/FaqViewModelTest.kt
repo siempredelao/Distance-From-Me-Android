@@ -22,10 +22,12 @@ import gc.david.dfm.faq.R
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.faq.data.model.Faq
 import gc.david.dfm.faq.domain.GetFaqsUseCase
+import gc.david.dfm.faq.presentation.model.FaqUiState
 import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -45,18 +47,21 @@ class FaqViewModelTest {
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
-    fun `onStart Given use case succeeds Then returns FAQs`() = runTest {
-        val faqSet = setOf(mock<Faq>())
+    fun `onStart Given use case succeeds Then returns Content with FAQs`() = runTest {
+        val faq = Faq("question", "answer")
+        val faqSet = setOf(faq)
         whenever(useCase()).thenReturn(Result.success(faqSet))
 
         viewModel.onStart()
 
         verify(useCase)()
-        assertEquals(faqSet, viewModel.faqList.value)
+        val state = viewModel.uiState.value
+        assertTrue(state is FaqUiState.Content)
+        assertEquals(faqSet.toList(), (state as FaqUiState.Content).faqs)
     }
 
     @Test
-    fun `onStart Given use case fails Then returns error message`() = runTest {
+    fun `onStart Given use case fails Then returns Error with message`() = runTest {
         whenever(useCase()).thenReturn(Result.failure(Throwable()))
         val errorMessage = "error message"
         whenever(resourceProvider.get(R.string.faq_error_message)).thenReturn(errorMessage)
@@ -64,6 +69,8 @@ class FaqViewModelTest {
         viewModel.onStart()
 
         verify(useCase)()
-        assertEquals(errorMessage, viewModel.errorMessage.value)
+        val state = viewModel.uiState.value
+        assertTrue(state is FaqUiState.Error)
+        assertEquals(errorMessage, (state as FaqUiState.Error).message)
     }
 }

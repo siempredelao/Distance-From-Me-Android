@@ -19,52 +19,32 @@ package gc.david.dfm.faq.presentation.activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.faq.databinding.ActivityHelpAndFeedbackBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.faq.presentation.model.FaqUiState
+import gc.david.dfm.faq.presentation.ui.FaqScreen
 import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HelpAndFeedbackActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityHelpAndFeedbackBinding
-    private lateinit var faqAdapter: FAQAdapter
+class HelpAndFeedbackActivity : ComponentActivity() {
 
     private val viewModel: FaqViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityHelpAndFeedbackBinding.inflate(layoutInflater).apply {
-            setContentView(root)
-            setSupportActionBar(tbMain.root)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            recyclerView.layoutManager = LinearLayoutManager(this@HelpAndFeedbackActivity)
-            recyclerView.itemAnimator = DefaultItemAnimator().apply { addDuration = 1000 }
-            faqAdapter = FAQAdapter()
-            recyclerView.adapter = faqAdapter
+        setContent {
+            val uiState by viewModel.uiState.observeAsState(FaqUiState.Loading)
+            DfmTheme {
+                FaqScreen(
+                    uiState = uiState,
+                    onBack = { onBackPressedDispatcher.onBackPressed() },
+                )
+            }
         }
-
-        with(viewModel) {
-            progressVisibility.observe(this@HelpAndFeedbackActivity) { visible ->
-                binding.progressBar.isVisible = visible
-                binding.recyclerView.isVisible = !visible
-            }
-            faqList.observe(this@HelpAndFeedbackActivity) { faqs ->
-                faqAdapter.addAll(faqs)
-            }
-            errorMessage.observe(this@HelpAndFeedbackActivity) { message ->
-                Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_LONG).show()
-            }
-            onStart()
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
+        viewModel.onStart()
     }
 
     companion object {
