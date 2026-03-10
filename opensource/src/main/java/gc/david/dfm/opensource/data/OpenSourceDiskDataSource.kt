@@ -117,15 +117,56 @@ class OpenSourceDiskDataSource {
             "2007"
         )
 
+        private val COROUTINES = OpenSourceLibraryEntity(
+            "Kotlin Coroutines",
+            "Library support for Kotlin coroutines with multiplatform support.",
+            "JetBrains s.r.o.",
+            "1.10.2",
+            "https://github.com/Kotlin/kotlinx.coroutines",
+            "Apache-2.0",
+            "2016-2021"
+        )
+        private val LOTTIE = OpenSourceLibraryEntity(
+            "Lottie",
+            "Render After Effects animations natively on Android and iOS, Web, and React Native.",
+            "Airbnb, Inc.",
+            "6.7.1",
+            "https://github.com/airbnb/lottie-android",
+            "Apache-2.0",
+            "2017"
+        )
+        private val MATERIAL_COMPONENTS = OpenSourceLibraryEntity(
+            "Material Components for Android",
+            "Modular and customizable Material Design UI components for Android.",
+            "The Android Open Source Project",
+            "1.13.0",
+            "https://github.com/material-components/material-components-android",
+            "Apache-2.0",
+            "2017-2020"
+        )
+        private val TIMBER = OpenSourceLibraryEntity(
+            "Timber",
+            "A logger with a small, extensible API which provides utility on top of Android's normal Log class.",
+            "Jake Wharton",
+            "5.0.1",
+            "https://github.com/JakeWharton/timber",
+            "Apache-2.0",
+            "2013"
+        )
+
         private val OPEN_SOURCE_LIBRARIES = listOf(
             GRAPHVIEW,
             ROOM,
             CRASHLYTICS,
+            COROUTINES,
             KOIN,
+            LOTTIE,
+            MATERIAL_COMPONENTS,
             OKHTTP,
             GSON,
             CONSTRAINT_LAYOUT,
             LEAK_CANARY,
+            TIMBER,
             JUNIT,
             MOCKITO
         )
