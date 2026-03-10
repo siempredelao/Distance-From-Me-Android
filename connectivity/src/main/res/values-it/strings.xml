@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_connection_problems_title">Problema di connessione</string>
+    <string name="dialog_connection_problems_message">Nessuna connessione Wireless attivata, vi piacerebbe attivarla?</string>
+    <string name="dialog_connection_problems_negative_button">Non in questo momento</string>
+    <string name="dialog_connection_problems_positive_button">Attivare</string>
+</resources>

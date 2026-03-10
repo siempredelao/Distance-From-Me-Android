@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_connection_problems_title">Problema en la conexión</string>
+    <string name="dialog_connection_problems_message">Ninguna conexión inalámbrica activada, ¿desea activarla?</string>
+    <string name="dialog_connection_problems_negative_button">Ahora no</string>
+    <string name="dialog_connection_problems_positive_button">Activar</string>
+</resources>

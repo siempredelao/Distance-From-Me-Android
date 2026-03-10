@@ -16,8 +16,6 @@
 
 package gc.david.dfm
 
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -48,28 +46,6 @@ object Utils {
         Timber.tag(TAG).d("toastIt message=%s", context.getString(stringRes))
 
         Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
-    }
-
-    fun showAlertDialog(action: String,
-                        title: String,
-                        message: String,
-                        positiveButton: String,
-                        negativeButton: String,
-                        activity: Activity) {
-        Timber.tag(TAG).d("showAlertDialog")
-
-        AlertDialog.Builder(activity).apply {
-            setTitle(title)
-            setMessage(message)
-            setCancelable(false)
-            setPositiveButton(positiveButton) { _, _ ->
-                val optionsIntent = Intent(action)
-                activity.startActivity(optionsIntent)
-            }
-            setNegativeButton(negativeButton) { dialog, _ -> dialog.cancel() }
-        }
-                .create()
-                .show()
     }
 
     fun dumpIntentToString(intent: Intent?): String {

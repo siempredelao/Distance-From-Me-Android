@@ -23,9 +23,6 @@
     <string name="toast_no_results">Resultati non trovati.</string>
     <string name="toast_loading_position">Cercando posizione, aspettare per favore.</string>
     <string name="menu_load_title">Caricare distanza</string>
-    <string name="dialog_connection_problems_negative_button">Non in questo momento</string>
-    <string name="dialog_connection_problems_message">Nessuna connessione Wireless attivata, vi piacerebbe attivarla?</string>
-    <string name="dialog_connection_problems_positive_button">Attivare</string>
     <string name="dialog_select_address_title">Scegliere un indirizzo</string>
     <string name="dialog_load_distances_title">Scegliere una distanza</string>
     <string name="menu_rate_app_title">Valuta app</string>
@@ -60,7 +57,6 @@
     <string name="alias_dialog_no_name_toast">Distanza salvata correttamente</string>
     <string name="save_distance_error">Impossibile salvare la distanza. Riprova più tardi.</string>
     <string name="preference_centre_map_title">Centra la mappa</string>
-    <string name="dialog_connection_problems_title">Problema di connessione</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsiasi posizione</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posizione attuale</string>
     <string name="no_animation_item">Nessuna animazione</string>

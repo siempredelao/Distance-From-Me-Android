@@ -23,9 +23,6 @@
     <string name="toast_no_results">No s\'han trobat resultats.</string>
     <string name="toast_loading_position">Cercant la seva posició. Per favor, espere uns instants</string>
     <string name="menu_load_title">Carregar distància</string>
-    <string name="dialog_connection_problems_negative_button">Ara no</string>
-    <string name="dialog_connection_problems_message">Cap connexió inalàmbrica activada, desitja activar-la?</string>
-    <string name="dialog_connection_problems_positive_button">Activar</string>
     <string name="dialog_select_address_title">Triï una adreça</string>
     <string name="dialog_load_distances_title">Triï una distància</string>
     <string name="menu_rate_app_title">Puntua aplicació</string>
@@ -63,7 +60,6 @@
     <string name="navigation_drawer_starting_point_any_position_item">Qualsevol posició</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posició actual</string>
     <string name="no_animation_item">Sense animació</string>
-    <string name="dialog_connection_problems_title">Problema en la connexió</string>
     <string name="toast_first_point_needed">Si us plau, assenyale un punt inicial.</string>
     <string name="category_unit_title">Unitat de mesura</string>
     <string name="preference_unit_dialog_title">Seleccione unitat</string>

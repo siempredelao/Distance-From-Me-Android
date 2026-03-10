@@ -23,9 +23,6 @@
     <string name="toast_no_results">No se han encontrado resultados.</string>
     <string name="toast_loading_position">Buscando su posición. Por favor, espere unos instantes</string>
     <string name="menu_load_title">Cargar distancia</string>
-    <string name="dialog_connection_problems_negative_button">Ahora no</string>
-    <string name="dialog_connection_problems_message">Ninguna conexión inalámbrica activada, ¿desea activarla?</string>
-    <string name="dialog_connection_problems_positive_button">Activar</string>
     <string name="dialog_select_address_title">Elija una dirección</string>
     <string name="dialog_load_distances_title">Elija una distancia</string>
     <string name="menu_rate_app_title">Valorar aplicación</string>
@@ -63,7 +60,6 @@
     <string name="no_animation_item">Sin animación</string>
     <string name="navigation_drawer_starting_point_any_position_item">Cualquier posición</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posición actual</string>
-    <string name="dialog_connection_problems_title">Problema en la conexión</string>
     <string name="preference_centre_map_title">Centrar mapa</string>
     <string name="category_unit_title">Unidad de medida</string>
     <string name="preference_unit_dialog_title">Seleccione unidad</string>

@@ -37,26 +37,18 @@ class AddressViewModel(
 ) : ViewModel() {
 
     val progressVisibility = MutableLiveData<Boolean>()
-    val connectionIssueEvent = MutableLiveData<Event<ConnectionIssuesData>>()
+    val connectionIssueEvent = MutableLiveData<Event<Unit>>()
     val errorMessage = MutableLiveData<Event<String>>()
     val addressFoundEvent = MutableLiveData<Event<Address>>()
     val multipleAddressesFoundEvent = MutableLiveData<Event<List<Address>>>()
 
     fun onAddressSearch(query: String) {
         if (!connectionManager.isOnline()) {
-            val connectionIssuesData = getConnectionIssuesData()
-            connectionIssueEvent.value = Event(connectionIssuesData)
+            connectionIssueEvent.value = Event(Unit)
         } else {
             onSearchPositionByNameWithConnectionAvailable(query)
         }
     }
-
-    private fun getConnectionIssuesData() = ConnectionIssuesData(
-        resourceProvider.get(R.string.dialog_connection_problems_title),
-        resourceProvider.get(R.string.dialog_connection_problems_message),
-        resourceProvider.get(R.string.dialog_connection_problems_positive_button),
-        resourceProvider.get(R.string.dialog_connection_problems_negative_button)
-    )
 
     private fun onSearchPositionByNameWithConnectionAvailable(locationName: String) {
         progressVisibility.value = true
@@ -86,8 +78,7 @@ class AddressViewModel(
 
     fun onAddressSearch(coordinates: LatLng) { // FIXME consider using a Coordinates(x, y) custom data model
         if (!connectionManager.isOnline()) {
-            val connectionIssuesData = getConnectionIssuesData()
-            connectionIssueEvent.value = Event(connectionIssuesData)
+            connectionIssueEvent.value = Event(Unit)
         } else {
             onSearchPositionByCoordinatesWithConnectionAvailable(coordinates)
         }
@@ -113,10 +104,3 @@ class AddressViewModel(
         }
     }
 }
-
-data class ConnectionIssuesData(
-    val title: String,
-    val description: String,
-    val positiveMessage: String,
-    val negativeMessage: String
-)

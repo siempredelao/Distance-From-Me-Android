@@ -128,6 +128,7 @@ dependencies {
 	implementation(libs.room.runtime)
 	implementation(libs.timber)
     implementation(project(":common"))
+    implementation(project(":connectivity"))
     implementation(project(":elevation"))
     implementation(project(":faq"))
     implementation(project(":feedback"))
