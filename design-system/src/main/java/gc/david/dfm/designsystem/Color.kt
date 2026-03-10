@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-}
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+package gc.david.dfm.designsystem
 
-include(":app")
-include(":common")
-include(":design-system")
-include(":faq")
-include(":feedback")
-include(":opensource")
-include(":test-support")
+import androidx.compose.ui.graphics.Color
+
+val DfmGreen = Color(0xFF4C9956)
+val DfmGreenDark = Color(0xFF142602)
+val DfmAccent = Color(0xFF99CC00)
+val DfmGreenLight = Color(0xFF8BC394)
+val DfmOnPrimary = Color.White
+val DfmBackground = Color(0xFFFAFAFA)
+val DfmOnBackground = Color(0xFF1C1B1F)
+val DfmSurface = Color.White
+val DfmOnSurface = Color(0xFF1C1B1F)

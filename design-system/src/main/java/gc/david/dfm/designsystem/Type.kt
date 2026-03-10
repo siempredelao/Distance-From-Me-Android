@@ -13,26 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-}
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+package gc.david.dfm.designsystem
 
-include(":app")
-include(":common")
-include(":design-system")
-include(":faq")
-include(":feedback")
-include(":opensource")
-include(":test-support")
+import androidx.compose.material3.Typography
+
+val DfmTypography = Typography()
