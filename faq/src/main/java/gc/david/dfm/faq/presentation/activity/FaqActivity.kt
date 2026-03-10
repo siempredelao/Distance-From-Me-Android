@@ -29,7 +29,7 @@ import gc.david.dfm.faq.presentation.ui.FaqScreen
 import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HelpAndFeedbackActivity : ComponentActivity() {
+class FaqActivity : ComponentActivity() {
 
     private val viewModel: FaqViewModel by viewModel()
 
@@ -50,8 +50,8 @@ class HelpAndFeedbackActivity : ComponentActivity() {
     companion object {
 
         fun open(activity: Activity) {
-            val openHelpAndFeedbackActivityIntent = Intent(activity, HelpAndFeedbackActivity::class.java)
-            activity.startActivity(openHelpAndFeedbackActivityIntent)
+            val openFaqActivityIntent = Intent(activity, FaqActivity::class.java)
+            activity.startActivity(openFaqActivityIntent)
         }
     }
 }

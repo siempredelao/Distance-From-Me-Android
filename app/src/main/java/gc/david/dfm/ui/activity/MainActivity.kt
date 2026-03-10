@@ -22,7 +22,6 @@ import android.app.SearchManager
 import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
-import androidx.core.net.toUri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -31,6 +30,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -50,9 +50,9 @@ import gc.david.dfm.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel
-import gc.david.dfm.faq.presentation.activity.HelpAndFeedbackActivity
-import gc.david.dfm.opensource.presentation.activity.AboutActivity
+import gc.david.dfm.faq.presentation.activity.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
+import gc.david.dfm.opensource.presentation.activity.AboutActivity
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.service.GeofencingService
@@ -62,7 +62,6 @@ import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.*
 
 class MainActivity :
         AppCompatActivity(),
@@ -134,7 +133,7 @@ class MainActivity :
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.menu_help_feedback -> {
-                    HelpAndFeedbackActivity.open(this@MainActivity)
+                    FaqActivity.open(this@MainActivity)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.menu_about -> {
