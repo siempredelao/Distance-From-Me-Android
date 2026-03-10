@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
@@ -28,6 +29,10 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+    }
+
+    buildFeatures {
+        compose = true
     }
 
     compileOptions {
@@ -44,7 +49,13 @@ kotlin {
 
 dependencies {
 
+    implementation(platform(libs.compose.bom))
     implementation(libs.androidx.core.ktx)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
     implementation(libs.play.review)
     implementation(libs.timber)
+    implementation(project(":design-system"))
+    debugImplementation(libs.compose.ui.tooling)
 }

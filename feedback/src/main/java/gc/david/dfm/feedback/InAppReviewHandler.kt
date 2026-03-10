@@ -17,14 +17,15 @@
 package gc.david.dfm.feedback
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.net.toUri
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
-import gc.david.dfm.feedback.R
+import gc.david.dfm.designsystem.DfmTheme
 import timber.log.Timber
 
 object InAppReviewHandler {
@@ -58,21 +59,23 @@ object InAppReviewHandler {
     }
 
     private fun showRateAppFallbackDialog(activity: Activity) {
-        AlertDialog.Builder(activity)
-            .setTitle(R.string.dialog_rate_app_title)
-            .setMessage(R.string.dialog_rate_app_message)
-            .setPositiveButton(activity.getString(R.string.dialog_rate_app_positive_button)
-            ) { dialog, _ ->
-                dialog.dismiss()
-                openPlayStoreAppPage(activity)
+        val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
+        val composeView = ComposeView(activity).apply {
+            setContent {
+                DfmTheme {
+                    RateAppFallbackDialog(
+                        onDismiss = {
+                            contentView.removeView(this@apply)
+                        },
+                        onCtaClick = {
+                            contentView.removeView(this@apply)
+                            openPlayStoreAppPage(activity)
+                        },
+                    )
+                }
             }
-//                .setNegativeButton(getString(R.string.dialog_rate_app_negative_button)
-//                ) { dialog, _ ->
-//                    dialog.dismiss()
-//                    openFeedbackActivity()
-//                }
-            .create()
-            .show()
+        }
+        contentView.addView(composeView)
     }
 
     private fun openPlayStoreAppPage(activity: Activity) {
