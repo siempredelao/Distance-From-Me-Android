@@ -40,7 +40,6 @@
     <string name="category_db_title">Registrazione degli distanze</string>
     <string name="preference_delete_distances_title">Eliminare distanze</string>
     <string name="preference_delete_distances_summary">Toccare per eliminare tutte le distanze memorizzati</string>
-    <string name="elevation_chart_title">Profilo elevazione (%s)</string>
     <string name="preference_show_elevation_title">Mostrare profilo elevazione</string>
     <string name="preference_show_elevation_summary">Calcola il profilo elevazione. Questa operazione potrebbe richiedere alcuni tempo a seconda della vostra connessione.</string>
     <string name="info_current_position_title">Posizione corrente approssimativa:</string>

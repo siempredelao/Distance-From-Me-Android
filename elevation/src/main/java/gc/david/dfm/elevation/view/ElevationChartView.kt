@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui
+package gc.david.dfm.elevation.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -24,8 +24,8 @@ import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import gc.david.dfm.R
-import gc.david.dfm.databinding.ViewElevationChartBinding
+import gc.david.dfm.elevation.R
+import gc.david.dfm.elevation.databinding.ViewElevationChartBinding
 
 class ElevationChartView @JvmOverloads constructor(
         context: Context,

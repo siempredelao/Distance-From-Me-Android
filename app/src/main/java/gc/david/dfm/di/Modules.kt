@@ -31,12 +31,6 @@ import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceLocalDataSource
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.domain.*
-import gc.david.dfm.elevation.data.BaseElevationRepository
-import gc.david.dfm.elevation.data.ElevationRemoteDataSource
-import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
-import gc.david.dfm.elevation.domain.ElevationRepository
-import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
-import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.faq.data.BaseFaqRepository
 import gc.david.dfm.faq.data.FaqDiskDataSource
 import gc.david.dfm.faq.domain.FaqRepository
@@ -68,7 +62,6 @@ val viewModelModule = module {
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
-    viewModel { ElevationViewModel(get(), get(), get()) }
     viewModel { AddressViewModel(get(), get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
@@ -78,7 +71,6 @@ val useCaseModule = module {
     factory { GetFaqsUseCase(get()) }
     factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
     factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
-    factory { GetElevationByCoordinatesUseCase(get(), get()) }
     factory { ClearDistancesUseCase(get()) }
     factory { SaveDistanceUseCase(get()) }
     factory { GetPositionListUseCase(get()) }
@@ -86,7 +78,6 @@ val useCaseModule = module {
 
     // Mappers
     factory { AddressCollectionEntityDataMapper() }
-    factory { ElevationEntityDataMapper() }
     factory { AddressFormatter() }
 }
 
@@ -94,12 +85,10 @@ val repositoryModule = module {
 
     single<DistanceRepository> { BaseDistanceRepository(get()) }
     single<AddressRepository> { BaseAddressRepository(get()) }
-    single<ElevationRepository> { BaseElevationRepository(get()) }
     single<FaqRepository> { BaseFaqRepository(get()) }
 
     single { DistanceLocalDataSource(get()) }
     single { AddressRemoteDataSource(get()) }
-    single { ElevationRemoteDataSource(get()) }
     single { FaqDiskDataSource() }
 }
 

@@ -40,7 +40,6 @@
     <string name="category_db_title">Entfernung Register</string>
     <string name="preference_delete_distances_title">Entfernungen Löschen</string>
     <string name="preference_delete_distances_summary">Berühren, um alle gespeicherten Entfernungen löschen</string>
-    <string name="elevation_chart_title">Höhenprofil (%s)</string>
     <string name="preference_show_elevation_title">Höhenprofil zeigen</string>
     <string name="preference_show_elevation_summary">Berechnet Höhenprofil. Diese Aufgabe kann einige Zeit dauern, je nach Netzwerk</string>
     <string name="info_current_position_title">Ungefährer aktuelle Position:</string>

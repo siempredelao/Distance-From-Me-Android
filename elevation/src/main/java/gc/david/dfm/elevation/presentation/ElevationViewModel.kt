@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DFMPreferences
 import gc.david.dfm.Event
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
@@ -43,7 +42,7 @@ class ElevationViewModel(
     private val locale: Locale
         get() {
             val defaultUnit = preferencesProvider.getMeasureUnitPreference()
-            return if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
+            return if (AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
         }
 
     fun onCoordinatesSelected(coordinates: List<LatLng>) {
@@ -64,8 +63,9 @@ class ElevationViewModel(
         }
     }
 
-    companion object {
+    private companion object {
 
-        private const val TAG = "ElevationViewModel"
+        const val TAG = "ElevationViewModel"
+        const val AMERICAN_UNIT_VALUE = "US"
     }
 }

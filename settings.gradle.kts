@@ -32,6 +32,7 @@ dependencyResolutionManagement {
 include(":app")
 include(":common")
 include(":design-system")
+include(":elevation")
 include(":faq")
 include(":feedback")
 include(":opensource")

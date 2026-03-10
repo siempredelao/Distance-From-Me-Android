@@ -48,7 +48,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tbMain"/>
 
-        <gc.david.dfm.ui.ElevationChartView
+        <gc.david.dfm.elevation.view.ElevationChartView
             android:id="@+id/elevationChartView"
             android:layout_width="match_parent"
             android:layout_height="100dp"

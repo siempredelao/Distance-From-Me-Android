@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (c) 2026 David Aguiar Gonzalez
   ~
@@ -15,10 +16,7 @@
   -->
 
 <resources>
-
-    <dimen name="map_line_width">3dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="showinfo_distance_margin_top">24dp</dimen>
-
+    <color name="elevation_chart_background">#66191919</color>
+    <color name="elevation_chart_line">#00FA9A</color>
+    <color name="white">#FFFFFF</color>
 </resources>

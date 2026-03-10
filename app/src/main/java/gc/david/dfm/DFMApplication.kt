@@ -23,6 +23,7 @@ import gc.david.dfm.di.repositoryModule
 import gc.david.dfm.di.storageModule
 import gc.david.dfm.di.useCaseModule
 import gc.david.dfm.di.viewModelModule
+import gc.david.dfm.elevation.di.elevationModule
 import gc.david.dfm.faq.faqModule
 import gc.david.dfm.opensource.openSourceModule
 import gc.david.dfm.initializers.Initializers
@@ -49,6 +50,7 @@ class DFMApplication : Application() {
                 repositoryModule,
                 storageModule,
                 commonModule,
+                elevationModule,
                 faqModule,
                 openSourceModule
             )
