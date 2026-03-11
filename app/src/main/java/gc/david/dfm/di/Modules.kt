@@ -16,14 +16,9 @@
 
 package gc.david.dfm.di
 
-import androidx.room.Room
 import gc.david.dfm.*
-import gc.david.dfm.database.DFMDatabase
-import gc.david.dfm.distance.data.BaseDistanceRepository
 import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceLocalDataSource
 import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.domain.*
 import gc.david.dfm.faq.data.BaseFaqRepository
 import gc.david.dfm.faq.data.FaqDiskDataSource
 import gc.david.dfm.faq.domain.FaqRepository
@@ -40,6 +35,7 @@ import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import gc.david.dfm.ui.activity.MapDrawer
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
+
 val appModule = module {
 
     single { arrayOf(DefaultUnitInitializer(), FirebaseInitializer(), LoggingInitializer(get())) }
@@ -59,12 +55,7 @@ val viewModelModule = module {
 }
 
 val useCaseModule = module {
-    // Use cases
     factory { GetFaqsUseCase(get()) }
-    factory { ClearDistancesUseCase(get()) }
-    factory { SaveDistanceUseCase(get()) }
-    factory { GetPositionListUseCase(get()) }
-    factory { GetDistancesUseCase(get()) }
 
     // Mappers
     factory { AddressFormatter() }
@@ -72,14 +63,7 @@ val useCaseModule = module {
 
 val repositoryModule = module {
 
-    single<DistanceRepository> { BaseDistanceRepository(get()) }
     single<FaqRepository> { BaseFaqRepository(get()) }
 
-    single { DistanceLocalDataSource(get()) }
     single { FaqDiskDataSource() }
-}
-
-val storageModule = module {
-
-    single { Room.databaseBuilder(get(), DFMDatabase::class.java, "DistanciasDB.db").build() }
 }

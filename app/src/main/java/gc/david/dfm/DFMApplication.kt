@@ -19,9 +19,9 @@ package gc.david.dfm
 import android.app.Application
 import gc.david.dfm.address.di.addressModule
 import gc.david.dfm.common.commonModule
+import gc.david.dfm.core.distances.di.coreDistancesModule
 import gc.david.dfm.di.appModule
 import gc.david.dfm.di.repositoryModule
-import gc.david.dfm.di.storageModule
 import gc.david.dfm.di.useCaseModule
 import gc.david.dfm.di.viewModelModule
 import gc.david.dfm.elevation.di.elevationModule
@@ -47,10 +47,10 @@ class DFMApplication : Application() {
             modules(
                 addressModule,
                 appModule,
+                coreDistancesModule,
                 viewModelModule,
                 useCaseModule,
                 repositoryModule,
-                storageModule,
                 commonModule,
                 elevationModule,
                 faqModule,

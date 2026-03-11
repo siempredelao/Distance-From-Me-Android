@@ -19,11 +19,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.jetbrains.kotlin.android)
-	alias(libs.plugins.ksp)
 	id("kotlin-parcelize")
 	alias(libs.plugins.google.services)
 	alias(libs.plugins.crashlytics)
-	alias(libs.plugins.room)
 }
 
 android {
@@ -38,10 +36,6 @@ android {
 		versionName = libs.versions.appVersionName.get()
 		versionCode = libs.versions.appVersionCode.get().toInt()
 		androidResources.localeFilters.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
-	}
-
-	room {
-		schemaDirectory("$projectDir/schemas")
 	}
 
 	buildTypes {
@@ -123,13 +117,11 @@ dependencies {
 	implementation(libs.okhttp.coroutines)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
-	ksp(libs.room.compiler)
-	implementation(libs.room.ktx)
-	implementation(libs.room.runtime)
 	implementation(libs.timber)
     implementation(project(":address"))
     implementation(project(":common"))
     implementation(project(":connectivity"))
+    implementation(project(":core-distances"))
     implementation(project(":elevation"))
     implementation(project(":faq"))
     implementation(project(":feedback"))
