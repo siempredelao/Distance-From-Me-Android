@@ -19,6 +19,7 @@ package gc.david.dfm.distance.data
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by david on 16.01.17.
@@ -36,9 +37,7 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
         }
     }
 
-    suspend fun loadDistances(): List<Distance> {
-        return database.distanceDao().loadAll()
-    }
+    fun loadDistances(): Flow<List<Distance>> = database.distanceDao().loadAll()
 
     suspend fun clear() {
         with(database) {

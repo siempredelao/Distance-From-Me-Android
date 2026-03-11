@@ -17,8 +17,10 @@
 package gc.david.dfm.main.presentation
 
 import android.location.Location
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.*
@@ -33,6 +35,10 @@ import gc.david.dfm.distance.domain.GetDistancesUseCase
 import gc.david.dfm.distance.domain.GetPositionListUseCase
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.map.Haversine
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -48,8 +54,15 @@ class MainViewModel(
 ) : ViewModel() {
 
     val connectionIssueEvent = MutableLiveData<Event<Unit>>()
-    val showLoadDistancesItem = MutableLiveData<Boolean>()
     val showForceCrashItem = MutableLiveData<Boolean>()
+
+    private val distances = getDistancesUseCase()
+        .catch { Timber.tag(TAG).e(it) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val showLoadDistancesItem: LiveData<Boolean> = distances
+        .map { it.isNotEmpty() }
+        .asLiveData()
     val selectFromDistancesLoaded = MutableLiveData<Event<List<Distance>>>()
     val drawDistance = MutableLiveData<DrawDistanceModel>()
     val drawPoints = MutableLiveData<List<LatLng>>()
@@ -78,44 +91,20 @@ class MainViewModel(
         }
     }
 
-    fun onResume() {
-        // Reloading distances in case a new one was saved into database
-        // TODO transform use case to observable to avoid this workaround
-        loadDistancesItem()
-    }
-
     /**
      * Triggered when the menu is already built and ready to be updated.
      */
     fun onMenuReady() {
-        loadDistancesItem()
         showForceCrashItem.value = !Utils.isReleaseBuild()
-    }
-
-    private fun loadDistancesItem() {
-        viewModelScope.launch {
-            val result = getDistancesUseCase()
-
-            result.fold({
-                showLoadDistancesItem.postValue(it.isNotEmpty())
-            },{
-                showLoadDistancesItem.postValue(false)
-            })
-        }
     }
 
     /**
      * Triggered when the user taps on the "Show distances" menu item.
      */
     fun onLoadDistancesClick() {
-        viewModelScope.launch {
-            val result = getDistancesUseCase()
-
-            result.fold({
-                selectFromDistancesLoaded.postValue(Event(it))
-            },{
-                Timber.tag(TAG).e(Exception("Unable to load distances."))
-            })
+        val current = distances.value
+        if (current.isNotEmpty()) {
+            selectFromDistancesLoaded.value = Event(current)
         }
     }
 

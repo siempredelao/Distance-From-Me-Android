@@ -229,6 +229,7 @@ class MainActivity :
                 event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
             }
             showLoadDistancesItem.observe(this@MainActivity) { visible ->
+                Timber.tag(TAG).d("showLoadDistancesItem $visible")
                 val loadItem = binding.tbMain.root.menu.findItem(R.id.action_load)
                 loadItem?.isVisible = visible
             }
@@ -458,11 +459,6 @@ class MainActivity :
         } else {
             binding.fabMyLocation.isVisible = false
         }
-    }
-
-    public override fun onResume() {
-        super.onResume()
-        mainViewModel.onResume()
     }
 
     public override fun onDestroy() {

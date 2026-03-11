@@ -19,12 +19,13 @@ package gc.david.dfm.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DistanceDao {
 
     @Query("SELECT * FROM DISTANCE")
-    suspend fun loadAll(): List<Distance>
+    fun loadAll(): Flow<List<Distance>>
 
     @Query("DELETE FROM DISTANCE")
     suspend fun deleteAll()

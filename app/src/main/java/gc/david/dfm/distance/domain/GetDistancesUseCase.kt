@@ -17,17 +17,11 @@
 package gc.david.dfm.distance.domain
 
 import gc.david.dfm.database.Distance
+import kotlinx.coroutines.flow.Flow
 
 class GetDistancesUseCase(
     private val repository: DistanceRepository
 ) {
 
-    suspend operator fun invoke(): Result<List<Distance>> {
-        return try {
-            val distances = repository.loadDistances()
-            Result.success(distances)
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
-    }
+    operator fun invoke(): Flow<List<Distance>> = repository.loadDistances()
 }
