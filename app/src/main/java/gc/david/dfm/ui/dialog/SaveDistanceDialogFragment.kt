@@ -16,20 +16,34 @@
 
 package gc.david.dfm.ui.dialog
 
-import android.app.Dialog
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
-import android.text.InputType
-import android.view.View
-import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.Utils
+import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -47,24 +61,41 @@ class SaveDistanceDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val editTextAlias = EditText(context).apply { // TODO fix problem when config change
-            id = View.generateViewId()
-            setTextColor(Color.BLACK)
-            inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-        }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
+            setContent {
+                DfmTheme {
+                    var alias by remember { mutableStateOf("") }
 
-        return AlertDialog.Builder(requireActivity())
-                .setMessage(getString(R.string.alias_dialog_message))
-                .setTitle(getString(R.string.alias_dialog_title))
-                .setView(editTextAlias)
-                .setPositiveButton(getString(R.string.alias_dialog_accept)) { _, _ ->
-                    // TODO transform to real DialogFragment
-                    //  and check that save operation is finished before the dialog is closed
-                    viewModel.onSave(editTextAlias.text.toString())
+                    AlertDialog(
+                        onDismissRequest = { dismiss() },
+                        title = { Text(stringResource(R.string.alias_dialog_title)) },
+                        text = {
+                            Column {
+                                Text(stringResource(R.string.alias_dialog_message))
+                                Spacer(Modifier.height(Spacing.s))
+                                OutlinedTextField(
+                                    value = alias,
+                                    onValueChange = { alias = it },
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.Sentences,
+                                    ),
+                                )
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.onSave(alias)
+                                dismiss()
+                            }) {
+                                Text(stringResource(R.string.alias_dialog_accept))
+                            }
+                        },
+                    )
                 }
-                .create()
-    }
+            }
+        }
 
     private fun parseBundle(bundle: Bundle?) {
         if (bundle == null || bundle.isEmpty) {
@@ -84,13 +115,13 @@ class SaveDistanceDialogFragment : DialogFragment() {
         private const val BUNDLE_DISTANCE = "BUNDLE_DISTANCE"
 
         fun newInstance(positionsList: List<LatLng>, distance: String) =
-                SaveDistanceDialogFragment().apply {
-                    val apply = bundleOf(
-                            BUNDLE_DISTANCE to distance
-                    ).apply {
-                        putParcelableArrayList(BUNDLE_POSITION_LIST, ArrayList<Parcelable>(positionsList))
-                    }
-                    arguments = apply
+            SaveDistanceDialogFragment().apply {
+                val apply = bundleOf(
+                    BUNDLE_DISTANCE to distance
+                ).apply {
+                    putParcelableArrayList(BUNDLE_POSITION_LIST, ArrayList<Parcelable>(positionsList))
                 }
+                arguments = apply
+            }
     }
 }
