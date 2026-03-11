@@ -21,7 +21,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.R
 import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.distance.domain.ClearDistancesUseCase
+import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
 import kotlinx.coroutines.launch
 import timber.log.Timber
 

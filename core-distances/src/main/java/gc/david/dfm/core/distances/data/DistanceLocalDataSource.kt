@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.data
+package gc.david.dfm.core.distances.data
 
-import gc.david.dfm.database.DFMDatabase
-import gc.david.dfm.database.Distance
-import gc.david.dfm.database.Position
+import gc.david.dfm.core.distances.data.database.DFMDatabase
+import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.data.database.Position
 import kotlinx.coroutines.flow.Flow
 
 /**

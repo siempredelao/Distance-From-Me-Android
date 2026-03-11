@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.core.distances.domain
 
-import androidx.room.TypeConverter
-import java.util.*
+import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.data.database.Position
 
-class Converters {
+/**
+ * Created by david on 16.01.17.
+ */
+class SaveDistanceUseCase(
+    private val repository: DistanceRepository
+) {
 
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
-
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
+    suspend operator fun invoke(distance: Distance, positionList: List<Position>): Result<Unit> {
+        return try {
+            repository.insert(distance, positionList)
+            Result.success(Unit)
+        } catch (exception: Exception) {
+            Result.failure(exception)
+        }
     }
 }

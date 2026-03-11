@@ -27,12 +27,12 @@ import gc.david.dfm.*
 import gc.david.dfm.Utils.toLatLng
 import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.database.Distance
+import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.domain.GetDistancesUseCase
-import gc.david.dfm.distance.domain.GetPositionListUseCase
+import gc.david.dfm.core.distances.domain.GetDistancesUseCase
+import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.map.Haversine
 import kotlinx.coroutines.flow.SharingStarted

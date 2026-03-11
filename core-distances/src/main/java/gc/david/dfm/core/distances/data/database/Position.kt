@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.core.distances.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import gc.david.dfm.database.Position.Companion.TABLE_NAME
+import gc.david.dfm.core.distances.data.database.Position.Companion.TABLE_NAME
 
 @Entity(tableName = TABLE_NAME)
 data class Position(

@@ -23,7 +23,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.database.Position
+import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.map.Haversine
 import timber.log.Timber
 

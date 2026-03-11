@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.core.distances.data.database
 
-class ClearDistancesUseCase(
-    private val repository: DistanceRepository
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import gc.david.dfm.core.distances.data.database.Distance.Companion.TABLE_NAME
+import java.util.*
+
+@Entity(tableName = TABLE_NAME)
+data class Distance(
+        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long?,
+        @ColumnInfo(name = "NAME") val name: String,
+        @ColumnInfo(name = "DISTANCE") val distance: String,
+        @ColumnInfo(name = "DATE") val date: Date
 ) {
 
-    suspend operator fun invoke(): Result<Unit> {
-        return try {
-            repository.clear()
-            Result.success(Unit)
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
+    companion object {
+
+        const val TABLE_NAME = "DISTANCE"
     }
 }

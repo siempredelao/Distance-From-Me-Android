@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.core.distances.domain
 
-import gc.david.dfm.database.Distance
-import kotlinx.coroutines.flow.Flow
+import gc.david.dfm.core.distances.data.database.Position
 
-class GetDistancesUseCase(
+/**
+ * Created by david on 16.01.17.
+ */
+class GetPositionListUseCase(
     private val repository: DistanceRepository
 ) {
 
-    operator fun invoke(): Flow<List<Distance>> = repository.loadDistances()
+    suspend operator fun invoke(distanceId: Long): Result<List<Position>> {
+        return try {
+            val positionList = repository.getPositionListById(distanceId)
+            Result.success(positionList)
+        } catch (exception: Throwable) {
+            Result.failure(exception)
+        }
+    }
 }

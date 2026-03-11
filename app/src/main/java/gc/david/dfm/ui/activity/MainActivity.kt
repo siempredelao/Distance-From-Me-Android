@@ -47,7 +47,7 @@ import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.connectivity.ConnectionIssuesDialogHandler
-import gc.david.dfm.database.Distance
+import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel

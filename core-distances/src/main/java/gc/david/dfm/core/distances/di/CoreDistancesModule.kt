@@ -17,14 +17,14 @@
 package gc.david.dfm.core.distances.di
 
 import androidx.room.Room
-import gc.david.dfm.database.DFMDatabase
-import gc.david.dfm.distance.data.BaseDistanceRepository
-import gc.david.dfm.distance.data.DistanceLocalDataSource
-import gc.david.dfm.distance.domain.ClearDistancesUseCase
-import gc.david.dfm.distance.domain.DistanceRepository
-import gc.david.dfm.distance.domain.GetDistancesUseCase
-import gc.david.dfm.distance.domain.GetPositionListUseCase
-import gc.david.dfm.distance.domain.SaveDistanceUseCase
+import gc.david.dfm.core.distances.data.database.DFMDatabase
+import gc.david.dfm.core.distances.data.BaseDistanceRepository
+import gc.david.dfm.core.distances.data.DistanceLocalDataSource
+import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
+import gc.david.dfm.core.distances.domain.DistanceRepository
+import gc.david.dfm.core.distances.domain.GetDistancesUseCase
+import gc.david.dfm.core.distances.domain.GetPositionListUseCase
+import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
 import org.koin.dsl.module
 
 val coreDistancesModule = module {

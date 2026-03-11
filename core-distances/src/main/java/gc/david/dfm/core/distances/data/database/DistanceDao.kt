@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.core.distances.data.database
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
-@Database(entities = [Distance::class, Position::class], version = 2)
-@TypeConverters(Converters::class)
-abstract class DFMDatabase : RoomDatabase() {
+@Dao
+interface DistanceDao {
 
-    abstract fun distanceDao(): DistanceDao
+    @Query("SELECT * FROM DISTANCE")
+    fun loadAll(): Flow<List<Distance>>
 
-    abstract fun positionDao(): PositionDao
+    @Query("DELETE FROM DISTANCE")
+    suspend fun deleteAll()
+
+    @Insert
+    suspend fun insert(distance: Distance): Long
+
 }

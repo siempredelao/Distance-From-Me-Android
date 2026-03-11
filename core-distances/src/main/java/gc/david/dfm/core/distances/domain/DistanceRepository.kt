@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.core.distances.domain
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.data.database.Position
+import kotlinx.coroutines.flow.Flow
 
-@Dao
-interface PositionDao {
+/**
+ * Created by david on 16.01.17.
+ */
+interface DistanceRepository {
 
-    @Query("SELECT * FROM POSITION WHERE DISTANCE_ID=:distanceId")
-    suspend fun loadAllById(distanceId: Long): List<Position>
+    suspend fun insert(distance: Distance, positionList: List<Position>)
 
-    @Query("DELETE FROM POSITION")
-    suspend fun deleteAll()
+    fun loadDistances(): Flow<List<Distance>>
 
-    @Insert
-    suspend fun insertMany(positions: List<Position>)
+    suspend fun clear()
+
+    suspend fun getPositionListById(distanceId: Long): List<Position>
 }

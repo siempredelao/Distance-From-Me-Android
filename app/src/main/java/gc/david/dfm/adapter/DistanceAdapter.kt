@@ -22,7 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import gc.david.dfm.R
-import gc.david.dfm.database.Distance
+import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.databinding.DatabaseListItemBinding
 import java.text.SimpleDateFormat
 import java.util.*

@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.database
+package gc.david.dfm.core.distances.data.database
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import gc.david.dfm.database.Distance.Companion.TABLE_NAME
+import androidx.room.TypeConverter
 import java.util.*
 
-@Entity(tableName = TABLE_NAME)
-data class Distance(
-        @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long?,
-        @ColumnInfo(name = "NAME") val name: String,
-        @ColumnInfo(name = "DISTANCE") val distance: String,
-        @ColumnInfo(name = "DATE") val date: Date
-) {
+class Converters {
 
-    companion object {
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }
+    }
 
-        const val TABLE_NAME = "DISTANCE"
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
     }
 }

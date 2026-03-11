@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.core.distances.domain
 
-import gc.david.dfm.database.Distance
-import gc.david.dfm.database.Position
-
-/**
- * Created by david on 16.01.17.
- */
-class SaveDistanceUseCase(
+class ClearDistancesUseCase(
     private val repository: DistanceRepository
 ) {
 
-    suspend operator fun invoke(distance: Distance, positionList: List<Position>): Result<Unit> {
+    suspend operator fun invoke(): Result<Unit> {
         return try {
-            repository.insert(distance, positionList)
+            repository.clear()
             Result.success(Unit)
-        } catch (exception: Exception) {
+        } catch (exception: Throwable) {
             Result.failure(exception)
         }
     }

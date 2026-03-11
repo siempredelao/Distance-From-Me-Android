@@ -22,9 +22,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.database.Distance
-import gc.david.dfm.database.Position
-import gc.david.dfm.distance.domain.SaveDistanceUseCase
+import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.data.database.Position
+import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
