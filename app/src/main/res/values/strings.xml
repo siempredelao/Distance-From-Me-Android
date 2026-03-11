@@ -31,8 +31,6 @@
 
     <string name="toast_loading_position">Searching your position. Please, wait</string>
     <string name="toast_no_find_address">No backend service available or very poor network signal. Try again in a while</string>
-    <string name="toast_no_results">No matches were found</string>
-
     <string name="dialog_select_address_title">Select an address</string>
     <string name="dialog_load_distances_title">Choose a distance</string>
 

@@ -20,7 +20,6 @@
     <string name="action_bar_item_social_share_title">Condividiere</string>
     <string name="action_bar_search_hint">Cercare Distance From Me</string>
     <string name="toast_no_find_address">Servizio inattivo o segnale di rete molto povera. Riprova tra qualche minuto.</string>
-    <string name="toast_no_results">Resultati non trovati.</string>
     <string name="toast_loading_position">Cercando posizione, aspettare per favore.</string>
     <string name="menu_load_title">Caricare distanza</string>
     <string name="dialog_select_address_title">Scegliere un indirizzo</string>

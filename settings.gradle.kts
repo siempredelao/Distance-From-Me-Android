@@ -29,6 +29,7 @@ dependencyResolutionManagement {
     }
 }
 
+include(":address")
 include(":app")
 include(":common")
 include(":connectivity")

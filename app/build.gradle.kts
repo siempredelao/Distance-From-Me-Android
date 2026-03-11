@@ -127,6 +127,7 @@ dependencies {
 	implementation(libs.room.ktx)
 	implementation(libs.room.runtime)
 	implementation(libs.timber)
+    implementation(project(":address"))
     implementation(project(":common"))
     implementation(project(":connectivity"))
     implementation(project(":elevation"))

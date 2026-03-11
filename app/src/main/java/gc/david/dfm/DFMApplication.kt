@@ -17,6 +17,7 @@
 package gc.david.dfm
 
 import android.app.Application
+import gc.david.dfm.address.di.addressModule
 import gc.david.dfm.common.commonModule
 import gc.david.dfm.di.appModule
 import gc.david.dfm.di.repositoryModule
@@ -44,6 +45,7 @@ class DFMApplication : Application() {
         startKoin {
             androidContext(this@DFMApplication)
             modules(
+                addressModule,
                 appModule,
                 viewModelModule,
                 useCaseModule,

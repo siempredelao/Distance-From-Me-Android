@@ -18,13 +18,6 @@ package gc.david.dfm.di
 
 import androidx.room.Room
 import gc.david.dfm.*
-import gc.david.dfm.address.data.AddressRemoteDataSource
-import gc.david.dfm.address.data.BaseAddressRepository
-import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
-import gc.david.dfm.address.domain.AddressRepository
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
-import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.database.DFMDatabase
 import gc.david.dfm.distance.data.BaseDistanceRepository
 import gc.david.dfm.distance.data.CurrentLocationProvider
@@ -62,33 +55,27 @@ val viewModelModule = module {
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
-    viewModel { AddressViewModel(get(), get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val useCaseModule = module {
     // Use cases
     factory { GetFaqsUseCase(get()) }
-    factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
-    factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
     factory { ClearDistancesUseCase(get()) }
     factory { SaveDistanceUseCase(get()) }
     factory { GetPositionListUseCase(get()) }
     factory { GetDistancesUseCase(get()) }
 
     // Mappers
-    factory { AddressCollectionEntityDataMapper() }
     factory { AddressFormatter() }
 }
 
 val repositoryModule = module {
 
     single<DistanceRepository> { BaseDistanceRepository(get()) }
-    single<AddressRepository> { BaseAddressRepository(get()) }
     single<FaqRepository> { BaseFaqRepository(get()) }
 
     single { DistanceLocalDataSource(get()) }
-    single { AddressRemoteDataSource(get()) }
     single { FaqDiskDataSource() }
 }
 

@@ -20,7 +20,6 @@
     <string name="action_bar_item_social_share_title">Ort teilen</string>
     <string name="action_bar_search_hint">Distance From Me suchen</string>
     <string name="toast_no_find_address">Dienst inaktiv oder sehr schlechte Netzwerk-Signal. Bitte versuchen Sie es später noch einmal</string>
-    <string name="toast_no_results">Keine Daten gefunden.</string>
     <string name="toast_loading_position">Suche Ihrer Position im Vorgang. Bitte warten</string>
     <string name="menu_load_title">Entfernung laden</string>
     <string name="dialog_select_address_title">Wählen Sie eine Adresse aus</string>
