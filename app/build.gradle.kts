@@ -22,6 +22,7 @@ plugins {
 	id("kotlin-parcelize")
 	alias(libs.plugins.google.services)
 	alias(libs.plugins.crashlytics)
+	alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
@@ -78,6 +79,7 @@ android {
 	}
 
 	buildFeatures {
+		compose = true
 		viewBinding = true
 		buildConfig = true
 	}
@@ -108,6 +110,7 @@ dependencies {
 	implementation(libs.gson)
 	implementation(libs.koin)
 	implementation(libs.koin.android)
+	debugImplementation(libs.compose.ui.tooling)
 	debugImplementation(libs.leakcanary)
 	implementation(libs.lifecycle.runtime)
 	implementation(libs.lifecycle.viewmodel)
@@ -118,10 +121,15 @@ dependencies {
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	implementation(libs.timber)
+	implementation(platform(libs.compose.bom))
+	implementation(libs.compose.material3)
+	implementation(libs.compose.ui)
+	implementation(libs.compose.ui.tooling.preview)
     implementation(project(":address"))
     implementation(project(":common"))
     implementation(project(":connectivity"))
     implementation(project(":core-distances"))
+    implementation(project(":design-system"))
     implementation(project(":elevation"))
     implementation(project(":faq"))
     implementation(project(":feedback"))

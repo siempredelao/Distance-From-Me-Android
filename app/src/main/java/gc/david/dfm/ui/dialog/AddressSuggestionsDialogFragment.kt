@@ -16,16 +16,25 @@
 
 package gc.david.dfm.ui.dialog
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.DialogFragment
 import gc.david.dfm.R
 import gc.david.dfm.address.domain.model.Address
+import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.designsystem.Spacing
 
-/**
- * Created by david on 07.02.16.
- */
 class AddressSuggestionsDialogFragment : DialogFragment() {
 
     private lateinit var addressList: List<Address>
@@ -40,17 +49,32 @@ class AddressSuggestionsDialogFragment : DialogFragment() {
         this.onDialogActionListener = onDialogActionListener
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(requireActivity())
-                .setTitle(getString(R.string.dialog_select_address_title))
-                .setItems(groupAddresses(addressList).toTypedArray()
-                ) { _, item ->
-                    onDialogActionListener?.invoke(item)
-                }.create()
-    }
-
-    // TODO: 13.01.17 improve this formatting, probably text will run out of space
-    private fun groupAddresses(addressList: List<Address>): List<String> {
-        return addressList.map { it.formattedAddress }
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
+            setContent {
+                DfmTheme {
+                    AlertDialog(
+                        onDismissRequest = { dismiss() },
+                        title = { Text(stringResource(R.string.dialog_select_address_title)) },
+                        text = {
+                            LazyColumn {
+                                itemsIndexed(addressList) { index, address ->
+                                    Text(
+                                        text = address.formattedAddress,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                onDialogActionListener?.invoke(index)
+                                                dismiss()
+                                            }
+                                            .padding(vertical = Spacing.m),
+                                    )
+                                }
+                            }
+                        },
+                        confirmButton = {},
+                    )
+                }
+            }
+        }
 }
