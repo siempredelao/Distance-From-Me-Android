@@ -25,7 +25,9 @@ import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.database.Distance
 import gc.david.dfm.database.Position
 import gc.david.dfm.distance.domain.SaveDistanceUseCase
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.*
 
@@ -50,19 +52,21 @@ class SaveDistanceViewModel(
         }
 
         viewModelScope.launch {
-            val result = saveDistanceUseCase(distanceAsDistance, positionList)
+            withContext(NonCancellable) {
+                val result = saveDistanceUseCase(distanceAsDistance, positionList)
 
-            result.fold({
-                if (name.isNotEmpty()) {
-                    val message = resourceProvider.get(R.string.alias_dialog_with_name_toast)
-                    errorMessage.postValue(String.format(message, name))
-                } else {
-                    errorMessage.postValue(resourceProvider.get(R.string.alias_dialog_no_name_toast))
-                }
-            },{
-                Timber.tag(TAG).e(it, "Unable to insert distance into database.")
-                errorMessage.postValue(resourceProvider.get(R.string.save_distance_error))
-            })
+                result.fold({
+                    if (name.isNotEmpty()) {
+                        val message = resourceProvider.get(R.string.alias_dialog_with_name_toast)
+                        errorMessage.postValue(String.format(message, name))
+                    } else {
+                        errorMessage.postValue(resourceProvider.get(R.string.alias_dialog_no_name_toast))
+                    }
+                }, {
+                    Timber.tag(TAG).e(it, "Unable to insert distance into database.")
+                    errorMessage.postValue(resourceProvider.get(R.string.save_distance_error))
+                })
+            }
         }
     }
 
