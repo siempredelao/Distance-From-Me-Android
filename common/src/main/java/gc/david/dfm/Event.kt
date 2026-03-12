@@ -21,6 +21,11 @@ package gc.david.dfm
  *
  * Extracted from https://medium.com/androiddevelopers/livedata-with-snackbar-navigation-and-other-events-the-singleliveevent-case-ac2622673150
  */
+@Deprecated(
+    "Model one-shot events as nullable fields in your UiState and clear them " +
+        "with an acknowledgment callback. " +
+        "See https://developer.android.com/topic/architecture/ui-layer/events",
+)
 open class Event<out T>(private val content: T) {
 
     var hasBeenHandled = false

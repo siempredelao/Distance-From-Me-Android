@@ -20,68 +20,65 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.content.IntentCompat
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.common.UiUtils
-import gc.david.dfm.showinfo.R
-import gc.david.dfm.showinfo.databinding.ActivityShowInfoBinding
-import gc.david.dfm.showinfo.presentation.SaveDistanceData
-import gc.david.dfm.showinfo.presentation.ShareDialogData
+import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
-import gc.david.dfm.ui.dialog.SaveDistanceDialogFragment
+import gc.david.dfm.showinfo.presentation.ui.SaveDistanceDialog
+import gc.david.dfm.showinfo.presentation.ui.ShowInfoScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.util.*
 
-class ShowInfoActivity : AppCompatActivity() {
+class ShowInfoActivity : ComponentActivity() {
 
-    private lateinit var binding: ActivityShowInfoBinding
-
-    private var refreshMenuItem: MenuItem? = null
-
-    private val viewModel: ShowInfoViewModel by viewModel()
+    private val showInfoViewModel: ShowInfoViewModel by viewModel()
+    private val saveDistanceViewModel: SaveDistanceViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
-
+        Timber.tag(TAG).d("onCreate")
         super.onCreate(savedInstanceState)
-        binding = ActivityShowInfoBinding.inflate(layoutInflater).apply {
-            setContentView(root)
-            setSupportActionBar(tbMain.root)
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
-
-        with(viewModel) {
-            originAddress.observe(this@ShowInfoActivity) { originAddress ->
-                binding.textViewOriginAddress.text = originAddress
-            }
-            destinationAddress.observe(this@ShowInfoActivity) { destinationAddress ->
-                binding.textViewDestinationAddress.text = destinationAddress
-            }
-            distanceMessage.observe(this@ShowInfoActivity) { distance ->
-                binding.textViewDistance.text = distance
-            }
-            errorMessage.observe(this@ShowInfoActivity) { event ->
-                event.getContentIfNotHandled()?.let { Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show() }
-            }
-            progressVisibility.observe(this@ShowInfoActivity) { visible ->
-                if (visible) showProgress() else hideProgress()
-            }
-            showShareDialogEvent.observe(this@ShowInfoActivity) { event ->
-                event.getContentIfNotHandled()?.let { showShareDialog(it) }
-            }
-            saveDistanceEvent.observe(this@ShowInfoActivity) { event ->
-                event.getContentIfNotHandled()?.let { storeDataLocally(it) }
-            }
-        }
 
         if (savedInstanceState == null) {
-            Timber.tag(TAG).d("onCreate savedInstanceState null")
             loadData()
+        }
+
+        setContent {
+            val uiState by showInfoViewModel.uiState.collectAsState()
+            val saveUserMessage by saveDistanceViewModel.userMessage.collectAsState()
+
+            DfmTheme {
+                ShowInfoScreen(
+                    uiState = uiState,
+                    saveUserMessage = saveUserMessage,
+                    onBackPress = { onBackPressedDispatcher.onBackPressed() },
+                    onShare = showInfoViewModel::onShare,
+                    onRefresh = ::loadData,
+                    onSave = showInfoViewModel::onSave,
+                    onUserMessageShown = showInfoViewModel::onUserMessageShown,
+                    onShareDialogShown = showInfoViewModel::onShareDialogShown,
+                    onSaveUserMessageShown = saveDistanceViewModel::onUserMessageShown,
+                )
+
+                if (uiState.showSaveDialog) {
+                    SaveDistanceDialog(
+                        onDismiss = showInfoViewModel::onSaveDialogDismissed,
+                        onConfirm = { alias ->
+                            // TODO store position list and distance in a repository to avoid asking
+                            //  the viewmodel for information twice
+                            val data = showInfoViewModel.getSaveDistanceData()
+                            saveDistanceViewModel.onStart(data.positionsList, data.distance)
+                            saveDistanceViewModel.onSave(alias)
+                            showInfoViewModel.onSaveDialogDismissed()
+                        },
+                    )
+                }
+            }
         }
     }
 
@@ -96,60 +93,7 @@ class ShowInfoActivity : AppCompatActivity() {
             )
                 ?: error("No positions available")
         val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)!!
-        viewModel.onStart(positionsList, distance)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.show_info, menu)
-
-        refreshMenuItem = menu.findItem(R.id.refresh)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_social_share -> {
-                viewModel.onShare()
-                true
-            }
-            R.id.refresh -> {
-                loadData()
-                true
-            }
-            R.id.menu_save -> {
-                viewModel.onSave()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun showShareDialog(data: ShareDialogData) {
-        with(data) {
-            val defaultShareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, subject)
-                putExtra(Intent.EXTRA_TEXT, description)
-            }
-
-            startActivity(Intent.createChooser(defaultShareIntent, title))
-        }
-    }
-
-    private fun storeDataLocally(data: SaveDistanceData) {
-        with(data) {
-            val saveDistanceDialogFragment =
-                    SaveDistanceDialogFragment.newInstance(positionsList, distance)
-            saveDistanceDialogFragment.show(supportFragmentManager, null)
-        }
-    }
-
-    private fun showProgress() {
-        refreshMenuItem?.setActionView(R.layout.actionbar_indeterminate_progress)
-    }
-
-    private fun hideProgress() {
-        refreshMenuItem?.actionView = null
+        showInfoViewModel.onStart(positionsList, distance)
     }
 
     companion object {
@@ -161,8 +105,10 @@ class ShowInfoActivity : AppCompatActivity() {
 
         fun open(activity: Activity, coordinates: List<LatLng>, distanceAsText: String) {
             val openShowInfoActivityIntent = Intent(activity, ShowInfoActivity::class.java)
-            openShowInfoActivityIntent.putParcelableArrayListExtra(POSITIONS_LIST_EXTRA_KEY,
-                    ArrayList<Parcelable>(coordinates))
+            openShowInfoActivityIntent.putParcelableArrayListExtra(
+                POSITIONS_LIST_EXTRA_KEY,
+                ArrayList<Parcelable>(coordinates)
+            )
             openShowInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText)
             activity.startActivity(openShowInfoActivityIntent)
         }

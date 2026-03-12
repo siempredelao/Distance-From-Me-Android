@@ -16,17 +16,19 @@
 
 package gc.david.dfm.showinfo.presentation
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.Event
-import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.showinfo.R
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.showinfo.R
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -37,13 +39,8 @@ class ShowInfoViewModel(
     private val addressFormatter: AddressFormatter
 ) : ViewModel() {
 
-    val originAddress = MutableLiveData<String>()
-    val destinationAddress = MutableLiveData<String>()
-    val distanceMessage = MutableLiveData<String>()
-    val progressVisibility = MutableLiveData<Boolean>()
-    val errorMessage = MutableLiveData<Event<String>>()
-    val showShareDialogEvent = MutableLiveData<Event<ShareDialogData>>()
-    val saveDistanceEvent = MutableLiveData<Event<SaveDistanceData>>()
+    private val _uiState = MutableStateFlow(ShowInfoUiState())
+    val uiState: StateFlow<ShowInfoUiState> = _uiState.asStateFlow()
 
     private lateinit var inputParams: InputParams
 
@@ -51,11 +48,15 @@ class ShowInfoViewModel(
         this.inputParams = InputParams(positionsList, distance)
 
         if (!connectionManager.isOnline()) {
-            errorMessage.value = Event(resourceProvider.get(R.string.toast_network_problems))
+            _uiState.update {
+                it.copy(userMessage = resourceProvider.get(R.string.toast_network_problems))
+            }
             return
         }
 
-        progressVisibility.value = true
+        val distanceMessage = resourceProvider.get(R.string.info_distance_title, distance)
+        _uiState.update { it.copy(isLoading = true, distanceMessage = distanceMessage) }
+
         viewModelScope.launch {
             val originPosition = positionsList.first()
             val destinationPosition = positionsList.last()
@@ -65,79 +66,80 @@ class ShowInfoViewModel(
                 async { getAddressNameByCoordinatesUseCase(destinationPosition) }
             val (originAddressResult, destinationAddressResult) =
                 originAddressDeferred.await() to destinationAddressDeferred.await()
-            progressVisibility.postValue(false)
 
-            getAddressByLatLng(originAddressResult, positionsList.first(), true)
-            getAddressByLatLng(destinationAddressResult, positionsList.last(), false)
-        }
-
-        val get = resourceProvider.get(R.string.info_distance_title)
-        distanceMessage.value = String.format(get, distance)
-    }
-
-    private fun getAddressByLatLng(
-        result: Result<AddressCollection>,
-        latLng: LatLng,
-        isOrigin: Boolean
-    ) {
-        result.fold({
-            val addressList = it.addressList
-            if (addressList.isEmpty()) {
-                showNoMatchesMessage(isOrigin)
-            } else {
-                setAddress(addressList.first().formattedAddress, latLng, isOrigin)
+            _uiState.update { current ->
+                current.copy(
+                    isLoading = false,
+                    originAddress = resolveAddress(originAddressResult, positionsList.first()),
+                    destinationAddress = resolveAddress(destinationAddressResult, positionsList.last()),
+                )
             }
-        }, {
-            showError(it.message.orEmpty(), isOrigin)
+        }
+    }
+
+    private fun resolveAddress(result: Result<AddressCollection>, latLng: LatLng) =
+        result.fold({ collection ->
+            val addressList = collection.addressList
+            if (addressList.isEmpty()) {
+                resourceProvider.get(R.string.error_no_address_found_message)
+            } else {
+                addressFormatter.format(
+                    addressList.first().formattedAddress,
+                    latLng.latitude,
+                    latLng.longitude,
+                )
+            }
+        }, { error ->
+            Timber.tag(TAG).e(error)
+            resourceProvider.get(R.string.toast_no_location_found)
         })
-    }
-
-    private fun showNoMatchesMessage(isOrigin: Boolean) {
-        if (isOrigin) {
-            originAddress.value = resourceProvider.get(R.string.error_no_address_found_message)
-        } else {
-            destinationAddress.value = resourceProvider.get(R.string.error_no_address_found_message)
-        }
-    }
-
-    private fun setAddress(address: String, latLng: LatLng, isOrigin: Boolean) {
-        val formatted = addressFormatter.format(address, latLng.latitude, latLng.longitude)
-        if (isOrigin) {
-            originAddress.value = formatted
-        } else {
-            destinationAddress.value = formatted
-        }
-    }
-
-    private fun showError(errorMessage: String, isOrigin: Boolean) {
-        if (isOrigin) {
-            originAddress.value = resourceProvider.get(R.string.toast_no_location_found)
-        } else {
-            destinationAddress.value = resourceProvider.get(R.string.toast_no_location_found)
-        }
-        Timber.tag(TAG).d(Exception(errorMessage))
-    }
 
     fun onShare() {
-        val title = resourceProvider.get(R.string.action_bar_item_social_share_title)
+        val state = _uiState.value
         val subject = "Distance From Me (http://goo.gl/0IBHFN)"
+        val fromLabel = resourceProvider.get(R.string.share_distance_from_message)
+        val toLabel = resourceProvider.get(R.string.share_distance_to_message)
+        val thereAreLabel = resourceProvider.get(R.string.share_distance_there_are_message)
+
         val message = """Distance From Me (http://goo.gl/0IBHFN)
-${resourceProvider.get(R.string.share_distance_from_message)}
-${originAddress.value}
+$fromLabel
+${state.originAddress}
 
-${resourceProvider.get(R.string.share_distance_to_message)}
-${destinationAddress.value}
+$toLabel
+${state.destinationAddress}
 
-${resourceProvider.get(R.string.share_distance_there_are_message)}
+$thereAreLabel
 ${inputParams.distance}"""
 
-        showShareDialogEvent.value = Event(ShareDialogData(title, subject, message))
+        _uiState.update {
+            it.copy(
+                shareIntentData = ShareIntentData(
+                    title = resourceProvider.get(R.string.action_bar_item_social_share_title),
+                    subject = subject,
+                    message = message,
+                )
+            )
+        }
+    }
+
+    fun onShareDialogShown() {
+        _uiState.update { it.copy(shareIntentData = null) }
     }
 
     fun onSave() {
-        saveDistanceEvent.value =
-            Event(SaveDistanceData(inputParams.positionsList, inputParams.distance))
+        _uiState.update { it.copy(showSaveDialog = true) }
     }
+
+    fun onSaveDialogDismissed() {
+        _uiState.update { it.copy(showSaveDialog = false) }
+    }
+
+    fun onUserMessageShown() {
+        _uiState.update { it.copy(userMessage = null) }
+    }
+
+    fun getSaveDistanceData(): SaveDistanceData =
+        SaveDistanceData(inputParams.positionsList, inputParams.distance)
 
     companion object {
 
@@ -145,7 +147,6 @@ ${inputParams.distance}"""
     }
 
     data class InputParams(val positionsList: List<LatLng>, val distance: String)
-}
 
-data class ShareDialogData(val title: String, val subject: String, val description: String)
-data class SaveDistanceData(val positionsList: List<LatLng>, val distance: String)
+    data class SaveDistanceData(val positionsList: List<LatLng>, val distance: String)
+}

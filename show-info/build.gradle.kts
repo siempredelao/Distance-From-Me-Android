@@ -33,7 +33,6 @@ android {
 
     buildFeatures {
         compose = true
-        viewBinding = true
     }
 
     compileOptions {
@@ -50,9 +49,10 @@ kotlin {
 
 dependencies {
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.fragment.ktx)
     implementation(platform(libs.compose.bom))
+    implementation(libs.compose.material.icons)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling.preview)
@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.material.components)
     implementation(libs.playservices.maps)
     implementation(libs.timber)
     implementation(project(":address"))

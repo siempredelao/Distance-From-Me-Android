@@ -19,7 +19,6 @@
     <application>
         <activity
             android:name="gc.david.dfm.ui.activity.ShowInfoActivity"
-            android:configChanges="screenSize|keyboardHidden"
             android:label="@string/app_name"
             android:parentActivityName="gc.david.dfm.ui.activity.MainActivity" />
     </application>
