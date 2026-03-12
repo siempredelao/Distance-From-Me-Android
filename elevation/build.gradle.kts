@@ -62,7 +62,6 @@ dependencies {
     implementation(libs.timber)
     implementation(project(":common"))
 
-    testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockito)

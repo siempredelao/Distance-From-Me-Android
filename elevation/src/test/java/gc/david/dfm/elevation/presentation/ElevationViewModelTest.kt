@@ -16,7 +16,6 @@
 
 package gc.david.dfm.elevation.presentation
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
@@ -29,7 +28,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -48,7 +46,6 @@ class ElevationViewModelTest {
     private val viewModel =
         ElevationViewModel(getElevationByCoordinatesUseCase, connectionManager, preferencesProvider)
 
-    @get:Rule var instantTaskRule: TestRule = InstantTaskExecutorRule()
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
@@ -58,7 +55,7 @@ class ElevationViewModelTest {
 
         viewModel.onCoordinatesSelected(dummyList)
 
-        assertTrue(viewModel.hideChartEvent.value!!.peekContent() == Unit)
+        assertTrue(viewModel.uiState.value.hideChart)
     }
 
     @Test
@@ -69,7 +66,7 @@ class ElevationViewModelTest {
 
         viewModel.onCoordinatesSelected(dummyList)
 
-        assertTrue(viewModel.hideChartEvent.value!!.peekContent() == Unit)
+        assertTrue(viewModel.uiState.value.hideChart)
     }
 
     @Test
@@ -95,6 +92,6 @@ class ElevationViewModelTest {
         viewModel.onCoordinatesSelected(coordinateList)
 
         val expectedElevationModel = ElevationModel(elevation.results, "m")
-        assertEquals(expectedElevationModel, viewModel.elevationSamples.value)
+        assertEquals(expectedElevationModel, viewModel.uiState.value.elevationModel)
     }
 }

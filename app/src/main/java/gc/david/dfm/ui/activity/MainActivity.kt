@@ -52,6 +52,10 @@ import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.opensource.presentation.AboutActivity
@@ -188,34 +192,45 @@ class MainActivity :
     }
 
     private fun observeElevationViewModel() {
-        with(elevationViewModel) {
-            elevationSamples.observe(this@MainActivity) { elevationModel ->
-                buildChart(elevationModel)
-            }
-            hideChartEvent.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { hideChart() }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                elevationViewModel.uiState.collect { state ->
+                    if (state.hideChart) {
+                        hideChart()
+                        elevationViewModel.onHideChartHandled()
+                    }
+                    state.elevationModel?.let { buildChart(it) }
+                }
             }
         }
     }
 
     private fun observeAddressViewModel() {
-        with(addressViewModel) {
-            connectionIssueEvent.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let {
-                    ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                addressViewModel.uiState.collect { state ->
+                    binding.progressView.isVisible = state.isLoading
+
+                    if (state.showConnectionIssue) {
+                        ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
+                        addressViewModel.onConnectionIssueShown()
+                    }
+
+                    state.errorMessage?.let {
+                        UiUtils.toastIt(it, appContext)
+                        addressViewModel.onErrorMessageShown()
+                    }
+
+                    state.addressFound?.let {
+                        showPositionByName(it)
+                        addressViewModel.onAddressHandled()
+                    }
+
+                    state.multipleAddressesFound?.let {
+                        showAddressSelectionDialog(it)
+                        addressViewModel.onMultipleAddressesHandled()
+                    }
                 }
-            }
-            progressVisibility.observe(this@MainActivity) { visible ->
-                binding.progressView.isVisible = visible
-            }
-            errorMessage.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { UiUtils.toastIt(it, appContext) }
-            }
-            addressFoundEvent.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { showPositionByName(it) }
-            }
-            multipleAddressesFoundEvent.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { showAddressSelectionDialog(it) }
             }
         }
     }

@@ -16,17 +16,20 @@
 
 package gc.david.dfm.address.presentation
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.Event
 import gc.david.dfm.address.R
-import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
+import gc.david.dfm.address.presentation.model.AddressUiState
+import gc.david.dfm.common.ResourceProvider
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AddressViewModel(
@@ -36,71 +39,107 @@ class AddressViewModel(
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
-    val progressVisibility = MutableLiveData<Boolean>()
-    val connectionIssueEvent = MutableLiveData<Event<Unit>>()
-    val errorMessage = MutableLiveData<Event<String>>()
-    val addressFoundEvent = MutableLiveData<Event<Address>>()
-    val multipleAddressesFoundEvent = MutableLiveData<Event<List<Address>>>()
+    private val _uiState = MutableStateFlow(AddressUiState())
+    val uiState: StateFlow<AddressUiState> = _uiState.asStateFlow()
 
     fun onAddressSearch(query: String) {
         if (!connectionManager.isOnline()) {
-            connectionIssueEvent.value = Event(Unit)
+            _uiState.update { it.copy(showConnectionIssue = true) }
         } else {
             onSearchPositionByNameWithConnectionAvailable(query)
         }
     }
 
     private fun onSearchPositionByNameWithConnectionAvailable(locationName: String) {
-        progressVisibility.value = true
+        _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val result = getAddressCoordinatesByNameUseCase(locationName)
-            progressVisibility.postValue(false)
-
-            result.fold({
-                when {
-                    it.addressList.isEmpty() ->
-                        errorMessage.postValue(Event(resourceProvider.get(R.string.toast_no_results)))
-                    it.addressList.size == 1 ->
-                        addressFoundEvent.postValue(Event(it.addressList.first()))
-                    else ->
-                        multipleAddressesFoundEvent.postValue(Event(it.addressList))
-                }
-            }, {
-                errorMessage.postValue(Event(it.message.orEmpty()))
-            })
+            _uiState.update { current ->
+                result.fold({ collection ->
+                    when {
+                        collection.addressList.isEmpty() ->
+                            current.copy(
+                                isLoading = false,
+                                errorMessage = resourceProvider.get(R.string.toast_no_results),
+                            )
+                        collection.addressList.size == 1 ->
+                            current.copy(
+                                isLoading = false,
+                                addressFound = collection.addressList.first(),
+                            )
+                        else ->
+                            current.copy(
+                                isLoading = false,
+                                multipleAddressesFound = collection.addressList,
+                            )
+                    }
+                }, { error ->
+                    // TODO show a user friendly error message
+                    current.copy(
+                        isLoading = false,
+                        errorMessage = error.message.orEmpty(),
+                    )
+                })
+            }
         }
     }
 
     fun onAddressSelected(address: Address) {
-        addressFoundEvent.value = Event(address)
+        _uiState.update { it.copy(addressFound = address) }
     }
 
     fun onAddressSearch(coordinates: LatLng) { // FIXME consider using a Coordinates(x, y) custom data model
         if (!connectionManager.isOnline()) {
-            connectionIssueEvent.value = Event(Unit)
+            _uiState.update { it.copy(showConnectionIssue = true) }
         } else {
             onSearchPositionByCoordinatesWithConnectionAvailable(coordinates)
         }
     }
 
     private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: LatLng) {
-        progressVisibility.value = true
+        _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val result = getAddressNameByCoordinatesUseCase(coordinates)
-            progressVisibility.postValue(false)
-
-            result.fold({
-                when {
-                    it.addressList.isEmpty() ->
-                        errorMessage.postValue(Event(resourceProvider.get(R.string.toast_no_results)))
-                    else ->
-                        addressFoundEvent.postValue(Event(it.addressList.first()))
-                }
-            }, {
-                errorMessage.postValue(Event(it.message.orEmpty()))
-            })
+            _uiState.update { current ->
+                result.fold({ collection ->
+                    when {
+                        collection.addressList.isEmpty() ->
+                            current.copy(
+                                isLoading = false,
+                                errorMessage = resourceProvider.get(R.string.toast_no_results),
+                            )
+                        else ->
+                            current.copy(
+                                isLoading = false,
+                                addressFound = collection.addressList.first(),
+                            )
+                    }
+                }, { error ->
+                    // TODO show a user friendly error message
+                    current.copy(
+                        isLoading = false,
+                        errorMessage = error.message.orEmpty(),
+                    )
+                })
+            }
         }
+    }
+
+    fun onConnectionIssueShown() {
+        _uiState.update { it.copy(showConnectionIssue = false) }
+    }
+
+    fun onErrorMessageShown() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun onAddressHandled() {
+        _uiState.update { it.copy(addressFound = null) }
+    }
+
+    fun onMultipleAddressesHandled() {
+        _uiState.update { it.copy(multipleAddressesFound = null) }
     }
 }

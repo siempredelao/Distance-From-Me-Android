@@ -16,16 +16,19 @@
 
 package gc.david.dfm.elevation.presentation
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.Event
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
+import gc.david.dfm.elevation.presentation.model.ElevationUiState
 import gc.david.dfm.map.Haversine
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -36,8 +39,8 @@ class ElevationViewModel(
     private val preferencesProvider: PreferencesProvider
 ) : ViewModel() {
 
-    val elevationSamples = MutableLiveData<ElevationModel>()
-    val hideChartEvent = MutableLiveData<Event<Unit>>()
+    private val _uiState = MutableStateFlow(ElevationUiState())
+    val uiState: StateFlow<ElevationUiState> = _uiState.asStateFlow()
 
     private val locale: Locale
         get() {
@@ -47,7 +50,7 @@ class ElevationViewModel(
 
     fun onCoordinatesSelected(coordinates: List<LatLng>) {
         if (!preferencesProvider.shouldShowElevationChart() || !connectionManager.isOnline()) {
-            hideChartEvent.value = Event(Unit)
+            _uiState.update { it.copy(hideChart = true) }
             return
         }
 
@@ -56,11 +59,17 @@ class ElevationViewModel(
                 val normalizedElevationList =
                     it.results.map { Haversine.normalizeAltitudeByLocale(it, locale) }
                 val altitudeUnit = Haversine.getAltitudeUnitByLocale(locale)
-                elevationSamples.postValue(ElevationModel(normalizedElevationList, altitudeUnit))
+                _uiState.update { current ->
+                    current.copy(elevationModel = ElevationModel(normalizedElevationList, altitudeUnit))
+                }
             }, {
                 Timber.tag(TAG).e(it)
             })
         }
+    }
+
+    fun onHideChartHandled() {
+        _uiState.update { it.copy(hideChart = false) }
     }
 
     private companion object {

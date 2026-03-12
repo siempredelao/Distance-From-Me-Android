@@ -16,7 +16,6 @@
 
 package gc.david.dfm.address.presentation
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
@@ -30,7 +29,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -55,7 +53,6 @@ class AddressViewModelTest {
             resourceProvider
         )
 
-    @get:Rule val instantTaskRule: TestRule = InstantTaskExecutorRule()
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
@@ -65,7 +62,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertTrue(viewModel.connectionIssueEvent.value != null)
+        assertTrue(viewModel.uiState.value.showConnectionIssue)
     }
 
     @Test
@@ -87,7 +84,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(false, viewModel.progressVisibility.value)
+        assertEquals(false, viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -100,7 +97,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(message, viewModel.errorMessage.value!!.peekContent())
+        assertEquals(message, viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -113,7 +110,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
+        assertEquals(address, viewModel.uiState.value.addressFound)
     }
 
     @Test
@@ -129,7 +126,7 @@ class AddressViewModelTest {
 
             assertEquals(
                 addressCollection.addressList,
-                viewModel.multipleAddressesFoundEvent.value!!.peekContent()
+                viewModel.uiState.value.multipleAddressesFound
             )
         }
 
@@ -141,7 +138,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(false, viewModel.progressVisibility.value)
+        assertEquals(false, viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -152,7 +149,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(errorMessage, viewModel.errorMessage.value!!.peekContent())
+        assertEquals(errorMessage, viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -161,7 +158,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSelected(address)
 
-        assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
+        assertEquals(address, viewModel.uiState.value.addressFound)
     }
 
     @Test
@@ -171,7 +168,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertTrue(viewModel.connectionIssueEvent.value != null)
+        assertTrue(viewModel.uiState.value.showConnectionIssue)
     }
 
     @Test
@@ -192,7 +189,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(false, viewModel.progressVisibility.value)
+        assertEquals(false, viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -205,7 +202,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(message, viewModel.errorMessage.value!!.peekContent())
+        assertEquals(message, viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -218,7 +215,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(address, viewModel.addressFoundEvent.value!!.peekContent())
+        assertEquals(address, viewModel.uiState.value.addressFound)
     }
 
     @Test
@@ -229,7 +226,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(false, viewModel.progressVisibility.value)
+        assertEquals(false, viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -240,7 +237,7 @@ class AddressViewModelTest {
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(errorMessage, viewModel.errorMessage.value!!.peekContent())
+        assertEquals(errorMessage, viewModel.uiState.value.errorMessage)
     }
 
     private suspend fun getAddressCoordinatesByNameSuccess(addressCollection: AddressCollection) {
