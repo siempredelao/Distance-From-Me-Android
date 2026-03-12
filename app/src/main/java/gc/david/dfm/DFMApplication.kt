@@ -23,8 +23,8 @@ import gc.david.dfm.core.distances.di.coreDistancesModule
 import gc.david.dfm.di.appModule
 import gc.david.dfm.di.viewModelModule
 import gc.david.dfm.elevation.di.elevationModule
-import gc.david.dfm.faq.faqModule
-import gc.david.dfm.opensource.openSourceModule
+import gc.david.dfm.faq.di.faqModule
+import gc.david.dfm.opensource.di.openSourceModule
 import gc.david.dfm.showinfo.di.showInfoModule
 import gc.david.dfm.initializers.Initializers
 import org.koin.android.ext.android.inject

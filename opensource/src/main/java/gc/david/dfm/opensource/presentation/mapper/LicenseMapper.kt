@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.presentation
+package gc.david.dfm.opensource.presentation.mapper
 
-import gc.david.dfm.opensource.R
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.License
 
 /**

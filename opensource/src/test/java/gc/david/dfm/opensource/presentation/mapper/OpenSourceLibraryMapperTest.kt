@@ -18,7 +18,7 @@ package gc.david.dfm.opensource.presentation.mapper
 
 import gc.david.dfm.opensource.domain.License
 import gc.david.dfm.opensource.domain.OpenSourceLibrary
-import gc.david.dfm.opensource.presentation.LicenseMapper
+import gc.david.dfm.opensource.presentation.mapper.LicenseMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import org.junit.Assert.assertEquals
 import org.junit.Test

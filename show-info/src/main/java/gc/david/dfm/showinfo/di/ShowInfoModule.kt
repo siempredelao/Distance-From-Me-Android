@@ -17,7 +17,7 @@
 package gc.david.dfm.showinfo.di
 
 import gc.david.dfm.showinfo.presentation.AddressFormatter
-import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
+import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module

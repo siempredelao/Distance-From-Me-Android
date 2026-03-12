@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.presentation.activity
+package gc.david.dfm.opensource.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -30,10 +30,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
-import gc.david.dfm.opensource.presentation.ui.OpenSourceDetailScreen
-import gc.david.dfm.opensource.presentation.ui.OpenSourceListScreen
+import gc.david.dfm.opensource.presentation.screen.OpenSourceDetailScreen
+import gc.david.dfm.opensource.presentation.screen.OpenSourceListScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AboutActivity : ComponentActivity() {

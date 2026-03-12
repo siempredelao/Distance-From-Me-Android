@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.presentation.viewmodel
+package gc.david.dfm.faq.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

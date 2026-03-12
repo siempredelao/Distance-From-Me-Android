@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.showinfo.presentation.ui
+package gc.david.dfm.showinfo.presentation.savedistance
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

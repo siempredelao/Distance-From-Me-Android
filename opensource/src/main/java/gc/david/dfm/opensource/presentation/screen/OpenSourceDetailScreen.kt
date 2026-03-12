@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource.presentation.ui
+package gc.david.dfm.opensource.presentation.screen
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.showinfo.presentation
+package gc.david.dfm.showinfo.presentation.savedistance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

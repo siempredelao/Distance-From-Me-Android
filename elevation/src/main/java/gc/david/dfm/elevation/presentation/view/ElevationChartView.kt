@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.elevation.view
+package gc.david.dfm.elevation.presentation.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -40,8 +40,8 @@ class ElevationChartView @JvmOverloads constructor(
     init {
         if (!isInEditMode) {
             layoutParams = LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT
             )
             setBackgroundColor(ContextCompat.getColor(context, R.color.elevation_chart_background))
         }

@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.showinfo.presentation
+package gc.david.dfm.faq.di
 
-data class ShowInfoUiState(
-    val originAddress: String = "",
-    val destinationAddress: String = "",
-    val distanceMessage: String = "",
-    val isLoading: Boolean = false,
-    val userMessage: String? = null,
-    val shareIntentData: ShareIntentData? = null,
-    val showSaveDialog: Boolean = false,
-)
+import gc.david.dfm.faq.data.BaseFaqRepository
+import gc.david.dfm.faq.data.FaqDiskDataSource
+import gc.david.dfm.faq.domain.FaqRepository
+import gc.david.dfm.faq.domain.GetFaqsUseCase
+import gc.david.dfm.faq.presentation.FaqViewModel
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
 
-data class ShareIntentData(
-    val title: String,
-    val subject: String,
-    val message: String,
-)
+val faqModule = module {
+
+    viewModel { FaqViewModel(get(), get()) }
+    factory { GetFaqsUseCase(get()) }
+    single<FaqRepository> { BaseFaqRepository(get()) }
+    single { FaqDiskDataSource() }
+}
+

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.showinfo.presentation.ui
+package gc.david.dfm.showinfo.presentation.screen
 
 import android.content.Intent
 import android.widget.Toast
@@ -59,7 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.showinfo.R
-import gc.david.dfm.showinfo.presentation.ShowInfoUiState
+import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
 
 private val BackgroundGradient = Brush.verticalGradient(
     colors = listOf(Color(0x50526D02), Color(0x00526D02)),

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.activity
+package gc.david.dfm.showinfo.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -27,13 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.core.content.IntentCompat
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
-import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
-import gc.david.dfm.showinfo.presentation.ui.SaveDistanceDialog
-import gc.david.dfm.showinfo.presentation.ui.ShowInfoScreen
+import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceDialog
+import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
+import gc.david.dfm.showinfo.presentation.screen.ShowInfoScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.*
+import java.util.ArrayList
 
 class ShowInfoActivity : ComponentActivity() {
 
@@ -41,7 +40,7 @@ class ShowInfoActivity : ComponentActivity() {
     private val saveDistanceViewModel: SaveDistanceViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate")
+        Timber.Forest.tag(TAG).d("onCreate")
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
@@ -83,7 +82,7 @@ class ShowInfoActivity : ComponentActivity() {
     }
 
     private fun loadData() {
-        Timber.tag(TAG).d("loadData")
+        Timber.Forest.tag(TAG).d("loadData")
 
         val positionsList =
             IntentCompat.getParcelableArrayListExtra(

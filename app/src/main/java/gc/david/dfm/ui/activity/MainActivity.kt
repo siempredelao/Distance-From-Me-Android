@@ -52,12 +52,13 @@ import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel
-import gc.david.dfm.faq.presentation.activity.FaqActivity
+import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
-import gc.david.dfm.opensource.presentation.activity.AboutActivity
+import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.service.GeofencingService
+import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment

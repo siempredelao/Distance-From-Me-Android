@@ -23,7 +23,7 @@ import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.faq.data.model.Faq
 import gc.david.dfm.faq.domain.GetFaqsUseCase
 import gc.david.dfm.faq.presentation.model.FaqUiState
-import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
+import gc.david.dfm.faq.presentation.FaqViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

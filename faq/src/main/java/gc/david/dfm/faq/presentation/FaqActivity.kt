@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.presentation.activity
+package gc.david.dfm.faq.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -25,8 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.faq.presentation.model.FaqUiState
-import gc.david.dfm.faq.presentation.ui.FaqScreen
-import gc.david.dfm.faq.presentation.viewmodel.FaqViewModel
+import gc.david.dfm.faq.presentation.screen.FaqScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FaqActivity : ComponentActivity() {

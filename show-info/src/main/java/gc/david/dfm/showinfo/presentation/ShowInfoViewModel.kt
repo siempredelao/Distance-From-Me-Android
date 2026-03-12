@@ -24,6 +24,8 @@ import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.showinfo.R
+import gc.david.dfm.showinfo.presentation.model.ShareIntentData
+import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

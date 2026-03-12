@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.opensource
+package gc.david.dfm.opensource.di
 
 import gc.david.dfm.opensource.data.BaseOpenSourceRepository
 import gc.david.dfm.opensource.data.OpenSourceDiskDataSource
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.OpenSourceRepository
-import gc.david.dfm.opensource.presentation.LicenseMapper
+import gc.david.dfm.opensource.presentation.mapper.LicenseMapper
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module

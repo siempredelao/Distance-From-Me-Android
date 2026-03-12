@@ -17,7 +17,7 @@
 package gc.david.dfm.opensource.presentation.mapper
 
 import gc.david.dfm.opensource.domain.OpenSourceLibrary
-import gc.david.dfm.opensource.presentation.LicenseMapper
+import gc.david.dfm.opensource.presentation.mapper.LicenseMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 
 /**

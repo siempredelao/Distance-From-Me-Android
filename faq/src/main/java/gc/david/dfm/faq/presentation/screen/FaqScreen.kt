@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.presentation.ui
+package gc.david.dfm.faq.presentation.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
