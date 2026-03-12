@@ -26,9 +26,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.R
 import gc.david.dfm.common.UiUtils
-import gc.david.dfm.databinding.ActivityShowInfoBinding
+import gc.david.dfm.showinfo.R
+import gc.david.dfm.showinfo.databinding.ActivityShowInfoBinding
 import gc.david.dfm.showinfo.presentation.SaveDistanceData
 import gc.david.dfm.showinfo.presentation.ShareDialogData
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel

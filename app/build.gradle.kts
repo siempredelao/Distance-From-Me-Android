@@ -134,6 +134,7 @@ dependencies {
     implementation(project(":faq"))
     implementation(project(":feedback"))
     implementation(project(":opensource"))
+    implementation(project(":show-info"))
 
 	testImplementation(libs.androidx.arch.core.testing)
 	testImplementation(libs.coroutines.test)

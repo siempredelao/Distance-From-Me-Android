@@ -29,9 +29,6 @@ import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.settings.presentation.SettingsViewModel
-import gc.david.dfm.showinfo.presentation.AddressFormatter
-import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
-import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import gc.david.dfm.ui.activity.MapDrawer
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -49,16 +46,11 @@ val appModule = module {
 val viewModelModule = module {
 
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
-    viewModel { SaveDistanceViewModel(get(), get()) }
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val useCaseModule = module {
     factory { GetFaqsUseCase(get()) }
-
-    // Mappers
-    factory { AddressFormatter() }
 }
 
 val repositoryModule = module {

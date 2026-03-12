@@ -20,11 +20,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.R
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
+import gc.david.dfm.showinfo.R
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

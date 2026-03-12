@@ -40,10 +40,10 @@ import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.R
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
+import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

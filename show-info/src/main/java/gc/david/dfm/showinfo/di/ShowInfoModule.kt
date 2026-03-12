@@ -13,31 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-}
 
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+package gc.david.dfm.showinfo.di
 
-include(":address")
-include(":app")
-include(":common")
-include(":connectivity")
-include(":core-distances")
-include(":design-system")
-include(":elevation")
-include(":faq")
-include(":feedback")
-include(":opensource")
-include(":show-info")
-include(":test-support")
+import gc.david.dfm.showinfo.presentation.AddressFormatter
+import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
+import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+val showInfoModule = module {
+    viewModel { ShowInfoViewModel(get(), get(), get(), get()) }
+    viewModel { SaveDistanceViewModel(get(), get()) }
+    factory { AddressFormatter() }
+}

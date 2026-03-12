@@ -27,6 +27,7 @@ import gc.david.dfm.di.viewModelModule
 import gc.david.dfm.elevation.di.elevationModule
 import gc.david.dfm.faq.faqModule
 import gc.david.dfm.opensource.openSourceModule
+import gc.david.dfm.showinfo.di.showInfoModule
 import gc.david.dfm.initializers.Initializers
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -54,7 +55,8 @@ class DFMApplication : Application() {
                 commonModule,
                 elevationModule,
                 faqModule,
-                openSourceModule
+                openSourceModule,
+                showInfoModule
             )
         }
 

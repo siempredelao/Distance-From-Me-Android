@@ -17,7 +17,6 @@
 
 <resources>
     <string name="action_bar_search_title">Pesquisar</string>
-    <string name="action_bar_item_social_share_title">Compartilhar</string>
     <string name="action_bar_search_hint">Pesquisar no Distance From Me</string>
     <string name="toast_no_find_address">Serviço inativo o sinal da rede muito pobre. Tente novamente em alguns instantes.</string>
     <string name="toast_loading_position">Procurando a sua posiçao. Por favor, aguarde</string>
@@ -38,23 +37,6 @@
     <string name="preference_delete_distances_summary">Toque para eliminar todas as distâncias armazenadas</string>
     <string name="preference_show_elevation_title">Mostrar perfil de elevação</string>
     <string name="preference_show_elevation_summary">Calcula o perfil de elevação. Esta tarefa pode demorar algum tempo, dependendo da sua conexão.</string>
-    <string name="info_current_position_title">Posiçao atual aproximada:</string>
-    <string name="info_destination_position_title">Destino aproximado:</string>
-    <string name="error_no_address_found_message">Não foi encontrado direçao</string>
-    <string name="info_distance_title">Distância: %s</string>
-    <string name="action_bar_item_refresh_title">Refrescar dados</string>
-    <string name="action_bar_item_save_title">Guardar</string>
-    <string name="share_distance_from_message">Desde</string>
-    <string name="share_distance_to_message">Até</string>
-    <string name="share_distance_there_are_message">Há</string>
-    <string name="toast_no_location_found">Erro ao obter direçao. Pressione o botão Atualizar para refrescar a informação</string>
-    <string name="toast_network_problems">Conexão com a Internet não ativado. Ative sua conexão e tente novamente.</string>
-    <string name="alias_dialog_title">Alias</string>
-    <string name="alias_dialog_message">Associe um alias para a distância:</string>
-    <string name="alias_dialog_accept">Aceitar</string>
-    <string name="alias_dialog_with_name_toast">Distância \"%s\" armazenada corretamente</string>
-    <string name="alias_dialog_no_name_toast">Distância armazenada corretamente</string>
-    <string name="save_distance_error">Não foi possível salvar a distância. Tente novamente mais tarde.</string>
     <string name="preference_centre_map_title">Centrar mapa</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualquer posição</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posição Atual</string>

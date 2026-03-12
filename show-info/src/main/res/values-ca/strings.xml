@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_bar_item_social_share_title">Compartir</string>
+    <string name="info_current_position_title">Posició actual aproximada:</string>
+    <string name="info_destination_position_title">Destinació aproximada:</string>
+    <string name="error_no_address_found_message">No s\'ha trobat adreça</string>
+    <string name="info_distance_title">Distància: %s</string>
+    <string name="action_bar_item_refresh_title">Refrescar dades</string>
+    <string name="action_bar_item_save_title">Desar</string>
+    <string name="share_distance_from_message">Des de</string>
+    <string name="share_distance_to_message">Fins a</string>
+    <string name="share_distance_there_are_message">Hi ha</string>
+    <string name="toast_no_location_found">Error en obtenir adreça. Prema el botó Actualitzar per refrescar la informació</string>
+    <string name="toast_network_problems">Connexió a Internet no activada. Active la seva connexió i torne a intentar-ho</string>
+    <string name="alias_dialog_title">Àlies</string>
+    <string name="alias_dialog_message">Associe un àlies a la distància:</string>
+    <string name="alias_dialog_accept">Acceptar</string>
+    <string name="alias_dialog_with_name_toast">Distància \"%s\" emmagatzemada correctament</string>
+    <string name="alias_dialog_no_name_toast">Distància emmagatzemada correctament</string>
+    <string name="save_distance_error">No s\'ha pogut desar la distància. Torneu-ho a provar més tard.</string>
+</resources>
