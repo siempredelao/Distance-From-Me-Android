@@ -19,10 +19,6 @@ package gc.david.dfm.di
 import gc.david.dfm.*
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.faq.data.BaseFaqRepository
-import gc.david.dfm.faq.data.FaqDiskDataSource
-import gc.david.dfm.faq.domain.FaqRepository
-import gc.david.dfm.faq.domain.GetFaqsUseCase
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
@@ -49,13 +45,3 @@ val viewModelModule = module {
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
-val useCaseModule = module {
-    factory { GetFaqsUseCase(get()) }
-}
-
-val repositoryModule = module {
-
-    single<FaqRepository> { BaseFaqRepository(get()) }
-
-    single { FaqDiskDataSource() }
-}
