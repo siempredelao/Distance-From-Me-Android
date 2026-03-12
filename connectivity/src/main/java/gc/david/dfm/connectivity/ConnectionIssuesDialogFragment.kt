@@ -16,35 +16,29 @@
 
 package gc.david.dfm.connectivity
 
-import android.app.Activity
 import android.content.Intent
+import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
+import androidx.fragment.app.DialogFragment
 import gc.david.dfm.designsystem.DfmTheme
-import timber.log.Timber
 
-object ConnectionIssuesDialogHandler {
+class ConnectionIssuesDialogFragment : DialogFragment() {
 
-    private const val TAG = "ConnectionIssuesDialog"
-
-    fun show(activity: Activity) {
-        Timber.tag(TAG).d("show")
-
-        val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
-        val composeView = ComposeView(activity).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
             setContent {
                 DfmTheme {
                     ConnectionIssuesDialog(
-                        onNegativeButtonClick = { contentView.removeView(this@apply) },
+                        onNegativeButtonClick = { dismiss() },
                         onPositiveButtonClick = {
-                            contentView.removeView(this@apply)
-                            activity.startActivity(Intent(Settings.ACTION_SETTINGS))
+                            dismiss()
+                            startActivity(Intent(Settings.ACTION_SETTINGS))
                         },
                     )
                 }
             }
         }
-        contentView.addView(composeView)
-    }
 }

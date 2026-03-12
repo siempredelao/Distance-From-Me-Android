@@ -49,6 +49,7 @@ kotlin {
 
 dependencies {
 
+    implementation(libs.androidx.fragment.ktx)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)

@@ -46,7 +46,7 @@ import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.connectivity.ConnectionIssuesDialogHandler
+import gc.david.dfm.connectivity.ConnectionIssuesDialogFragment
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
@@ -200,7 +200,7 @@ class MainActivity :
         with(addressViewModel) {
             connectionIssueEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
-                    ConnectionIssuesDialogHandler.show(this@MainActivity)
+                    ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
                 }
             }
             progressVisibility.observe(this@MainActivity) { visible ->
@@ -222,7 +222,7 @@ class MainActivity :
         with(mainViewModel) {
             connectionIssueEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let {
-                    ConnectionIssuesDialogHandler.show(this@MainActivity)
+                    ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
                 }
             }
             errorMessage.observe(this@MainActivity) { event ->
