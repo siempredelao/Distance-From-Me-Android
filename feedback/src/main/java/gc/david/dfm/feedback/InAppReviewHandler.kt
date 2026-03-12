@@ -16,23 +16,17 @@
 
 package gc.david.dfm.feedback
 
-import android.app.Activity
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.core.net.toUri
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
-import gc.david.dfm.designsystem.DfmTheme
 import timber.log.Timber
 
 object InAppReviewHandler {
 
     private const val TAG = "InAppReviewHandler"
 
-    fun rateApp(activity: Activity) {
+    fun rateApp(activity: FragmentActivity) {
         showRateApp(activity)
     }
 
@@ -42,7 +36,7 @@ object InAppReviewHandler {
      * https://developer.android.com/guide/playcore/in-app-review#quotas
      * We show fallback dialog if there is any error
      */
-    private fun showRateApp(activity: Activity) {
+    private fun showRateApp(activity: FragmentActivity) {
         val reviewManager = ReviewManagerFactory.create(activity)
         val request: Task<ReviewInfo> = reviewManager.requestReviewFlow()
         request.addOnCompleteListener { task ->
@@ -53,38 +47,8 @@ object InAppReviewHandler {
                 flow.addOnCompleteListener { Timber.tag(TAG).i("Review process finished") }
             } else {
                 Timber.tag(TAG).d("showRateApp failure")
-                showRateAppFallbackDialog(activity)
+                RateAppFallbackDialogFragment().show(activity.supportFragmentManager, null)
             }
-        }
-    }
-
-    private fun showRateAppFallbackDialog(activity: Activity) {
-        val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
-        val composeView = ComposeView(activity).apply {
-            setContent {
-                DfmTheme {
-                    RateAppFallbackDialog(
-                        onDismiss = {
-                            contentView.removeView(this@apply)
-                        },
-                        onCtaClick = {
-                            contentView.removeView(this@apply)
-                            openPlayStoreAppPage(activity)
-                        },
-                    )
-                }
-            }
-        }
-        contentView.addView(composeView)
-    }
-
-    private fun openPlayStoreAppPage(activity: Activity) {
-        Timber.tag(TAG).d("openPlayStoreAppPage")
-
-        try {
-            activity.startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=gc.david.dfm".toUri()))
-        } catch (e: ActivityNotFoundException) {
-            Timber.tag(TAG).e(e, "Unable to open Play Store, rooted device?")
         }
     }
 }
