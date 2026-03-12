@@ -16,62 +16,14 @@
 
 package gc.david.dfm
 
-import android.content.Context
-import android.content.Intent
 import android.location.Location
-import android.os.Bundle
-import android.widget.Toast
-import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.map.Haversine
-import timber.log.Timber
 
-/**
- * Created by David on 15/10/2014.
- */
 object Utils {
 
-    private const val TAG = "Utils"
-
     fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
-
-    fun toastIt(charSequence: String, context: Context) {
-        Timber.tag(TAG).d("toastIt message=$charSequence")
-
-        Toast.makeText(context, charSequence, Toast.LENGTH_LONG).show()
-    }
-
-    fun toastIt(@StringRes stringRes: Int, context: Context) {
-        Timber.tag(TAG).d("toastIt message=%s", context.getString(stringRes))
-
-        Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
-    }
-
-    fun dumpIntentToString(intent: Intent?): String {
-        if (intent == null) {
-            return "intent is null"
-        }
-
-        var intentAsString = StringBuilder()
-        val bundle = intent.extras
-
-        if (bundle != null) {
-            val keys = bundle.keySet()
-            intentAsString.append("intent=[ ")
-            for (key in keys) {
-                intentAsString.append(key).append("=").append(bundle.get(key)).append(", ")
-            }
-            intentAsString.append(" ]")
-        } else {
-            intentAsString = StringBuilder("intent with empty bundle")
-        }
-        return intentAsString.toString()
-    }
-
-    fun dumpBundleToString(bundle: Bundle?): String {
-        return bundle?.toString() ?: "bundle is null"
-    }
 
     fun calculateDistanceInMetres(coordinates: List<LatLng>): Double {
         var distanceInMetres = 0.0

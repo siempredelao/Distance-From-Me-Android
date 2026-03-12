@@ -68,4 +68,5 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.material.components)
+    implementation(libs.timber)
 }

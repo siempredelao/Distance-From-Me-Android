@@ -43,6 +43,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
 import gc.david.dfm.Utils.toPoint
+import gc.david.dfm.common.UiUtils
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
@@ -146,7 +147,7 @@ class MainActivity :
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).apply {
@@ -207,7 +208,7 @@ class MainActivity :
                 binding.progressView.isVisible = visible
             }
             errorMessage.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
+                event.getContentIfNotHandled()?.let { UiUtils.toastIt(it, appContext) }
             }
             addressFoundEvent.observe(this@MainActivity) { event ->
                 event.getContentIfNotHandled()?.let { showPositionByName(it) }
@@ -226,7 +227,7 @@ class MainActivity :
                 }
             }
             errorMessage.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { Utils.toastIt(it, appContext) }
+                event.getContentIfNotHandled()?.let { UiUtils.toastIt(it, appContext) }
             }
             showLoadDistancesItem.observe(this@MainActivity) { visible ->
                 Timber.tag(TAG).d("showLoadDistancesItem $visible")
@@ -284,7 +285,7 @@ class MainActivity :
         if (!isLocationPermissionGranted) {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
         } else {
-            Utils.toastIt(R.string.toast_loading_position, appContext)
+            UiUtils.toastIt(R.string.toast_loading_position, appContext)
             googleMap?.isMyLocationEnabled = true
             binding.fabMyLocation.isVisible = true
         }
@@ -304,7 +305,7 @@ class MainActivity :
                 if (grantResults.first() == PERMISSION_GRANTED) {
                     Timber.tag(TAG).d("onRequestPermissionsResult GRANTED")
 
-                    Utils.toastIt(R.string.toast_loading_position, appContext)
+                    UiUtils.toastIt(R.string.toast_loading_position, appContext)
                     googleMap?.isMyLocationEnabled = true
                     binding.fabMyLocation.isVisible = true
 
@@ -343,7 +344,7 @@ class MainActivity :
     }
 
     override fun onNewIntent(intent: Intent) {
-        Timber.tag(TAG).d("onNewIntent %s", Utils.dumpIntentToString(intent))
+        Timber.tag(TAG).d("onNewIntent %s", UiUtils.dumpIntentToString(intent))
         super.onNewIntent(intent)
 
         setIntent(intent)

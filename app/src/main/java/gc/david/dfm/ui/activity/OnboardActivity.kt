@@ -20,7 +20,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import gc.david.dfm.Utils
+import gc.david.dfm.common.UiUtils
 import timber.log.Timber
 
 /**
@@ -53,7 +53,7 @@ class OnboardActivity : AppCompatActivity() {
                         ?.show()
             } else {
                 Timber.tag(TAG).e("checkPlayServices device not supported, finishing")
-                Utils.toastIt("This device is not supported by Google Play Services.", this)
+                UiUtils.toastIt("This device is not supported by Google Play Services.", this)
 
                 finish()
             }

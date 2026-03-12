@@ -41,7 +41,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
-import gc.david.dfm.Utils
+import gc.david.dfm.common.UiUtils
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.showinfo.presentation.SaveDistanceViewModel
@@ -56,7 +56,7 @@ class SaveDistanceDialogFragment : DialogFragment() {
         parseBundle(arguments)
         with(viewModel) {
             errorMessage.observe(this@SaveDistanceDialogFragment) { message ->
-                Utils.toastIt(message, requireContext())
+                UiUtils.toastIt(message, requireContext())
             }
         }
     }

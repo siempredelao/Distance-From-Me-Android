@@ -27,7 +27,7 @@ import androidx.core.content.IntentCompat
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.R
-import gc.david.dfm.Utils
+import gc.david.dfm.common.UiUtils
 import gc.david.dfm.databinding.ActivityShowInfoBinding
 import gc.david.dfm.showinfo.presentation.SaveDistanceData
 import gc.david.dfm.showinfo.presentation.ShareDialogData
@@ -46,7 +46,7 @@ class ShowInfoActivity : AppCompatActivity() {
     private val viewModel: ShowInfoViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate savedInstanceState=%s", Utils.dumpBundleToString(savedInstanceState))
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
 
         super.onCreate(savedInstanceState)
         binding = ActivityShowInfoBinding.inflate(layoutInflater).apply {
