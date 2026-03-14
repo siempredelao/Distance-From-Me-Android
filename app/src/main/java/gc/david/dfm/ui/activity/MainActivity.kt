@@ -79,6 +79,7 @@ class MainActivity :
 
     private val appContext: Context by inject()
     private val mapDrawer: MapDrawer by inject()
+    private val permissionChecker: PermissionChecker by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
@@ -100,10 +101,6 @@ class MainActivity :
     private var googleMap: GoogleMap? = null
     private var drawDistanceModel = DrawDistanceModel.EMPTY
 
-    private val isLocationPermissionGranted: Boolean
-        get() = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
-
     private fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
 
     private val onNavigationItemSelectedListener: NavigationView.OnNavigationItemSelectedListener
@@ -113,7 +110,7 @@ class MainActivity :
                 R.id.menu_current_position -> {
                     mainViewModel.onDistanceFromCurrentPositionSet()
                     menuItem.isChecked = true
-                    if (!isLocationPermissionGranted) {
+                    if (!permissionChecker.isLocationPermissionGranted()) {
                         Snackbar.make(binding.drawerLayout,
                                 R.string.snackbar_location_permission_needed,
                                 Snackbar.LENGTH_INDEFINITE)
@@ -298,7 +295,7 @@ class MainActivity :
 
         resetMap()
 
-        if (!isLocationPermissionGranted) {
+        if (!permissionChecker.isLocationPermissionGranted()) {
             requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
         } else {
             UiUtils.toastIt(R.string.toast_loading_position, appContext)
@@ -468,7 +465,7 @@ class MainActivity :
         Timber.tag(TAG).d("onStart")
 
         super.onStart()
-        if (isLocationPermissionGranted) {
+        if (permissionChecker.isLocationPermissionGranted()) {
             registerLocationReceiver()
             startService(Intent(this, GeofencingService::class.java))
             googleMap?.isMyLocationEnabled = true

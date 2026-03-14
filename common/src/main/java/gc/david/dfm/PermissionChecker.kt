@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm
 
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DefaultConnectionManager
-import gc.david.dfm.DefaultGeocodeApiKeyProvider
-import gc.david.dfm.DefaultPermissionChecker
-import gc.david.dfm.GeocodeApiKeyProvider
-import gc.david.dfm.PermissionChecker
-import org.koin.dsl.module
+interface PermissionChecker {
 
-val commonModule = module {
-
-    single { ResourceProvider(get()) }
-    single<ConnectionManager> { DefaultConnectionManager(get()) }
-    single<GeocodeApiKeyProvider> { DefaultGeocodeApiKeyProvider(get()) }
-    single<PermissionChecker> { DefaultPermissionChecker(get()) }
+    fun isLocationPermissionGranted(): Boolean
 }
-
