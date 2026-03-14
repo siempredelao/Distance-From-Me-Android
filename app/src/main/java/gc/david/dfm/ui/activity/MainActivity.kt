@@ -20,12 +20,12 @@ import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.SearchManager
 import android.content.*
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -88,6 +88,24 @@ class MainActivity :
 
     private var googleMap: GoogleMap? = null
     private var drawDistanceModel = DrawDistanceModel.EMPTY
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions.values.all { it }
+        if (granted) {
+            Timber.tag(TAG).d("permissions GRANTED")
+            UiUtils.toastIt(R.string.toast_loading_position, appContext)
+            googleMap?.isMyLocationEnabled = true
+            binding.fabMyLocation.isVisible = true
+            locationManager.startAfterPermissionGranted()
+        } else {
+            Timber.tag(TAG).d("permissions DENIED/INTERRUPTED")
+            binding.fabMyLocation.isVisible = false
+            binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
+            resetMap()
+        }
+    }
 
     private fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
 
@@ -287,42 +305,12 @@ class MainActivity :
         resetMap()
 
         if (!permissionChecker.isLocationPermissionGranted()) {
-            requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE)
+            permissionLauncher.launch(PERMISSIONS)
         } else {
             UiUtils.toastIt(R.string.toast_loading_position, appContext)
             googleMap?.isMyLocationEnabled = true
             binding.fabMyLocation.isVisible = true
         }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray) {
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.isEmpty()) { // happens when the permissions request interaction with the user is interrupted
-                Timber.tag(TAG).d("onRequestPermissionsResult INTERRUPTED")
-                binding.fabMyLocation.isVisible = false
-                binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-                resetMap()
-            } else {
-                // no need to check both permissions, they fall under location group
-                if (grantResults.first() == PERMISSION_GRANTED) {
-                    Timber.tag(TAG).d("onRequestPermissionsResult GRANTED")
-
-                    UiUtils.toastIt(R.string.toast_loading_position, appContext)
-                    googleMap?.isMyLocationEnabled = true
-                    binding.fabMyLocation.isVisible = true
-
-                    locationManager.startAfterPermissionGranted()
-                } else {
-                    Timber.tag(TAG).d("onRequestPermissionsResult DENIED")
-                    binding.fabMyLocation.isVisible = false
-                    binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-                    resetMap()
-                }
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onMapLongClick(point: LatLng) {
@@ -538,6 +526,5 @@ class MainActivity :
 
         private const val TAG = "MainActivity"
         private val PERMISSIONS = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
-        private const val PERMISSIONS_REQUEST_CODE = 2
     }
 }
