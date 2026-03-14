@@ -54,7 +54,8 @@ class MainViewModel(
     private val resourceProvider: ResourceProvider,
     private val preferencesProvider: PreferencesProvider,
     private val distanceModeProvider: DistanceModeProvider,
-    private val currentLocationProvider: CurrentLocationProvider
+    private val currentLocationProvider: CurrentLocationProvider,
+    private val permissionChecker: PermissionChecker,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -136,6 +137,9 @@ class MainViewModel(
     fun onDistanceFromCurrentPositionSet() {
         distanceModeProvider.set(DistanceMode.FROM_CURRENT_POINT)
         resetMap()
+        if (!permissionChecker.isLocationPermissionGranted()) {
+            _uiState.update { it.copy(showLocationPermissionSnackbar = true) }
+        }
     }
 
     fun onDistanceFromAnyPositionSet() {
@@ -306,6 +310,10 @@ class MainViewModel(
 
     fun onDrawPointsHandled() {
         _uiState.update { it.copy(drawPoints = null) }
+    }
+
+    fun onLocationPermissionSnackbarShown() {
+        _uiState.update { it.copy(showLocationPermissionSnackbar = false) }
     }
 
     companion object {

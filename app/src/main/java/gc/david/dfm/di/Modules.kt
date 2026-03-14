@@ -44,6 +44,6 @@ val appModule = module {
 val viewModelModule = module {
 
     viewModel { SettingsViewModel(get(), get()) }
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 

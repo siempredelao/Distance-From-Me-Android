@@ -32,4 +32,5 @@ data class MainUiState(
     val searchAddress: String? = null,
     val resetMap: Boolean = false,
     val hideChart: Boolean = false,
+    val showLocationPermissionSnackbar: Boolean = false,
 )

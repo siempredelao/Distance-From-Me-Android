@@ -116,17 +116,6 @@ class MainActivity :
                 R.id.menu_current_position -> {
                     mainViewModel.onDistanceFromCurrentPositionSet()
                     menuItem.isChecked = true
-                    if (!permissionChecker.isLocationPermissionGranted()) {
-                        Snackbar.make(binding.drawerLayout,
-                                R.string.snackbar_location_permission_needed,
-                                Snackbar.LENGTH_INDEFINITE)
-                                .setAction(R.string.snackbar_location_permission_action) {
-                                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                    intent.data = "package:$packageName".toUri()
-                                    startActivity(intent)
-                                }
-                                .show()
-                    }
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.menu_any_position -> {
@@ -302,6 +291,22 @@ class MainActivity :
                     if (state.hideChart) {
                         hideChart()
                         mainViewModel.onHideChartHandled()
+                    }
+
+                    if (state.showLocationPermissionSnackbar) {
+                        Snackbar
+                            .make(
+                                binding.drawerLayout,
+                                R.string.snackbar_location_permission_needed,
+                                Snackbar.LENGTH_INDEFINITE
+                            )
+                            .setAction(R.string.snackbar_location_permission_action) {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                intent.data = "package:$packageName".toUri()
+                                startActivity(intent)
+                            }
+                            .show()
+                        mainViewModel.onLocationPermissionSnackbarShown()
                     }
                 }
             }
