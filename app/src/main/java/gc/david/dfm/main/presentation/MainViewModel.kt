@@ -77,6 +77,7 @@ class MainViewModel(
     // Determines whether a multi-point distance is being marked on the map
     private var calculatingDistance: Boolean = false
     private var positionList = mutableListOf<LatLng>()
+    private var drawDistanceModel = DrawDistanceModel.EMPTY
 
     private val locale: Locale
         get() {
@@ -116,17 +117,17 @@ class MainViewModel(
 
             result.fold({
                 val distanceInMetres = Utils.calculateDistanceInMetres2(it)
+                val model = DrawDistanceModel(
+                    it.toLatLng().toMutableList(),
+                    distance.name + "\n",
+                    distanceInMetres,
+                    Haversine.normalizeDistance(distanceInMetres, locale),
+                    DrawDistanceModel.Source.DATABASE,
+                    distanceModeProvider.get()
+                )
+                drawDistanceModel = model
                 _uiState.update { state ->
-                    state.copy(
-                        drawDistance = DrawDistanceModel(
-                            it.toLatLng().toMutableList(),
-                            distance.name + "\n",
-                            distanceInMetres,
-                            Haversine.normalizeDistance(distanceInMetres, locale),
-                            DrawDistanceModel.Source.DATABASE,
-                            distanceModeProvider.get()
-                        )
-                    )
+                    state.copy(drawDistance = model)
                 }
             },{
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
@@ -238,18 +239,16 @@ class MainViewModel(
         positionList.add(point)
 
         val distanceInMetres = Utils.calculateDistanceInMetres(positionList)
-        _uiState.update {
-            it.copy(
-                drawDistance = DrawDistanceModel(
-                    positionList,
-                    "",
-                    distanceInMetres,
-                    Haversine.normalizeDistance(distanceInMetres, locale),
-                    DrawDistanceModel.Source.MANUAL,
-                    distanceModeProvider.get()
-                )
-            )
-        }
+        val model = DrawDistanceModel(
+            positionList,
+            "",
+            distanceInMetres,
+            Haversine.normalizeDistance(distanceInMetres, locale),
+            DrawDistanceModel.Source.MANUAL,
+            distanceModeProvider.get()
+        )
+        drawDistanceModel = model
+        _uiState.update { it.copy(drawDistance = model) }
 
         calculatingDistance = false
     }
@@ -302,6 +301,14 @@ class MainViewModel(
 
     fun onHideChartHandled() {
         _uiState.update { it.copy(hideChart = false) }
+    }
+
+    fun onInfoWindowClick() {
+        _uiState.update { it.copy(openShowInfo = drawDistanceModel) }
+    }
+
+    fun onOpenShowInfoHandled() {
+        _uiState.update { it.copy(openShowInfo = null) }
     }
 
     fun onDrawDistanceHandled() {

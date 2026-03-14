@@ -88,7 +88,6 @@ class MainActivity :
     private lateinit var binding: ActivityMainBinding
 
     private var googleMap: GoogleMap? = null
-    private var drawDistanceModel = DrawDistanceModel.EMPTY
 
     @SuppressLint("MissingPermission")
     private val permissionLauncher = registerForActivityResult(
@@ -295,6 +294,11 @@ class MainActivity :
                         mainViewModel.onHideChartHandled()
                     }
 
+                    state.openShowInfo?.let {
+                        ShowInfoActivity.open(this@MainActivity, it.positionList, it.formattedDistance)
+                        mainViewModel.onOpenShowInfoHandled()
+                    }
+
                     if (state.showLocationPermissionSnackbar) {
                         Snackbar
                             .make(
@@ -347,10 +351,7 @@ class MainActivity :
 
     override fun onInfoWindowClick(marker: Marker) {
         Timber.tag(TAG).d("onInfoWindowClick")
-
-        with(drawDistanceModel) {
-            ShowInfoActivity.open(this@MainActivity, positionList, formattedDistance)
-        }
+        mainViewModel.onInfoWindowClick()
     }
 
     private fun resetMap() {
@@ -473,7 +474,6 @@ class MainActivity :
     private fun drawAndShowMultipleDistances(model: DrawDistanceModel) {
         Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
 
-        drawDistanceModel = model
         elevationViewModel.onCoordinatesSelected(model.positionList)
         googleMap?.let {
             mapDrawer.drawDistance(
