@@ -117,6 +117,15 @@ class OpenSourceDiskDataSource {
             "2007"
         )
 
+        private val JETPACK_COMPOSE = OpenSourceLibraryEntity(
+            "Jetpack Compose",
+            "Android's modern toolkit for building native UI with a declarative approach.",
+            "The Android Open Source Project",
+            "2026.02.01",
+            "https://developer.android.com/jetpack/compose",
+            "Apache-2.0",
+            "2019"
+        )
         private val COROUTINES = OpenSourceLibraryEntity(
             "Kotlin Coroutines",
             "Library support for Kotlin coroutines with multiplatform support.",
@@ -156,6 +165,7 @@ class OpenSourceDiskDataSource {
 
         private val OPEN_SOURCE_LIBRARIES = listOf(
             GRAPHVIEW,
+            JETPACK_COMPOSE,
             ROOM,
             CRASHLYTICS,
             COROUTINES,
