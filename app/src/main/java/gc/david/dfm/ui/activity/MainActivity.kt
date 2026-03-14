@@ -21,7 +21,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.SearchManager
 import android.content.*
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.location.Location
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -58,10 +57,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
+import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
-import gc.david.dfm.service.GeofencingService
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
@@ -80,23 +79,12 @@ class MainActivity :
     private val appContext: Context by inject()
     private val mapDrawer: MapDrawer by inject()
     private val permissionChecker: PermissionChecker by inject()
+    private val locationManager: GeofencingLocationManager by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
 
     private lateinit var binding: ActivityMainBinding
-
-    private val locationReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val latitude = intent.getDoubleExtra(GeofencingService.GEOFENCE_RECEIVER_LATITUDE_KEY, 0.0)
-            val longitude = intent.getDoubleExtra(GeofencingService.GEOFENCE_RECEIVER_LONGITUDE_KEY, 0.0)
-            val location = Location("").apply {
-                this.latitude = latitude
-                this.longitude = longitude
-            }
-            onLocationChanged(location)
-        }
-    }
 
     private var googleMap: GoogleMap? = null
     private var drawDistanceModel = DrawDistanceModel.EMPTY
@@ -179,6 +167,9 @@ class MainActivity :
                 onBackPressedDispatcher.onBackPressed()
             }
         }
+
+        lifecycle.addObserver(locationManager)
+        locationManager.setOnLocationChangedListener(mainViewModel::onLocationChanged)
 
         observeElevationViewModel()
         observeAddressViewModel()
@@ -322,8 +313,7 @@ class MainActivity :
                     googleMap?.isMyLocationEnabled = true
                     binding.fabMyLocation.isVisible = true
 
-                    registerLocationReceiver()
-                    startService(Intent(this, GeofencingService::class.java))
+                    locationManager.startAfterPermissionGranted()
                 } else {
                     Timber.tag(TAG).d("onRequestPermissionsResult DENIED")
                     binding.fabMyLocation.isVisible = false
@@ -445,19 +435,6 @@ class MainActivity :
         InAppReviewHandler.rateApp(this)
     }
 
-    public override fun onStop() {
-        Timber.tag(TAG).d("onStop")
-
-        super.onStop()
-        try {
-            unregisterLocationReceiver()
-        } catch (exception: IllegalArgumentException) {
-            Timber.tag(TAG).d("onStop receiver not registered, do nothing")
-        }
-
-        stopService(Intent(this, GeofencingService::class.java))
-    }
-
     /**
      * Called when the Activity is restarted, even before it becomes visible.
      */
@@ -466,8 +443,6 @@ class MainActivity :
 
         super.onStart()
         if (permissionChecker.isLocationPermissionGranted()) {
-            registerLocationReceiver()
-            startService(Intent(this, GeofencingService::class.java))
             googleMap?.isMyLocationEnabled = true
             binding.fabMyLocation.isVisible = true
         } else {
@@ -480,10 +455,6 @@ class MainActivity :
 
         hideChart()
         super.onDestroy()
-    }
-
-    fun onLocationChanged(location: Location) {
-        mainViewModel.onLocationChanged(location)
     }
 
     private fun drawAndShowMultipleDistances(model: DrawDistanceModel) {
@@ -561,19 +532,6 @@ class MainActivity :
 
         val addressCoordinates = address.coordinates
         mainViewModel.onPositionByNameResolved(addressCoordinates)
-    }
-
-    private fun registerLocationReceiver() {
-        ContextCompat.registerReceiver(
-            this,
-            locationReceiver,
-            IntentFilter(GeofencingService.GEOFENCE_RECEIVER_ACTION),
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
-    }
-
-    private fun unregisterLocationReceiver() {
-        unregisterReceiver(locationReceiver)
     }
 
     companion object {
