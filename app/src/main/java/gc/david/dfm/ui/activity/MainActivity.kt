@@ -18,6 +18,7 @@ package gc.david.dfm.ui.activity
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.*
 import android.os.Bundle
@@ -89,6 +90,7 @@ class MainActivity :
     private var googleMap: GoogleMap? = null
     private var drawDistanceModel = DrawDistanceModel.EMPTY
 
+    @SuppressLint("MissingPermission")
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -313,6 +315,7 @@ class MainActivity :
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         googleMap = map.apply {
             uiSettings.isMyLocationButtonEnabled = false
@@ -447,6 +450,7 @@ class MainActivity :
     /**
      * Called when the Activity is restarted, even before it becomes visible.
      */
+    @SuppressLint("MissingPermission")
     public override fun onStart() {
         Timber.tag(TAG).d("onStart")
 
