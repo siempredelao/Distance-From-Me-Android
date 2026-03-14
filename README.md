@@ -20,20 +20,26 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | Module | Description |
 |---|---|
 | `:app` | Main application module |
+| `:address` | Address / geocoding feature |
 | `:common` | Shared resources and utilities |
+| `:connectivity` | Connection issues UI |
+| `:core-distances` | Room database and distance domain |
+| `:design-system` | Compose theme and shared UI components |
+| `:elevation` | Elevation profile feature |
 | `:faq` | FAQ / Help & Feedback feature |
 | `:feedback` | In-app review dialog |
 | `:opensource` | Open source licenses screen |
+| `:show-info` | Distance detail and sharing screen |
 | `:test-support` | Shared test utilities |
 
 ## Main libraries used
-* [Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines)
+* [Jetpack Compose](https://developer.android.com/jetpack/compose)
+* [Kotlin Coroutines & Flow](https://github.com/Kotlin/kotlinx.coroutines)
 * [Koin](https://github.com/InsertKoinIO/koin)
 * [Room](https://developer.android.com/topic/libraries/architecture/room)
 * [OkHttp](https://square.github.io/okhttp/)
 * [Gson](https://github.com/google/gson)
 * [Material Components](https://github.com/material-components/material-components-android)
-* [ConstraintLayout](https://developer.android.com/training/constraint-layout/index.html)
 * [Lottie](https://github.com/airbnb/lottie-android)
 * [Timber](https://github.com/JakeWharton/timber)
 * [GraphView](https://github.com/jjoe64/GraphView)
