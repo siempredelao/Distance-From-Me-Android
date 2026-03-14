@@ -17,10 +17,7 @@
 package gc.david.dfm.main.presentation
 
 import android.location.Location
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.*
@@ -34,11 +31,18 @@ import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
+import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.map.Haversine
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
@@ -53,25 +57,19 @@ class MainViewModel(
     private val currentLocationProvider: CurrentLocationProvider
 ) : ViewModel() {
 
-    val connectionIssueEvent = MutableLiveData<Event<Unit>>()
-    val showForceCrashItem = MutableLiveData<Boolean>()
+    private val _uiState = MutableStateFlow(MainUiState())
+    val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     private val distances = getDistancesUseCase()
         .catch { Timber.tag(TAG).e(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val showLoadDistancesItem: LiveData<Boolean> = distances
-        .map { it.isNotEmpty() }
-        .asLiveData()
-    val selectFromDistancesLoaded = MutableLiveData<Event<List<Distance>>>()
-    val drawDistance = MutableLiveData<DrawDistanceModel>()
-    val drawPoints = MutableLiveData<List<LatLng>>()
-    val errorMessage = MutableLiveData<Event<String>>()
-    val zoomMapInto = MutableLiveData<Event<LatLng>>()
-    val centerMapInto = MutableLiveData<Event<LatLng>>()
-    val searchAddress = MutableLiveData<Event<String>>()
-    val resetMap = MutableLiveData<Unit>()
-    val hideChart = MutableLiveData<Unit>()
+    init {
+        distances
+            .map { it.isNotEmpty() }
+            .onEach { hasDistances -> _uiState.update { it.copy(showLoadDistancesItem = hasDistances) } }
+            .launchIn(viewModelScope)
+    }
 
     // Moves to current position if app has just started
     private var appHasJustStarted = true
@@ -87,7 +85,7 @@ class MainViewModel(
 
     fun onStart() {
         if (!connectionManager.isOnline()) {
-            connectionIssueEvent.value = Event(Unit)
+            _uiState.update { it.copy(showConnectionIssue = true) }
         }
     }
 
@@ -95,7 +93,7 @@ class MainViewModel(
      * Triggered when the menu is already built and ready to be updated.
      */
     fun onMenuReady() {
-        showForceCrashItem.value = !Utils.isReleaseBuild()
+        _uiState.update { it.copy(showForceCrashItem = !Utils.isReleaseBuild()) }
     }
 
     /**
@@ -104,7 +102,7 @@ class MainViewModel(
     fun onLoadDistancesClick() {
         val current = distances.value
         if (current.isNotEmpty()) {
-            selectFromDistancesLoaded.value = Event(current)
+            _uiState.update { it.copy(selectFromDistancesLoaded = current) }
         }
     }
 
@@ -117,16 +115,18 @@ class MainViewModel(
 
             result.fold({
                 val distanceInMetres = Utils.calculateDistanceInMetres2(it)
-                drawDistance.postValue(
-                    DrawDistanceModel(
-                        it.toLatLng().toMutableList(),
-                        distance.name + "\n",
-                        distanceInMetres,
-                        Haversine.normalizeDistance(distanceInMetres, locale),
-                        DrawDistanceModel.Source.DATABASE,
-                        distanceModeProvider.get()
+                _uiState.update { state ->
+                    state.copy(
+                        drawDistance = DrawDistanceModel(
+                            it.toLatLng().toMutableList(),
+                            distance.name + "\n",
+                            distanceInMetres,
+                            Haversine.normalizeDistance(distanceInMetres, locale),
+                            DrawDistanceModel.Source.DATABASE,
+                            distanceModeProvider.get()
+                        )
                     )
-                )
+                }
             },{
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
             })
@@ -147,7 +147,7 @@ class MainViewModel(
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
             val latLng = LatLng(currentLocation.lat, currentLocation.lon)
-            centerMapInto.value = Event(latLng)
+            _uiState.update { it.copy(centerMapInto = latLng) }
         }
     }
 
@@ -160,7 +160,7 @@ class MainViewModel(
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
             val latlng = LatLng(location.latitude, location.longitude)
-            zoomMapInto.value = Event(latlng)
+            _uiState.update { it.copy(zoomMapInto = latlng) }
             appHasJustStarted = false
         }
     }
@@ -192,7 +192,7 @@ class MainViewModel(
             }
         }
         positionList.add(point)
-        drawPoints.value = positionList
+        _uiState.update { it.copy(drawPoints = positionList.toList()) }
     }
 
     fun onPositionByNameResolved(point: LatLng) {
@@ -201,8 +201,7 @@ class MainViewModel(
                 onMapLongClick(point)
             } else {
                 positionList.add(point)
-                drawPoints.value = positionList
-                centerMapInto.value = Event(point)
+                _uiState.update { it.copy(drawPoints = positionList.toList(), centerMapInto = point) }
             }
         } else {
             onMapLongClick(point)
@@ -215,7 +214,7 @@ class MainViewModel(
 
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
             if (positionList.isEmpty()) {
-                errorMessage.value = Event(resourceProvider.get(R.string.toast_first_point_needed))
+                _uiState.update { it.copy(errorMessage = resourceProvider.get(R.string.toast_first_point_needed)) }
                 return
             }
         } else {
@@ -235,14 +234,18 @@ class MainViewModel(
         positionList.add(point)
 
         val distanceInMetres = Utils.calculateDistanceInMetres(positionList)
-        drawDistance.value = DrawDistanceModel(
-            positionList,
-            "",
-            distanceInMetres,
-            Haversine.normalizeDistance(distanceInMetres, locale),
-            DrawDistanceModel.Source.MANUAL,
-            distanceModeProvider.get()
-        )
+        _uiState.update {
+            it.copy(
+                drawDistance = DrawDistanceModel(
+                    positionList,
+                    "",
+                    distanceInMetres,
+                    Haversine.normalizeDistance(distanceInMetres, locale),
+                    DrawDistanceModel.Source.MANUAL,
+                    distanceModeProvider.get()
+                )
+            )
+        }
 
         calculatingDistance = false
     }
@@ -251,20 +254,58 @@ class MainViewModel(
         Timber.tag(TAG).d("handleSearchIntent $query")
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
-            searchAddress.value = Event(query)
+            _uiState.update { it.copy(searchAddress = query) }
         }
     }
 
     fun resetMap() {
         calculatingDistance = false
         positionList.clear()
-        resetMap.value = Unit
-        hideChart.value = Unit
-
+        _uiState.update { it.copy(resetMap = true, hideChart = true) }
     }
 
     fun onForceCrashClick() {
         throw RuntimeException("User forced crash")
+    }
+
+    fun onConnectionIssueShown() {
+        _uiState.update { it.copy(showConnectionIssue = false) }
+    }
+
+    fun onErrorMessageShown() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun onDistancesLoadedHandled() {
+        _uiState.update { it.copy(selectFromDistancesLoaded = null) }
+    }
+
+    fun onZoomHandled() {
+        _uiState.update { it.copy(zoomMapInto = null) }
+    }
+
+    fun onCenterHandled() {
+        _uiState.update { it.copy(centerMapInto = null) }
+    }
+
+    fun onSearchAddressHandled() {
+        _uiState.update { it.copy(searchAddress = null) }
+    }
+
+    fun onResetMapHandled() {
+        _uiState.update { it.copy(resetMap = false) }
+    }
+
+    fun onHideChartHandled() {
+        _uiState.update { it.copy(hideChart = false) }
+    }
+
+    fun onDrawDistanceHandled() {
+        _uiState.update { it.copy(drawDistance = null) }
+    }
+
+    fun onDrawPointsHandled() {
+        _uiState.update { it.copy(drawPoints = null) }
     }
 
     companion object {

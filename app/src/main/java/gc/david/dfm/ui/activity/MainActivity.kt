@@ -242,53 +242,69 @@ class MainActivity :
     }
 
     private fun observeMainViewModel() {
-        with(mainViewModel) {
-            connectionIssueEvent.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let {
-                    ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.uiState.collect { state ->
+                    with(binding.tbMain.root.menu) {
+                        Timber.tag(TAG).d("showLoadDistancesItem ${state.showLoadDistancesItem}")
+                        findItem(R.id.action_load)?.isVisible = state.showLoadDistancesItem
+                        findItem(R.id.action_crash)?.isVisible = state.showForceCrashItem
+                    }
+
+                    if (state.showConnectionIssue) {
+                        ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
+                        mainViewModel.onConnectionIssueShown()
+                    }
+
+                    state.errorMessage?.let {
+                        UiUtils.toastIt(it, appContext)
+                        mainViewModel.onErrorMessageShown()
+                    }
+
+                    state.selectFromDistancesLoaded?.let {
+                        showLoadedDistancesDialog(it)
+                        mainViewModel.onDistancesLoadedHandled()
+                    }
+
+                    state.drawDistance?.let {
+                        drawAndShowMultipleDistances(it)
+                        mainViewModel.onDrawDistanceHandled()
+                    }
+
+                    state.drawPoints?.let { list ->
+                        googleMap?.let { map ->
+                            map.clear()
+                            list.forEach { map.addMarker(MarkerOptions().position(it)) }
+                        }
+                        mainViewModel.onDrawPointsHandled()
+                    }
+
+                    state.zoomMapInto?.let {
+                        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
+                        mainViewModel.onZoomHandled()
+                    }
+
+                    state.centerMapInto?.let {
+                        googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
+                        mainViewModel.onCenterHandled()
+                    }
+
+                    state.searchAddress?.let {
+                        addressViewModel.onAddressSearch(it)
+                        mainViewModel.onSearchAddressHandled()
+                    }
+
+                    if (state.resetMap) {
+                        googleMap?.clear()
+                        mainViewModel.onResetMapHandled()
+                    }
+
+                    if (state.hideChart) {
+                        hideChart()
+                        mainViewModel.onHideChartHandled()
+                    }
                 }
             }
-            errorMessage.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { UiUtils.toastIt(it, appContext) }
-            }
-            showLoadDistancesItem.observe(this@MainActivity) { visible ->
-                Timber.tag(TAG).d("showLoadDistancesItem $visible")
-                val loadItem = binding.tbMain.root.menu.findItem(R.id.action_load)
-                loadItem?.isVisible = visible
-            }
-            showForceCrashItem.observe(this@MainActivity) { visible ->
-                val crashItem = binding.tbMain.root.menu.findItem(R.id.action_crash)
-                crashItem?.isVisible = visible
-            }
-            selectFromDistancesLoaded.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let { showLoadedDistancesDialog(it) }
-            }
-            drawDistance.observe(this@MainActivity) { model ->
-                drawAndShowMultipleDistances(model)
-            }
-            drawPoints.observe(this@MainActivity) { list ->
-                googleMap?.let { map ->
-                    map.clear()
-                    list.forEach { map.addMarker(MarkerOptions().position(it)) }
-                }
-            }
-            zoomMapInto.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let {
-                    googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
-                }
-            }
-            centerMapInto.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let {
-                    googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
-                }
-            }
-            searchAddress.observe(this@MainActivity) { event ->
-                event.getContentIfNotHandled()?.let {
-                    addressViewModel.onAddressSearch(it)
-                }
-            }
-            resetMap.observe(this@MainActivity) { googleMap?.clear() }
-            hideChart.observe(this@MainActivity) { hideChart() }
         }
     }
 
