@@ -17,6 +17,7 @@
 package gc.david.dfm
 
 import android.content.Context
+import gc.david.dfm.map.UnitSystem
 
 // TODO Consider moving to :common once DFMPreferences is decoupled from app-specific configuration
 class DefaultPreferencesProvider(private val context: Context) : PreferencesProvider {
@@ -25,7 +26,8 @@ class DefaultPreferencesProvider(private val context: Context) : PreferencesProv
         return DFMPreferences.shouldShowElevationChart(context)
     }
 
-    override fun getMeasureUnitPreference(): String {
-        return DFMPreferences.getMeasureUnitPreference(context)
+    override fun getUnitSystemPreference(): UnitSystem {
+        val value = DFMPreferences.getMeasureUnitPreference(context)
+        return if (value == DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE) UnitSystem.IMPERIAL else UnitSystem.METRIC
     }
 }

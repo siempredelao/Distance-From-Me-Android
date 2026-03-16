@@ -18,18 +18,17 @@ package gc.david.dfm.initializers
 
 import android.app.Application
 import gc.david.dfm.DFMPreferences
-import gc.david.dfm.map.Haversine
-import java.util.*
+import java.util.Locale
 
 class DefaultUnitInitializer : Initializer {
 
-    private val isAmericanLocale: Boolean
-        get() = Haversine.isAmericanLocale(Locale.getDefault())
+    private val isImperialLocale: Boolean
+        get() = Locale.getDefault() == Locale.US
 
     override fun init(application: Application) {
         DFMPreferences.setMeasureUnitPreference(
                 application,
-                if (isAmericanLocale) DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
+                if (isImperialLocale) DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
                 else DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE
         )
     }

@@ -33,6 +33,7 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.map.Haversine
+import gc.david.dfm.map.UnitSystem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +46,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 
 class MainViewModel(
     private val getDistancesUseCase: GetDistancesUseCase,
@@ -79,11 +79,8 @@ class MainViewModel(
     private var positionList = mutableListOf<LatLng>()
     private var drawDistanceModel = DrawDistanceModel.EMPTY
 
-    private val locale: Locale
-        get() {
-            val defaultUnit = preferencesProvider.getMeasureUnitPreference()
-            return if (DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
-        }
+    private val unitSystem: UnitSystem
+        get() = preferencesProvider.getUnitSystemPreference()
 
     fun onStart() {
         if (!connectionManager.isOnline()) {
@@ -121,7 +118,7 @@ class MainViewModel(
                     it.toLatLng(),
                     distance.name + "\n",
                     distanceInMetres,
-                    Haversine.normalizeDistance(distanceInMetres, locale),
+                    Haversine.normalizeDistance(distanceInMetres, unitSystem),
                     DrawDistanceModel.Source.DATABASE,
                     distanceModeProvider.get()
                 )
@@ -243,7 +240,7 @@ class MainViewModel(
             positionList,
             "",
             distanceInMetres,
-            Haversine.normalizeDistance(distanceInMetres, locale),
+            Haversine.normalizeDistance(distanceInMetres, unitSystem),
             DrawDistanceModel.Source.MANUAL,
             distanceModeProvider.get()
         )

@@ -22,6 +22,7 @@ import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
+import gc.david.dfm.map.UnitSystem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -85,6 +86,7 @@ class ElevationViewModelTest {
     fun `returns elevation samples when use case returns data`() = runTest {
         val coordinateList = emptyList<LatLng>()
         whenever(preferencesProvider.shouldShowElevationChart()).thenReturn(true)
+        whenever(preferencesProvider.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.success(elevation))

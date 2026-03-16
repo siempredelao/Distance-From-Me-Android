@@ -25,13 +25,13 @@ import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.elevation.presentation.model.ElevationUiState
 import gc.david.dfm.map.Haversine
+import gc.david.dfm.map.UnitSystem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 
 class ElevationViewModel(
     private val getElevationByCoordinatesUseCase: GetElevationByCoordinatesUseCase,
@@ -42,11 +42,8 @@ class ElevationViewModel(
     private val _uiState = MutableStateFlow(ElevationUiState())
     val uiState: StateFlow<ElevationUiState> = _uiState.asStateFlow()
 
-    private val locale: Locale
-        get() {
-            val defaultUnit = preferencesProvider.getMeasureUnitPreference()
-            return if (AMERICAN_UNIT_VALUE == defaultUnit) Locale.US else Locale.FRANCE
-        }
+    private val unitSystem: UnitSystem
+        get() = preferencesProvider.getUnitSystemPreference()
 
     fun onCoordinatesSelected(coordinates: List<LatLng>) {
         if (!preferencesProvider.shouldShowElevationChart() || !connectionManager.isOnline()) {
@@ -57,8 +54,8 @@ class ElevationViewModel(
         viewModelScope.launch {
             getElevationByCoordinatesUseCase(coordinates).fold({
                 val normalizedElevationList =
-                    it.results.map { Haversine.normalizeAltitudeByLocale(it, locale) }
-                val altitudeUnit = Haversine.getAltitudeUnitByLocale(locale)
+                    it.results.map { Haversine.normalizeAltitude(it, unitSystem) }
+                val altitudeUnit = Haversine.getAltitudeUnit(unitSystem)
                 _uiState.update { current ->
                     current.copy(elevationModel = ElevationModel(normalizedElevationList, altitudeUnit))
                 }
@@ -75,6 +72,5 @@ class ElevationViewModel(
     private companion object {
 
         const val TAG = "ElevationViewModel"
-        const val AMERICAN_UNIT_VALUE = "US"
     }
 }

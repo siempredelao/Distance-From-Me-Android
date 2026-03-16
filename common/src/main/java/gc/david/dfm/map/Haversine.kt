@@ -17,7 +17,6 @@
 package gc.david.dfm.map
 
 import java.text.DecimalFormat
-import java.util.*
 import kotlin.math.*
 
 /**
@@ -33,9 +32,8 @@ object Haversine {
     private const val EARTH_RADIUS_IN_METRES = 6371000.0
     private const val MILE_IN_METRES = 1609.344
     private const val KILOMETRE_IN_METRES = 1000.0
-    private const val YARD_IN_METRES = 1.093613298337708
+    private const val YARDS_PER_METRE = 1.093613298337708
     private const val FEET_IN_METRES = 0.3048
-    private val DISTANCE_FORMAT = DecimalFormat("##,##0.00")
 
     /**
      * Calculates distance between two positions in metres.
@@ -68,44 +66,41 @@ object Haversine {
     }
 
     /**
-     * Normalizes distance corresponding to its unit and the device locale and with only two decimal
-     * digits. This static function distinguish between metric and imperial and US customary units.
+     * Normalizes distance corresponding to its unit system with only two decimal
+     * digits. Distinguishes between metric and imperial units.
      *
      * @param distanceInMetres Unformatted distance in metres.
-     * @param locale           The current locale of the device.
+     * @param unitSystem       The unit system to use for formatting.
      * @return A String with the amount and the unit.
      */
-    fun normalizeDistance(distanceInMetres: Double, locale: Locale): String {
-        val (measureUnit, distanceByLocale) =
-                if (isAmericanLocale(locale)) {
-                    if (distanceInMetres >= MILE_IN_METRES) {
-                        "mi" to distanceInMetres / MILE_IN_METRES
-                    } else {
-                        "yd" to distanceInMetres * YARD_IN_METRES
-                    }
-                } else {
-                    if (distanceInMetres >= KILOMETRE_IN_METRES) {
-                        "km" to distanceInMetres / KILOMETRE_IN_METRES
-                    } else {
-                        "m" to distanceInMetres
-                    }
-                }
-        return "${DISTANCE_FORMAT.format(distanceByLocale)} $measureUnit"
+    fun normalizeDistance(distanceInMetres: Double, unitSystem: UnitSystem): String {
+        val (measureUnit, distance) = when (unitSystem) {
+            UnitSystem.IMPERIAL -> if (distanceInMetres >= MILE_IN_METRES) {
+                "mi" to distanceInMetres / MILE_IN_METRES
+            } else {
+                "yd" to distanceInMetres * YARDS_PER_METRE
+            }
+            UnitSystem.METRIC -> if (distanceInMetres >= KILOMETRE_IN_METRES) {
+                "km" to distanceInMetres / KILOMETRE_IN_METRES
+            } else {
+                "m" to distanceInMetres
+            }
+        }
+        return "${DecimalFormat("##,##0.00").format(distance)} $measureUnit"
     }
 
     /**
-     * Normalizes altitude corresponding to its unit and the device locale and with only two decimal
-     * digits. This static function distinguish between metric and imperial and US customary units.
+     * Normalizes altitude corresponding to its unit system with only two decimal
+     * digits. Distinguishes between metric and imperial units.
      *
-     * @param altitude Unformatted altitude in metres.
-     * @param locale   The current locale of the device.
+     * @param altitude   Unformatted altitude in metres.
+     * @param unitSystem The unit system to use for formatting.
      * @return A double with only the normalized amount.
      */
-    fun normalizeAltitudeByLocale(altitude: Double, locale: Locale): Double {
-        val measure = if (isEnglishLocale(locale)) {
-            altitude / FEET_IN_METRES
-        } else {
-            altitude
+    fun normalizeAltitude(altitude: Double, unitSystem: UnitSystem): Double {
+        val measure = when (unitSystem) {
+            UnitSystem.IMPERIAL -> altitude / FEET_IN_METRES
+            UnitSystem.METRIC -> altitude
         }
 
         // Two decimal digits
@@ -113,26 +108,15 @@ object Haversine {
     }
 
     /**
-     * Returns a string with the altitude unit, m or ft, based in the current locale.
+     * Returns a string with the altitude unit, m or ft, based on the unit system.
      *
-     * @param locale Current locale.
+     * @param unitSystem The unit system to use.
      * @return String with altitude unit.
      */
-    fun getAltitudeUnitByLocale(locale: Locale): String {
-        return if (isEnglishLocale(locale)) "ft" else "m"
-    }
-
-    private fun isEnglishLocale(locale: Locale): Boolean {
-        return locale == Locale.CANADA || locale == Locale.UK || locale == Locale.US
-    }
-
-    fun isAmericanLocale(locale: Locale): Boolean {
-        return (locale == Locale.CANADA
-                || locale == Locale.CHINA
-                || locale == Locale.JAPAN
-                || locale == Locale.KOREA
-                || locale == Locale.TAIWAN
-                || locale == Locale.UK
-                || locale == Locale.US)
+    fun getAltitudeUnit(unitSystem: UnitSystem): String {
+        return when (unitSystem) {
+            UnitSystem.IMPERIAL -> "ft"
+            UnitSystem.METRIC -> "m"
+        }
     }
 }

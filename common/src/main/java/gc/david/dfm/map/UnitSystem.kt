@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.map
 
-import gc.david.dfm.map.UnitSystem
-
-interface PreferencesProvider {
-
-    fun shouldShowElevationChart(): Boolean
-
-    fun getUnitSystemPreference(): UnitSystem
-}
+enum class UnitSystem { METRIC, IMPERIAL }
