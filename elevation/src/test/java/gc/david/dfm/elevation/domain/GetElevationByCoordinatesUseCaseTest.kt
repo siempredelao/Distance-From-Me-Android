@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain
 
-import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.common.Coordinate
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
@@ -42,7 +42,7 @@ class GetElevationByCoordinatesUseCaseTest {
 
     @Test
     fun `returns error when coordinate list is empty`() = runTest {
-        val coordinateList = emptyList<LatLng>()
+        val coordinateList = emptyList<Coordinate>()
 
         val result = useCase.invoke(coordinateList)
 
@@ -51,7 +51,7 @@ class GetElevationByCoordinatesUseCaseTest {
 
     @Test
     fun `returns mapped elevation when repository call succeeds and status is OK`() = runTest {
-        val coordinateList = mutableListOf(LatLng(0.0, 0.0))
+        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
         val elevation = 1.0
         val results = listOf(Result(elevation))
         val elevationEntity = ElevationEntity(results, ElevationStatus.OK)
@@ -67,7 +67,7 @@ class GetElevationByCoordinatesUseCaseTest {
 
     @Test
     fun `returns error when repository call succeeds but status is not OK`() = runTest {
-        val coordinateList = mutableListOf(LatLng(0.0, 0.0))
+        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
         val elevation = 1.0
         val results = listOf(Result(elevation))
         val elevationEntity = ElevationEntity(results, ElevationStatus.INVALID_REQUEST)
@@ -80,7 +80,7 @@ class GetElevationByCoordinatesUseCaseTest {
 
     @Test
     fun `returns error when repository call fails`() = runTest {
-        val coordinateList = mutableListOf(LatLng(0.0, 0.0))
+        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
         val throwable = Throwable()
         whenever(repository.getElevation(any(), any())).thenAnswer { throw throwable }
 
@@ -91,7 +91,7 @@ class GetElevationByCoordinatesUseCaseTest {
 
     @Test
     fun `builds coordinates path for list with one coordinate`() = runTest {
-        val coordinateList = mutableListOf(LatLng(0.0, 0.0))
+        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
         val coordinatesPath = "0.0,0.0"
         val maxSamples = 100
 
@@ -102,7 +102,7 @@ class GetElevationByCoordinatesUseCaseTest {
 
     @Test
     fun `builds coordinates path for list with more than one coordinate`() = runTest {
-        val coordinateList = mutableListOf(LatLng(0.0, 0.0), LatLng(1.0, 1.0))
+        val coordinateList = mutableListOf(Coordinate(0.0, 0.0), Coordinate(1.0, 1.0))
         val coordinatesPath = "0.0,0.0|1.0,1.0"
         val maxSamples = 100
 

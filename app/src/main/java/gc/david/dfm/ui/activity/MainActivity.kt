@@ -456,7 +456,7 @@ class MainActivity :
     private fun drawAndShowMultipleDistances(model: DrawDistanceModel) {
         Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
 
-        elevationViewModel.onCoordinatesSelected(model.positionList.map { it.toLatLng() })
+        elevationViewModel.onCoordinatesSelected(model.positionList)
         googleMap?.let { mapDrawer.drawDistance(it, model) }
     }
 

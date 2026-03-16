@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain
 
-import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.common.Coordinate
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationStatus
 import gc.david.dfm.elevation.domain.model.Elevation
@@ -26,7 +26,7 @@ class GetElevationByCoordinatesUseCase(
     private val mapper: ElevationEntityDataMapper
 ) {
 
-    suspend operator fun invoke(coordinateList: List<LatLng>): Result<Elevation> {
+    suspend operator fun invoke(coordinateList: List<Coordinate>): Result<Elevation> {
         return if (coordinateList.isEmpty()) {
             Result.failure(Exception("Empty coordinates list"))
         } else {
@@ -45,7 +45,7 @@ class GetElevationByCoordinatesUseCase(
         }
     }
 
-    private fun getCoordinatesPath(coordinateList: List<LatLng>): String {
+    private fun getCoordinatesPath(coordinateList: List<Coordinate>): String {
         return coordinateList.joinToString("|") { "${it.latitude},${it.longitude}" }
     }
 
