@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.distance.data.DistanceMode
 
 data class DrawDistanceModel(
-    val positionList: MutableList<LatLng>, // TODO this is wip, should be List
+    val positionList: List<LatLng>,
     val distanceName: String,
     val distanceInMetres: Double,
     val formattedDistance: String,
@@ -34,7 +34,7 @@ data class DrawDistanceModel(
 
         val EMPTY =
             DrawDistanceModel(
-                mutableListOf(),
+                emptyList(),
                 "",
                 0.0,
                 "",

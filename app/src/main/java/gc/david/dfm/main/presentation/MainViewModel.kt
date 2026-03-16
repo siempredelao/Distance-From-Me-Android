@@ -118,7 +118,7 @@ class MainViewModel(
             result.fold({
                 val distanceInMetres = Utils.calculateDistanceInMetres2(it)
                 val model = DrawDistanceModel(
-                    it.toLatLng().toMutableList(),
+                    it.toLatLng(),
                     distance.name + "\n",
                     distanceInMetres,
                     Haversine.normalizeDistance(distanceInMetres, locale),

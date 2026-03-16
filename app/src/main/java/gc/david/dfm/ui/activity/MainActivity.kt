@@ -484,7 +484,7 @@ class MainActivity :
         }
     }
 
-    private fun toString(list: MutableList<LatLng>) = list.joinToString { it.toPoint().toString() }
+    private fun toString(list: List<LatLng>) = list.joinToString { it.toPoint().toString() }
 
     private fun fixMapPadding() {
         Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
