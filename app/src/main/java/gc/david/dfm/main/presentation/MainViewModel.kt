@@ -19,10 +19,10 @@ package gc.david.dfm.main.presentation
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.*
-import gc.david.dfm.Utils.toLatLng
+import gc.david.dfm.Utils.toCoordinate
 import gc.david.dfm.Utils.toPoint
+import gc.david.dfm.common.Coordinate
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.distance.data.CurrentLocationProvider
@@ -77,7 +77,7 @@ class MainViewModel(
     private var appHasJustStarted = true
     // Determines whether a multi-point distance is being marked on the map
     private var calculatingDistance: Boolean = false
-    private var positionList = mutableListOf<LatLng>()
+    private var positionList = mutableListOf<Coordinate>()
     private var drawDistanceModel = DrawDistanceModel.EMPTY
 
     private val unitSystem: UnitSystem
@@ -116,7 +116,7 @@ class MainViewModel(
             result.fold({
                 val distanceInMetres = Utils.calculateDistanceInMetres2(it)
                 val model = DrawDistanceModel(
-                    it.toLatLng(),
+                    it.toCoordinate(),
                     distance.name + "\n",
                     distanceInMetres,
                     Haversine.normalizeDistance(distanceInMetres, unitSystem),
@@ -150,8 +150,8 @@ class MainViewModel(
     fun onMyLocationButtonClick() {
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
-            val latLng = LatLng(currentLocation.lat, currentLocation.lon)
-            _uiState.update { it.copy(centerMapInto = latLng) }
+            val coordinate = Coordinate(currentLocation.lat, currentLocation.lon)
+            _uiState.update { it.copy(centerMapInto = coordinate) }
         }
     }
 
@@ -163,14 +163,14 @@ class MainViewModel(
         if (appHasJustStarted) {
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
-            val latlng = LatLng(location.latitude, location.longitude)
-            _uiState.update { it.copy(zoomMapInto = latlng) }
+            val coordinate = Coordinate(location.latitude, location.longitude)
+            _uiState.update { it.copy(zoomMapInto = coordinate) }
             appHasJustStarted = false
         }
     }
 
-    fun onMapClick(point: LatLng) {
-        Timber.tag(TAG).d("onMapClick ${point.toPoint()}")
+    fun onMapClick(point: Coordinate) {
+        Timber.tag(TAG).d("onMapClick $point")
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
             if (!calculatingDistance) {
                 positionList.clear()
@@ -192,14 +192,14 @@ class MainViewModel(
             // To calculate the distance from the current position,
             // we effectively need the current position ;)
             if (positionList.isEmpty()) {
-                positionList.add(LatLng(currentLocation.lat, currentLocation.lon))
+                positionList.add(Coordinate(currentLocation.lat, currentLocation.lon))
             }
         }
         positionList.add(point)
         _uiState.update { it.copy(drawPoints = positionList.toList()) }
     }
 
-    fun onPositionByNameResolved(point: LatLng) {
+    fun onPositionByNameResolved(point: Coordinate) {
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
             if (positionList.isNotEmpty()) {
                 onMapLongClick(point)
@@ -212,8 +212,8 @@ class MainViewModel(
         }
     }
 
-    fun onMapLongClick(point: LatLng) {
-        Timber.tag(TAG).d("onMapLongClick ${point.toPoint()}")
+    fun onMapLongClick(point: Coordinate) {
+        Timber.tag(TAG).d("onMapLongClick $point")
         calculatingDistance = true
 
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
@@ -231,7 +231,7 @@ class MainViewModel(
             // To calculate the distance from the current position,
             // we effectively need the current position ;)
             if (positionList.isEmpty()) {
-                positionList.add(0, LatLng(currentLocation.lat, currentLocation.lon))
+                positionList.add(0, Coordinate(currentLocation.lat, currentLocation.lon))
             }
         }
 

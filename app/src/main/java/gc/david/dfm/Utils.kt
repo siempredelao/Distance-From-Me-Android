@@ -17,7 +17,7 @@
 package gc.david.dfm
 
 import android.location.Location
-import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.common.Coordinate
 import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.settings.domain.Haversine
 
@@ -25,7 +25,7 @@ object Utils {
 
     fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
 
-    fun calculateDistanceInMetres(coordinates: List<LatLng>): Double {
+    fun calculateDistanceInMetres(coordinates: List<Coordinate>): Double {
         var distanceInMetres = 0.0
         for (i in 0 until coordinates.size - 1) {
             distanceInMetres += Haversine.getDistance(
@@ -37,25 +37,12 @@ object Utils {
         return distanceInMetres
     }
 
-    fun calculateDistanceInMetres2(coordinates: List<Position>): Double {
-        var distanceInMetres = 0.0
-        for (i in 0 until coordinates.size - 1) {
-            distanceInMetres += Haversine.getDistance(
-                    coordinates[i].latitude,
-                    coordinates[i].longitude,
-                    coordinates[i + 1].latitude,
-                    coordinates[i + 1].longitude)
-        }
-        return distanceInMetres
-    }
+    fun calculateDistanceInMetres2(coordinates: List<Position>): Double =
+        calculateDistanceInMetres(coordinates.toCoordinate())
 
-    fun convertPositionListToLatLngList(positionList: List<Position>): List<LatLng> {
-        return positionList.map { LatLng(it.latitude, it.longitude) }
-    }
+    fun Position.toCoordinate() = Coordinate(latitude, longitude)
 
-    fun Position.toLatLng() = LatLng(latitude, longitude)
-
-    fun List<Position>.toLatLng() = map { it.toLatLng() }
+    fun List<Position>.toCoordinate() = map { it.toCoordinate() }
 
     data class Point(val lat: Double, val lon: Double) {
         override fun toString(): String {
@@ -63,7 +50,7 @@ object Utils {
         }
     }
 
-    fun LatLng.toPoint() = Point(latitude, longitude)
+    fun Coordinate.toPoint() = Point(latitude, longitude)
     fun Position.toPoint() = Point(latitude, longitude)
     fun Location.toPoint() = Point(latitude, longitude)
 }

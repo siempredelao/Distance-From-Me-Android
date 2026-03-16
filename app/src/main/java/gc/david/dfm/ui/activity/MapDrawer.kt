@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import gc.david.dfm.R
+import gc.david.dfm.common.Coordinate
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.settings.domain.model.CameraAnimation
@@ -52,7 +53,7 @@ class MapDrawer(private val context: Context) {
 
     private fun addMarkers(
         googleMap: GoogleMap,
-        coordinates: List<LatLng>,
+        coordinates: List<Coordinate>,
         distance: String,
         message: String,
         source: DrawDistanceModel.Source,
@@ -64,7 +65,7 @@ class MapDrawer(private val context: Context) {
                 || i == coordinates.size - 1
             ) {
                 val coordinate = coordinates[i]
-                val marker = addMarker(googleMap, coordinate)
+                val marker = addMarker(googleMap, coordinate.toLatLng())
 
                 if (coordinates.isNotEmpty() && i == coordinates.size - 1) {
                     marker.title = message + distance
@@ -80,11 +81,11 @@ class MapDrawer(private val context: Context) {
 
     private fun addLines(
         googleMap: GoogleMap,
-        positionList: List<LatLng>,
+        positionList: List<Coordinate>,
         source: DrawDistanceModel.Source
     ) {
         for (i in 0 until positionList.size - 1) {
-            addLine(googleMap, positionList[i], positionList[i + 1], source)
+            addLine(googleMap, positionList[i].toLatLng(), positionList[i + 1].toLatLng(), source)
         }
     }
 
@@ -106,13 +107,13 @@ class MapDrawer(private val context: Context) {
 
     private fun moveCameraZoom(
         googleMap: GoogleMap,
-        coordinatesList: List<LatLng>,
+        coordinatesList: List<Coordinate>,
         cameraAnimation: CameraAnimation.Animate
     ) {
         when (cameraAnimation) {
             is CameraAnimation.Animate.Centre -> {
                 val latLngBoundsBuilder = LatLngBounds.Builder()
-                coordinatesList.forEach { latLngBoundsBuilder.include(it) }
+                coordinatesList.forEach { latLngBoundsBuilder.include(it.toLatLng()) }
                 googleMap.animateCamera(
                     CameraUpdateFactory.newLatLngBounds(
                         latLngBoundsBuilder.build(),
@@ -121,13 +122,11 @@ class MapDrawer(private val context: Context) {
                 )
             }
             is CameraAnimation.Animate.Destination -> {
-                val lastCoordinates = coordinatesList[coordinatesList.size - 1]
-                googleMap.animateCamera(
-                    CameraUpdateFactory.newLatLng(
-                        LatLng(lastCoordinates.latitude, lastCoordinates.longitude)
-                    )
-                )
+                val lastCoordinate = coordinatesList.last()
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(lastCoordinate.toLatLng()))
             }
         }
     }
 }
+
+private fun Coordinate.toLatLng() = LatLng(latitude, longitude)

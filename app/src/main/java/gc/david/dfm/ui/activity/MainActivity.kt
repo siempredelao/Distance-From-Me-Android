@@ -41,7 +41,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
-import gc.david.dfm.Utils.toPoint
+import gc.david.dfm.common.Coordinate
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.collectOnStarted
@@ -248,18 +248,18 @@ class MainActivity :
             state.drawPoints?.let { list ->
                 googleMap?.let { map ->
                     map.clear()
-                    list.forEach { map.addMarker(MarkerOptions().position(it)) }
+                    list.forEach { map.addMarker(MarkerOptions().position(it.toLatLng())) }
                 }
                 mainViewModel.onDrawPointsHandled()
             }
 
             state.zoomMapInto?.let {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it.toLatLng(), 17F))
                 mainViewModel.onZoomHandled()
             }
 
             state.centerMapInto?.let {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
                 mainViewModel.onCenterHandled()
             }
 
@@ -279,7 +279,7 @@ class MainActivity :
             }
 
             state.openShowInfo?.let {
-                ShowInfoActivity.open(this@MainActivity, it.positionList, it.formattedDistance)
+                ShowInfoActivity.open(this@MainActivity, it.positionList.map(Coordinate::toLatLng), it.formattedDistance)
                 mainViewModel.onOpenShowInfoHandled()
             }
 
@@ -324,11 +324,11 @@ class MainActivity :
     }
 
     override fun onMapLongClick(point: LatLng) {
-        mainViewModel.onMapLongClick(point)
+        mainViewModel.onMapLongClick(point.toCoordinate())
     }
 
     override fun onMapClick(point: LatLng) {
-        mainViewModel.onMapClick(point)
+        mainViewModel.onMapClick(point.toCoordinate())
     }
 
     override fun onInfoWindowClick(marker: Marker) {
@@ -456,11 +456,11 @@ class MainActivity :
     private fun drawAndShowMultipleDistances(model: DrawDistanceModel) {
         Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
 
-        elevationViewModel.onCoordinatesSelected(model.positionList)
+        elevationViewModel.onCoordinatesSelected(model.positionList.map { it.toLatLng() })
         googleMap?.let { mapDrawer.drawDistance(it, model) }
     }
 
-    private fun toString(list: List<LatLng>) = list.joinToString { it.toPoint().toString() }
+    private fun toString(list: List<Coordinate>) = list.joinToString { "P(${it.latitude}, ${it.longitude})" }
 
     private fun fixMapPadding() {
         Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
@@ -519,8 +519,7 @@ class MainActivity :
     private fun showPositionByName(address: gc.david.dfm.address.domain.model.Address) {
         Timber.tag(TAG).d("showPositionByName $address")
 
-        val addressCoordinates = address.coordinates
-        mainViewModel.onPositionByNameResolved(addressCoordinates)
+        mainViewModel.onPositionByNameResolved(address.coordinates.toCoordinate())
     }
 
     companion object {
@@ -529,3 +528,6 @@ class MainActivity :
         private val PERMISSIONS = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
     }
 }
+
+private fun LatLng.toCoordinate() = Coordinate(latitude, longitude)
+private fun Coordinate.toLatLng() = LatLng(latitude, longitude)
