@@ -20,12 +20,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.PreferencesProvider
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.elevation.presentation.model.ElevationUiState
-import gc.david.dfm.map.Haversine
-import gc.david.dfm.map.UnitSystem
+import gc.david.dfm.settings.domain.Haversine
+import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.settings.domain.model.UnitSystem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,17 +36,17 @@ import timber.log.Timber
 class ElevationViewModel(
     private val getElevationByCoordinatesUseCase: GetElevationByCoordinatesUseCase,
     private val connectionManager: ConnectionManager,
-    private val preferencesProvider: PreferencesProvider
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ElevationUiState())
     val uiState: StateFlow<ElevationUiState> = _uiState.asStateFlow()
 
     private val unitSystem: UnitSystem
-        get() = preferencesProvider.getUnitSystemPreference()
+        get() = settingsRepository.getUnitSystemPreference()
 
     fun onCoordinatesSelected(coordinates: List<LatLng>) {
-        if (!preferencesProvider.shouldShowElevationChart() || !connectionManager.isOnline()) {
+        if (!settingsRepository.shouldShowElevationChart() || !connectionManager.isOnline()) {
             _uiState.update { it.copy(hideChart = true) }
             return
         }

@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.settings.domain
 
-import gc.david.dfm.map.CameraAnimation
-import gc.david.dfm.map.UnitSystem
+import gc.david.dfm.settings.domain.model.CameraAnimation
+import gc.david.dfm.settings.domain.model.UnitSystem
 
-interface PreferencesProvider {
+interface SettingsRepository {
 
     fun shouldShowElevationChart(): Boolean
 
     fun getUnitSystemPreference(): UnitSystem
+
+    fun setUnitSystemPreference(unitSystem: UnitSystem)
 
     fun getCameraAnimation(): CameraAnimation
 }

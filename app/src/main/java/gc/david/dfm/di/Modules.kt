@@ -16,7 +16,6 @@
 
 package gc.david.dfm.di
 
-import gc.david.dfm.*
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.initializers.DefaultUnitInitializer
@@ -25,16 +24,14 @@ import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.presentation.MainViewModel
-import gc.david.dfm.settings.presentation.SettingsViewModel
 import gc.david.dfm.ui.activity.MapDrawer
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
 
-    single { arrayOf(DefaultUnitInitializer(), FirebaseInitializer(), LoggingInitializer(get())) }
+    single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get())) }
     single { Initializers(get()) }
-    single<PreferencesProvider> { DefaultPreferencesProvider(get()) }
     single { MapDrawer(get()) }
     single { DistanceModeProvider() }
     single { CurrentLocationProvider() }
@@ -43,7 +40,6 @@ val appModule = module {
 
 val viewModelModule = module {
 
-    viewModel { SettingsViewModel(get(), get()) }
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 

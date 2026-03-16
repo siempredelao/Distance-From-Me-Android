@@ -57,6 +57,7 @@ import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.main.presentation.MainViewModel
+import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import gc.david.dfm.ui.animation.AnimatorUtil

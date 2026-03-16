@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.map
+package gc.david.dfm.settings.domain.model
 
 enum class UnitSystem { METRIC, IMPERIAL }

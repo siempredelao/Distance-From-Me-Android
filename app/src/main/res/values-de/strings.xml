@@ -26,26 +26,7 @@
     <string name="menu_rate_app_title">App bewerten</string>
     <string name="toast_send_feedback_error">Es gibt keine E-Mail-Clients installiert</string>
     <string name="menu_settings_title">Einstellungen</string>
-    <string name="toast_distances_deleted">Entfernungen gelöschten</string>
-    <string name="category_centre_title">Entfernung Maßnahme</string>
-    <string name="dialog_centre_map_title">Karte zentrieren</string>
-    <string name="preference_centre_map_summary">Wo die Karte im Abstand Mess zeigt</string>
-    <string name="animation_destination_item">In Ziel zu zentrieren</string>
-    <string name="animation_center_item">In der Mitte zu zentrieren</string>
-    <string name="category_db_title">Entfernung Register</string>
-    <string name="preference_delete_distances_title">Entfernungen Löschen</string>
-    <string name="preference_delete_distances_summary">Berühren, um alle gespeicherten Entfernungen löschen</string>
-    <string name="preference_show_elevation_title">Höhenprofil zeigen</string>
-    <string name="preference_show_elevation_summary">Berechnet Höhenprofil. Diese Aufgabe kann einige Zeit dauern, je nach Netzwerk</string>
-    <string name="preference_centre_map_title">Karte zentrieren</string>
     <string name="navigation_drawer_starting_point_current_position_item">Aktuelle Position</string>
-    <string name="no_animation_item">Keine Animation</string>
     <string name="toast_first_point_needed">Startpunkt benötigt. Bitte wählen Sie einen Punkt.</string>
     <string name="navigation_drawer_starting_point_any_position_item">Irgendeine Position</string>
-    <string name="category_unit_title">Maßeinheit</string>
-    <string name="preference_unit_dialog_title">Wählen Sie die Maßeinheit</string>
-    <string name="preference_unit_entry_EU">Meter, Kilometer</string>
-    <string name="preference_unit_entry_US">Meilen, Yards, Füße</string>
-    <string name="preference_unit_summary">Wählen Sie eine Maßeinheit. Standardmäßig in Bezug auf Ihre aktuelle Geräte Sprache sie gesetzt ist.</string>
-    <string name="preference_unit_title">Wählen Sie bevorzugte Einheit</string>
 </resources>

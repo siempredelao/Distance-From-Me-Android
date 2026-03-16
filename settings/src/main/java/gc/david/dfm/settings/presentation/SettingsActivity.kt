@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.activity
+package gc.david.dfm.settings.presentation
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import gc.david.dfm.R
-import gc.david.dfm.databinding.ActivitySettingsBinding
-import gc.david.dfm.ui.fragment.SettingsFragment
+import gc.david.dfm.settings.R
+import gc.david.dfm.settings.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
 

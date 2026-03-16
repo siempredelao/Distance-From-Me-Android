@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.initializers
+package gc.david.dfm.settings.di
 
-import android.app.Application
+import gc.david.dfm.settings.data.SettingsDiskDataSource
 import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.UnitSystem
-import java.util.Locale
+import gc.david.dfm.settings.data.BaseSettingsRepository
+import gc.david.dfm.settings.presentation.SettingsViewModel
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
 
-class DefaultUnitInitializer(
-    private val settingsRepository: SettingsRepository
-) : Initializer {
+val settingsModule = module {
 
-    private val isImperialLocale: Boolean
-        get() = Locale.getDefault() == Locale.US
-
-    override fun init(application: Application) {
-        settingsRepository.setUnitSystemPreference(
-            if (isImperialLocale) UnitSystem.IMPERIAL else UnitSystem.METRIC
-        )
-    }
+    single { SettingsDiskDataSource(get()) }
+    single { BaseSettingsRepository(get()) }
+    single<SettingsRepository> { get<BaseSettingsRepository>() }
+    viewModel { SettingsViewModel(get(), get()) }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="toast_distances_deleted">Distâncias eliminadas</string>
+    <string name="category_centre_title">Cálculo de distâncias</string>
+    <string name="dialog_centre_map_title">Centrar mapa</string>
+    <string name="preference_centre_map_summary">Onde centrar o mapa para calcular a distância</string>
+    <string name="preference_centre_map_title">Centrar mapa</string>
+    <string name="animation_destination_item">Mostrar só destino</string>
+    <string name="animation_center_item">Mostrar ambos lugares</string>
+    <string name="no_animation_item">Sem animação</string>
+    <string name="preference_show_elevation_title">Mostrar perfil de elevação</string>
+    <string name="preference_show_elevation_summary">Calcula o perfil de elevação. Esta tarefa pode demorar algum tempo, dependendo da sua conexão.</string>
+    <string name="category_db_title">Registro de distâncias</string>
+    <string name="preference_delete_distances_title">Sair distâncias</string>
+    <string name="preference_delete_distances_summary">Toque para eliminar todas as distâncias armazenadas</string>
+    <string name="category_unit_title">Unidade de medida</string>
+    <string name="preference_unit_dialog_title">Selecione unidade</string>
+    <string name="preference_unit_entry_EU">metros, quilômetros</string>
+    <string name="preference_unit_entry_US">milhas, jardas, pés</string>
+    <string name="preference_unit_summary">Escolha uma unidade de medida. Por padrão, é selecionada tendo em conta a língua do seu aparelho.</string>
+    <string name="preference_unit_title">Selecione unidade preferida</string>
+</resources>

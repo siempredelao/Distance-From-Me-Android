@@ -23,7 +23,7 @@ plugins {
 
 android {
 
-    namespace = "gc.david.dfm.elevation"
+    namespace = "gc.david.dfm.settings"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -49,23 +49,15 @@ kotlin {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.preference)
     implementation(libs.coroutines)
-    implementation(libs.graphview)
-    implementation(libs.gson)
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.coroutines)
-    implementation(libs.playservices.maps)
+    implementation(libs.material.components)
     implementation(libs.timber)
     implementation(project(":common"))
-    implementation(project(":settings"))
-
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.junit)
-    testImplementation(libs.mockito)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(project(":test-support"))
+    implementation(project(":core-distances"))
+    implementation(project(":design-system"))
 }

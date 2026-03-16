@@ -19,7 +19,7 @@ package gc.david.dfm
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.core.distances.data.database.Position
-import gc.david.dfm.map.Haversine
+import gc.david.dfm.settings.domain.Haversine
 
 object Utils {
 

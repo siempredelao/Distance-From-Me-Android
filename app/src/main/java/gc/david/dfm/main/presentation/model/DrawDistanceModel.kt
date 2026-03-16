@@ -18,7 +18,7 @@ package gc.david.dfm.main.presentation.model
 
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.distance.data.DistanceMode
-import gc.david.dfm.map.CameraAnimation
+import gc.david.dfm.settings.domain.model.CameraAnimation
 
 data class DrawDistanceModel(
     val positionList: List<LatLng>,

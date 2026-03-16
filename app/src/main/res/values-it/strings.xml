@@ -26,27 +26,7 @@
     <string name="menu_rate_app_title">Valuta app</string>
     <string name="toast_send_feedback_error">Non c\'e client di posta elettronica disponibile</string>
     <string name="menu_settings_title">Preferenze</string>
-    <string name="toast_distances_deleted">Distanze eliminati</string>
-    <string name="category_centre_title">Calcolo degli distanze</string>
-    <string name="dialog_centre_map_title">Centra la mappa</string>
-    <string name="preference_centre_map_summary">Dove centrare la mappa per calcolare la distanza</string>
-    <string name="animation_destination_item">Vedere sola destinazione</string>
-    <string name="animation_center_item">Vedere i due posti</string>
-    <string name="category_db_title">Registrazione degli distanze</string>
-    <string name="preference_delete_distances_title">Eliminare distanze</string>
-    <string name="preference_delete_distances_summary">Toccare per eliminare tutte le distanze memorizzati</string>
-    <string name="preference_show_elevation_title">Mostrare profilo elevazione</string>
-    <string name="preference_show_elevation_summary">Calcola il profilo elevazione. Questa operazione potrebbe richiedere alcuni tempo a seconda della vostra connessione.</string>
-    <string name="preference_centre_map_title">Centra la mappa</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsiasi posizione</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posizione attuale</string>
-    <string name="no_animation_item">Nessuna animazione</string>
     <string name="toast_first_point_needed">Si prega di indicare un punto di partenza.</string>
-    <string name="category_unit_title">Unità di misura</string>
-    <string name="preference_unit_dialog_title">Seleziona unità</string>
-    <string name="preference_unit_entry_EU">metri, chilometri</string>
-    <string name="preference_unit_entry_US">miglia, iarde, piedi</string>
-    <string name="preference_unit_summary">Scelga un\'unità di misura. Per default viene selezionato tenendo conto
-        della lingua del dispositivo.</string>
-    <string name="preference_unit_title">Selezioni unità preferita</string>
 </resources>

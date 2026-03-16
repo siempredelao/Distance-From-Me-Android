@@ -26,26 +26,7 @@
     <string name="menu_rate_app_title">Valorar aplicación</string>
     <string name="toast_send_feedback_error">No hay clientes de email disponibles</string>
     <string name="menu_settings_title">Preferencias</string>
-    <string name="toast_distances_deleted">Distancias eliminadas</string>
-    <string name="category_centre_title">Cálculo de distancias</string>
-    <string name="dialog_centre_map_title">Centrar mapa</string>
-    <string name="preference_centre_map_summary">Dónde centrar el mapa al calcular la distancia</string>
-    <string name="animation_destination_item">Visualizar sólo destino</string>
-    <string name="animation_center_item">Visualizar ambos lugares</string>
-    <string name="category_db_title">Registro de distancias</string>
-    <string name="preference_delete_distances_title">Borrar distancias</string>
-    <string name="preference_delete_distances_summary">Toque para borrar todas las distancias almacenadas</string>
-    <string name="preference_show_elevation_title">Mostrar perfil de elevación</string>
-    <string name="preference_show_elevation_summary">Calcula el perfil de elevación. Esta tarea puede tardar algún tiempo dependiendo de su conexión.</string>
     <string name="toast_first_point_needed">Por favor, señale un punto inicial.</string>
-    <string name="no_animation_item">Sin animación</string>
     <string name="navigation_drawer_starting_point_any_position_item">Cualquier posición</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posición actual</string>
-    <string name="preference_centre_map_title">Centrar mapa</string>
-    <string name="category_unit_title">Unidad de medida</string>
-    <string name="preference_unit_dialog_title">Seleccione unidad</string>
-    <string name="preference_unit_entry_EU">metros, kilómetros</string>
-    <string name="preference_unit_entry_US">millas, yardas, pies</string>
-    <string name="preference_unit_title">Seleccione unidad preferida</string>
-    <string name="preference_unit_summary">Elija una unidad de medida. Por defecto, se selecciona atendiendo al idioma de su dispositivo.</string>
 </resources>

@@ -26,26 +26,7 @@
     <string name="menu_rate_app_title">Avaliar aplicativo</string>
     <string name="toast_send_feedback_error">Nenhum cliente de e-mail disponível</string>
     <string name="menu_settings_title">Preferências</string>
-    <string name="toast_distances_deleted">Distâncias eliminadas</string>
-    <string name="category_centre_title">Cálculo de distâncias</string>
-    <string name="dialog_centre_map_title">Centrar mapa</string>
-    <string name="preference_centre_map_summary">Onde centrar o mapa para calcular a distância</string>
-    <string name="animation_destination_item">Mostrar só destino</string>
-    <string name="animation_center_item">Mostrar ambos lugares</string>
-    <string name="category_db_title">Registro de distâncias</string>
-    <string name="preference_delete_distances_title">Sair distâncias</string>
-    <string name="preference_delete_distances_summary">Toque para eliminar todas as distâncias armazenadas</string>
-    <string name="preference_show_elevation_title">Mostrar perfil de elevação</string>
-    <string name="preference_show_elevation_summary">Calcula o perfil de elevação. Esta tarefa pode demorar algum tempo, dependendo da sua conexão.</string>
-    <string name="preference_centre_map_title">Centrar mapa</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualquer posição</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posição Atual</string>
-    <string name="no_animation_item">Sem animação</string>
     <string name="toast_first_point_needed">Por favor, indica um ponto de partida.</string>
-    <string name="category_unit_title">Unidade de medida</string>
-    <string name="preference_unit_dialog_title">Selecione unidade</string>
-    <string name="preference_unit_entry_EU">metros, quilômetros</string>
-    <string name="preference_unit_entry_US">milhas, jardas, pés</string>
-    <string name="preference_unit_summary">Escolha uma unidade de medida. Por padrão, é selecionada tendo em conta a língua do seu aparelho.</string>
-    <string name="preference_unit_title">Selecione unidade preferida</string>
 </resources>

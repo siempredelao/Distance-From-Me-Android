@@ -19,9 +19,9 @@ package gc.david.dfm.settings.presentation
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.R
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
+import gc.david.dfm.settings.R
 import kotlinx.coroutines.launch
 import timber.log.Timber
 

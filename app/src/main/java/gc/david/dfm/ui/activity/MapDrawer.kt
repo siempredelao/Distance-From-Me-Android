@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.*
 import gc.david.dfm.R
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
-import gc.david.dfm.map.CameraAnimation
+import gc.david.dfm.settings.domain.model.CameraAnimation
 
 /**
  * Class to take a [DrawDistanceModel] and render it into a GoogleMap canvas.

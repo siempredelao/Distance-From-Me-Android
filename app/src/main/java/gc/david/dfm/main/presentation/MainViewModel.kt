@@ -32,8 +32,9 @@ import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
-import gc.david.dfm.map.Haversine
-import gc.david.dfm.map.UnitSystem
+import gc.david.dfm.settings.domain.Haversine
+import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.settings.domain.model.UnitSystem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +53,7 @@ class MainViewModel(
     private val getPositionListUseCase: GetPositionListUseCase,
     private val connectionManager: ConnectionManager,
     private val resourceProvider: ResourceProvider,
-    private val preferencesProvider: PreferencesProvider,
+    private val settingsRepository: SettingsRepository,
     private val distanceModeProvider: DistanceModeProvider,
     private val currentLocationProvider: CurrentLocationProvider,
     private val permissionChecker: PermissionChecker,
@@ -80,7 +81,7 @@ class MainViewModel(
     private var drawDistanceModel = DrawDistanceModel.EMPTY
 
     private val unitSystem: UnitSystem
-        get() = preferencesProvider.getUnitSystemPreference()
+        get() = settingsRepository.getUnitSystemPreference()
 
     fun onStart() {
         if (!connectionManager.isOnline()) {
@@ -121,7 +122,7 @@ class MainViewModel(
                     Haversine.normalizeDistance(distanceInMetres, unitSystem),
                     DrawDistanceModel.Source.DATABASE,
                     distanceModeProvider.get(),
-                    preferencesProvider.getCameraAnimation()
+                    settingsRepository.getCameraAnimation()
                 )
                 drawDistanceModel = model
                 _uiState.update { state ->
@@ -244,7 +245,7 @@ class MainViewModel(
             Haversine.normalizeDistance(distanceInMetres, unitSystem),
             DrawDistanceModel.Source.MANUAL,
             distanceModeProvider.get(),
-            preferencesProvider.getCameraAnimation()
+            settingsRepository.getCameraAnimation()
         )
         drawDistanceModel = model
         _uiState.update { it.copy(drawDistance = model) }

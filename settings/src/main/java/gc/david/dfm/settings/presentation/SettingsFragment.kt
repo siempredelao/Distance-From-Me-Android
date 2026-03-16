@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.ui.fragment
+package gc.david.dfm.settings.presentation
 
 import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.R
-import gc.david.dfm.settings.presentation.SettingsViewModel
+import gc.david.dfm.settings.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : PreferenceFragmentCompat() {
