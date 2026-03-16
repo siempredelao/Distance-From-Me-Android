@@ -44,6 +44,7 @@ import gc.david.dfm.*
 import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
+import gc.david.dfm.collectOnStarted
 import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.connectivity.ConnectionIssuesDialogFragment
@@ -51,10 +52,6 @@ import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.launch
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.location.GeofencingLocationManager
@@ -183,134 +180,122 @@ class MainActivity :
         handleIntents(intent)
     }
 
-    private fun observeElevationViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                elevationViewModel.uiState.collect { state ->
-                    if (state.hideChart) {
-                        hideChart()
-                        elevationViewModel.onHideChartHandled()
-                    }
-                    state.elevationModel?.let { buildChart(it) }
-                }
+    private fun observeElevationViewModel() = collectOnStarted {
+        elevationViewModel.uiState.collect { state ->
+            if (state.hideChart) {
+                hideChart()
+                elevationViewModel.onHideChartHandled()
+            }
+            state.elevationModel?.let { buildChart(it) }
+        }
+    }
+
+    private fun observeAddressViewModel() = collectOnStarted {
+        addressViewModel.uiState.collect { state ->
+            binding.progressView.isVisible = state.isLoading
+
+            if (state.showConnectionIssue) {
+                ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
+                addressViewModel.onConnectionIssueShown()
+            }
+
+            state.errorMessage?.let {
+                UiUtils.toastIt(it, appContext)
+                addressViewModel.onErrorMessageShown()
+            }
+
+            state.addressFound?.let {
+                showPositionByName(it)
+                addressViewModel.onAddressHandled()
+            }
+
+            state.multipleAddressesFound?.let {
+                showAddressSelectionDialog(it)
+                addressViewModel.onMultipleAddressesHandled()
             }
         }
     }
 
-    private fun observeAddressViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                addressViewModel.uiState.collect { state ->
-                    binding.progressView.isVisible = state.isLoading
-
-                    if (state.showConnectionIssue) {
-                        ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
-                        addressViewModel.onConnectionIssueShown()
-                    }
-
-                    state.errorMessage?.let {
-                        UiUtils.toastIt(it, appContext)
-                        addressViewModel.onErrorMessageShown()
-                    }
-
-                    state.addressFound?.let {
-                        showPositionByName(it)
-                        addressViewModel.onAddressHandled()
-                    }
-
-                    state.multipleAddressesFound?.let {
-                        showAddressSelectionDialog(it)
-                        addressViewModel.onMultipleAddressesHandled()
-                    }
-                }
+    private fun observeMainViewModel() = collectOnStarted {
+        mainViewModel.uiState.collect { state ->
+            with(binding.tbMain.root.menu) {
+                Timber.tag(TAG).d("showLoadDistancesItem ${state.showLoadDistancesItem}")
+                findItem(R.id.action_load)?.isVisible = state.showLoadDistancesItem
+                findItem(R.id.action_crash)?.isVisible = state.showForceCrashItem
             }
-        }
-    }
 
-    private fun observeMainViewModel() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.uiState.collect { state ->
-                    with(binding.tbMain.root.menu) {
-                        Timber.tag(TAG).d("showLoadDistancesItem ${state.showLoadDistancesItem}")
-                        findItem(R.id.action_load)?.isVisible = state.showLoadDistancesItem
-                        findItem(R.id.action_crash)?.isVisible = state.showForceCrashItem
-                    }
+            if (state.showConnectionIssue) {
+                ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
+                mainViewModel.onConnectionIssueShown()
+            }
 
-                    if (state.showConnectionIssue) {
-                        ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
-                        mainViewModel.onConnectionIssueShown()
-                    }
+            state.errorMessage?.let {
+                UiUtils.toastIt(it, appContext)
+                mainViewModel.onErrorMessageShown()
+            }
 
-                    state.errorMessage?.let {
-                        UiUtils.toastIt(it, appContext)
-                        mainViewModel.onErrorMessageShown()
-                    }
+            state.selectFromDistancesLoaded?.let {
+                showLoadedDistancesDialog(it)
+                mainViewModel.onDistancesLoadedHandled()
+            }
 
-                    state.selectFromDistancesLoaded?.let {
-                        showLoadedDistancesDialog(it)
-                        mainViewModel.onDistancesLoadedHandled()
-                    }
+            state.drawDistance?.let {
+                drawAndShowMultipleDistances(it)
+                mainViewModel.onDrawDistanceHandled()
+            }
 
-                    state.drawDistance?.let {
-                        drawAndShowMultipleDistances(it)
-                        mainViewModel.onDrawDistanceHandled()
-                    }
-
-                    state.drawPoints?.let { list ->
-                        googleMap?.let { map ->
-                            map.clear()
-                            list.forEach { map.addMarker(MarkerOptions().position(it)) }
-                        }
-                        mainViewModel.onDrawPointsHandled()
-                    }
-
-                    state.zoomMapInto?.let {
-                        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
-                        mainViewModel.onZoomHandled()
-                    }
-
-                    state.centerMapInto?.let {
-                        googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
-                        mainViewModel.onCenterHandled()
-                    }
-
-                    state.searchAddress?.let {
-                        addressViewModel.onAddressSearch(it)
-                        mainViewModel.onSearchAddressHandled()
-                    }
-
-                    if (state.resetMap) {
-                        googleMap?.clear()
-                        mainViewModel.onResetMapHandled()
-                    }
-
-                    if (state.hideChart) {
-                        hideChart()
-                        mainViewModel.onHideChartHandled()
-                    }
-
-                    state.openShowInfo?.let {
-                        ShowInfoActivity.open(this@MainActivity, it.positionList, it.formattedDistance)
-                        mainViewModel.onOpenShowInfoHandled()
-                    }
-
-                    if (state.showLocationPermissionSnackbar) {
-                        Snackbar
-                            .make(
-                                binding.drawerLayout,
-                                R.string.snackbar_location_permission_needed,
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            .setAction(R.string.snackbar_location_permission_action) {
-                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                intent.data = "package:$packageName".toUri()
-                                startActivity(intent)
-                            }
-                            .show()
-                        mainViewModel.onLocationPermissionSnackbarShown()
-                    }
+            state.drawPoints?.let { list ->
+                googleMap?.let { map ->
+                    map.clear()
+                    list.forEach { map.addMarker(MarkerOptions().position(it)) }
                 }
+                mainViewModel.onDrawPointsHandled()
+            }
+
+            state.zoomMapInto?.let {
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17F))
+                mainViewModel.onZoomHandled()
+            }
+
+            state.centerMapInto?.let {
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
+                mainViewModel.onCenterHandled()
+            }
+
+            state.searchAddress?.let {
+                addressViewModel.onAddressSearch(it)
+                mainViewModel.onSearchAddressHandled()
+            }
+
+            if (state.resetMap) {
+                googleMap?.clear()
+                mainViewModel.onResetMapHandled()
+            }
+
+            if (state.hideChart) {
+                hideChart()
+                mainViewModel.onHideChartHandled()
+            }
+
+            state.openShowInfo?.let {
+                ShowInfoActivity.open(this@MainActivity, it.positionList, it.formattedDistance)
+                mainViewModel.onOpenShowInfoHandled()
+            }
+
+            if (state.showLocationPermissionSnackbar) {
+                Snackbar
+                    .make(
+                        binding.drawerLayout,
+                        R.string.snackbar_location_permission_needed,
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                    .setAction(R.string.snackbar_location_permission_action) {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = "package:$packageName".toUri()
+                        startActivity(intent)
+                    }
+                    .show()
+                mainViewModel.onLocationPermissionSnackbarShown()
             }
         }
     }
