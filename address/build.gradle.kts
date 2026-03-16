@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.okhttp)
     implementation(libs.okhttp.coroutines)
-    implementation(libs.playservices.maps)
     implementation(libs.timber)
     implementation(project(":common"))
 

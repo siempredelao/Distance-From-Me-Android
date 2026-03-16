@@ -16,19 +16,19 @@
 
 package gc.david.dfm.main.presentation.model
 
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.distances.data.database.Distance
 
 data class MainUiState(
     val showLoadDistancesItem: Boolean = false,
     val showForceCrashItem: Boolean = false,
     val drawDistance: DrawDistanceModel? = null,
-    val drawPoints: List<Coordinate>? = null,
+    val drawPoints: List<Coordinates>? = null,
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
     val selectFromDistancesLoaded: List<Distance>? = null,
-    val zoomMapInto: Coordinate? = null,
-    val centerMapInto: Coordinate? = null,
+    val zoomMapInto: Coordinates? = null,
+    val centerMapInto: Coordinates? = null,
     val searchAddress: String? = null,
     val resetMap: Boolean = false,
     val hideChart: Boolean = false,

@@ -19,28 +19,27 @@ package gc.david.dfm.showinfo.presentation
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.core.content.IntentCompat
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceDialog
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.screen.ShowInfoScreen
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.ArrayList
 
 class ShowInfoActivity : ComponentActivity() {
 
+    private val coordinatesRepository: CoordinatesRepository by inject()
     private val showInfoViewModel: ShowInfoViewModel by viewModel()
     private val saveDistanceViewModel: SaveDistanceViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.Forest.tag(TAG).d("onCreate")
+        Timber.tag(TAG).d("onCreate")
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
@@ -82,16 +81,14 @@ class ShowInfoActivity : ComponentActivity() {
     }
 
     private fun loadData() {
-        Timber.Forest.tag(TAG).d("loadData")
+        Timber.tag(TAG).d("loadData")
 
-        val positionsList =
-            IntentCompat.getParcelableArrayListExtra(
-                intent,
-                POSITIONS_LIST_EXTRA_KEY,
-                LatLng::class.java
-            )
-                ?: error("No positions available")
-        val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)!!
+        val positionsList = coordinatesRepository.observeDistance().value
+        val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)
+        if (positionsList.isEmpty() || distance.isNullOrBlank()) {
+            finish()
+            return
+        }
         showInfoViewModel.onStart(positionsList, distance)
     }
 
@@ -99,15 +96,10 @@ class ShowInfoActivity : ComponentActivity() {
 
         private const val TAG = "ShowInfoActivity"
 
-        private const val POSITIONS_LIST_EXTRA_KEY = "positionsList"
         private const val DISTANCE_EXTRA_KEY = "distance"
 
-        fun open(activity: Activity, coordinates: List<LatLng>, distanceAsText: String) {
+        fun open(activity: Activity, distanceAsText: String) {
             val openShowInfoActivityIntent = Intent(activity, ShowInfoActivity::class.java)
-            openShowInfoActivityIntent.putParcelableArrayListExtra(
-                POSITIONS_LIST_EXTRA_KEY,
-                ArrayList<Parcelable>(coordinates)
-            )
             openShowInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText)
             activity.startActivity(openShowInfoActivityIntent)
         }

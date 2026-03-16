@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain
 
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationStatus
 import gc.david.dfm.elevation.domain.model.Elevation
@@ -26,12 +26,12 @@ class GetElevationByCoordinatesUseCase(
     private val mapper: ElevationEntityDataMapper
 ) {
 
-    suspend operator fun invoke(coordinateList: List<Coordinate>): Result<Elevation> {
-        return if (coordinateList.isEmpty()) {
+    suspend operator fun invoke(coordinatesList: List<Coordinates>): Result<Elevation> {
+        return if (coordinatesList.isEmpty()) {
             Result.failure(Exception("Empty coordinates list"))
         } else {
             try {
-                val coordinatesPath = getCoordinatesPath(coordinateList)
+                val coordinatesPath = getCoordinatesPath(coordinatesList)
                 val elevationEntity = repository.getElevation(coordinatesPath, ELEVATION_SAMPLES)
                 if (elevationEntity.status == ElevationStatus.OK) {
                     val elevation = mapper.transform(elevationEntity)
@@ -45,8 +45,8 @@ class GetElevationByCoordinatesUseCase(
         }
     }
 
-    private fun getCoordinatesPath(coordinateList: List<Coordinate>): String {
-        return coordinateList.joinToString("|") { "${it.latitude},${it.longitude}" }
+    private fun getCoordinatesPath(coordinatesList: List<Coordinates>): String {
+        return coordinatesList.joinToString("|") { "${it.latitude},${it.longitude}" }
     }
 
     companion object {

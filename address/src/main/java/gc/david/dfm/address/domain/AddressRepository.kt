@@ -16,15 +16,15 @@
 
 package gc.david.dfm.address.domain
 
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.address.domain.model.Coordinates
 
 /**
  * Created by david on 12.01.17.
  */
 interface AddressRepository {
 
-    suspend fun getNameByCoordinates(coordinates: LatLng): AddressCollectionEntity
+    suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity
 
     suspend fun getCoordinatesByName(name: String): AddressCollectionEntity
 

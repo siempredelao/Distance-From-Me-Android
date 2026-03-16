@@ -16,7 +16,7 @@
 
 package gc.david.dfm.distance.data
 
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import kotlinx.coroutines.flow.StateFlow
 
@@ -24,9 +24,9 @@ class BaseCoordinatesRepository(
     private val memoryDataSource: CoordinatesMemoryDataSource
 ) : CoordinatesRepository {
 
-    override fun observeDistance(): StateFlow<List<Coordinate>> = memoryDataSource.observe()
+    override fun observeDistance(): StateFlow<List<Coordinates>> = memoryDataSource.observe()
 
-    override fun append(coordinate: Coordinate) = memoryDataSource.append(coordinate)
+    override fun append(coordinates: Coordinates) = memoryDataSource.append(coordinates)
 
     override fun clear() = memoryDataSource.clear()
 }

@@ -17,7 +17,7 @@
 package gc.david.dfm.elevation.presentation
 
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
@@ -51,7 +51,7 @@ class ElevationViewModelTest {
 
     @Test
     fun `hides chart when show elevation chart preference is false`() {
-        val dummyList = emptyList<Coordinate>()
+        val dummyList = emptyList<Coordinates>()
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(false)
 
         viewModel.onCoordinatesSelected(dummyList)
@@ -61,7 +61,7 @@ class ElevationViewModelTest {
 
     @Test
     fun `hides chart when no connection available`() {
-        val dummyList = emptyList<Coordinate>()
+        val dummyList = emptyList<Coordinates>()
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(false)
 
@@ -72,26 +72,26 @@ class ElevationViewModelTest {
 
     @Test
     fun `executes use case when preference is activated and connection available`() = runTest {
-        val coordinateList = emptyList<Coordinate>()
+        val coordinatesList = emptyList<Coordinates>()
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.failure(Throwable()))
 
-        viewModel.onCoordinatesSelected(coordinateList)
+        viewModel.onCoordinatesSelected(coordinatesList)
 
-        verify(getElevationByCoordinatesUseCase).invoke(coordinateList)
+        verify(getElevationByCoordinatesUseCase).invoke(coordinatesList)
     }
 
     @Test
     fun `returns elevation samples when use case returns data`() = runTest {
-        val coordinateList = emptyList<Coordinate>()
+        val coordinatesList = emptyList<Coordinates>()
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(connectionManager.isOnline()).thenReturn(true)
         val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
         whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.success(elevation))
 
-        viewModel.onCoordinatesSelected(coordinateList)
+        viewModel.onCoordinatesSelected(coordinatesList)
 
         val expectedElevationModel = ElevationModel(elevation.results, "m")
         assertEquals(expectedElevationModel, viewModel.uiState.value.elevationModel)

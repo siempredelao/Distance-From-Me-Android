@@ -16,11 +16,11 @@
 
 package gc.david.dfm.address.domain
 
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.*
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.domain.model.Coordinates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -66,7 +66,7 @@ class GetAddressCoordinatesByNameUseCaseTest {
         val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
         whenever(repository.getCoordinatesByName(anyString()))
             .thenReturn(addressCollectionEntity)
-        val address = Address(LOCATION_NAME, LatLng(latitude, longitude))
+        val address = Address(LOCATION_NAME, Coordinates(latitude, longitude))
         val addressList = mutableListOf(address)
         val addressCollection = AddressCollection(addressList)
         whenever(mapper.transform(addressCollectionEntity)).thenReturn(addressCollection)

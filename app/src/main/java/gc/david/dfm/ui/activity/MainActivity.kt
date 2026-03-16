@@ -41,7 +41,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.collectOnStarted
@@ -60,9 +60,11 @@ import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
+import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
+import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -78,6 +80,7 @@ class MainActivity :
     private val mapDrawer: MapDrawer by inject()
     private val permissionChecker: PermissionChecker by inject()
     private val locationManager: GeofencingLocationManager by inject()
+    private val coordinatesRepository: CoordinatesRepository by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
@@ -279,7 +282,7 @@ class MainActivity :
             }
 
             state.openShowInfo?.let {
-                ShowInfoActivity.open(this@MainActivity, it.positionList.map(Coordinate::toLatLng), it.formattedDistance)
+                ShowInfoActivity.open(this@MainActivity, it.formattedDistance)
                 mainViewModel.onOpenShowInfoHandled()
             }
 
@@ -324,11 +327,11 @@ class MainActivity :
     }
 
     override fun onMapLongClick(point: LatLng) {
-        mainViewModel.onMapLongClick(point.toCoordinate())
+        mainViewModel.onMapLongClick(point.toCoordinates())
     }
 
     override fun onMapClick(point: LatLng) {
-        mainViewModel.onMapClick(point.toCoordinate())
+        mainViewModel.onMapClick(point.toCoordinates())
     }
 
     override fun onInfoWindowClick(marker: Marker) {
@@ -460,7 +463,7 @@ class MainActivity :
         googleMap?.let { mapDrawer.drawDistance(it, model) }
     }
 
-    private fun toString(list: List<Coordinate>) = list.joinToString { "P(${it.latitude}, ${it.longitude})" }
+    private fun toString(list: List<Coordinates>) = list.joinToString { "P(${it.latitude}, ${it.longitude})" }
 
     private fun fixMapPadding() {
         Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
@@ -519,7 +522,7 @@ class MainActivity :
     private fun showPositionByName(address: gc.david.dfm.address.domain.model.Address) {
         Timber.tag(TAG).d("showPositionByName $address")
 
-        mainViewModel.onPositionByNameResolved(address.coordinates.toCoordinate())
+        mainViewModel.onPositionByNameResolved(address.coordinates.toCommonCoordinates())
     }
 
     companion object {
@@ -529,5 +532,6 @@ class MainActivity :
     }
 }
 
-private fun LatLng.toCoordinate() = Coordinate(latitude, longitude)
-private fun Coordinate.toLatLng() = LatLng(latitude, longitude)
+private fun LatLng.toCoordinates() = Coordinates(latitude, longitude)
+private fun Coordinates.toLatLng() = LatLng(latitude, longitude)
+private fun AddressCoordinate.toCommonCoordinates() = Coordinates(latitude, longitude)

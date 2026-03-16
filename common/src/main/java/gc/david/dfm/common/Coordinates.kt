@@ -16,4 +16,4 @@
 
 package gc.david.dfm.common
 
-data class Coordinate(val latitude: Double, val longitude: Double)
+data class Coordinates(val latitude: Double, val longitude: Double)

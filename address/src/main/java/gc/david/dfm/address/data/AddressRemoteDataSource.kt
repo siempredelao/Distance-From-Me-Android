@@ -16,10 +16,10 @@
 
 package gc.david.dfm.address.data
 
-import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.address.domain.model.Coordinates
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
@@ -31,7 +31,7 @@ class AddressRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
     private val gson = Gson()
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
-    suspend fun getNameByCoordinates(coordinates: LatLng): AddressCollectionEntity {
+    suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity {
         return executeRequest(getNameByCoordinatesUrl(coordinates))
     }
 
@@ -48,7 +48,7 @@ class AddressRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
         return addressCollectionEntity
     }
 
-    private fun getNameByCoordinatesUrl(coordinates: LatLng): String {
+    private fun getNameByCoordinatesUrl(coordinates: Coordinates): String {
         val parameter = "latlng=${coordinates.latitude},${coordinates.longitude}"
         Timber.tag(TAG).d(parameter)
         return getUrl(parameter)

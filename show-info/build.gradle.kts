@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.playservices.maps)
     implementation(libs.timber)
     implementation(project(":address"))
     implementation(project(":common"))

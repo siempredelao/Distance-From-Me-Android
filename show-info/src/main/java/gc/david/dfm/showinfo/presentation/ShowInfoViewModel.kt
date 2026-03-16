@@ -18,10 +18,11 @@ package gc.david.dfm.showinfo.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.model.ShareIntentData
@@ -46,7 +47,7 @@ class ShowInfoViewModel(
 
     private lateinit var inputParams: InputParams
 
-    fun onStart(positionsList: List<LatLng>, distance: String) {
+    fun onStart(positionsList: List<Coordinates>, distance: String) {
         this.inputParams = InputParams(positionsList, distance)
 
         if (!connectionManager.isOnline()) {
@@ -63,23 +64,23 @@ class ShowInfoViewModel(
             val originPosition = positionsList.first()
             val destinationPosition = positionsList.last()
             val originAddressDeferred =
-                async { getAddressNameByCoordinatesUseCase(originPosition) }
+                async { getAddressNameByCoordinatesUseCase(originPosition.toAddressCoordinate()) }
             val destinationAddressDeferred =
-                async { getAddressNameByCoordinatesUseCase(destinationPosition) }
+                async { getAddressNameByCoordinatesUseCase(destinationPosition.toAddressCoordinate()) }
             val (originAddressResult, destinationAddressResult) =
                 originAddressDeferred.await() to destinationAddressDeferred.await()
 
             _uiState.update { current ->
                 current.copy(
                     isLoading = false,
-                    originAddress = resolveAddress(originAddressResult, positionsList.first()),
-                    destinationAddress = resolveAddress(destinationAddressResult, positionsList.last()),
+                    originAddress = resolveAddress(originAddressResult, originPosition),
+                    destinationAddress = resolveAddress(destinationAddressResult, destinationPosition),
                 )
             }
         }
     }
 
-    private fun resolveAddress(result: Result<AddressCollection>, latLng: LatLng) =
+    private fun resolveAddress(result: Result<AddressCollection>, coordinates: Coordinates) =
         result.fold({ collection ->
             val addressList = collection.addressList
             if (addressList.isEmpty()) {
@@ -87,8 +88,8 @@ class ShowInfoViewModel(
             } else {
                 addressFormatter.format(
                     addressList.first().formattedAddress,
-                    latLng.latitude,
-                    latLng.longitude,
+                    coordinates.latitude,
+                    coordinates.longitude,
                 )
             }
         }, { error ->
@@ -148,7 +149,9 @@ ${inputParams.distance}"""
         private const val TAG = "ShowInfoViewModel"
     }
 
-    data class InputParams(val positionsList: List<LatLng>, val distance: String)
+    data class InputParams(val positionsList: List<Coordinates>, val distance: String)
 
-    data class SaveDistanceData(val positionsList: List<LatLng>, val distance: String)
+    data class SaveDistanceData(val positionsList: List<Coordinates>, val distance: String)
 }
+
+private fun Coordinates.toAddressCoordinate() = AddressCoordinate(latitude, longitude)

@@ -19,7 +19,7 @@ package gc.david.dfm.elevation.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.elevation.presentation.model.ElevationUiState
@@ -45,7 +45,7 @@ class ElevationViewModel(
     private val unitSystem: UnitSystem
         get() = settingsRepository.getUnitSystemPreference()
 
-    fun onCoordinatesSelected(coordinates: List<Coordinate>) {
+    fun onCoordinatesSelected(coordinates: List<Coordinates>) {
         if (!settingsRepository.shouldShowElevationChart() || !connectionManager.isOnline()) {
             _uiState.update { it.copy(hideChart = true) }
             return

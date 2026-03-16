@@ -16,10 +16,10 @@
 
 package gc.david.dfm.address.presentation
 
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
@@ -265,7 +265,7 @@ class AddressViewModelTest {
         private const val LOCATION_NAME = "fake location name"
         private const val ERROR_MESSAGE = "fake errorMessage"
 
-        private val COORDINATES = LatLng(0.0, 0.0)
+        private val COORDINATES = Coordinates(0.0, 0.0)
         private val ADDRESS = gc.david.dfm.address.domain.model.Address(LOCATION_NAME, COORDINATES)
         private val EMPTY_ADDRESS_COLLECTION = AddressCollection(ArrayList())
     }

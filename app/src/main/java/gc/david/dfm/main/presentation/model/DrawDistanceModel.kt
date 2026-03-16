@@ -16,12 +16,12 @@
 
 package gc.david.dfm.main.presentation.model
 
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.settings.domain.model.CameraAnimation
 
 data class DrawDistanceModel(
-    val positionList: List<Coordinate>,
+    val positionList: List<Coordinates>,
     val distanceName: String,
     val distanceInMetres: Double,
     val formattedDistance: String,

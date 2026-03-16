@@ -17,7 +17,7 @@
 package gc.david.dfm
 
 import android.location.Location
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.settings.domain.Haversine
 
@@ -25,7 +25,7 @@ object Utils {
 
     fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
 
-    fun calculateDistanceInMetres(coordinates: List<Coordinate>): Double {
+    fun calculateDistanceInMetres(coordinates: List<Coordinates>): Double {
         var distanceInMetres = 0.0
         for (i in 0 until coordinates.size - 1) {
             distanceInMetres += Haversine.getDistance(
@@ -38,11 +38,11 @@ object Utils {
     }
 
     fun calculateDistanceInMetres2(coordinates: List<Position>): Double =
-        calculateDistanceInMetres(coordinates.toCoordinate())
+        calculateDistanceInMetres(coordinates.toCoordinates())
 
-    fun Position.toCoordinate() = Coordinate(latitude, longitude)
+    fun Position.toCoordinates() = Coordinates(latitude, longitude)
 
-    fun List<Position>.toCoordinate() = map { it.toCoordinate() }
+    fun List<Position>.toCoordinates() = map { it.toCoordinates() }
 
     data class Point(val lat: Double, val lon: Double) {
         override fun toString(): String {
@@ -50,7 +50,7 @@ object Utils {
         }
     }
 
-    fun Coordinate.toPoint() = Point(latitude, longitude)
+    fun Coordinates.toPoint() = Point(latitude, longitude)
     fun Position.toPoint() = Point(latitude, longitude)
     fun Location.toPoint() = Point(latitude, longitude)
 }

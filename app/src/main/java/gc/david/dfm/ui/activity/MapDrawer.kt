@@ -22,7 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import gc.david.dfm.R
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.settings.domain.model.CameraAnimation
@@ -53,7 +53,7 @@ class MapDrawer(private val context: Context) {
 
     private fun addMarkers(
         googleMap: GoogleMap,
-        coordinates: List<Coordinate>,
+        coordinates: List<Coordinates>,
         distance: String,
         message: String,
         source: DrawDistanceModel.Source,
@@ -81,7 +81,7 @@ class MapDrawer(private val context: Context) {
 
     private fun addLines(
         googleMap: GoogleMap,
-        positionList: List<Coordinate>,
+        positionList: List<Coordinates>,
         source: DrawDistanceModel.Source
     ) {
         for (i in 0 until positionList.size - 1) {
@@ -107,7 +107,7 @@ class MapDrawer(private val context: Context) {
 
     private fun moveCameraZoom(
         googleMap: GoogleMap,
-        coordinatesList: List<Coordinate>,
+        coordinatesList: List<Coordinates>,
         cameraAnimation: CameraAnimation.Animate
     ) {
         when (cameraAnimation) {
@@ -129,4 +129,4 @@ class MapDrawer(private val context: Context) {
     }
 }
 
-private fun Coordinate.toLatLng() = LatLng(latitude, longitude)
+private fun Coordinates.toLatLng() = LatLng(latitude, longitude)

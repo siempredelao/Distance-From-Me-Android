@@ -18,7 +18,7 @@ package gc.david.dfm.showinfo.presentation.savedistance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.core.distances.data.database.Position
@@ -44,7 +44,7 @@ class SaveDistanceViewModel(
 
     private lateinit var inputParams: InputParams
 
-    fun onStart(positionsList: List<LatLng>, distance: String) {
+    fun onStart(positionsList: List<Coordinates>, distance: String) {
         this.inputParams = InputParams(positionsList, distance)
     }
 
@@ -84,7 +84,7 @@ class SaveDistanceViewModel(
         _userMessage.update { null }
     }
 
-    data class InputParams(val positionsList: List<LatLng>, val distance: String)
+    data class InputParams(val positionsList: List<Coordinates>, val distance: String)
 
     companion object {
 

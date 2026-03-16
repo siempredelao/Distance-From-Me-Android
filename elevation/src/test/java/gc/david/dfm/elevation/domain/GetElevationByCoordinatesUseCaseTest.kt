@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain
 
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
@@ -41,17 +41,17 @@ class GetElevationByCoordinatesUseCaseTest {
     private val useCase = GetElevationByCoordinatesUseCase(repository, mapper)
 
     @Test
-    fun `returns error when coordinate list is empty`() = runTest {
-        val coordinateList = emptyList<Coordinate>()
+    fun `returns error when coordinates list is empty`() = runTest {
+        val coordinatesList = emptyList<Coordinates>()
 
-        val result = useCase.invoke(coordinateList)
+        val result = useCase.invoke(coordinatesList)
 
         assertEquals("Empty coordinates list", result.exceptionOrNull()!!.message)
     }
 
     @Test
     fun `returns mapped elevation when repository call succeeds and status is OK`() = runTest {
-        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
+        val coordinatesList = mutableListOf(Coordinates(0.0, 0.0))
         val elevation = 1.0
         val results = listOf(Result(elevation))
         val elevationEntity = ElevationEntity(results, ElevationStatus.OK)
@@ -60,53 +60,53 @@ class GetElevationByCoordinatesUseCaseTest {
         val elevation1 = Elevation(elevationResults)
         whenever(mapper.transform(elevationEntity)).thenReturn(elevation1)
 
-        val result = useCase.invoke(coordinateList)
+        val result = useCase.invoke(coordinatesList)
 
         assertEquals(kotlin.Result.success(elevation1), result)
     }
 
     @Test
     fun `returns error when repository call succeeds but status is not OK`() = runTest {
-        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
+        val coordinatesList = mutableListOf(Coordinates(0.0, 0.0))
         val elevation = 1.0
         val results = listOf(Result(elevation))
         val elevationEntity = ElevationEntity(results, ElevationStatus.INVALID_REQUEST)
         whenever(repository.getElevation(any(), any())).thenReturn(elevationEntity)
 
-        val result = useCase.invoke(coordinateList)
+        val result = useCase.invoke(coordinatesList)
 
         assertEquals(ElevationStatus.INVALID_REQUEST.toString(), result.exceptionOrNull()!!.message)
     }
 
     @Test
     fun `returns error when repository call fails`() = runTest {
-        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
+        val coordinatesList = mutableListOf(Coordinates(0.0, 0.0))
         val throwable = Throwable()
         whenever(repository.getElevation(any(), any())).thenAnswer { throw throwable }
 
-        val result = useCase.invoke(coordinateList)
+        val result = useCase.invoke(coordinatesList)
 
         assertEquals(kotlin.Result.failure<Elevation>(throwable), result)
     }
 
     @Test
     fun `builds coordinates path for list with one coordinate`() = runTest {
-        val coordinateList = mutableListOf(Coordinate(0.0, 0.0))
+        val coordinatesList = mutableListOf(Coordinates(0.0, 0.0))
         val coordinatesPath = "0.0,0.0"
         val maxSamples = 100
 
-        useCase.invoke(coordinateList)
+        useCase.invoke(coordinatesList)
 
         verify(repository).getElevation(eq(coordinatesPath), eq(maxSamples))
     }
 
     @Test
     fun `builds coordinates path for list with more than one coordinate`() = runTest {
-        val coordinateList = mutableListOf(Coordinate(0.0, 0.0), Coordinate(1.0, 1.0))
+        val coordinatesLists = mutableListOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0))
         val coordinatesPath = "0.0,0.0|1.0,1.0"
         val maxSamples = 100
 
-        useCase.invoke(coordinateList)
+        useCase.invoke(coordinatesLists)
 
         verify(repository).getElevation(eq(coordinatesPath), eq(maxSamples))
     }

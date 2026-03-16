@@ -16,10 +16,10 @@
 
 package gc.david.dfm.address.data.mapper
 
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.domain.model.Coordinates
 
 /**
  * Created by david on 13.01.17.
@@ -33,7 +33,7 @@ class AddressCollectionEntityDataMapper {
     fun transform(addressCollectionEntity: AddressCollectionEntity): AddressCollection {
         val addressList = addressCollectionEntity.results.map {
             val location = it.geometry.location
-            Address(it.formattedAddress, LatLng(location.latitude, location.longitude))
+            Address(it.formattedAddress, Coordinates(location.latitude, location.longitude))
         }
         return AddressCollection(addressList)
     }

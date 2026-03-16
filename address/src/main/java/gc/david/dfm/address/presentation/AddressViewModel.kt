@@ -18,12 +18,12 @@ package gc.david.dfm.address.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.R
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
+import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.presentation.model.AddressUiState
 import gc.david.dfm.common.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -89,7 +89,7 @@ class AddressViewModel(
         _uiState.update { it.copy(addressFound = address) }
     }
 
-    fun onAddressSearch(coordinates: LatLng) { // FIXME consider using a Coordinates(x, y) custom data model
+    fun onAddressSearch(coordinates: Coordinates) {
         if (!connectionManager.isOnline()) {
             _uiState.update { it.copy(showConnectionIssue = true) }
         } else {
@@ -97,7 +97,7 @@ class AddressViewModel(
         }
     }
 
-    private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: LatLng) {
+    private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: Coordinates) {
         _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {

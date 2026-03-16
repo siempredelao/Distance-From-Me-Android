@@ -16,17 +16,17 @@
 
 package gc.david.dfm.address.domain
 
-import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.GeocodingStatus
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.domain.model.Coordinates
 
 class GetAddressNameByCoordinatesUseCase(
     private val repository: AddressRepository,
     private val mapper: AddressCollectionEntityDataMapper
 ) {
 
-    suspend operator fun invoke(coordinates: LatLng): Result<AddressCollection> {
+    suspend operator fun invoke(coordinates: Coordinates): Result<AddressCollection> {
         return try {
             val addressCollectionEntity = repository.getNameByCoordinates(coordinates)
             if (addressCollectionEntity.status in setOf(

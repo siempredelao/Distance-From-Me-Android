@@ -20,9 +20,9 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.*
-import gc.david.dfm.Utils.toCoordinate
+import gc.david.dfm.Utils.toCoordinates
 import gc.david.dfm.Utils.toPoint
-import gc.david.dfm.common.Coordinate
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.distance.data.CurrentLocationProvider
@@ -117,9 +117,12 @@ class MainViewModel(
             val result = getPositionListUseCase(distance.id!!)
 
             result.fold({
+                val coordinates = it.toCoordinates()
+                coordinatesRepository.setList(coordinates)
+
                 val distanceInMetres = Utils.calculateDistanceInMetres2(it)
                 val model = DrawDistanceModel(
-                    it.toCoordinate(),
+                    coordinates,
                     distance.name + "\n",
                     distanceInMetres,
                     Haversine.normalizeDistance(distanceInMetres, unitSystem),
@@ -153,8 +156,8 @@ class MainViewModel(
     fun onMyLocationButtonClick() {
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
-            val coordinate = Coordinate(currentLocation.lat, currentLocation.lon)
-            _uiState.update { it.copy(centerMapInto = coordinate) }
+            val coordinates = Coordinates(currentLocation.lat, currentLocation.lon)
+            _uiState.update { it.copy(centerMapInto = coordinates) }
         }
     }
 
@@ -166,14 +169,14 @@ class MainViewModel(
         if (appHasJustStarted) {
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
-            val coordinate = Coordinate(location.latitude, location.longitude)
-            _uiState.update { it.copy(zoomMapInto = coordinate) }
+            val coordinates = Coordinates(location.latitude, location.longitude)
+            _uiState.update { it.copy(zoomMapInto = coordinates) }
             appHasJustStarted = false
         }
     }
 
-    fun onMapClick(point: Coordinate) {
-        Timber.tag(TAG).d("onMapClick $point")
+    fun onMapClick(coordinates: Coordinates) {
+        Timber.tag(TAG).d("onMapClick $coordinates")
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
             if (!calculatingDistance) {
                 coordinatesRepository.clear()
@@ -194,33 +197,33 @@ class MainViewModel(
 
             // To calculate the distance from the current position,
             // we effectively need the current position ;)
-            if (coordinates.isEmpty()) {
-                coordinatesRepository.append(Coordinate(currentLocation.lat, currentLocation.lon))
+            if (this@MainViewModel.coordinates.isEmpty()) {
+                coordinatesRepository.append(Coordinates(currentLocation.lat, currentLocation.lon))
             }
         }
-        coordinatesRepository.append(point)
-        _uiState.update { it.copy(drawPoints = coordinates) }
+        coordinatesRepository.append(coordinates)
+        _uiState.update { it.copy(drawPoints = this@MainViewModel.coordinates) }
     }
 
-    fun onPositionByNameResolved(point: Coordinate) {
+    fun onPositionByNameResolved(coordinates: Coordinates) {
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
-            if (coordinates.isNotEmpty()) {
-                onMapLongClick(point)
+            if (this@MainViewModel.coordinates.isNotEmpty()) {
+                onMapLongClick(coordinates)
             } else {
-                coordinatesRepository.append(point)
-                _uiState.update { it.copy(drawPoints = coordinates, centerMapInto = point) }
+                coordinatesRepository.append(coordinates)
+                _uiState.update { it.copy(drawPoints = this@MainViewModel.coordinates, centerMapInto = coordinates) }
             }
         } else {
-            onMapLongClick(point)
+            onMapLongClick(coordinates)
         }
     }
 
-    fun onMapLongClick(point: Coordinate) {
-        Timber.tag(TAG).d("onMapLongClick $point")
+    fun onMapLongClick(coordinates: Coordinates) {
+        Timber.tag(TAG).d("onMapLongClick $coordinates")
         calculatingDistance = true
 
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
-            if (coordinates.isEmpty()) {
+            if (this@MainViewModel.coordinates.isEmpty()) {
                 _uiState.update { it.copy(errorMessage = resourceProvider.get(R.string.toast_first_point_needed)) }
                 return
             }
@@ -233,16 +236,16 @@ class MainViewModel(
 
             // To calculate the distance from the current position,
             // we effectively need the current position ;)
-            if (coordinates.isEmpty()) {
-                coordinatesRepository.append(Coordinate(currentLocation.lat, currentLocation.lon))
+            if (this@MainViewModel.coordinates.isEmpty()) {
+                coordinatesRepository.append(Coordinates(currentLocation.lat, currentLocation.lon))
             }
         }
 
-        coordinatesRepository.append(point)
+        coordinatesRepository.append(coordinates)
 
-        val distanceInMetres = Utils.calculateDistanceInMetres(coordinates)
+        val distanceInMetres = Utils.calculateDistanceInMetres(this@MainViewModel.coordinates)
         val model = DrawDistanceModel(
-            coordinates,
+            this@MainViewModel.coordinates,
             "",
             distanceInMetres,
             Haversine.normalizeDistance(distanceInMetres, unitSystem),
@@ -324,6 +327,11 @@ class MainViewModel(
 
     fun onLocationPermissionSnackbarShown() {
         _uiState.update { it.copy(showLocationPermissionSnackbar = false) }
+    }
+
+    private fun CoordinatesRepository.setList(list: List<Coordinates>) {
+        clear()
+        list.forEach(coordinatesRepository::append)
     }
 
     companion object {

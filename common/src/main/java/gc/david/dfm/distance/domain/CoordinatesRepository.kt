@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.data
+package gc.david.dfm.distance.domain
 
 import gc.david.dfm.common.Coordinates
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
-class CoordinatesMemoryDataSource {
+// TODO figure out a better placement than on the common module
+interface CoordinatesRepository {
 
-    private val _coordinates = MutableStateFlow<List<Coordinates>>(emptyList())
+    fun observeDistance(): StateFlow<List<Coordinates>>
 
-    fun observe(): StateFlow<List<Coordinates>> = _coordinates.asStateFlow()
+    fun append(coordinates: Coordinates)
 
-    fun append(coordinates: Coordinates) {
-        _coordinates.update { it + coordinates }
-    }
-
-    fun clear() {
-        _coordinates.update { emptyList() }
-    }
+    fun clear()
 }
