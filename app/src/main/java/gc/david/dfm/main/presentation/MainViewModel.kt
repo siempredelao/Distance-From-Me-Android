@@ -120,7 +120,8 @@ class MainViewModel(
                     distanceInMetres,
                     Haversine.normalizeDistance(distanceInMetres, unitSystem),
                     DrawDistanceModel.Source.DATABASE,
-                    distanceModeProvider.get()
+                    distanceModeProvider.get(),
+                    preferencesProvider.getCameraAnimation()
                 )
                 drawDistanceModel = model
                 _uiState.update { state ->
@@ -242,7 +243,8 @@ class MainViewModel(
             distanceInMetres,
             Haversine.normalizeDistance(distanceInMetres, unitSystem),
             DrawDistanceModel.Source.MANUAL,
-            distanceModeProvider.get()
+            distanceModeProvider.get(),
+            preferencesProvider.getCameraAnimation()
         )
         drawDistanceModel = model
         _uiState.update { it.copy(drawDistance = model) }

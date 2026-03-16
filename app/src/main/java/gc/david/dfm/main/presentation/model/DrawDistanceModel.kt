@@ -18,6 +18,7 @@ package gc.david.dfm.main.presentation.model
 
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.distance.data.DistanceMode
+import gc.david.dfm.map.CameraAnimation
 
 data class DrawDistanceModel(
     val positionList: List<LatLng>,
@@ -25,7 +26,8 @@ data class DrawDistanceModel(
     val distanceInMetres: Double,
     val formattedDistance: String,
     val source: Source,
-    val distanceMode: DistanceMode
+    val distanceMode: DistanceMode,
+    val cameraAnimation: CameraAnimation
 ) {
 
     enum class Source { MANUAL, DATABASE }
@@ -39,7 +41,8 @@ data class DrawDistanceModel(
                 0.0,
                 "",
                 Source.MANUAL,
-                DistanceMode.FROM_CURRENT_POINT
+                DistanceMode.FROM_CURRENT_POINT,
+                CameraAnimation.None
             )
     }
 }

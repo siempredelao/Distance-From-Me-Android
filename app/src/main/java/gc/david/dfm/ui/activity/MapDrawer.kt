@@ -21,17 +21,17 @@ import android.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
-import gc.david.dfm.DFMPreferences
 import gc.david.dfm.R
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
+import gc.david.dfm.map.CameraAnimation
 
 /**
  * Class to take a [DrawDistanceModel] and render it into a GoogleMap canvas.
  */
 class MapDrawer(private val context: Context) {
 
-    fun drawDistance(googleMap: GoogleMap, model: DrawDistanceModel, animationPreference: String?) {
+    fun drawDistance(googleMap: GoogleMap, model: DrawDistanceModel) {
         googleMap.clear()
 
         addMarkers(
@@ -45,8 +45,8 @@ class MapDrawer(private val context: Context) {
 
         addLines(googleMap, model.positionList, model.source)
 
-        if (model.positionList.isNotEmpty()) {
-            moveCameraZoom(googleMap, model.positionList, animationPreference)
+        if (model.positionList.isNotEmpty() && model.cameraAnimation is CameraAnimation.Animate) {
+            moveCameraZoom(googleMap, model.positionList, model.cameraAnimation)
         }
     }
 
@@ -107,10 +107,10 @@ class MapDrawer(private val context: Context) {
     private fun moveCameraZoom(
         googleMap: GoogleMap,
         coordinatesList: List<LatLng>,
-        animationPreference: String?
+        cameraAnimation: CameraAnimation.Animate
     ) {
-        when (animationPreference) {
-            DFMPreferences.ANIMATION_CENTRE_VALUE -> {
+        when (cameraAnimation) {
+            is CameraAnimation.Animate.Centre -> {
                 val latLngBoundsBuilder = LatLngBounds.Builder()
                 coordinatesList.forEach { latLngBoundsBuilder.include(it) }
                 googleMap.animateCamera(
@@ -120,16 +120,13 @@ class MapDrawer(private val context: Context) {
                     )
                 )
             }
-            DFMPreferences.ANIMATION_DESTINATION_VALUE -> {
+            is CameraAnimation.Animate.Destination -> {
                 val lastCoordinates = coordinatesList[coordinatesList.size - 1]
                 googleMap.animateCamera(
                     CameraUpdateFactory.newLatLng(
                         LatLng(lastCoordinates.latitude, lastCoordinates.longitude)
                     )
                 )
-            }
-            DFMPreferences.NO_ANIMATION_DESTINATION_VALUE -> {
-                // nothing
             }
         }
     }

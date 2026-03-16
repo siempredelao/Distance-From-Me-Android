@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.map
 
-import gc.david.dfm.map.CameraAnimation
-import gc.david.dfm.map.UnitSystem
+sealed interface CameraAnimation {
 
-interface PreferencesProvider {
+    sealed class Animate : CameraAnimation {
 
-    fun shouldShowElevationChart(): Boolean
+        data object Centre : Animate()
 
-    fun getUnitSystemPreference(): UnitSystem
+        data object Destination : Animate()
+    }
 
-    fun getCameraAnimation(): CameraAnimation
+    data object None : CameraAnimation
 }

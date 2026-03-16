@@ -17,6 +17,7 @@
 package gc.david.dfm
 
 import android.content.Context
+import gc.david.dfm.map.CameraAnimation
 import gc.david.dfm.map.UnitSystem
 
 // TODO Consider moving to :common once DFMPreferences is decoupled from app-specific configuration
@@ -29,5 +30,13 @@ class DefaultPreferencesProvider(private val context: Context) : PreferencesProv
     override fun getUnitSystemPreference(): UnitSystem {
         val value = DFMPreferences.getMeasureUnitPreference(context)
         return if (value == DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE) UnitSystem.IMPERIAL else UnitSystem.METRIC
+    }
+
+    override fun getCameraAnimation(): CameraAnimation {
+        return when (DFMPreferences.getAnimationPreference(context)) {
+            DFMPreferences.ANIMATION_DESTINATION_VALUE -> CameraAnimation.Animate.Destination
+            DFMPreferences.ANIMATION_CENTRE_VALUE -> CameraAnimation.Animate.Centre
+            else -> CameraAnimation.None
+        }
     }
 }

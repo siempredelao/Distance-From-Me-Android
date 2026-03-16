@@ -456,13 +456,7 @@ class MainActivity :
         Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
 
         elevationViewModel.onCoordinatesSelected(model.positionList)
-        googleMap?.let {
-            mapDrawer.drawDistance(
-                it,
-                model,
-                DFMPreferences.getAnimationPreference(baseContext)
-            )
-        }
+        googleMap?.let { mapDrawer.drawDistance(it, model) }
     }
 
     private fun toString(list: List<LatLng>) = list.joinToString { it.toPoint().toString() }

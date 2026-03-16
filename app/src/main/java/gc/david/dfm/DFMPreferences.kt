@@ -33,7 +33,6 @@ object DFMPreferences {
     private const val ANIMATION_KEY = "animation"
     const val ANIMATION_CENTRE_VALUE = "CEN"
     const val ANIMATION_DESTINATION_VALUE = "DES"
-    const val NO_ANIMATION_DESTINATION_VALUE = "NO"
 
 
     fun getMeasureUnitPreference(context: Context): String {
