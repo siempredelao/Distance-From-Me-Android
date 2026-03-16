@@ -20,7 +20,6 @@ import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.DFMPreferences
 import gc.david.dfm.R
 import gc.david.dfm.settings.presentation.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -32,8 +31,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
 
-        val bbddPreference : Preference? = findPreference(DFMPreferences.CLEAR_DATABASE_KEY)
-        bbddPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        val clearDatabasePreference : Preference? = findPreference(CLEAR_DATABASE_KEY)
+        clearDatabasePreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             viewModel.onClearData()
             false
         }
@@ -43,5 +42,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
             }
         }
+    }
+
+    private companion object {
+
+        const val CLEAR_DATABASE_KEY = "bbdd"
     }
 }

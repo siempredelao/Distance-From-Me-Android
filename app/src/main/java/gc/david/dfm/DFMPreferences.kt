@@ -19,6 +19,7 @@ package gc.david.dfm
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import androidx.core.content.edit
 
 /**
  * Created by david on 05.11.16.
@@ -33,7 +34,6 @@ object DFMPreferences {
     const val ANIMATION_CENTRE_VALUE = "CEN"
     const val ANIMATION_DESTINATION_VALUE = "DES"
     const val NO_ANIMATION_DESTINATION_VALUE = "NO"
-    const val CLEAR_DATABASE_KEY = "bbdd"
 
 
     fun getMeasureUnitPreference(context: Context): String {
@@ -41,7 +41,7 @@ object DFMPreferences {
     }
 
     fun setMeasureUnitPreference(context: Context, unit: String) {
-        getPreferences(context).edit().putString(MEASURE_UNIT_KEY, unit).apply()
+        getPreferences(context).edit { putString(MEASURE_UNIT_KEY, unit) }
     }
 
     fun shouldShowElevationChart(context: Context): Boolean {
