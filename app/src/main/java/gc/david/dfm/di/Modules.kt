@@ -16,8 +16,11 @@
 
 package gc.david.dfm.di
 
+import gc.david.dfm.distance.data.BaseCoordinatesRepository
+import gc.david.dfm.distance.data.CoordinatesMemoryDataSource
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceModeProvider
+import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
@@ -35,11 +38,13 @@ val appModule = module {
     single { MapDrawer(get()) }
     single { DistanceModeProvider() }
     single { CurrentLocationProvider() }
+    single { CoordinatesMemoryDataSource() }
+    single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }
     factory { GeofencingLocationManager(get(), get()) }
 }
 
 val viewModelModule = module {
 
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
