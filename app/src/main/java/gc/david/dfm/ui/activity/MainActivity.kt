@@ -39,7 +39,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
 import gc.david.dfm.Utils.toPoint
@@ -110,40 +109,6 @@ class MainActivity :
 
     private fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
 
-    private val onNavigationItemSelectedListener: NavigationView.OnNavigationItemSelectedListener
-        get() = NavigationView.OnNavigationItemSelectedListener { menuItem ->
-            binding.drawerLayout.closeDrawers()
-            when (menuItem.itemId) {
-                R.id.menu_current_position -> {
-                    mainViewModel.onDistanceFromCurrentPositionSet()
-                    menuItem.isChecked = true
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.menu_any_position -> {
-                    mainViewModel.onDistanceFromAnyPositionSet()
-                    menuItem.isChecked = true
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.menu_rate_app -> {
-                    showRateDialog()
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.menu_settings -> {
-                    SettingsActivity.open(this@MainActivity)
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.menu_help_feedback -> {
-                    FaqActivity.open(this@MainActivity)
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.menu_about -> {
-                    AboutActivity.open(this@MainActivity)
-                    return@OnNavigationItemSelectedListener true
-                }
-            }
-            false
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
 
@@ -160,7 +125,38 @@ class MainActivity :
                 setHomeAsUpIndicator(upArrow)
             }
 
-            nvDrawer.setNavigationItemSelectedListener(onNavigationItemSelectedListener)
+            nvDrawer.setNavigationItemSelectedListener { menuItem ->
+                drawerLayout.closeDrawers()
+                when (menuItem.itemId) {
+                    R.id.menu_current_position -> {
+                        mainViewModel.onDistanceFromCurrentPositionSet()
+                        menuItem.isChecked = true
+                        true
+                    }
+                    R.id.menu_any_position -> {
+                        mainViewModel.onDistanceFromAnyPositionSet()
+                        menuItem.isChecked = true
+                        true
+                    }
+                    R.id.menu_rate_app -> {
+                        showRateDialog()
+                        true
+                    }
+                    R.id.menu_settings -> {
+                        SettingsActivity.open(this@MainActivity)
+                        true
+                    }
+                    R.id.menu_help_feedback -> {
+                        FaqActivity.open(this@MainActivity)
+                        true
+                    }
+                    R.id.menu_about -> {
+                        AboutActivity.open(this@MainActivity)
+                        true
+                    }
+                    else -> false
+                }
+            }
             elevationChartView.setOnCloseListener { animateHideChart() }
 
             val mapFragment = map2.getFragment<SupportMapFragment>()
