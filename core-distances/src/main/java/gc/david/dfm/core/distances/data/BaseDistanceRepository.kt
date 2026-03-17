@@ -19,14 +19,15 @@ package gc.david.dfm.core.distances.data
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.core.distances.domain.DistanceRepository
+import gc.david.dfm.core.distances.domain.model.NewDistance
 import kotlinx.coroutines.flow.Flow
 
 class BaseDistanceRepository(
     private val localDataSource: DistanceLocalDataSource
 ) : DistanceRepository {
 
-    override suspend fun insert(distance: Distance, positionList: List<Position>) {
-        localDataSource.insert(distance, positionList)
+    override suspend fun insert(distance: NewDistance) {
+        localDataSource.insert(distance)
     }
 
     override fun loadDistances(): Flow<List<Distance>> = localDataSource.loadDistances()

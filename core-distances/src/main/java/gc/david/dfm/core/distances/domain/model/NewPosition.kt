@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.core.distances.domain
+package gc.david.dfm.core.distances.domain.model
 
-import gc.david.dfm.core.distances.domain.model.NewDistance
+data class NewPosition(
+    val latitude: Double,
+    val longitude: Double,
+)
 
-/**
- * Created by david on 16.01.17.
- */
-class SaveDistanceUseCase(
-    private val repository: DistanceRepository
-) {
-
-    suspend operator fun invoke(distance: NewDistance): Result<Unit> {
-        return try {
-            repository.insert(distance)
-            Result.success(Unit)
-        } catch (exception: Exception) {
-            Result.failure(exception)
-        }
-    }
-}

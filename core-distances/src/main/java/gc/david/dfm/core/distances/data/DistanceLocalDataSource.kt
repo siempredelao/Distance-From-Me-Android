@@ -19,6 +19,7 @@ package gc.david.dfm.core.distances.data
 import gc.david.dfm.core.distances.data.database.DFMDatabase
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.core.distances.data.database.Position
+import gc.david.dfm.core.distances.domain.model.NewDistance
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -26,12 +27,30 @@ import kotlinx.coroutines.flow.Flow
  */
 class DistanceLocalDataSource(private val database: DFMDatabase) {
 
-    suspend fun insert(distance: Distance, positionList: List<Position>) {
-        val rowID = database.distanceDao().insert(distance)
+    suspend fun insert(distance: NewDistance) {
+        val rowID =
+            database.distanceDao().insert(
+                Distance(
+                    id = null,
+                    name = distance.name,
+                    distance = distance.distanceText,
+                    date = distance.date
+                )
+            )
+
         if (rowID == -1L) {
             throw Exception() // TODO return a custom exception instead
         } else {
-            val positionListWithDistanceId = positionList.map { it.apply { distanceId = rowID } }
+            val positionListWithDistanceId =
+                distance.positions
+                    .map {
+                        Position(
+                            id = null,
+                            latitude = it.latitude,
+                            longitude = it.longitude,
+                            distanceId = rowID,
+                        )
+                    }
             database.positionDao().insertMany(positionListWithDistanceId)
             return
         }

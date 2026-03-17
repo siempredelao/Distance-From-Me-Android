@@ -18,6 +18,7 @@ package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.core.distances.data.database.Position
+import gc.david.dfm.core.distances.domain.model.NewDistance
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -25,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface DistanceRepository {
 
-    suspend fun insert(distance: Distance, positionList: List<Position>)
+    suspend fun insert(distance: NewDistance)
 
     fun loadDistances(): Flow<List<Distance>>
 

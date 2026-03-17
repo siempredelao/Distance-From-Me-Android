@@ -20,9 +20,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.core.distances.data.database.Distance
-import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
+import gc.david.dfm.core.distances.domain.model.NewDistance
+import gc.david.dfm.core.distances.domain.model.NewPosition
 import gc.david.dfm.showinfo.R
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,21 +49,23 @@ class SaveDistanceViewModel(
     }
 
     fun onSave(name: String) {
-        val distanceAsDistance =
-            Distance(id = null, name = name, distance = inputParams.distance, date = Date())
-
-        val positionList = inputParams.positionsList.map {
-            Position(
-                id = null,
-                latitude = it.latitude,
-                longitude = it.longitude,
-                distanceId = -1L // FIXME
+        val newDistance =
+            NewDistance(
+                name = name,
+                distanceText = inputParams.distance,
+                date = Date(),
+                positions =
+                    inputParams.positionsList.map {
+                        NewPosition(
+                            latitude = it.latitude,
+                            longitude = it.longitude,
+                        )
+                    },
             )
-        }
 
         viewModelScope.launch {
             withContext(NonCancellable) {
-                val result = saveDistanceUseCase(distanceAsDistance, positionList)
+                val result = saveDistanceUseCase(newDistance)
 
                 result.fold({
                     val message = if (name.isNotEmpty()) {
