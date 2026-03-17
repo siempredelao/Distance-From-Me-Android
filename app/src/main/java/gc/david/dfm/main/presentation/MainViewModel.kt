@@ -20,7 +20,6 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.*
-import gc.david.dfm.Utils.toCoordinates
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.distance.data.CurrentLocationProvider
@@ -30,6 +29,7 @@ import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
+import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.settings.domain.Haversine
@@ -47,6 +47,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.collections.map
 
 class MainViewModel(
     private val getDistancesUseCase: GetDistancesUseCase,
@@ -119,7 +120,7 @@ class MainViewModel(
                 val coordinates = it.toCoordinates()
                 coordinatesRepository.setList(coordinates)
 
-                val distanceInMetres = Utils.calculateDistanceInMetres2(it)
+                val distanceInMetres = Utils.calculateDistanceInMetres(coordinates)
                 val model = DrawDistanceModel(
                     coordinates,
                     distance.name + "\n",
@@ -331,6 +332,10 @@ class MainViewModel(
         clear()
         list.forEach(coordinatesRepository::append)
     }
+
+    private fun Position.toCoordinates() = Coordinates(latitude, longitude)
+
+    private fun List<Position>.toCoordinates() = map { it.toCoordinates() }
 
     companion object {
 

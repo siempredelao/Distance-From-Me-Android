@@ -17,7 +17,6 @@
 package gc.david.dfm
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.settings.domain.Haversine
 
 object Utils {
@@ -35,11 +34,4 @@ object Utils {
         }
         return distanceInMetres
     }
-
-    fun calculateDistanceInMetres2(coordinates: List<Position>): Double =
-        calculateDistanceInMetres(coordinates.toCoordinates())
-
-    fun Position.toCoordinates() = Coordinates(latitude, longitude)
-
-    fun List<Position>.toCoordinates() = map { it.toCoordinates() }
 }
