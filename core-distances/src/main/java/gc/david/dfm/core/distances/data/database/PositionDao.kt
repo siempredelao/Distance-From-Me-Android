@@ -24,11 +24,11 @@ import androidx.room.Query
 interface PositionDao {
 
     @Query("SELECT * FROM POSITION WHERE DISTANCE_ID=:distanceId")
-    suspend fun loadAllById(distanceId: Long): List<Position>
+    suspend fun loadAllById(distanceId: Long): List<PositionEntity>
 
     @Query("DELETE FROM POSITION")
     suspend fun deleteAll()
 
     @Insert
-    suspend fun insertMany(positions: List<Position>)
+    suspend fun insertMany(positions: List<PositionEntity>)
 }

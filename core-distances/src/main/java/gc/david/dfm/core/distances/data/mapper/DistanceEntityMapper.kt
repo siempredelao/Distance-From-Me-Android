@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.core.distances.domain
+package gc.david.dfm.core.distances.data.mapper
 
+import gc.david.dfm.core.distances.data.database.DistanceEntity
 import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.core.distances.domain.model.NewDistance
-import gc.david.dfm.core.distances.domain.model.Position
-import kotlinx.coroutines.flow.Flow
 
 /**
- * Created by david on 16.01.17.
+ * Mapper class used to transform [DistanceEntity] (Room entity) in the Data layer
+ * to [Distance] in the Domain layer.
  */
-interface DistanceRepository {
+class DistanceEntityMapper {
 
-    suspend fun insert(distance: NewDistance)
+    fun toDomain(entity: DistanceEntity): Distance {
+        return Distance(
+            id = entity.id ?: 0L,
+            name = entity.name,
+            distance = entity.distance,
+            date = entity.date
+        )
+    }
 
-    fun loadDistances(): Flow<List<Distance>>
-
-    suspend fun clear()
-
-    suspend fun getPositionListById(distanceId: Long): List<Position>
+    fun toDomainList(entities: List<DistanceEntity>): List<Distance> {
+        return entities.map { toDomain(it) }
+    }
 }
+

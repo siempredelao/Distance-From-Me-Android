@@ -19,10 +19,10 @@ package gc.david.dfm.core.distances.data.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import gc.david.dfm.core.distances.data.database.Position.Companion.TABLE_NAME
+import gc.david.dfm.core.distances.data.database.PositionEntity.Companion.TABLE_NAME
 
 @Entity(tableName = TABLE_NAME)
-data class Position(
+data class PositionEntity(
         @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long?,
         @ColumnInfo(name = "LATITUDE") val latitude: Double,
         @ColumnInfo(name = "LONGITUDE") val longitude: Double,

@@ -17,7 +17,7 @@
 package gc.david.dfm
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.core.distances.data.database.Position
+import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.settings.domain.Haversine
 
 object Utils {

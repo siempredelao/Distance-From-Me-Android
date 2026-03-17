@@ -25,12 +25,12 @@ import kotlinx.coroutines.flow.Flow
 interface DistanceDao {
 
     @Query("SELECT * FROM DISTANCE")
-    fun loadAll(): Flow<List<Distance>>
+    fun loadAll(): Flow<List<DistanceEntity>>
 
     @Query("DELETE FROM DISTANCE")
     suspend fun deleteAll()
 
     @Insert
-    suspend fun insert(distance: Distance): Long
+    suspend fun insert(distance: DistanceEntity): Long
 
 }

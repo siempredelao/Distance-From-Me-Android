@@ -23,13 +23,13 @@ import gc.david.dfm.*
 import gc.david.dfm.Utils.toCoordinates
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
+import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.settings.domain.Haversine
@@ -113,7 +113,7 @@ class MainViewModel(
      */
     fun onDistanceToShowSelected(distance: Distance) {
         viewModelScope.launch {
-            val result = getPositionListUseCase(distance.id!!)
+            val result = getPositionListUseCase(distance.id)
 
             result.fold({
                 val coordinates = it.toCoordinates()

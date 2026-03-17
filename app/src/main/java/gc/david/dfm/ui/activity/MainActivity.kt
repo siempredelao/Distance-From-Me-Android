@@ -48,7 +48,7 @@ import gc.david.dfm.collectOnStarted
 import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.connectivity.ConnectionIssuesDialogFragment
-import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.databinding.ActivityMainBinding
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.elevation.presentation.model.ElevationModel

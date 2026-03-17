@@ -36,7 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.fragment.app.DialogFragment
 import gc.david.dfm.R
-import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import java.text.SimpleDateFormat

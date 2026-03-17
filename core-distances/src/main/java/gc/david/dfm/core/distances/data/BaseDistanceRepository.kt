@@ -16,10 +16,10 @@
 
 package gc.david.dfm.core.distances.data
 
-import gc.david.dfm.core.distances.data.database.Distance
-import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.core.distances.domain.DistanceRepository
+import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
+import gc.david.dfm.core.distances.domain.model.Position
 import kotlinx.coroutines.flow.Flow
 
 class BaseDistanceRepository(

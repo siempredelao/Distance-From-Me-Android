@@ -19,11 +19,11 @@ package gc.david.dfm.core.distances.data.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import gc.david.dfm.core.distances.data.database.Distance.Companion.TABLE_NAME
+import gc.david.dfm.core.distances.data.database.DistanceEntity.Companion.TABLE_NAME
 import java.util.*
 
 @Entity(tableName = TABLE_NAME)
-data class Distance(
+data class DistanceEntity(
         @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long?,
         @ColumnInfo(name = "NAME") val name: String,
         @ColumnInfo(name = "DISTANCE") val distance: String,

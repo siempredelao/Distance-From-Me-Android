@@ -20,6 +20,8 @@ import androidx.room.Room
 import gc.david.dfm.core.distances.data.database.DFMDatabase
 import gc.david.dfm.core.distances.data.BaseDistanceRepository
 import gc.david.dfm.core.distances.data.DistanceLocalDataSource
+import gc.david.dfm.core.distances.data.mapper.DistanceEntityMapper
+import gc.david.dfm.core.distances.data.mapper.PositionEntityMapper
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
 import gc.david.dfm.core.distances.domain.DistanceRepository
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
@@ -29,8 +31,10 @@ import org.koin.dsl.module
 
 val coreDistancesModule = module {
     single { Room.databaseBuilder(get(), DFMDatabase::class.java, "DistanciasDB.db").build() }
+    factory { DistanceEntityMapper() }
+    factory { PositionEntityMapper() }
+    single { DistanceLocalDataSource(get(), get(), get()) }
     single<DistanceRepository> { BaseDistanceRepository(get()) }
-    single { DistanceLocalDataSource(get()) }
     factory { ClearDistancesUseCase(get()) }
     factory { SaveDistanceUseCase(get()) }
     factory { GetPositionListUseCase(get()) }

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.core.distances.data.database
+package gc.david.dfm.core.distances.domain.model
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+/**
+ * Domain model representing a position (geographic coordinate).
+ */
+data class Position(
+    val latitude: Double,
+    val longitude: Double
+)
 
-@Database(entities = [DistanceEntity::class, PositionEntity::class], version = 2)
-@TypeConverters(Converters::class)
-abstract class DFMDatabase : RoomDatabase() {
-
-    abstract fun distanceDao(): DistanceDao
-
-    abstract fun positionDao(): PositionDao
-}

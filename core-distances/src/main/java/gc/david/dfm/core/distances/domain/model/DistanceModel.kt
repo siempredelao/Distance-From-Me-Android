@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.core.distances.data.database
+package gc.david.dfm.core.distances.domain.model
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import java.util.Date
 
-@Database(entities = [DistanceEntity::class, PositionEntity::class], version = 2)
-@TypeConverters(Converters::class)
-abstract class DFMDatabase : RoomDatabase() {
+/**
+ * Domain model representing a saved distance.
+ */
+data class Distance(
+    val id: Long,
+    val name: String,
+    val distance: String,
+    val date: Date
+)
 
-    abstract fun distanceDao(): DistanceDao
-
-    abstract fun positionDao(): PositionDao
-}

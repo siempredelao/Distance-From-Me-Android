@@ -17,21 +17,30 @@
 package gc.david.dfm.core.distances.data
 
 import gc.david.dfm.core.distances.data.database.DFMDatabase
-import gc.david.dfm.core.distances.data.database.Distance
-import gc.david.dfm.core.distances.data.database.Position
+import gc.david.dfm.core.distances.data.database.DistanceEntity
+import gc.david.dfm.core.distances.data.database.PositionEntity
+import gc.david.dfm.core.distances.data.mapper.DistanceEntityMapper
+import gc.david.dfm.core.distances.data.mapper.PositionEntityMapper
 import gc.david.dfm.core.distances.domain.InsertDistanceException
+import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
+import gc.david.dfm.core.distances.domain.model.Position
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by david on 16.01.17.
  */
-class DistanceLocalDataSource(private val database: DFMDatabase) {
+class DistanceLocalDataSource(
+    private val database: DFMDatabase,
+    private val distanceMapper: DistanceEntityMapper,
+    private val positionMapper: PositionEntityMapper
+) {
 
     suspend fun insert(distance: NewDistance) {
         val rowID =
             database.distanceDao().insert(
-                Distance(
+                DistanceEntity(
                     id = null,
                     name = distance.name,
                     distance = distance.distanceText,
@@ -45,7 +54,7 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
             val positionListWithDistanceId =
                 distance.positions
                     .map {
-                        Position(
+                        PositionEntity(
                             id = null,
                             latitude = it.latitude,
                             longitude = it.longitude,
@@ -57,7 +66,10 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
         }
     }
 
-    fun loadDistances(): Flow<List<Distance>> = database.distanceDao().loadAll()
+    fun loadDistances(): Flow<List<Distance>> = 
+        database.distanceDao().loadAll().map { entities ->
+            distanceMapper.toDomainList(entities)
+        }
 
     suspend fun clear() {
         with(database) {
@@ -67,6 +79,7 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
     }
 
     suspend fun getPositionListById(distanceId: Long): List<Position> {
-        return database.positionDao().loadAllById(distanceId)
+        val entities = database.positionDao().loadAllById(distanceId)
+        return positionMapper.toDomainList(entities)
     }
 }

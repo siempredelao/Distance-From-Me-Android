@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.core.distances.domain
+package gc.david.dfm.core.distances.data.mapper
 
+import gc.david.dfm.core.distances.data.database.PositionEntity
 import gc.david.dfm.core.distances.domain.model.Position
 
 /**
- * Created by david on 16.01.17.
+ * Mapper class used to transform [PositionEntity] (Room entity) in the Data layer
+ * to [Position] in the Domain layer.
  */
-class GetPositionListUseCase(
-    private val repository: DistanceRepository
-) {
+class PositionEntityMapper {
 
-    suspend operator fun invoke(distanceId: Long): Result<List<Position>> {
-        return try {
-            val positionList = repository.getPositionListById(distanceId)
-            Result.success(positionList)
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
+    fun toDomain(entity: PositionEntity): Position {
+        return Position(
+            latitude = entity.latitude,
+            longitude = entity.longitude
+        )
+    }
+
+    fun toDomainList(entities: List<PositionEntity>): List<Position> {
+        return entities.map { toDomain(it) }
     }
 }
+

@@ -17,7 +17,7 @@
 package gc.david.dfm.main.presentation.model
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.core.distances.data.database.Distance
+import gc.david.dfm.core.distances.domain.model.Distance
 
 data class MainUiState(
     val showLoadDistancesItem: Boolean = false,
