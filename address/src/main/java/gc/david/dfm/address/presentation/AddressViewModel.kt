@@ -24,6 +24,7 @@ import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.presentation.model.AddressUiState
 import gc.david.dfm.common.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,8 @@ class AddressViewModel(
     private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase,
     private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
     private val connectionManager: ConnectionManager,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddressUiState())
@@ -75,10 +77,9 @@ class AddressViewModel(
                             )
                     }
                 }, { error ->
-                    // TODO show a user friendly error message
                     current.copy(
                         isLoading = false,
-                        errorMessage = error.message.orEmpty(),
+                        errorMessage = geocodingErrorMessageMapper.map(error),
                     )
                 })
             }
@@ -117,10 +118,9 @@ class AddressViewModel(
                             )
                     }
                 }, { error ->
-                    // TODO show a user friendly error message
                     current.copy(
                         isLoading = false,
-                        errorMessage = error.message.orEmpty(),
+                        errorMessage = geocodingErrorMessageMapper.map(error),
                     )
                 })
             }

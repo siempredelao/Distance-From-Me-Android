@@ -23,6 +23,7 @@ import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -44,13 +45,15 @@ class AddressViewModelTest {
     private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
+    private val geocodingErrorMessageMapper = GeocodingErrorMessageMapper(resourceProvider)
 
     private val viewModel =
         AddressViewModel(
             getAddressCoordinatesByNameUseCase,
             getAddressNameByCoordinatesUseCase,
             connectionManager,
-            resourceProvider
+            resourceProvider,
+            geocodingErrorMessageMapper
         )
 
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
@@ -146,10 +149,12 @@ class AddressViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val errorMessage = ERROR_MESSAGE
         getAddressCoordinatesByNameFailure(errorMessage)
+        val mappedMessage = "friendly error"
+        whenever(resourceProvider.get(any())).thenReturn(mappedMessage)
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
-        assertEquals(errorMessage, viewModel.uiState.value.errorMessage)
+        assertEquals(mappedMessage, viewModel.uiState.value.errorMessage)
     }
 
     @Test
@@ -234,10 +239,12 @@ class AddressViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val errorMessage = ERROR_MESSAGE
         getAddressNameByCoordinatesFailure(errorMessage)
+        val mappedMessage = "friendly error"
+        whenever(resourceProvider.get(any())).thenReturn(mappedMessage)
 
         viewModel.onAddressSearch(COORDINATES)
 
-        assertEquals(errorMessage, viewModel.uiState.value.errorMessage)
+        assertEquals(mappedMessage, viewModel.uiState.value.errorMessage)
     }
 
     private suspend fun getAddressCoordinatesByNameSuccess(addressCollection: AddressCollection) {

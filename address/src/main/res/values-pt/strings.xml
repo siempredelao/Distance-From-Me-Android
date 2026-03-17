@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="toast_no_results">Não foram encontrados resultados.</string>
+    <string name="geocoding_error_invalid_request">Pesquisa inválida. Tente novamente.</string>
+    <string name="geocoding_error_quota">Quota do serviço excedida. Tente mais tarde.</string>
+    <string name="geocoding_error_rate_limited">Muitos pedidos. Tente novamente em alguns minutos.</string>
+    <string name="geocoding_error_request_denied">Pedido recusado. Verifique a configuração.</string>
+    <string name="geocoding_error_unknown">Erro do servidor. Tente novamente.</string>
+    <string name="geocoding_error_generic">Não foi possível obter a localização. Tente novamente.</string>
 </resources>

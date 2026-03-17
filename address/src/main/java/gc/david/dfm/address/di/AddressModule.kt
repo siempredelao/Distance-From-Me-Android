@@ -23,14 +23,16 @@ import gc.david.dfm.address.domain.AddressRepository
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.AddressViewModel
+import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val addressModule = module {
-    viewModel { AddressViewModel(get(), get(), get(), get()) }
+    viewModel { AddressViewModel(get(), get(), get(), get(), get()) }
     factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
     factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
     factory { AddressCollectionEntityDataMapper() }
+    factory { GeocodingErrorMessageMapper(get()) }
     single<AddressRepository> { BaseAddressRepository(get()) }
     single { AddressRemoteDataSource(get()) }
 }
