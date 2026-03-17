@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 package gc.david.dfm
+
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.distances.domain.model.Position
+
 /**
  * Extension functions for coordinate conversions.
  */
 fun Position.toCoordinates() = Coordinates(latitude, longitude)
+
 fun List<Position>.toCoordinates() = map { it.toCoordinates() }

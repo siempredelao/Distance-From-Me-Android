@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package gc.david.dfm.common.domain
+
 import gc.david.dfm.common.domain.model.UnitSystem
+
 /**
  * Pure domain logic for unit conversions between metric and imperial systems.
  * Contains conversion logic without any formatting or presentation concerns.
  */
 class UnitConverter {
+
     /**
      * Converts distance in meters to the appropriate unit based on the unit system.
      * Returns raw values without formatting.
@@ -42,6 +46,7 @@ class UnitConverter {
             }
         }
     }
+
     /**
      * Converts altitude in meters to the appropriate unit.
      * Returns raw value without formatting.
@@ -56,6 +61,7 @@ class UnitConverter {
             UnitSystem.METRIC -> metres
         }
     }
+
     /**
      * Gets the altitude unit symbol for the given unit system.
      *
@@ -68,7 +74,9 @@ class UnitConverter {
             UnitSystem.METRIC -> "m"
         }
     }
+
     private companion object {
+
         const val MILE_IN_METRES = 1609.344
         const val KILOMETRE_IN_METRES = 1000.0
         const val YARDS_PER_METRE = 1.093613298337708

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 package gc.david.dfm
+
 import gc.david.dfm.common.BuildConfigProvider
+
 /**
  * Default implementation of BuildConfigProvider.
  * Uses Android BuildConfig to determine build type.
  */
 class DefaultBuildConfigProvider : BuildConfigProvider {
+
     override fun isReleaseBuild(): Boolean {
         return BuildConfig.BUILD_TYPE == "release"
     }

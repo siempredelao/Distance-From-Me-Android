@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 package gc.david.dfm.common
+
 /**
  * Provides build configuration information.
  * Abstracts build variants for better testability.
  */
 interface BuildConfigProvider {
+
     /**
      * Checks if the current build is a release build.
      * 

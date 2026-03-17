@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package gc.david.dfm.common.presentation
+
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.domain.model.UnitSystem
 import java.text.DecimalFormat
 import kotlin.math.roundToLong
+
 /**
  * Formats distance and altitude values for UI display.
  * Uses domain converters but adds presentation logic (formatting).
  */
-class DistanceFormatter(
-    private val converter: UnitConverter
-) {
+class DistanceFormatter(private val converter: UnitConverter) {
+
     private val decimalFormat = DecimalFormat("##,##0.00")
+
     /**
      * Formats distance with unit for display.
      * 
@@ -37,6 +40,7 @@ class DistanceFormatter(
         val (value, unit) = converter.convertDistance(distanceInMetres, unitSystem)
         return "${decimalFormat.format(value)} $unit"
     }
+
     /**
      * Formats altitude for display (normalized to 2 decimals).
      * 
@@ -49,6 +53,7 @@ class DistanceFormatter(
         // Two decimal digits
         return (converted * 1e2).roundToLong() / 1e2
     }
+
     /**
      * Gets altitude unit label for display.
      * 

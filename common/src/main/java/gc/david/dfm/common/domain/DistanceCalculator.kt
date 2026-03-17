@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package gc.david.dfm.common.domain
+
 import gc.david.dfm.common.Coordinates
 import kotlin.math.*
+
 /**
  * Pure domain logic for distance calculations using Haversine formula.
  * Contains no formatting or presentation logic.
@@ -23,6 +26,7 @@ import kotlin.math.*
  * @see [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula)
  */
 class DistanceCalculator {
+
     /**
      * Calculates distance between two coordinates using Haversine formula.
      * 
@@ -51,6 +55,7 @@ class DistanceCalculator {
         val c = 2 * asin(min(1.0, sqrt(a)))
         return EARTH_RADIUS_IN_METRES * c
     }
+
     /**
      * Calculates total distance for a path of coordinates.
      * Sums the distance between each consecutive pair of coordinates.
@@ -71,7 +76,9 @@ class DistanceCalculator {
         }
         return totalDistance
     }
+
     private companion object {
+
         const val EARTH_RADIUS_IN_METRES = 6371000.0
     }
 }
