@@ -28,8 +28,8 @@ import org.koin.dsl.module
 val elevationModule = module {
 
     viewModel { ElevationViewModel(get(), get(), get()) }
-    factory { GetElevationByCoordinatesUseCase(get(), get()) }
+    factory { GetElevationByCoordinatesUseCase(get()) }
     factory { ElevationEntityDataMapper() }
-    single<ElevationRepository> { BaseElevationRepository(get()) }
+    single<ElevationRepository> { BaseElevationRepository(get(), get()) }
     single { ElevationRemoteDataSource(get()) }
 }

@@ -17,11 +17,8 @@
 package gc.david.dfm.elevation.domain
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
-import gc.david.dfm.elevation.data.model.ElevationEntity
-import gc.david.dfm.elevation.data.model.ElevationStatus
-import gc.david.dfm.elevation.data.model.Result
 import gc.david.dfm.elevation.domain.model.Elevation
+import gc.david.dfm.elevation.domain.model.ElevationStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -36,9 +33,8 @@ import org.mockito.kotlin.whenever
 class GetElevationByCoordinatesUseCaseTest {
 
     private val repository = mock<ElevationRepository>()
-    private val mapper = mock<ElevationEntityDataMapper>()
 
-    private val useCase = GetElevationByCoordinatesUseCase(repository, mapper)
+    private val useCase = GetElevationByCoordinatesUseCase(repository)
 
     @Test
     fun `returns error when coordinates list is empty`() = runTest {
@@ -50,28 +46,23 @@ class GetElevationByCoordinatesUseCaseTest {
     }
 
     @Test
-    fun `returns mapped elevation when repository call succeeds and status is OK`() = runTest {
+    fun `returns elevation when repository call succeeds and status is OK`() = runTest {
         val coordinatesList = mutableListOf(Coordinates(0.0, 0.0))
-        val elevation = 1.0
-        val results = listOf(Result(elevation))
-        val elevationEntity = ElevationEntity(results, ElevationStatus.OK)
-        whenever(repository.getElevation(any(), any())).thenReturn(elevationEntity)
-        val elevationResults = mutableListOf(elevation)
-        val elevation1 = Elevation(elevationResults)
-        whenever(mapper.transform(elevationEntity)).thenReturn(elevation1)
+        val elevationResults = listOf(1.0)
+        val elevation = Elevation(elevationResults, ElevationStatus.OK)
+        whenever(repository.getElevation(any(), any())).thenReturn(elevation)
 
         val result = useCase.invoke(coordinatesList)
 
-        assertEquals(kotlin.Result.success(elevation1), result)
+        assertEquals(kotlin.Result.success(elevation), result)
     }
 
     @Test
     fun `returns error when repository call succeeds but status is not OK`() = runTest {
         val coordinatesList = mutableListOf(Coordinates(0.0, 0.0))
-        val elevation = 1.0
-        val results = listOf(Result(elevation))
-        val elevationEntity = ElevationEntity(results, ElevationStatus.INVALID_REQUEST)
-        whenever(repository.getElevation(any(), any())).thenReturn(elevationEntity)
+        val elevationResults = listOf(1.0)
+        val elevation = Elevation(elevationResults, ElevationStatus.INVALID_REQUEST)
+        whenever(repository.getElevation(any(), any())).thenReturn(elevation)
 
         val result = useCase.invoke(coordinatesList)
 

@@ -14,14 +14,35 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.elevation.domain
-
-import gc.david.dfm.elevation.domain.model.Elevation
+package gc.david.dfm.elevation.domain.model
 
 /**
- * Created by david on 05.01.17.
+ * Domain model representing the status of an elevation request.
  */
-interface ElevationRepository {
+enum class ElevationStatus {
+    /**
+     * The service request was successful.
+     */
+    OK,
 
-    suspend fun getElevation(coordinatesPath: String, maxSamples: Int): Elevation
+    /**
+     * The service request was malformed.
+     */
+    INVALID_REQUEST,
+
+    /**
+     * The requestor has exceeded quota.
+     */
+    OVER_QUERY_LIMIT,
+
+    /**
+     * The service did not complete the request, likely because on an invalid parameter.
+     */
+    REQUEST_DENIED,
+
+    /**
+     * Unknown error.
+     */
+    UNKNOWN_ERROR
 }
+

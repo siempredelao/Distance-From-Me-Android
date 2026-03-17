@@ -17,6 +17,11 @@
 package gc.david.dfm.elevation.domain.model
 
 /**
+ * Domain model representing elevation data with status.
+ * 
  * Created by david on 13.01.17.
  */
-class Elevation(val results: List<Double>)
+data class Elevation(
+    val results: List<Double>,
+    val status: ElevationStatus
+)

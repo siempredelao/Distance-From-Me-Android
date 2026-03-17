@@ -18,6 +18,8 @@ package gc.david.dfm.elevation.data.mapper
 
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.domain.model.Elevation
+import gc.david.dfm.elevation.data.model.ElevationStatus as DataElevationStatus
+import gc.david.dfm.elevation.domain.model.ElevationStatus as DomainElevationStatus
 
 /**
  * Created by david on 13.01.17.
@@ -30,6 +32,17 @@ class ElevationEntityDataMapper {
 
     fun transform(elevationEntity: ElevationEntity): Elevation {
         val elevationList = elevationEntity.results.map { it.elevation }
-        return Elevation(elevationList)
+        val status = mapStatus(elevationEntity.status)
+        return Elevation(elevationList, status)
+    }
+
+    private fun mapStatus(dataStatus: DataElevationStatus): DomainElevationStatus {
+        return when (dataStatus) {
+            DataElevationStatus.OK -> DomainElevationStatus.OK
+            DataElevationStatus.INVALID_REQUEST -> DomainElevationStatus.INVALID_REQUEST
+            DataElevationStatus.OVER_QUERY_LIMIT -> DomainElevationStatus.OVER_QUERY_LIMIT
+            DataElevationStatus.REQUEST_DENIED -> DomainElevationStatus.REQUEST_DENIED
+            DataElevationStatus.UNKNOWN_ERROR -> DomainElevationStatus.UNKNOWN_ERROR
+        }
     }
 }

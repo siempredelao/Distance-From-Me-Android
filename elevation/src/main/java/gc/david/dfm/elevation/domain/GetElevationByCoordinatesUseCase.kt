@@ -17,14 +17,10 @@
 package gc.david.dfm.elevation.domain
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
-import gc.david.dfm.elevation.data.model.ElevationStatus
 import gc.david.dfm.elevation.domain.model.Elevation
+import gc.david.dfm.elevation.domain.model.ElevationStatus
 
-class GetElevationByCoordinatesUseCase(
-    private val repository: ElevationRepository,
-    private val mapper: ElevationEntityDataMapper
-) {
+class GetElevationByCoordinatesUseCase(private val repository: ElevationRepository) {
 
     suspend operator fun invoke(coordinatesList: List<Coordinates>): Result<Elevation> {
         return if (coordinatesList.isEmpty()) {
@@ -32,12 +28,11 @@ class GetElevationByCoordinatesUseCase(
         } else {
             try {
                 val coordinatesPath = getCoordinatesPath(coordinatesList)
-                val elevationEntity = repository.getElevation(coordinatesPath, ELEVATION_SAMPLES)
-                if (elevationEntity.status == ElevationStatus.OK) {
-                    val elevation = mapper.transform(elevationEntity)
+                val elevation = repository.getElevation(coordinatesPath, ELEVATION_SAMPLES)
+                if (elevation.status == ElevationStatus.OK) {
                     Result.success(elevation)
                 } else {
-                    Result.failure(Exception(elevationEntity.status.toString()))
+                    Result.failure(Exception(elevation.status.toString()))
                 }
             } catch (exception: Throwable) {
                 Result.failure(exception)
