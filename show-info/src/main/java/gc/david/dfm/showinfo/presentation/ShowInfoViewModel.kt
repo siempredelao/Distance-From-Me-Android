@@ -21,6 +21,7 @@ import androidx.lifecycle.viewModelScope
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
@@ -42,6 +43,7 @@ class ShowInfoViewModel(
     private val connectionManager: ConnectionManager,
     private val addressFormatter: AddressFormatter,
     private val coordinatesRepository: CoordinatesRepository,
+    private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShowInfoUiState())
@@ -110,8 +112,7 @@ class ShowInfoViewModel(
             }
         }, { error ->
             Timber.tag(TAG).e(error)
-            // TODO use GeocodingErrorMessageMapper
-            resourceProvider.get(R.string.toast_no_location_found)
+            geocodingErrorMessageMapper.map(error)
         })
 
     fun onShare() {

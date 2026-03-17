@@ -19,6 +19,7 @@ package gc.david.dfm.showinfo.presentation
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
@@ -45,6 +46,7 @@ internal class ShowInfoViewModelTest {
     private val connectionManager = mock<ConnectionManager>()
     private val addressFormatter = AddressFormatter()
     private val coordinatesRepository = mock<CoordinatesRepository>()
+    private val geocodingErrorMessageMapper = mock<GeocodingErrorMessageMapper>()
 
     private val viewModel =
         ShowInfoViewModel(
@@ -52,7 +54,8 @@ internal class ShowInfoViewModelTest {
             resourceProvider,
             connectionManager,
             addressFormatter,
-            coordinatesRepository
+            coordinatesRepository,
+            geocodingErrorMessageMapper
         )
 
     @Test
