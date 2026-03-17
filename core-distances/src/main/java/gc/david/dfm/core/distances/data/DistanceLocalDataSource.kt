@@ -19,6 +19,7 @@ package gc.david.dfm.core.distances.data
 import gc.david.dfm.core.distances.data.database.DFMDatabase
 import gc.david.dfm.core.distances.data.database.Distance
 import gc.david.dfm.core.distances.data.database.Position
+import gc.david.dfm.core.distances.domain.InsertDistanceException
 import gc.david.dfm.core.distances.domain.model.NewDistance
 import kotlinx.coroutines.flow.Flow
 
@@ -39,7 +40,7 @@ class DistanceLocalDataSource(private val database: DFMDatabase) {
             )
 
         if (rowID == -1L) {
-            throw Exception() // TODO return a custom exception instead
+            throw InsertDistanceException()
         } else {
             val positionListWithDistanceId =
                 distance.positions
