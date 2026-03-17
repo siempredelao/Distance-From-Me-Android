@@ -66,4 +66,10 @@ dependencies {
     implementation(project(":core-distances"))
     implementation(project(":design-system"))
     debugImplementation(libs.compose.ui.tooling)
+
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(project(":test-support"))
 }

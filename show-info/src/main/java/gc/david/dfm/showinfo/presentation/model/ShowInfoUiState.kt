@@ -24,6 +24,7 @@ data class ShowInfoUiState(
     val userMessage: String? = null,
     val shareIntentData: ShareIntentData? = null,
     val showSaveDialog: Boolean = false,
+    val shouldFinish: Boolean = false,
 )
 
 data class ShareIntentData(

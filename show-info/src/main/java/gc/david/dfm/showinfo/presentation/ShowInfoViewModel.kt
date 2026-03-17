@@ -24,6 +24,7 @@ import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.model.ShareIntentData
 import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
@@ -39,7 +40,8 @@ class ShowInfoViewModel(
     private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
     private val resourceProvider: ResourceProvider,
     private val connectionManager: ConnectionManager,
-    private val addressFormatter: AddressFormatter
+    private val addressFormatter: AddressFormatter,
+    private val coordinatesRepository: CoordinatesRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShowInfoUiState())
@@ -47,9 +49,23 @@ class ShowInfoViewModel(
 
     private lateinit var inputParams: InputParams
 
-    fun onStart(positionsList: List<Coordinates>, distance: String) {
+    fun onStart(distance: String?) {
+        val positionsList = coordinatesRepository.observeDistance().value
+        if (positionsList.isEmpty() || distance.isNullOrBlank()) {
+            _uiState.update { it.copy(shouldFinish = true) }
+            return
+        }
+
         this.inputParams = InputParams(positionsList, distance)
 
+        load(distance, positionsList)
+    }
+
+    fun onRefresh() {
+        load(inputParams.distance, inputParams.positionsList)
+    }
+
+    private fun load(distance: String, positionsList: List<Coordinates>) {
         if (!connectionManager.isOnline()) {
             _uiState.update {
                 it.copy(userMessage = resourceProvider.get(R.string.toast_network_problems))
@@ -94,6 +110,7 @@ class ShowInfoViewModel(
             }
         }, { error ->
             Timber.tag(TAG).e(error)
+            // TODO use GeocodingErrorMessageMapper
             resourceProvider.get(R.string.toast_no_location_found)
         })
 

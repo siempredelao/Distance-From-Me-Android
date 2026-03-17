@@ -24,17 +24,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceDialog
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.screen.ShowInfoScreen
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class ShowInfoActivity : ComponentActivity() {
 
-    private val coordinatesRepository: CoordinatesRepository by inject()
     private val showInfoViewModel: ShowInfoViewModel by viewModel()
     private val saveDistanceViewModel: SaveDistanceViewModel by viewModel()
 
@@ -43,12 +40,16 @@ class ShowInfoActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            loadData()
+            showInfoViewModel.onStart(intent.getStringExtra(DISTANCE_EXTRA_KEY))
         }
 
         setContent {
             val uiState by showInfoViewModel.uiState.collectAsState()
             val saveUserMessage by saveDistanceViewModel.userMessage.collectAsState()
+
+            if (uiState.shouldFinish) {
+                finish()
+            }
 
             DfmTheme {
                 ShowInfoScreen(
@@ -56,7 +57,7 @@ class ShowInfoActivity : ComponentActivity() {
                     saveUserMessage = saveUserMessage,
                     onBackPress = { onBackPressedDispatcher.onBackPressed() },
                     onShare = showInfoViewModel::onShare,
-                    onRefresh = ::loadData,
+                    onRefresh = showInfoViewModel::onRefresh,
                     onSave = showInfoViewModel::onSave,
                     onUserMessageShown = showInfoViewModel::onUserMessageShown,
                     onShareDialogShown = showInfoViewModel::onShareDialogShown,
@@ -78,18 +79,6 @@ class ShowInfoActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun loadData() {
-        Timber.tag(TAG).d("loadData")
-
-        val positionsList = coordinatesRepository.observeDistance().value
-        val distance = intent.getStringExtra(DISTANCE_EXTRA_KEY)
-        if (positionsList.isEmpty() || distance.isNullOrBlank()) {
-            finish()
-            return
-        }
-        showInfoViewModel.onStart(positionsList, distance)
     }
 
     companion object {
