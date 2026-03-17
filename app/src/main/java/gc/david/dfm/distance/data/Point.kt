@@ -17,28 +17,10 @@
 package gc.david.dfm.distance.data
 
 import android.location.Location
-import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
-// Temporal solution, this should be a repository instead
-@Singleton
-class CurrentLocationProvider @Inject constructor() {
-
-    private var currentLocation: Point = UNDEFINED
-
-    fun get() : Point {
-        return currentLocation
-    }
-
-    fun set(location: Location) {
-        Timber.tag(TAG).d("set ${location.toPoint()}")
-        currentLocation = location.toPoint()
-    }
-
-    companion object {
-
-        private const val TAG = "CurrentLocationProvider"
-        val UNDEFINED = Point(Double.MAX_VALUE, Double.MIN_VALUE)
-    }
+data class Point(val lat: Double, val lon: Double) {
+    override fun toString(): String = "P($lat, $lon)"
 }
+
+fun Location.toPoint() = Point(latitude, longitude)
+

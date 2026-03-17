@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.*
 import gc.david.dfm.Utils.toCoordinates
-import gc.david.dfm.Utils.toPoint
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.core.distances.data.database.Distance
@@ -163,7 +162,6 @@ class MainViewModel(
 
     // TODO this should be moved to a repooooo!!!
     fun onLocationChanged(location: Location) {
-        Timber.tag(TAG).d("onLocationChanged ${location.toPoint()}")
         currentLocationProvider.set(location)
 
         if (appHasJustStarted) {

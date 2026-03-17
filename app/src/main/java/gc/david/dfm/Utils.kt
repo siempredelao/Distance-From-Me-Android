@@ -16,7 +16,6 @@
 
 package gc.david.dfm
 
-import android.location.Location
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.distances.data.database.Position
 import gc.david.dfm.settings.domain.Haversine
@@ -43,14 +42,4 @@ object Utils {
     fun Position.toCoordinates() = Coordinates(latitude, longitude)
 
     fun List<Position>.toCoordinates() = map { it.toCoordinates() }
-
-    data class Point(val lat: Double, val lon: Double) {
-        override fun toString(): String {
-            return "P($lat, $lon)"
-        }
-    }
-
-    fun Coordinates.toPoint() = Point(latitude, longitude)
-    fun Position.toPoint() = Point(latitude, longitude)
-    fun Location.toPoint() = Point(latitude, longitude)
 }
