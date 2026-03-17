@@ -16,9 +16,9 @@
 
 package gc.david.dfm.settings.data
 
+import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.settings.domain.model.CameraAnimation
 import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.UnitSystem
 
 class BaseSettingsRepository(
     private val localDataSource: SettingsDiskDataSource

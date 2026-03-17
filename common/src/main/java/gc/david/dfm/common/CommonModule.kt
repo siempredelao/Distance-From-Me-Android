@@ -22,6 +22,9 @@ import gc.david.dfm.DefaultGeocodeApiKeyProvider
 import gc.david.dfm.DefaultPermissionChecker
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.PermissionChecker
+import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.domain.UnitConverter
+import gc.david.dfm.common.presentation.DistanceFormatter
 import org.koin.dsl.module
 
 val commonModule = module {
@@ -30,5 +33,10 @@ val commonModule = module {
     single<ConnectionManager> { DefaultConnectionManager(get()) }
     single<GeocodeApiKeyProvider> { DefaultGeocodeApiKeyProvider(get()) }
     single<PermissionChecker> { DefaultPermissionChecker(get()) }
+    
+    // Distance calculation and unit conversion
+    single { DistanceCalculator() }
+    single { UnitConverter() }
+    single { DistanceFormatter(get()) }
 }
 

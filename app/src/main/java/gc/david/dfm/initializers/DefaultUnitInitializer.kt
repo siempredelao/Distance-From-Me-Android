@@ -17,8 +17,8 @@
 package gc.david.dfm.initializers
 
 import android.app.Application
+import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.UnitSystem
 import java.util.Locale
 
 class DefaultUnitInitializer(

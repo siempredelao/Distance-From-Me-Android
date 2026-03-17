@@ -20,12 +20,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.model.ElevationModel
 import gc.david.dfm.elevation.presentation.model.ElevationUiState
-import gc.david.dfm.settings.domain.Haversine
 import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.UnitSystem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +36,8 @@ import timber.log.Timber
 class ElevationViewModel(
     private val getElevationByCoordinatesUseCase: GetElevationByCoordinatesUseCase,
     private val connectionManager: ConnectionManager,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val distanceFormatter: DistanceFormatter
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ElevationUiState())
@@ -54,8 +55,10 @@ class ElevationViewModel(
         viewModelScope.launch {
             getElevationByCoordinatesUseCase(coordinates).fold({
                 val normalizedElevationList =
-                    it.results.map { Haversine.normalizeAltitude(it, unitSystem) }
-                val altitudeUnit = Haversine.getAltitudeUnit(unitSystem)
+                    it.results.map { elevation -> 
+                        distanceFormatter.formatAltitude(elevation, unitSystem)
+                    }
+                val altitudeUnit = distanceFormatter.getAltitudeUnitLabel(unitSystem)
                 _uiState.update { current ->
                     current.copy(elevationModel = ElevationModel(normalizedElevationList, altitudeUnit))
                 }

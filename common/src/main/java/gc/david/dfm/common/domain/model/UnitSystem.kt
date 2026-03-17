@@ -13,7 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package gc.david.dfm.settings.domain.model
-
-enum class UnitSystem { METRIC, IMPERIAL }
+package gc.david.dfm.common.domain.model
+/**
+ * Represents the unit system for measurements.
+ */
+enum class UnitSystem {
+    /**
+     * Metric system (meters, kilometers).
+     */
+    METRIC,
+    /**
+     * Imperial system (feet, yards, miles).
+     */
+    IMPERIAL
+}

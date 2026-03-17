@@ -22,6 +22,10 @@ import androidx.lifecycle.viewModelScope
 import gc.david.dfm.*
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.common.presentation.DistanceFormatter
+import gc.david.dfm.toCoordinates
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceMode
 import gc.david.dfm.distance.data.DistanceModeProvider
@@ -29,12 +33,9 @@ import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
-import gc.david.dfm.settings.domain.Haversine
 import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.UnitSystem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +48,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.collections.map
 
 class MainViewModel(
     private val getDistancesUseCase: GetDistancesUseCase,
@@ -59,6 +59,8 @@ class MainViewModel(
     private val currentLocationProvider: CurrentLocationProvider,
     private val permissionChecker: PermissionChecker,
     private val coordinatesRepository: CoordinatesRepository,
+    private val distanceCalculator: DistanceCalculator,
+    private val distanceFormatter: DistanceFormatter
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -120,12 +122,12 @@ class MainViewModel(
                 val coordinates = it.toCoordinates()
                 coordinatesRepository.setList(coordinates)
 
-                val distanceInMetres = Utils.calculateDistanceInMetres(coordinates)
+                val distanceInMetres = distanceCalculator.calculateTotalDistance(coordinates)
                 val model = DrawDistanceModel(
                     coordinates,
                     distance.name + "\n",
                     distanceInMetres,
-                    Haversine.normalizeDistance(distanceInMetres, unitSystem),
+                    distanceFormatter.formatDistance(distanceInMetres, unitSystem),
                     DrawDistanceModel.Source.DATABASE,
                     distanceModeProvider.get(),
                     settingsRepository.getCameraAnimation()
@@ -242,12 +244,12 @@ class MainViewModel(
 
         coordinatesRepository.append(coordinates)
 
-        val distanceInMetres = Utils.calculateDistanceInMetres(this@MainViewModel.coordinates)
+        val distanceInMetres = distanceCalculator.calculateTotalDistance(this@MainViewModel.coordinates)
         val model = DrawDistanceModel(
             this@MainViewModel.coordinates,
             "",
             distanceInMetres,
-            Haversine.normalizeDistance(distanceInMetres, unitSystem),
+            distanceFormatter.formatDistance(distanceInMetres, unitSystem),
             DrawDistanceModel.Source.MANUAL,
             distanceModeProvider.get(),
             settingsRepository.getCameraAnimation()
@@ -332,10 +334,6 @@ class MainViewModel(
         clear()
         list.forEach(coordinatesRepository::append)
     }
-
-    private fun Position.toCoordinates() = Coordinates(latitude, longitude)
-
-    private fun List<Position>.toCoordinates() = map { it.toCoordinates() }
 
     companion object {
 

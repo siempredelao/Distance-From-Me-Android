@@ -27,7 +27,7 @@ import org.koin.dsl.module
 
 val elevationModule = module {
 
-    viewModel { ElevationViewModel(get(), get(), get()) }
+    viewModel { ElevationViewModel(get(), get(), get(), get()) }
     factory { GetElevationByCoordinatesUseCase(get()) }
     factory { ElevationEntityDataMapper() }
     single<ElevationRepository> { BaseElevationRepository(get(), get()) }

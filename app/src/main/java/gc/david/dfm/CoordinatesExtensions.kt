@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package gc.david.dfm.settings.domain
-
-import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.settings.domain.model.CameraAnimation
-
-interface SettingsRepository {
-
-    fun shouldShowElevationChart(): Boolean
-
-    fun getUnitSystemPreference(): UnitSystem
-
-    fun setUnitSystemPreference(unitSystem: UnitSystem)
-
-    fun getCameraAnimation(): CameraAnimation
-}
+package gc.david.dfm
+import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.distances.domain.model.Position
+/**
+ * Extension functions for coordinate conversions.
+ */
+fun Position.toCoordinates() = Coordinates(latitude, longitude)
+fun List<Position>.toCoordinates() = map { it.toCoordinates() }

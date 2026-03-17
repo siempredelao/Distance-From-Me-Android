@@ -16,22 +16,8 @@
 
 package gc.david.dfm
 
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.settings.domain.Haversine
-
 object Utils {
 
+    // TODO: Move to BuildConfigProvider interface for better testability
     fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
-
-    fun calculateDistanceInMetres(coordinates: List<Coordinates>): Double {
-        var distanceInMetres = 0.0
-        for (i in 0 until coordinates.size - 1) {
-            distanceInMetres += Haversine.getDistance(
-                    coordinates[i].latitude,
-                    coordinates[i].longitude,
-                    coordinates[i + 1].latitude,
-                    coordinates[i + 1].longitude)
-        }
-        return distanceInMetres
-    }
 }
