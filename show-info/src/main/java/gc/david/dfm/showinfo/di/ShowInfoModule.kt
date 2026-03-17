@@ -19,11 +19,13 @@ package gc.david.dfm.showinfo.di
 import gc.david.dfm.showinfo.presentation.AddressFormatter
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
+import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val showInfoModule = module {
-    viewModel { ShowInfoViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { ShowInfoViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
     factory { AddressFormatter() }
+    factory { ShareInfoMessageMapper(get()) }
 }

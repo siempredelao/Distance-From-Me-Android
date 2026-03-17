@@ -24,6 +24,7 @@ import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.showinfo.R
+import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +48,7 @@ internal class ShowInfoViewModelTest {
     private val addressFormatter = AddressFormatter()
     private val coordinatesRepository = mock<CoordinatesRepository>()
     private val geocodingErrorMessageMapper = mock<GeocodingErrorMessageMapper>()
+    private val shareInfoMessageMapper = mock<ShareInfoMessageMapper>()
 
     private val viewModel =
         ShowInfoViewModel(
@@ -55,7 +57,8 @@ internal class ShowInfoViewModelTest {
             connectionManager,
             addressFormatter,
             coordinatesRepository,
-            geocodingErrorMessageMapper
+            geocodingErrorMessageMapper,
+            shareInfoMessageMapper,
         )
 
     @Test

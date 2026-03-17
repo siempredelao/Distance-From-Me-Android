@@ -27,6 +27,7 @@ import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.showinfo.R
+import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import gc.david.dfm.showinfo.presentation.model.ShareIntentData
 import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
 import kotlinx.coroutines.async
@@ -43,7 +44,8 @@ class ShowInfoViewModel(
     private val connectionManager: ConnectionManager,
     private val addressFormatter: AddressFormatter,
     private val coordinatesRepository: CoordinatesRepository,
-    private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper
+    private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper,
+    private val shareInfoMessageMapper: ShareInfoMessageMapper,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShowInfoUiState())
@@ -117,20 +119,13 @@ class ShowInfoViewModel(
 
     fun onShare() {
         val state = _uiState.value
-        val subject = "Distance From Me (http://goo.gl/0IBHFN)"
-        val fromLabel = resourceProvider.get(R.string.share_distance_from_message)
-        val toLabel = resourceProvider.get(R.string.share_distance_to_message)
-        val thereAreLabel = resourceProvider.get(R.string.share_distance_there_are_message)
-
-        val message = """Distance From Me (http://goo.gl/0IBHFN)
-$fromLabel
-${state.originAddress}
-
-$toLabel
-${state.destinationAddress}
-
-$thereAreLabel
-${inputParams.distance}"""
+        val subject = shareInfoMessageMapper.getSubject()
+        val message =
+            shareInfoMessageMapper.mapMessage(
+                originAddress = state.originAddress,
+                destinationAddress = state.destinationAddress,
+                distance = inputParams.distance,
+            )
 
         _uiState.update {
             it.copy(
