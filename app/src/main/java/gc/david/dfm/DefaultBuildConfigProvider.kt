@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm
-
-object Utils {
-
-    // TODO: Move to BuildConfigProvider interface for better testability
-    fun isReleaseBuild() = "release" == BuildConfig.BUILD_TYPE
+import gc.david.dfm.common.BuildConfigProvider
+/**
+ * Default implementation of BuildConfigProvider.
+ * Uses Android BuildConfig to determine build type.
+ */
+class DefaultBuildConfigProvider : BuildConfigProvider {
+    override fun isReleaseBuild(): Boolean {
+        return BuildConfig.BUILD_TYPE == "release"
+    }
 }

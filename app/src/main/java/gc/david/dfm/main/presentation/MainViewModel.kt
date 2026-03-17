@@ -20,6 +20,7 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.*
+import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
 import gc.david.dfm.common.domain.DistanceCalculator
@@ -60,7 +61,8 @@ class MainViewModel(
     private val permissionChecker: PermissionChecker,
     private val coordinatesRepository: CoordinatesRepository,
     private val distanceCalculator: DistanceCalculator,
-    private val distanceFormatter: DistanceFormatter
+    private val distanceFormatter: DistanceFormatter,
+    private val buildConfigProvider: BuildConfigProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -98,7 +100,7 @@ class MainViewModel(
      * Triggered when the menu is already built and ready to be updated.
      */
     fun onMenuReady() {
-        _uiState.update { it.copy(showForceCrashItem = !Utils.isReleaseBuild()) }
+        _uiState.update { it.copy(showForceCrashItem = !buildConfigProvider.isReleaseBuild()) }
     }
 
     /**

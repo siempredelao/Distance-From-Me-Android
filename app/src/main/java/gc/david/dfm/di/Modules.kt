@@ -16,6 +16,8 @@
 
 package gc.david.dfm.di
 
+import gc.david.dfm.DefaultBuildConfigProvider
+import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.distance.data.BaseCoordinatesRepository
 import gc.david.dfm.distance.data.CoordinatesMemoryDataSource
 import gc.david.dfm.distance.data.CurrentLocationProvider
@@ -41,10 +43,10 @@ val appModule = module {
     single { CoordinatesMemoryDataSource() }
     single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }
     factory { GeofencingLocationManager(get(), get()) }
+    single<BuildConfigProvider> { DefaultBuildConfigProvider() }
 }
 
 val viewModelModule = module {
 
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }
-
