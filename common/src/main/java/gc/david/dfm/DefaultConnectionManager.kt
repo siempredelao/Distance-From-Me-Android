@@ -16,16 +16,23 @@
 
 package gc.david.dfm
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 
 class DefaultConnectionManager(private val context: Context) : ConnectionManager {
 
     override fun isOnline(): Boolean = isOnline(context)
 
+    @SuppressLint("MissingPermission")
     private fun isOnline(context: Context): Boolean {
         val connectivityManager = context.systemService<ConnectivityManager>(Context.CONNECTIVITY_SERVICE)
-        val networkInfo = connectivityManager.activeNetworkInfo
-        return networkInfo?.isConnected == true
+        
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 }
