@@ -60,10 +60,10 @@ import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
-import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
+import gc.david.dfm.map.mapper.MapStateMapper
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -77,10 +77,10 @@ class MainActivity :
         GoogleMap.OnInfoWindowClickListener {
 
     private val appContext: Context by inject()
-    private val mapDrawer: MapDrawer by inject()
+    private val mapStateMapper: MapStateMapper by inject()
+    private val mapRenderer: MapRenderer by inject()
     private val permissionChecker: PermissionChecker by inject()
     private val locationManager: GeofencingLocationManager by inject()
-    private val coordinatesRepository: CoordinatesRepository by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
@@ -460,7 +460,10 @@ class MainActivity :
         Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
 
         elevationViewModel.onCoordinatesSelected(model.positionList)
-        googleMap?.let { mapDrawer.drawDistance(it, model) }
+        googleMap?.let { map ->
+            val mapUiState = mapStateMapper.toMapUiState(model)
+            mapRenderer.render(map, mapUiState)
+        }
     }
 
     private fun toString(list: List<Coordinates>) = list.joinToString { "P(${it.latitude}, ${it.longitude})" }
