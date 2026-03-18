@@ -36,6 +36,7 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
+import gc.david.dfm.map.mapper.MapStateMapper
 import gc.david.dfm.map.model.CameraUpdate
 import gc.david.dfm.map.model.MarkerData
 import gc.david.dfm.settings.domain.SettingsRepository
@@ -64,7 +65,8 @@ class MainViewModel(
     private val coordinatesRepository: CoordinatesRepository,
     private val distanceCalculator: DistanceCalculator,
     private val distanceFormatter: DistanceFormatter,
-    private val buildConfigProvider: BuildConfigProvider
+    private val buildConfigProvider: BuildConfigProvider,
+    private val mapStateMapper: MapStateMapper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -137,8 +139,12 @@ class MainViewModel(
                     settingsRepository.getCameraAnimation()
                 )
                 drawDistanceModel = model
+                val newMapState = mapStateMapper.toMapUiState(model)
                 _uiState.update { state ->
-                    state.copy(drawDistance = model)
+                    state.copy(
+                        mapState = newMapState,
+                        triggerElevationUpdate = coordinates
+                    )
                 }
             },{
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
@@ -294,7 +300,13 @@ class MainViewModel(
             settingsRepository.getCameraAnimation()
         )
         drawDistanceModel = model
-        _uiState.update { it.copy(drawDistance = model) }
+        val newMapState = mapStateMapper.toMapUiState(model)
+        _uiState.update { 
+            it.copy(
+                mapState = newMapState,
+                triggerElevationUpdate = model.positionList
+            )
+        }
 
         calculatingDistance = false
     }
@@ -366,8 +378,9 @@ class MainViewModel(
         _uiState.update { it.copy(openShowInfo = null) }
     }
 
-    fun onDrawDistanceHandled() {
-        _uiState.update { it.copy(drawDistance = null) }
+
+    fun onElevationUpdateHandled() {
+        _uiState.update { it.copy(triggerElevationUpdate = null) }
     }
 
     fun onLocationPermissionSnackbarShown() {

@@ -22,7 +22,6 @@ import gc.david.dfm.map.model.MapUiState
 data class MainUiState(
     val showLoadDistancesItem: Boolean = false,
     val showForceCrashItem: Boolean = false,
-    val drawDistance: DrawDistanceModel? = null,
     val mapState: MapUiState = MapUiState(),
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
@@ -30,5 +29,7 @@ data class MainUiState(
     val searchAddress: String? = null,
     val hideChart: Boolean = false,
     val showLocationPermissionSnackbar: Boolean = false,
+    // TODO replace with String with formatted distance
     val openShowInfo: DrawDistanceModel? = null,
+    val triggerElevationUpdate: List<gc.david.dfm.common.Coordinates>? = null,
 )

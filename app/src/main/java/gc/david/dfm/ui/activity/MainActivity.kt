@@ -34,7 +34,6 @@ import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -58,13 +57,10 @@ import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.settings.presentation.SettingsActivity
-import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
-import gc.david.dfm.map.mapper.MapStateMapper
-import gc.david.dfm.map.model.CameraUpdate
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -78,7 +74,6 @@ class MainActivity :
         GoogleMap.OnInfoWindowClickListener {
 
     private val appContext: Context by inject()
-    private val mapStateMapper: MapStateMapper by inject()
     private val mapRenderer: MapRenderer by inject()
     private val permissionChecker: PermissionChecker by inject()
     private val locationManager: GeofencingLocationManager by inject()
@@ -244,9 +239,9 @@ class MainActivity :
                 mainViewModel.onDistancesLoadedHandled()
             }
 
-            state.drawDistance?.let {
-                drawAndShowMultipleDistances(it)
-                mainViewModel.onDrawDistanceHandled()
+            state.triggerElevationUpdate?.let { coordinates ->
+                elevationViewModel.onCoordinatesSelected(coordinates)
+                mainViewModel.onElevationUpdateHandled()
             }
 
             // Render map state using MapRenderer
@@ -446,18 +441,6 @@ class MainActivity :
         hideChart()
         super.onDestroy()
     }
-
-    private fun drawAndShowMultipleDistances(model: DrawDistanceModel) {
-        Timber.tag(TAG).d("drawAndShowMultipleDistances ${toString(model.positionList)}")
-
-        elevationViewModel.onCoordinatesSelected(model.positionList)
-        googleMap?.let { map ->
-            val mapUiState = mapStateMapper.toMapUiState(model)
-            mapRenderer.render(map, mapUiState)
-        }
-    }
-
-    private fun toString(list: List<Coordinates>) = list.joinToString { "P(${it.latitude}, ${it.longitude})" }
 
     private fun fixMapPadding() {
         Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
