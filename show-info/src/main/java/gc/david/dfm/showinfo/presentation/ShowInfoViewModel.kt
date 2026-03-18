@@ -32,6 +32,7 @@ import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
+import gc.david.dfm.showinfo.presentation.model.SaveDialogData
 import gc.david.dfm.showinfo.presentation.model.ShareIntentData
 import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
 import kotlinx.coroutines.async
@@ -154,19 +155,16 @@ class ShowInfoViewModel(
     }
 
     fun onSave() {
-        _uiState.update { it.copy(showSaveDialog = true) }
+        _uiState.update { it.copy(showSaveDialog = SaveDialogData(inputParams.positionsList, inputParams.distance)) }
     }
 
     fun onSaveDialogDismissed() {
-        _uiState.update { it.copy(showSaveDialog = false) }
+        _uiState.update { it.copy(showSaveDialog = null) }
     }
 
     fun onUserMessageShown() {
         _uiState.update { it.copy(userMessage = null) }
     }
-
-    fun getSaveDistanceData(): SaveDistanceData =
-        SaveDistanceData(inputParams.positionsList, inputParams.distance)
 
     companion object {
 
@@ -174,8 +172,6 @@ class ShowInfoViewModel(
     }
 
     data class InputParams(val positionsList: List<Coordinates>, val distance: String)
-
-    data class SaveDistanceData(val positionsList: List<Coordinates>, val distance: String)
 }
 
 private fun Coordinates.toAddressCoordinate() = AddressCoordinate(latitude, longitude)

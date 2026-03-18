@@ -64,14 +64,11 @@ class ShowInfoActivity : ComponentActivity() {
                     onSaveUserMessageShown = saveDistanceViewModel::onUserMessageShown,
                 )
 
-                if (uiState.showSaveDialog) {
+                uiState.showSaveDialog?.let {
                     SaveDistanceDialog(
                         onDismiss = showInfoViewModel::onSaveDialogDismissed,
                         onConfirm = { alias ->
-                            // TODO store position list and distance in a repository to avoid asking
-                            //  the viewmodel for information twice
-                            val data = showInfoViewModel.getSaveDistanceData()
-                            saveDistanceViewModel.onStart(data.positionsList, data.distance)
+                            saveDistanceViewModel.onStart(it.positionsList, it.distance)
                             saveDistanceViewModel.onSave(alias)
                             showInfoViewModel.onSaveDialogDismissed()
                         },

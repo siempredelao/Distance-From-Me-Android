@@ -16,6 +16,8 @@
 
 package gc.david.dfm.showinfo.presentation.model
 
+import gc.david.dfm.common.Coordinates
+
 data class ShowInfoUiState(
     val originAddress: String = "",
     val destinationAddress: String = "",
@@ -23,7 +25,7 @@ data class ShowInfoUiState(
     val isLoading: Boolean = false,
     val userMessage: String? = null,
     val shareIntentData: ShareIntentData? = null,
-    val showSaveDialog: Boolean = false,
+    val showSaveDialog: SaveDialogData? = null,
     val shouldFinish: Boolean = false,
 )
 
@@ -31,4 +33,9 @@ data class ShareIntentData(
     val title: String,
     val subject: String,
     val message: String,
+)
+
+data class SaveDialogData(
+    val positionsList: List<Coordinates>,
+    val distance: String
 )
