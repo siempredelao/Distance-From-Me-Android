@@ -87,7 +87,6 @@ class MainViewModel(
     private var appHasJustStarted = true
     // Determines whether a multi-point distance is being marked on the map
     private var calculatingDistance: Boolean = false
-    private var drawDistanceModel = DrawDistanceModel.EMPTY
 
     private val coordinates get() = coordinatesRepository.observeDistance().value
 
@@ -138,7 +137,6 @@ class MainViewModel(
                     distanceModeProvider.get(),
                     settingsRepository.getCameraAnimation()
                 )
-                drawDistanceModel = model
                 val newMapState = mapStateMapper.toMapUiState(model)
                 _uiState.update { state ->
                     state.copy(
@@ -299,7 +297,6 @@ class MainViewModel(
             distanceModeProvider.get(),
             settingsRepository.getCameraAnimation()
         )
-        drawDistanceModel = model
         val newMapState = mapStateMapper.toMapUiState(model)
         _uiState.update { 
             it.copy(
@@ -371,11 +368,11 @@ class MainViewModel(
     }
 
     fun onInfoWindowClick() {
-        _uiState.update { it.copy(openShowInfo = drawDistanceModel) }
+        _uiState.update { it.copy(openShowInfo = true) }
     }
 
     fun onOpenShowInfoHandled() {
-        _uiState.update { it.copy(openShowInfo = null) }
+        _uiState.update { it.copy(openShowInfo = false) }
     }
 
 

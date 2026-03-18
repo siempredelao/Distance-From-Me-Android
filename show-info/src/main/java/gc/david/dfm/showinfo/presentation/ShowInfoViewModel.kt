@@ -25,7 +25,11 @@ import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import gc.david.dfm.showinfo.presentation.model.ShareIntentData
@@ -46,20 +50,27 @@ class ShowInfoViewModel(
     private val coordinatesRepository: CoordinatesRepository,
     private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper,
     private val shareInfoMessageMapper: ShareInfoMessageMapper,
+    private val settingsRepository: SettingsRepository,
+    private val distanceFormatter: DistanceFormatter,
+    private val distanceCalculator: DistanceCalculator
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ShowInfoUiState())
     val uiState: StateFlow<ShowInfoUiState> = _uiState.asStateFlow()
+    private val unitSystem: UnitSystem
+        get() = settingsRepository.getUnitSystemPreference()
 
     private lateinit var inputParams: InputParams
 
-    fun onStart(distance: String?) {
+    fun onStart() {
         val positionsList = coordinatesRepository.observeDistance().value
-        if (positionsList.isEmpty() || distance.isNullOrBlank()) {
+        if (positionsList.isEmpty()) {
             _uiState.update { it.copy(shouldFinish = true) }
             return
         }
 
+        val distanceInMetres = distanceCalculator.calculateTotalDistance(positionsList)
+        val distance = distanceFormatter.formatDistance(distanceInMetres, unitSystem)
         this.inputParams = InputParams(positionsList, distance)
 
         load(distance, positionsList)

@@ -65,6 +65,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":core-distances"))
     implementation(project(":design-system"))
+    implementation(project(":settings"))
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.coroutines.test)

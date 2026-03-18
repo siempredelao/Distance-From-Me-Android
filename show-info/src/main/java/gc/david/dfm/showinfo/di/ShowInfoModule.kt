@@ -24,7 +24,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val showInfoModule = module {
-    viewModel { ShowInfoViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { ShowInfoViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SaveDistanceViewModel(get(), get()) }
     factory { AddressFormatter() }
     factory { ShareInfoMessageMapper(get()) }

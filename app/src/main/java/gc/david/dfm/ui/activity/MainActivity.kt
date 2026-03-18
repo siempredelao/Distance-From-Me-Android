@@ -267,8 +267,8 @@ class MainActivity :
                 mainViewModel.onHideChartHandled()
             }
 
-            state.openShowInfo?.let {
-                ShowInfoActivity.open(this@MainActivity, it.formattedDistance)
+            if (state.openShowInfo) {
+                ShowInfoActivity.open(this@MainActivity)
                 mainViewModel.onOpenShowInfoHandled()
             }
 

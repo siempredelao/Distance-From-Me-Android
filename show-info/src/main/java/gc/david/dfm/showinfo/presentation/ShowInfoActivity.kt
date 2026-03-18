@@ -40,7 +40,7 @@ class ShowInfoActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            showInfoViewModel.onStart(intent.getStringExtra(DISTANCE_EXTRA_KEY))
+            showInfoViewModel.onStart()
         }
 
         setContent {
@@ -85,12 +85,8 @@ class ShowInfoActivity : ComponentActivity() {
 
         private const val TAG = "ShowInfoActivity"
 
-        private const val DISTANCE_EXTRA_KEY = "distance"
-
-        fun open(activity: Activity, distanceAsText: String) {
-            val openShowInfoActivityIntent = Intent(activity, ShowInfoActivity::class.java)
-            openShowInfoActivityIntent.putExtra(DISTANCE_EXTRA_KEY, distanceAsText)
-            activity.startActivity(openShowInfoActivityIntent)
+        fun open(activity: Activity) {
+            activity.startActivity(Intent(activity, ShowInfoActivity::class.java))
         }
     }
 }

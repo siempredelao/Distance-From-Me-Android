@@ -16,6 +16,7 @@
 
 package gc.david.dfm.main.presentation.model
 
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.map.model.MapUiState
 
@@ -29,7 +30,6 @@ data class MainUiState(
     val searchAddress: String? = null,
     val hideChart: Boolean = false,
     val showLocationPermissionSnackbar: Boolean = false,
-    // TODO replace with String with formatted distance
-    val openShowInfo: DrawDistanceModel? = null,
-    val triggerElevationUpdate: List<gc.david.dfm.common.Coordinates>? = null,
+    val openShowInfo: Boolean = false,
+    val triggerElevationUpdate: List<Coordinates>? = null,
 )
