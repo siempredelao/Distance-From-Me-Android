@@ -25,7 +25,6 @@ import android.os.Looper
 import androidx.core.os.bundleOf
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.map.LocationUtils
 import timber.log.Timber
 
 @SuppressLint("MissingPermission")
@@ -63,10 +62,10 @@ class GeofencingService : Service() {
 
         locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS
+            UPDATE_INTERVAL_IN_MILLISECONDS
         ).apply {
             // Set the interval ceiling to one minute
-            setMinUpdateIntervalMillis(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS)
+            setMinUpdateIntervalMillis(FAST_INTERVAL_CEILING_IN_MILLISECONDS)
         }
             .build()
             .also {
@@ -115,6 +114,20 @@ class GeofencingService : Service() {
         const val GEOFENCE_RECEIVER_ACTION = "geofence.receiver.action"
         const val GEOFENCE_RECEIVER_LATITUDE_KEY = "geofence.receiver.latitude.key"
         const val GEOFENCE_RECEIVER_LONGITUDE_KEY = "geofence.receiver.longitude.key"
+
+        /*
+         * Constants for location update parameters
+         */
+        // Milliseconds per second
+        private const val MILLISECONDS_PER_SECOND = 1000L
+        // The update interval
+        private const val UPDATE_INTERVAL_IN_SECONDS = 5
+        // Update interval in milliseconds
+        private const val UPDATE_INTERVAL_IN_MILLISECONDS = (MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS)
+        // A fast interval ceiling
+        private const val FAST_CEILING_IN_SECONDS = 1
+        // A fast ceiling of update intervals, used when the app is visible
+        private const val FAST_INTERVAL_CEILING_IN_MILLISECONDS = (MILLISECONDS_PER_SECOND * FAST_CEILING_IN_SECONDS)
 
         private const val TAG = "GeofencingService"
     }
