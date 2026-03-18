@@ -36,6 +36,8 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.main.presentation.model.DrawDistanceModel
 import gc.david.dfm.main.presentation.model.MainUiState
+import gc.david.dfm.map.model.CameraUpdate
+import gc.david.dfm.map.model.MarkerData
 import gc.david.dfm.settings.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -161,7 +163,9 @@ class MainViewModel(
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
             val coordinates = Coordinates(currentLocation.lat, currentLocation.lon)
-            _uiState.update { it.copy(centerMapInto = coordinates) }
+            _uiState.update { 
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates))) 
+            }
         }
     }
 
@@ -173,7 +177,9 @@ class MainViewModel(
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
             val coordinates = Coordinates(location.latitude, location.longitude)
-            _uiState.update { it.copy(zoomMapInto = coordinates) }
+            _uiState.update { 
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.ZoomTo(coordinates))) 
+            }
             appHasJustStarted = false
         }
     }
@@ -183,6 +189,15 @@ class MainViewModel(
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
             if (!calculatingDistance) {
                 coordinatesRepository.clear()
+                _uiState.update {
+                    it.copy(
+                        mapState = it.mapState.copy(
+                            clearMap = true,
+                            markers = emptyList(),
+                            polylines = emptyList()
+                        )
+                    )
+                }
             }
 
             calculatingDistance = true
@@ -195,6 +210,15 @@ class MainViewModel(
 
             if (!calculatingDistance) {
                 coordinatesRepository.clear()
+                _uiState.update {
+                    it.copy(
+                        mapState = it.mapState.copy(
+                            clearMap = true,
+                            markers = emptyList(),
+                            polylines = emptyList()
+                        )
+                    )
+                }
             }
             calculatingDistance = true
 
@@ -205,7 +229,12 @@ class MainViewModel(
             }
         }
         coordinatesRepository.append(coordinates)
-        _uiState.update { it.copy(drawPoints = this@MainViewModel.coordinates) }
+        
+        // Update map with markers for each coordinate
+        val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
+        _uiState.update { 
+            it.copy(mapState = it.mapState.copy(markers = markers)) 
+        }
     }
 
     fun onPositionByNameResolved(coordinates: Coordinates) {
@@ -214,7 +243,15 @@ class MainViewModel(
                 onMapLongClick(coordinates)
             } else {
                 coordinatesRepository.append(coordinates)
-                _uiState.update { it.copy(drawPoints = this@MainViewModel.coordinates, centerMapInto = coordinates) }
+                val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
+                _uiState.update {
+                    it.copy(
+                        mapState = it.mapState.copy(
+                            markers = markers,
+                            cameraUpdate = CameraUpdate.MoveTo(coordinates)
+                        )
+                    )
+                }
             }
         } else {
             onMapLongClick(coordinates)
@@ -273,7 +310,16 @@ class MainViewModel(
     fun resetMap() {
         calculatingDistance = false
         coordinatesRepository.clear()
-        _uiState.update { it.copy(resetMap = true, hideChart = true) }
+        _uiState.update { 
+            it.copy(
+                mapState = it.mapState.copy(
+                    clearMap = true,
+                    markers = emptyList(),
+                    polylines = emptyList()
+                ),
+                hideChart = true
+            ) 
+        }
     }
 
     fun onForceCrashClick() {
@@ -292,20 +338,20 @@ class MainViewModel(
         _uiState.update { it.copy(selectFromDistancesLoaded = null) }
     }
 
-    fun onZoomHandled() {
-        _uiState.update { it.copy(zoomMapInto = null) }
-    }
-
-    fun onCenterHandled() {
-        _uiState.update { it.copy(centerMapInto = null) }
+    fun onCameraUpdateHandled() {
+        _uiState.update { 
+            it.copy(mapState = it.mapState.copy(cameraUpdate = null)) 
+        }
     }
 
     fun onSearchAddressHandled() {
         _uiState.update { it.copy(searchAddress = null) }
     }
 
-    fun onResetMapHandled() {
-        _uiState.update { it.copy(resetMap = false) }
+    fun onMapClearHandled() {
+        _uiState.update { 
+            it.copy(mapState = it.mapState.copy(clearMap = false)) 
+        }
     }
 
     fun onHideChartHandled() {
@@ -322,10 +368,6 @@ class MainViewModel(
 
     fun onDrawDistanceHandled() {
         _uiState.update { it.copy(drawDistance = null) }
-    }
-
-    fun onDrawPointsHandled() {
-        _uiState.update { it.copy(drawPoints = null) }
     }
 
     fun onLocationPermissionSnackbarShown() {

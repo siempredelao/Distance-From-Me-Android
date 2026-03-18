@@ -64,6 +64,7 @@ import gc.david.dfm.ui.animation.AnimatorUtil
 import gc.david.dfm.ui.dialog.AddressSuggestionsDialogFragment
 import gc.david.dfm.ui.dialog.DistanceSelectionDialogFragment
 import gc.david.dfm.map.mapper.MapStateMapper
+import gc.david.dfm.map.model.CameraUpdate
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -248,32 +249,22 @@ class MainActivity :
                 mainViewModel.onDrawDistanceHandled()
             }
 
-            state.drawPoints?.let { list ->
-                googleMap?.let { map ->
-                    map.clear()
-                    list.forEach { map.addMarker(MarkerOptions().position(it.toLatLng())) }
+            // Render map state using MapRenderer
+            googleMap?.let { map ->
+                mapRenderer.render(map, state.mapState)
+                
+                // Handle one-time events after rendering
+                if (state.mapState.clearMap) {
+                    mainViewModel.onMapClearHandled()
                 }
-                mainViewModel.onDrawPointsHandled()
-            }
-
-            state.zoomMapInto?.let {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it.toLatLng(), 17F))
-                mainViewModel.onZoomHandled()
-            }
-
-            state.centerMapInto?.let {
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLng(it.toLatLng()))
-                mainViewModel.onCenterHandled()
+                if (state.mapState.cameraUpdate != null) {
+                    mainViewModel.onCameraUpdateHandled()
+                }
             }
 
             state.searchAddress?.let {
                 addressViewModel.onAddressSearch(it)
                 mainViewModel.onSearchAddressHandled()
-            }
-
-            if (state.resetMap) {
-                googleMap?.clear()
-                mainViewModel.onResetMapHandled()
             }
 
             if (state.hideChart) {
