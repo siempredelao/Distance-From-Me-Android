@@ -127,23 +127,7 @@ class MainViewModel(
                 val coordinates = it.toCoordinates()
                 coordinatesRepository.setList(coordinates)
 
-                val distanceInMetres = distanceCalculator.calculateTotalDistance(coordinates)
-                val model = DrawDistanceModel(
-                    coordinates,
-                    distance.name + "\n",
-                    distanceInMetres,
-                    distanceFormatter.formatDistance(distanceInMetres, unitSystem),
-                    DrawDistanceModel.Source.DATABASE,
-                    distanceModeProvider.get(),
-                    settingsRepository.getCameraAnimation()
-                )
-                val newMapState = mapStateMapper.toMapUiState(model)
-                _uiState.update { state ->
-                    state.copy(
-                        mapState = newMapState,
-                        triggerElevationUpdate = coordinates
-                    )
-                }
+                plotDistances(coordinates, distance.name + "\n", DrawDistanceModel.Source.DATABASE)
             },{
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
             })
@@ -287,23 +271,7 @@ class MainViewModel(
 
         coordinatesRepository.append(coordinates)
 
-        val distanceInMetres = distanceCalculator.calculateTotalDistance(this@MainViewModel.coordinates)
-        val model = DrawDistanceModel(
-            this@MainViewModel.coordinates,
-            "",
-            distanceInMetres,
-            distanceFormatter.formatDistance(distanceInMetres, unitSystem),
-            DrawDistanceModel.Source.MANUAL,
-            distanceModeProvider.get(),
-            settingsRepository.getCameraAnimation()
-        )
-        val newMapState = mapStateMapper.toMapUiState(model)
-        _uiState.update { 
-            it.copy(
-                mapState = newMapState,
-                triggerElevationUpdate = model.positionList
-            )
-        }
+        plotDistances(this@MainViewModel.coordinates, "", DrawDistanceModel.Source.MANUAL)
 
         calculatingDistance = false
     }
@@ -375,7 +343,6 @@ class MainViewModel(
         _uiState.update { it.copy(openShowInfo = false) }
     }
 
-
     fun onElevationUpdateHandled() {
         _uiState.update { it.copy(triggerElevationUpdate = null) }
     }
@@ -387,6 +354,30 @@ class MainViewModel(
     private fun CoordinatesRepository.setList(list: List<Coordinates>) {
         clear()
         list.forEach(coordinatesRepository::append)
+    }
+
+    private fun plotDistances(
+        coordinates: List<Coordinates>,
+        distanceName: String,
+        source: DrawDistanceModel.Source
+    ) {
+        val distanceInMetres = distanceCalculator.calculateTotalDistance(coordinates)
+        val model = DrawDistanceModel(
+            coordinates,
+            distanceName,
+            distanceInMetres,
+            distanceFormatter.formatDistance(distanceInMetres, unitSystem),
+            source,
+            distanceModeProvider.get(),
+            settingsRepository.getCameraAnimation()
+        )
+        val newMapState = mapStateMapper.toMapUiState(model)
+        _uiState.update { state ->
+            state.copy(
+                mapState = newMapState,
+                triggerElevationUpdate = coordinates
+            )
+        }
     }
 
     companion object {
