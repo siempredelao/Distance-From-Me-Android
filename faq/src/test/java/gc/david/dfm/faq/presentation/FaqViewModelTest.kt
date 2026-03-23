@@ -16,7 +16,7 @@
 
 package gc.david.dfm.faq.presentation
 
-import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.testsupport.CoroutineExtension
 import gc.david.dfm.faq.R
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.faq.domain.GetFaqsUseCase
@@ -24,10 +24,10 @@ import gc.david.dfm.faq.domain.model.Faq
 import gc.david.dfm.faq.presentation.model.FaqUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -35,12 +35,15 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class FaqViewModelTest {
 
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
+
     private val useCase = mock<GetFaqsUseCase>()
     private val resourceProvider = mock<ResourceProvider>()
 
     private val viewModel = FaqViewModel(useCase, resourceProvider)
 
-    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
     fun `onStart Given use case succeeds Then returns Content with FAQs`() = runTest {

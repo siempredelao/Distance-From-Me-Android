@@ -29,21 +29,23 @@ import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
-import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ShowInfoViewModelTest {
 
-    @get:Rule val coroutineDispatcherRule = CoroutineDispatcherRule()
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
 
     private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
     private val resourceProvider = mock<ResourceProvider>()

@@ -17,7 +17,7 @@
 package gc.david.dfm.address.presentation
 
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.testsupport.CoroutineExtension
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
@@ -26,10 +26,10 @@ import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -40,6 +40,10 @@ import org.mockito.kotlin.whenever
  */
 @ExperimentalCoroutinesApi
 class AddressViewModelTest {
+
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
 
     private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameUseCase>()
     private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
@@ -56,7 +60,6 @@ class AddressViewModelTest {
             geocodingErrorMessageMapper
         )
 
-    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
     fun `shows connection problems dialog when no connection available in position by name`() {

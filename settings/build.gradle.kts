@@ -63,8 +63,11 @@ dependencies {
 
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.coroutines.test)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.mockito)
     testImplementation(libs.mockito.kotlin)
     testImplementation(project(":test-support"))
+
+    testRuntimeOnly(libs.junit.jupiter.engine)
 }

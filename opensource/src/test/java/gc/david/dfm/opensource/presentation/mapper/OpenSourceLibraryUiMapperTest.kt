@@ -19,8 +19,8 @@ package gc.david.dfm.opensource.presentation.mapper
 import gc.david.dfm.opensource.domain.model.License
 import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 

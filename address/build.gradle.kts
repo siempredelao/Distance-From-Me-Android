@@ -34,6 +34,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 kotlin {
@@ -56,8 +62,11 @@ dependencies {
     implementation(project(":common"))
 
     testImplementation(libs.coroutines.test)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
     testImplementation(libs.mockito)
     testImplementation(libs.mockito.kotlin)
     testImplementation(project(":test-support"))
+    
+    testRuntimeOnly(libs.junit.jupiter.engine)
 }

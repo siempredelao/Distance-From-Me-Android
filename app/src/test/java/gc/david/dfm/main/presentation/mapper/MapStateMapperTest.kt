@@ -25,9 +25,9 @@ import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.LineColor
 import gc.david.dfm.settings.domain.model.CameraAnimation
-import org.junit.Assert.*
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -39,7 +39,7 @@ internal class MapStateMapperTest {
 
     private val lineWidth = 5f
 
-    @Before
+    @BeforeEach
     fun setUp() {
         resources = mock()
         whenever(resources.getDimension(R.dimen.map_line_width)).thenReturn(lineWidth)
@@ -235,8 +235,7 @@ internal class MapStateMapperTest {
         distanceMode: DistanceMode = DistanceMode.FROM_CURRENT_POINT,
         cameraAnimation: CameraAnimation = CameraAnimation.Animate.Centre,
         distanceName: String = "Distance: ",
-        formattedDistance: String = "1.0 km",
-        distanceInMetres: Double = 1000.0
+        formattedDistance: String = "1.0 km"
     ): DrawDistanceUiModel {
         return DrawDistanceUiModel(
             positionList = coordinates,

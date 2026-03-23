@@ -24,12 +24,12 @@ import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
-import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -37,13 +37,16 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class OpenSourceViewModelTest {
 
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
+
     private val useCase = mock<GetOpenSourceLibrariesUseCase>()
     private val uiMapper = mock<OpenSourceLibraryUiMapper>()
     private val resourceProvider = mock<ResourceProvider>()
 
     private val viewModel = OpenSourceViewModel(useCase, uiMapper, resourceProvider)
 
-    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
     fun `onStart Given use case succeeds Then returns Content with mapped models`() = runTest {

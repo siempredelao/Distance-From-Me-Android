@@ -19,10 +19,10 @@ package gc.david.dfm.opensource.data
 import gc.david.dfm.opensource.data.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
 import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
-import junit.framework.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 

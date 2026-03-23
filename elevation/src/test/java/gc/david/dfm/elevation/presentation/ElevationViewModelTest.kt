@@ -20,7 +20,7 @@ import gc.david.dfm.ConnectionManager
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
-import gc.david.dfm.testsupport.CoroutineDispatcherRule
+import gc.david.dfm.testsupport.CoroutineExtension
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.domain.model.Elevation
 import gc.david.dfm.elevation.domain.model.ElevationStatus
@@ -28,10 +28,10 @@ import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.settings.domain.SettingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -41,6 +41,10 @@ import org.mockito.kotlin.whenever
  */
 @ExperimentalCoroutinesApi
 class ElevationViewModelTest {
+
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
 
     private val getElevationByCoordinatesUseCase = mock<GetElevationByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
@@ -55,7 +59,6 @@ class ElevationViewModelTest {
             distanceFormatter
         )
 
-    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
     fun `hides chart when show elevation chart preference is false`() {

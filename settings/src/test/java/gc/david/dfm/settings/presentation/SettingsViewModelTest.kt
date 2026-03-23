@@ -19,12 +19,12 @@ package gc.david.dfm.settings.presentation
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
 import gc.david.dfm.settings.presentation.model.SettingsUiState
-import gc.david.dfm.testsupport.CoroutineDispatcherRule
-import junit.framework.TestCase.assertEquals
+import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -35,12 +35,15 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class SettingsViewModelTest {
 
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
+
     private val clearDistancesUseCase = mock<ClearDistancesUseCase>()
     private val resourceProvider = mock<ResourceProvider>()
 
     private val viewModel = SettingsViewModel(clearDistancesUseCase, resourceProvider)
 
-    @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
     fun `onClearData Given use case succeeds Then shows success message`() = runTest {

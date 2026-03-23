@@ -17,8 +17,8 @@
 package gc.david.dfm.address.data.mapper
 
 import gc.david.dfm.address.data.model.*
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 /**
  * Created by david on 15.01.17.
