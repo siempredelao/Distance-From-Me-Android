@@ -16,7 +16,6 @@
 
 package gc.david.dfm.faq.presentation
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.faq.R
 import gc.david.dfm.common.presentation.ResourceProvider
@@ -29,7 +28,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -42,7 +40,6 @@ class FaqViewModelTest {
 
     private val viewModel = FaqViewModel(useCase, resourceProvider)
 
-    @get:Rule var instantTaskRule: TestRule = InstantTaskExecutorRule()
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test

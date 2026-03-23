@@ -16,14 +16,16 @@
 
 package gc.david.dfm.faq.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.faq.R
 import gc.david.dfm.faq.domain.GetFaqsUseCase
 import gc.david.dfm.faq.presentation.model.FaqUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class FaqViewModel(
@@ -31,21 +33,21 @@ internal class FaqViewModel(
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData<FaqUiState>(FaqUiState.Loading)
-    val uiState: LiveData<FaqUiState> = _uiState
+    private val _uiState = MutableStateFlow<FaqUiState>(FaqUiState.Loading)
+    val uiState: StateFlow<FaqUiState> = _uiState.asStateFlow()
 
     fun onStart() {
-        _uiState.value = FaqUiState.Loading
+        _uiState.update { FaqUiState.Loading }
 
         viewModelScope.launch {
             val result = getFaqsUseCase()
 
             result.fold(
                 onSuccess = { faqs ->
-                    _uiState.postValue(FaqUiState.Content(faqs.toList()))
+                    _uiState.update { FaqUiState.Content(faqs.toList()) }
                 },
                 onFailure = {
-                    _uiState.postValue(FaqUiState.Error(resourceProvider.get(R.string.faq_error_message)))
+                    _uiState.update { FaqUiState.Error(resourceProvider.get(R.string.faq_error_message)) }
                 }
             )
         }

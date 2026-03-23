@@ -21,10 +21,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.faq.presentation.model.FaqUiState
 import gc.david.dfm.faq.presentation.screen.FaqScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -35,7 +34,7 @@ class FaqActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val uiState by viewModel.uiState.observeAsState(FaqUiState.Loading)
+            val uiState by viewModel.uiState.collectAsState()
             DfmTheme {
                 FaqScreen(
                     uiState = uiState,
