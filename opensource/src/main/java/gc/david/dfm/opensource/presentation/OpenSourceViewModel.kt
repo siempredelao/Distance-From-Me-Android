@@ -16,8 +16,6 @@
 
 package gc.david.dfm.opensource.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.common.presentation.ResourceProvider
@@ -25,6 +23,10 @@ import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
@@ -33,23 +35,23 @@ class OpenSourceViewModel(
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData<OpenSourceUiState>(OpenSourceUiState.Loading)
-    val uiState: LiveData<OpenSourceUiState> = _uiState
+    private val _uiState = MutableStateFlow<OpenSourceUiState>(OpenSourceUiState.Loading)
+    val uiState: StateFlow<OpenSourceUiState> = _uiState.asStateFlow()
 
     fun onStart() {
-        _uiState.value = OpenSourceUiState.Loading
+        _uiState.update { OpenSourceUiState.Loading }
 
         viewModelScope.launch {
             val result = getOpenSourceLibrariesUseCase()
 
             result.fold(
                 onSuccess = { libraries ->
-                    _uiState.postValue(OpenSourceUiState.Content(uiMapper(libraries)))
+                    _uiState.update { OpenSourceUiState.Content(uiMapper(libraries)) }
                 },
                 onFailure = {
-                    _uiState.postValue(
+                    _uiState.update {
                         OpenSourceUiState.Error(resourceProvider.get(R.string.opensourcelibrary_error_message))
-                    )
+                    }
                 }
             )
         }

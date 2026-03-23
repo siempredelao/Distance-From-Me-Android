@@ -16,7 +16,6 @@
 
 package gc.david.dfm.opensource.presentation
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
@@ -31,7 +30,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -45,7 +43,6 @@ class OpenSourceViewModelTest {
 
     private val viewModel = OpenSourceViewModel(useCase, uiMapper, resourceProvider)
 
-    @get:Rule var instantTaskRule: TestRule = InstantTaskExecutorRule()
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
