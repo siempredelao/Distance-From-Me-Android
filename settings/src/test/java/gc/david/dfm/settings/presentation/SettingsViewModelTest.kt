@@ -16,16 +16,15 @@
 
 package gc.david.dfm.settings.presentation
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
+import gc.david.dfm.settings.presentation.model.SettingsUiState
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -41,8 +40,6 @@ class SettingsViewModelTest {
 
     private val viewModel = SettingsViewModel(clearDistancesUseCase, resourceProvider)
 
-    @get:Rule
-    var instantTaskRule: TestRule = InstantTaskExecutorRule()
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
     @Test
@@ -53,6 +50,6 @@ class SettingsViewModelTest {
 
         viewModel.onClearData()
 
-        assertEquals(viewModel.resultMessage.value, successMessage)
+        assertEquals(SettingsUiState(successMessage = successMessage), viewModel.uiState.value)
     }
 }

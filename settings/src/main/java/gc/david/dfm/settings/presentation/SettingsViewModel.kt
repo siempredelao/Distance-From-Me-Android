@@ -16,12 +16,16 @@
 
 package gc.david.dfm.settings.presentation
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
 import gc.david.dfm.settings.R
+import gc.david.dfm.settings.presentation.model.SettingsUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -30,18 +34,25 @@ class SettingsViewModel(
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
-    val resultMessage = MutableLiveData<String>()
+    private val _uiState = MutableStateFlow(SettingsUiState())
+    val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     fun onClearData() {
         Timber.tag(TAG).d("onClearData")
 
         viewModelScope.launch {
             clearDistancesUseCase().fold({
-                resultMessage.postValue(resourceProvider.get(R.string.toast_distances_deleted))
+                _uiState.update { 
+                    it.copy(successMessage = resourceProvider.get(R.string.toast_distances_deleted))
+                }
             },{
                 Timber.tag(TAG).e(Exception("Unable to clear database."))
             })
         }
+    }
+
+    fun onMessageShown() {
+        _uiState.update { it.copy(successMessage = null) }
     }
 
     companion object {

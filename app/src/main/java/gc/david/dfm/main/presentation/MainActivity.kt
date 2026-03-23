@@ -42,9 +42,9 @@ import com.google.android.material.snackbar.Snackbar
 import gc.david.dfm.*
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
+import gc.david.dfm.common.collectOnStarted
 import gc.david.dfm.adapter.MarkerInfoWindowAdapter
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.collectOnStarted
 import gc.david.dfm.systemService
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.connectivity.ConnectionIssuesDialogFragment

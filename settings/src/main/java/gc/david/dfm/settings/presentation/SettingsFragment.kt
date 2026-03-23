@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
+import gc.david.dfm.common.collectOnStarted
 import gc.david.dfm.settings.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,9 +37,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             false
         }
 
-        with(viewModel) {
-            resultMessage.observe(this@SettingsFragment) {
-                Snackbar.make(requireView(), it, Snackbar.LENGTH_LONG).show()
+        collectOnStarted {
+            viewModel.uiState.collect { state ->
+                state.successMessage?.let { message ->
+                    Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
+                    viewModel.onMessageShown()
+                }
             }
         }
     }
