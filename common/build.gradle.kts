@@ -70,4 +70,11 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.material.components)
     implementation(libs.timber)
+
+    testImplementation(libs.junit.jupiter.api)
+    testImplementation(libs.junit.jupiter.params)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.coroutines.test)
 }
+
