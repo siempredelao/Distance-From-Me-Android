@@ -16,19 +16,16 @@
 
 package gc.david.dfm.opensource.domain
 
+import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
+
 /**
  * Created by david on 25.01.17.
  */
-class GetOpenSourceLibrariesUseCase(
-    private val repository: OpenSourceRepository,
-    private val mapper: OpenSourceLibraryMapper
-) {
+class GetOpenSourceLibrariesUseCase(private val repository: OpenSourceRepository) {
 
     suspend operator fun invoke(): Result<List<OpenSourceLibrary>> {
         return try {
-            val openSourceLibraryEntities = repository.getOpenSourceLibraries()
-            val openSourceLibraries = mapper(openSourceLibraryEntities)
-
+            val openSourceLibraries = repository.getOpenSourceLibraries()
             Result.success(openSourceLibraries)
         } catch (exception: Throwable) {
             Result.failure(exception)

@@ -21,9 +21,7 @@ import gc.david.dfm.core.distances.domain.model.NewDistance
 /**
  * Created by david on 16.01.17.
  */
-class SaveDistanceUseCase(
-    private val repository: DistanceRepository
-) {
+class SaveDistanceUseCase(private val repository: DistanceRepository) {
 
     suspend operator fun invoke(distance: NewDistance): Result<Unit> {
         return try {

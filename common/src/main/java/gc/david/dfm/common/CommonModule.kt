@@ -25,6 +25,7 @@ import gc.david.dfm.PermissionChecker
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.presentation.DistanceFormatter
+import gc.david.dfm.common.presentation.ResourceProvider
 import org.koin.dsl.module
 
 val commonModule = module {

@@ -17,19 +17,18 @@
 package gc.david.dfm.opensource.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
-import gc.david.dfm.opensource.domain.License
-import gc.david.dfm.opensource.domain.OpenSourceLibrary
-import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
+import gc.david.dfm.opensource.domain.model.License
+import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
+import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -41,10 +40,10 @@ import org.mockito.kotlin.whenever
 class OpenSourceViewModelTest {
 
     private val useCase = mock<GetOpenSourceLibrariesUseCase>()
-    private val mapper = mock<OpenSourceLibraryMapper>()
+    private val uiMapper = mock<OpenSourceLibraryUiMapper>()
     private val resourceProvider = mock<ResourceProvider>()
 
-    private val viewModel = OpenSourceViewModel(useCase, mapper, resourceProvider)
+    private val viewModel = OpenSourceViewModel(useCase, uiMapper, resourceProvider)
 
     @get:Rule var instantTaskRule: TestRule = InstantTaskExecutorRule()
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
@@ -54,7 +53,7 @@ class OpenSourceViewModelTest {
         val libraryEntities = listOf(DUMMY_LIBRARY)
         whenever(useCase()).thenReturn(Result.success(libraryEntities))
         val libraryModel = DUMMY_LIBRARY_UI_MODEL
-        whenever(mapper(libraryEntities)).thenReturn(listOf(libraryModel))
+        whenever(uiMapper(libraryEntities)).thenReturn(listOf(libraryModel))
 
         viewModel.onStart()
 

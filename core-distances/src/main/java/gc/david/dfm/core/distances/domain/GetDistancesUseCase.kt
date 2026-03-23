@@ -19,9 +19,7 @@ package gc.david.dfm.core.distances.domain
 import gc.david.dfm.core.distances.domain.model.Distance
 import kotlinx.coroutines.flow.Flow
 
-class GetDistancesUseCase(
-    private val repository: DistanceRepository
-) {
+class GetDistancesUseCase(private val repository: DistanceRepository) {
 
     operator fun invoke(): Flow<List<Distance>> = repository.loadDistances()
 }

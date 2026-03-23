@@ -16,9 +16,7 @@
 
 package gc.david.dfm.core.distances.domain
 
-class ClearDistancesUseCase(
-    private val repository: DistanceRepository
-) {
+class ClearDistancesUseCase(private val repository: DistanceRepository) {
 
     suspend operator fun invoke(): Result<Unit> {
         return try {

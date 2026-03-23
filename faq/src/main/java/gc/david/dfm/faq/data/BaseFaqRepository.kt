@@ -16,12 +16,16 @@
 
 package gc.david.dfm.faq.data
 
-import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.data.mapper.FaqEntityDataMapper
 import gc.david.dfm.faq.domain.FaqRepository
+import gc.david.dfm.faq.domain.model.Faq
 
-class BaseFaqRepository(private val diskDataSource: FaqDiskDataSource) : FaqRepository {
+class BaseFaqRepository(
+    private val diskDataSource: FaqDiskDataSource,
+    private val mapper: FaqEntityDataMapper
+) : FaqRepository {
 
     override suspend fun getFaqs(): Set<Faq> {
-        return diskDataSource.getFaqs()
+        return diskDataSource.getFaqs().map(mapper::transform).toSet()
     }
 }

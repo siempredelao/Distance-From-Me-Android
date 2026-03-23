@@ -18,7 +18,7 @@ package gc.david.dfm.address.presentation
 
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase

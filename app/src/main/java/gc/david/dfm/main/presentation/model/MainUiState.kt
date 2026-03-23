@@ -18,12 +18,11 @@ package gc.david.dfm.main.presentation.model
 
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.map.model.MapUiState
 
 data class MainUiState(
+    val mapState: MapUiState = MapUiState(),
     val showLoadDistancesItem: Boolean = false,
     val showForceCrashItem: Boolean = false,
-    val mapState: MapUiState = MapUiState(),
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
     val selectFromDistancesLoaded: List<Distance>? = null,

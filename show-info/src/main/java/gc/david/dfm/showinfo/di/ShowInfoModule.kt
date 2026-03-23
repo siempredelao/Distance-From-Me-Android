@@ -16,7 +16,7 @@
 
 package gc.david.dfm.showinfo.di
 
-import gc.david.dfm.showinfo.presentation.AddressFormatter
+import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
 import gc.david.dfm.showinfo.presentation.ShowInfoViewModel
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper

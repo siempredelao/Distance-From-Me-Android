@@ -20,12 +20,14 @@ import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.showinfo.R
+import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,14 +81,20 @@ internal class ShowInfoViewModelTest {
 
     @Test
     fun `shows network problems message when offline`() = runTest {
-        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(listOf(COORDS_1, COORDS_2)))
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
         whenever(connectionManager.isOnline()).thenReturn(false)
         whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
 
         viewModel.onStart()
 
         assertEquals("network problems", viewModel.uiState.value.userMessage)
     }
+
+    // TODO add more unit tests
 
     private companion object {
 

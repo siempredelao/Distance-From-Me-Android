@@ -21,7 +21,6 @@ import gc.david.dfm.address.di.addressModule
 import gc.david.dfm.common.commonModule
 import gc.david.dfm.core.distances.di.coreDistancesModule
 import gc.david.dfm.di.appModule
-import gc.david.dfm.di.viewModelModule
 import gc.david.dfm.elevation.di.elevationModule
 import gc.david.dfm.faq.di.faqModule
 import gc.david.dfm.settings.di.settingsModule
@@ -48,7 +47,6 @@ class DFMApplication : Application() {
                 addressModule,
                 appModule,
                 coreDistancesModule,
-                viewModelModule,
                 commonModule,
                 elevationModule,
                 faqModule,

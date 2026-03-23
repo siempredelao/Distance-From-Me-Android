@@ -23,7 +23,7 @@ import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
-import gc.david.dfm.elevation.presentation.model.ElevationModel
+import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.elevation.presentation.model.ElevationUiState
 import gc.david.dfm.settings.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,7 +60,7 @@ class ElevationViewModel(
                     }
                 val altitudeUnit = distanceFormatter.getAltitudeUnitLabel(unitSystem)
                 _uiState.update { current ->
-                    current.copy(elevationModel = ElevationModel(normalizedElevationList, altitudeUnit))
+                    current.copy(elevation = ElevationUiModel(normalizedElevationList, altitudeUnit))
                 }
             }, {
                 Timber.tag(TAG).e(it)

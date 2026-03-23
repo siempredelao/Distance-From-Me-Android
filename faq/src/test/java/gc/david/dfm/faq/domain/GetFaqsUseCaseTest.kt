@@ -16,7 +16,8 @@
 
 package gc.david.dfm.faq.domain
 
-import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.data.model.FaqEntity
+import gc.david.dfm.faq.domain.model.Faq
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -48,6 +49,6 @@ class GetFaqsUseCaseTest {
 
         val result = useCase.invoke()
 
-        assertEquals(Result.failure<Set<Faq>>(throwable), result)
+        assertEquals(Result.failure<Set<FaqEntity>>(throwable), result)
     }
 }

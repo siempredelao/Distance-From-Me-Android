@@ -17,6 +17,7 @@
 package gc.david.dfm.opensource.domain
 
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -31,16 +32,13 @@ import org.mockito.kotlin.whenever
 class GetOpenSourceLibrariesUseCaseTest {
 
     private val repository = mock<OpenSourceRepository>()
-    private val mapper = mock<OpenSourceLibraryMapper>()
 
-    private val useCase = GetOpenSourceLibrariesUseCase(repository, mapper)
+    private val useCase = GetOpenSourceLibrariesUseCase(repository)
 
     @Test
-    fun `returns mapped open source library list on success`() = runTest {
-        val openSourceLibraryEntityList = emptyList<OpenSourceLibraryEntity>()
-        whenever(repository.getOpenSourceLibraries()).thenReturn(openSourceLibraryEntityList)
+    fun `returns result from repository on success`() = runTest {
         val openSourceLibraryList = emptyList<OpenSourceLibrary>()
-        whenever(mapper.invoke(openSourceLibraryEntityList)).thenReturn(openSourceLibraryList)
+        whenever(repository.getOpenSourceLibraries()).thenReturn(openSourceLibraryList)
 
         val result = useCase.invoke()
 

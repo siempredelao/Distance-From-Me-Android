@@ -18,7 +18,7 @@ package gc.david.dfm.address.presentation.mapper
 
 import gc.david.dfm.address.R
 import gc.david.dfm.address.domain.GeocodingException
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.kotlin.mock

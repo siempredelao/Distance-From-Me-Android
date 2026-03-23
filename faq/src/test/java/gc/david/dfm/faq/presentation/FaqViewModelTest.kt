@@ -19,11 +19,10 @@ package gc.david.dfm.faq.presentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.faq.R
-import gc.david.dfm.common.ResourceProvider
-import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.faq.domain.GetFaqsUseCase
+import gc.david.dfm.faq.domain.model.Faq
 import gc.david.dfm.faq.presentation.model.FaqUiState
-import gc.david.dfm.faq.presentation.FaqViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals

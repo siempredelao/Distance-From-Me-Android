@@ -18,18 +18,20 @@ package gc.david.dfm.elevation.presentation
 
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.testsupport.CoroutineDispatcherRule
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
-import gc.david.dfm.elevation.presentation.model.ElevationModel
+import gc.david.dfm.elevation.domain.model.Elevation
+import gc.david.dfm.elevation.domain.model.ElevationStatus
+import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.UnitSystem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -43,9 +45,15 @@ class ElevationViewModelTest {
     private val getElevationByCoordinatesUseCase = mock<GetElevationByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val settingsRepository = mock<SettingsRepository>()
+    private val distanceFormatter = mock<DistanceFormatter>()
 
     private val viewModel =
-        ElevationViewModel(getElevationByCoordinatesUseCase, connectionManager, settingsRepository)
+        ElevationViewModel(
+            getElevationByCoordinatesUseCase,
+            connectionManager,
+            settingsRepository,
+            distanceFormatter
+        )
 
     @get:Rule val coroutinesDispatcherRule = CoroutineDispatcherRule()
 
@@ -71,29 +79,19 @@ class ElevationViewModelTest {
     }
 
     @Test
-    fun `executes use case when preference is activated and connection available`() = runTest {
-        val coordinatesList = emptyList<Coordinates>()
-        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.failure(Throwable()))
-
-        viewModel.onCoordinatesSelected(coordinatesList)
-
-        verify(getElevationByCoordinatesUseCase).invoke(coordinatesList)
-    }
-
-    @Test
     fun `returns elevation samples when use case returns data`() = runTest {
         val coordinatesList = emptyList<Coordinates>()
+        val unitSystem = UnitSystem.METRIC
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
-        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(unitSystem)
         whenever(connectionManager.isOnline()).thenReturn(true)
-        val elevation = gc.david.dfm.elevation.domain.model.Elevation(emptyList())
+        whenever(distanceFormatter.getAltitudeUnitLabel(unitSystem)).thenReturn("m")
+        val elevation = Elevation(emptyList(), ElevationStatus.OK)
         whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.success(elevation))
 
         viewModel.onCoordinatesSelected(coordinatesList)
 
-        val expectedElevationModel = ElevationModel(elevation.results, "m")
-        assertEquals(expectedElevationModel, viewModel.uiState.value.elevationModel)
+        val expectedElevationModel = ElevationUiModel(elevation.results, "m")
+        assertEquals(expectedElevationModel, viewModel.uiState.value.elevation)
     }
 }

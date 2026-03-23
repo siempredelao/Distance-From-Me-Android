@@ -22,18 +22,18 @@ import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.OpenSourceRepository
 import gc.david.dfm.opensource.presentation.mapper.LicenseMapper
 import gc.david.dfm.opensource.presentation.OpenSourceViewModel
+import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import gc.david.dfm.opensource.domain.OpenSourceLibraryMapper as OpenSourceLibraryDomainMapper
-import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper as OpenSourceLibraryUiMapper
+import gc.david.dfm.opensource.data.mapper.OpenSourceLibraryMapper
 
 val openSourceModule = module {
 
     viewModel { OpenSourceViewModel(get(), get(), get()) }
-    factory { GetOpenSourceLibrariesUseCase(get(), get()) }
+    factory { GetOpenSourceLibrariesUseCase(get()) }
     factory { OpenSourceLibraryUiMapper(get()) }
-    factory { OpenSourceLibraryDomainMapper() }
+    factory { OpenSourceLibraryMapper() }
     factory { LicenseMapper(get()) }
-    single<OpenSourceRepository> { BaseOpenSourceRepository(get()) }
+    single<OpenSourceRepository> { BaseOpenSourceRepository(get(), get()) }
     single { OpenSourceDiskDataSource() }
 }

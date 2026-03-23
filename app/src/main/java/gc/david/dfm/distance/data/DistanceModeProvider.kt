@@ -16,6 +16,7 @@
 
 package gc.david.dfm.distance.data
 
+import gc.david.dfm.distance.data.model.DistanceMode
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -21,9 +21,7 @@ import gc.david.dfm.core.distances.domain.model.Position
 /**
  * Created by david on 16.01.17.
  */
-class GetPositionListUseCase(
-    private val repository: DistanceRepository
-) {
+class GetPositionListUseCase(private val repository: DistanceRepository) {
 
     suspend operator fun invoke(distanceId: Long): Result<List<Position>> {
         return try {

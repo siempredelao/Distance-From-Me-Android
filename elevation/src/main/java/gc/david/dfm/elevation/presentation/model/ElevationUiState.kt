@@ -17,6 +17,6 @@
 package gc.david.dfm.elevation.presentation.model
 
 data class ElevationUiState(
-    val elevationModel: ElevationModel? = null,
+    val elevation: ElevationUiModel? = null,
     val hideChart: Boolean = false,
 )

@@ -16,7 +16,7 @@
 
 package gc.david.dfm.faq.domain
 
-import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.domain.model.Faq
 
 /**
  * Created by david on 19.12.16.

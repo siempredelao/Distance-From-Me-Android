@@ -16,7 +16,7 @@
 
 package gc.david.dfm.showinfo.presentation.mapper
 
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.showinfo.R
 
 class ShareInfoMessageMapper(private val resourceProvider: ResourceProvider) {

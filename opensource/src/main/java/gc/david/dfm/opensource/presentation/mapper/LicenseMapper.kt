@@ -16,9 +16,9 @@
 
 package gc.david.dfm.opensource.presentation.mapper
 
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
-import gc.david.dfm.opensource.domain.License
+import gc.david.dfm.opensource.domain.model.License
 
 /**
  * Created by david on 05.02.17.

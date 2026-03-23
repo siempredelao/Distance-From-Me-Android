@@ -33,11 +33,14 @@ class ElevationRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
     suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
         val urlNoKey = "https://maps.googleapis.com/maps/api/elevation/json?path=$coordinatesPath&samples=$maxSamples"
         Timber.tag(TAG).d(urlNoKey)
+
         val url = "$urlNoKey&key=$geocodeApiKey"
+
         val request = Request.Builder().url(url)
                 .header("content-type", "application/json")
                 .build()
         val response = client.newCall(request).executeAsync()
+
         val elevationEntity =
                 gson.fromJson(response.body.charStream(), ElevationEntity::class.java)
         return elevationEntity

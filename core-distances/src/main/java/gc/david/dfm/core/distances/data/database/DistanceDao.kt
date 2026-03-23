@@ -19,6 +19,7 @@ package gc.david.dfm.core.distances.data.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import gc.david.dfm.core.distances.data.database.model.DistanceEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

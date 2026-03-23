@@ -17,8 +17,8 @@
 package gc.david.dfm.core.distances.data
 
 import gc.david.dfm.core.distances.data.database.DFMDatabase
-import gc.david.dfm.core.distances.data.database.DistanceEntity
-import gc.david.dfm.core.distances.data.database.PositionEntity
+import gc.david.dfm.core.distances.data.database.model.DistanceEntity
+import gc.david.dfm.core.distances.data.database.model.PositionEntity
 import gc.david.dfm.core.distances.data.mapper.DistanceEntityMapper
 import gc.david.dfm.core.distances.data.mapper.PositionEntityMapper
 import gc.david.dfm.core.distances.domain.InsertDistanceException

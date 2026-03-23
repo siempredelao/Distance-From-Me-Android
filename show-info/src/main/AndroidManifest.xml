@@ -20,6 +20,6 @@
         <activity
             android:name=".presentation.ShowInfoActivity"
             android:label="@string/app_name"
-            android:parentActivityName="gc.david.dfm.ui.activity.MainActivity" />
+            android:parentActivityName="gc.david.dfm.onboarding.presentation.MainActivity" />
     </application>
 </manifest>

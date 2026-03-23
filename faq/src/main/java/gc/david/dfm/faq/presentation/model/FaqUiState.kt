@@ -16,7 +16,7 @@
 
 package gc.david.dfm.faq.presentation.model
 
-import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.domain.model.Faq
 
 sealed interface FaqUiState {
 

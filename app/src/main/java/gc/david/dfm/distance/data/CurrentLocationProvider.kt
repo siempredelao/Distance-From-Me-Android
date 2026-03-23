@@ -17,6 +17,7 @@
 package gc.david.dfm.distance.data
 
 import android.location.Location
+import gc.david.dfm.distance.data.model.Point
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,6 +36,8 @@ class CurrentLocationProvider @Inject constructor() {
         Timber.tag(TAG).d("set ${location.toPoint()}")
         currentLocation = location.toPoint()
     }
+
+    private fun Location.toPoint() = Point(latitude, longitude)
 
     companion object {
 

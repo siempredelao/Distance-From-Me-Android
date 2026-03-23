@@ -51,6 +51,7 @@ class GetAddressNameByCoordinatesUseCase(
     }
 
     companion object {
+
         private const val MAX_BY_COORD = 1
     }
 }

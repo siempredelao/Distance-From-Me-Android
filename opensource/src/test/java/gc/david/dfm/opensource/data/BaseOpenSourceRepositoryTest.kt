@@ -16,7 +16,9 @@
 
 package gc.david.dfm.opensource.data
 
+import gc.david.dfm.opensource.data.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -28,21 +30,19 @@ import org.mockito.kotlin.whenever
 class BaseOpenSourceRepositoryTest {
 
     private val localDataSource = mock<OpenSourceDiskDataSource>()
+    private val mapper = mock<OpenSourceLibraryMapper>()
 
-    private val repository = BaseOpenSourceRepository(localDataSource)
+    private val repository = BaseOpenSourceRepository(localDataSource, mapper)
 
     @Test
-    fun `returns libraries from local datasource`() = runTest {
-        val openSourceLibraries = listOf(DUMMY_LIBRARY)
-        whenever(localDataSource.getOpenSourceLibraries()).thenReturn(openSourceLibraries)
+    fun `returns mapped libraries from local datasource`() = runTest {
+        val libraryEntity = mock<OpenSourceLibraryEntity>()
+        whenever(localDataSource.getOpenSourceLibraries()).thenReturn(listOf(libraryEntity))
+        val library = mock<OpenSourceLibrary>()
+        whenever(mapper.invoke(libraryEntity)).thenReturn(library)
 
         val actualOpenSourceLibraries = repository.getOpenSourceLibraries()
 
-        assertEquals(openSourceLibraries, actualOpenSourceLibraries)
-    }
-
-    companion object {
-
-        private val DUMMY_LIBRARY = OpenSourceLibraryEntity("", "", "", "", "", "", "")
+        assertEquals(listOf(library), actualOpenSourceLibraries)
     }
 }

@@ -16,12 +16,12 @@
 
 package gc.david.dfm.opensource.domain
 
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 
 /**
  * Created by david on 25.01.17.
  */
 interface OpenSourceRepository {
 
-    suspend fun getOpenSourceLibraries(): List<OpenSourceLibraryEntity>
+    suspend fun getOpenSourceLibraries(): List<OpenSourceLibrary>
 }

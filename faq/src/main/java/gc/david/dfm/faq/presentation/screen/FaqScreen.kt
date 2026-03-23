@@ -52,7 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.faq.R
-import gc.david.dfm.faq.data.model.Faq
+import gc.david.dfm.faq.domain.model.Faq
 import gc.david.dfm.faq.presentation.model.FaqUiState
 
 @OptIn(ExperimentalMaterial3Api::class)

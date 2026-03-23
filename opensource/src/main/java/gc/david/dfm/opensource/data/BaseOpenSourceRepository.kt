@@ -16,14 +16,16 @@
 
 package gc.david.dfm.opensource.data
 
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+import gc.david.dfm.opensource.data.mapper.OpenSourceLibraryMapper
 import gc.david.dfm.opensource.domain.OpenSourceRepository
+import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 
 class BaseOpenSourceRepository(
-    private val localDataSource: OpenSourceDiskDataSource
+    private val localDataSource: OpenSourceDiskDataSource,
+    private val mapper: OpenSourceLibraryMapper
 ) : OpenSourceRepository {
 
-    override suspend fun getOpenSourceLibraries(): List<OpenSourceLibraryEntity> {
-        return localDataSource.getOpenSourceLibraries()
+    override suspend fun getOpenSourceLibraries(): List<OpenSourceLibrary> {
+        return localDataSource.getOpenSourceLibraries().map { mapper(it) }
     }
 }

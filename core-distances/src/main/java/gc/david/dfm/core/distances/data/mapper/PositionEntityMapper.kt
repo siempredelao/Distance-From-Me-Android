@@ -16,7 +16,7 @@
 
 package gc.david.dfm.core.distances.data.mapper
 
-import gc.david.dfm.core.distances.data.database.PositionEntity
+import gc.david.dfm.core.distances.data.database.model.PositionEntity
 import gc.david.dfm.core.distances.domain.model.Position
 
 /**

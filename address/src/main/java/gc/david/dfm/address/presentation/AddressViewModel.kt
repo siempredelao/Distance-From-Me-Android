@@ -26,7 +26,7 @@ import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.presentation.model.AddressUiState
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

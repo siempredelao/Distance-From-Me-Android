@@ -19,7 +19,7 @@ package gc.david.dfm.showinfo.presentation.savedistance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
 import gc.david.dfm.core.distances.domain.model.NewDistance
 import gc.david.dfm.core.distances.domain.model.NewPosition

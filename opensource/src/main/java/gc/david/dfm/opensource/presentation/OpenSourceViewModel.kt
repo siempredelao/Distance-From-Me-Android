@@ -20,16 +20,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
-import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryMapper
+import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
     private val getOpenSourceLibrariesUseCase: GetOpenSourceLibrariesUseCase,
-    private val openSourceLibraryMapper: OpenSourceLibraryMapper,
+    private val uiMapper: OpenSourceLibraryUiMapper,
     private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
@@ -44,7 +44,7 @@ class OpenSourceViewModel(
 
             result.fold(
                 onSuccess = { libraries ->
-                    _uiState.postValue(OpenSourceUiState.Content(openSourceLibraryMapper(libraries)))
+                    _uiState.postValue(OpenSourceUiState.Content(uiMapper(libraries)))
                 },
                 onFailure = {
                     _uiState.postValue(

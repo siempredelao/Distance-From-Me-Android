@@ -19,6 +19,8 @@ package gc.david.dfm.core.distances.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import gc.david.dfm.core.distances.data.database.model.DistanceEntity
+import gc.david.dfm.core.distances.data.database.model.PositionEntity
 
 @Database(entities = [DistanceEntity::class, PositionEntity::class], version = 2)
 @TypeConverters(Converters::class)

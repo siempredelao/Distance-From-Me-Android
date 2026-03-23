@@ -22,23 +22,23 @@ import androidx.lifecycle.viewModelScope
 import gc.david.dfm.*
 import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.ResourceProvider
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.toCoordinates
 import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceMode
+import gc.david.dfm.distance.data.model.DistanceMode
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.main.presentation.model.DrawDistanceModel
+import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MainUiState
-import gc.david.dfm.map.mapper.MapStateMapper
-import gc.david.dfm.map.model.CameraUpdate
-import gc.david.dfm.map.model.MarkerData
+import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.main.presentation.model.CameraUpdate
+import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.settings.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -75,6 +75,14 @@ class MainViewModel(
     private val distances = getDistancesUseCase()
         .catch { Timber.tag(TAG).e(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    private val coordinates get() = coordinatesRepository.observeDistance().value
+    private val unitSystem: UnitSystem
+        get() = settingsRepository.getUnitSystemPreference()
+
+    // Moves to current position if app has just started
+    private var appHasJustStarted = true
+    // Determines whether a multi-point distance is being marked on the map
+    private var isUserSelectingPoints: Boolean = false
 
     init {
         distances
@@ -82,16 +90,6 @@ class MainViewModel(
             .onEach { hasDistances -> _uiState.update { it.copy(showLoadDistancesItem = hasDistances) } }
             .launchIn(viewModelScope)
     }
-
-    // Moves to current position if app has just started
-    private var appHasJustStarted = true
-    // Determines whether a multi-point distance is being marked on the map
-    private var calculatingDistance: Boolean = false
-
-    private val coordinates get() = coordinatesRepository.observeDistance().value
-
-    private val unitSystem: UnitSystem
-        get() = settingsRepository.getUnitSystemPreference()
 
     fun onStart() {
         if (!connectionManager.isOnline()) {
@@ -127,7 +125,7 @@ class MainViewModel(
                 val coordinates = it.toCoordinates()
                 coordinatesRepository.setList(coordinates)
 
-                plotDistances(coordinates, distance.name + "\n", DrawDistanceModel.Source.DATABASE)
+                plotDistances(coordinates, distance.name + "\n", DrawDistanceUiModel.Source.DATABASE)
             },{
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
             })
@@ -174,8 +172,10 @@ class MainViewModel(
 
     fun onMapClick(coordinates: Coordinates) {
         Timber.tag(TAG).d("onMapClick $coordinates")
+
+        // TODO simplify this
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
-            if (!calculatingDistance) {
+            if (!isUserSelectingPoints) {
                 coordinatesRepository.clear()
                 _uiState.update {
                     it.copy(
@@ -188,15 +188,15 @@ class MainViewModel(
                 }
             }
 
-            calculatingDistance = true
+            isUserSelectingPoints = true
         } else {
             val currentLocation = currentLocationProvider.get()
             if (currentLocation == CurrentLocationProvider.UNDEFINED) {
-                calculatingDistance = false
+                isUserSelectingPoints = false
                 return // Without current location, we cannot calculate any distance
             }
 
-            if (!calculatingDistance) {
+            if (!isUserSelectingPoints) {
                 coordinatesRepository.clear()
                 _uiState.update {
                     it.copy(
@@ -208,7 +208,7 @@ class MainViewModel(
                     )
                 }
             }
-            calculatingDistance = true
+            isUserSelectingPoints = true
 
             // To calculate the distance from the current position,
             // we effectively need the current position ;)
@@ -248,7 +248,7 @@ class MainViewModel(
 
     fun onMapLongClick(coordinates: Coordinates) {
         Timber.tag(TAG).d("onMapLongClick $coordinates")
-        calculatingDistance = true
+        isUserSelectingPoints = true
 
         if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
             if (this@MainViewModel.coordinates.isEmpty()) {
@@ -258,7 +258,7 @@ class MainViewModel(
         } else {
             val currentLocation = currentLocationProvider.get()
             if (currentLocation == CurrentLocationProvider.UNDEFINED) {
-                calculatingDistance = false
+                isUserSelectingPoints = false
                 return // Without current location, we cannot calculate any distance
             }
 
@@ -271,13 +271,14 @@ class MainViewModel(
 
         coordinatesRepository.append(coordinates)
 
-        plotDistances(this@MainViewModel.coordinates, "", DrawDistanceModel.Source.MANUAL)
+        plotDistances(this@MainViewModel.coordinates, "", DrawDistanceUiModel.Source.MANUAL)
 
-        calculatingDistance = false
+        isUserSelectingPoints = false
     }
 
-    fun handleSearchIntent(query: String) {
-        Timber.tag(TAG).d("handleSearchIntent $query")
+    fun onAddressSearch(query: String) {
+        Timber.tag(TAG).d("onAddressSearch $query")
+
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
             _uiState.update { it.copy(searchAddress = query) }
@@ -285,7 +286,7 @@ class MainViewModel(
     }
 
     fun resetMap() {
-        calculatingDistance = false
+        isUserSelectingPoints = false
         coordinatesRepository.clear()
         _uiState.update { 
             it.copy(
@@ -316,9 +317,7 @@ class MainViewModel(
     }
 
     fun onCameraUpdateHandled() {
-        _uiState.update { 
-            it.copy(mapState = it.mapState.copy(cameraUpdate = null)) 
-        }
+        _uiState.update { it.copy(mapState = it.mapState.copy(cameraUpdate = null)) }
     }
 
     fun onSearchAddressHandled() {
@@ -326,9 +325,7 @@ class MainViewModel(
     }
 
     fun onMapClearHandled() {
-        _uiState.update { 
-            it.copy(mapState = it.mapState.copy(clearMap = false)) 
-        }
+        _uiState.update { it.copy(mapState = it.mapState.copy(clearMap = false)) }
     }
 
     fun onHideChartHandled() {
@@ -359,13 +356,12 @@ class MainViewModel(
     private fun plotDistances(
         coordinates: List<Coordinates>,
         distanceName: String,
-        source: DrawDistanceModel.Source
+        source: DrawDistanceUiModel.Source
     ) {
         val distanceInMetres = distanceCalculator.calculateTotalDistance(coordinates)
-        val model = DrawDistanceModel(
+        val model = DrawDistanceUiModel(
             coordinates,
             distanceName,
-            distanceInMetres,
             distanceFormatter.formatDistance(distanceInMetres, unitSystem),
             source,
             distanceModeProvider.get(),
