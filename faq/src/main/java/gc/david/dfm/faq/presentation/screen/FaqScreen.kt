@@ -50,6 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.faq.R
 import gc.david.dfm.faq.domain.model.Faq
@@ -145,5 +147,42 @@ private fun FaqCard(faq: Faq) {
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun FaqScreenLoadingPreview() {
+    DfmTheme {
+        FaqScreen(
+            uiState = FaqUiState.Loading,
+            onBack = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FaqScreenContentPreview() {
+    DfmTheme {
+        FaqScreen(
+            uiState = FaqUiState.Content(
+                faqs = listOf(
+                    Faq(
+                        question = "How do I measure a distance?",
+                        answer = "Tap on the map to set the origin and destination points. The distance will be calculated automatically."
+                    ),
+                    Faq(
+                        question = "Can I save my measurements?",
+                        answer = "Yes, you can save your distance measurements by tapping the save button in the info screen."
+                    ),
+                    Faq(
+                        question = "How accurate are the measurements?",
+                        answer = "The measurements are based on GPS coordinates and use the Haversine formula for accuracy."
+                    ),
+                )
+            ),
+            onBack = {},
+        )
     }
 }

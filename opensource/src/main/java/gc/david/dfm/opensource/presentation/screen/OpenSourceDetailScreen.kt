@@ -38,6 +38,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
@@ -105,6 +107,33 @@ fun SharedTransitionScope.OpenSourceDetailScreen(
                         animatedVisibilityScope = animatedVisibilityScope,
                     ),
             )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun OpenSourceDetailScreenPreview() {
+    DfmTheme {
+        androidx.compose.animation.SharedTransitionLayout {
+            androidx.compose.animation.AnimatedVisibility(visible = true) {
+                OpenSourceDetailScreen(
+                    library = OpenSourceLibraryUiModel(
+                        name = "Kotlin",
+                        description = "The Kotlin Programming Language",
+                        author = "JetBrains",
+                        version = "1.9.0",
+                        link = "https://kotlinlang.org/",
+                        licenseTitle = "Apache License 2.0",
+                        licenseDescription = "Licensed under the Apache License, Version 2.0 (the \"License\");",
+                        year = "2024"
+                    ),
+                    index = 0,
+                    animatedVisibilityScope = this,
+                    onBack = {},
+                    onOpenInBrowser = {},
+                )
+            }
         }
     }
 }

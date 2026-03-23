@@ -21,6 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import gc.david.dfm.designsystem.DfmTheme
 
 @Composable
 fun RateAppFallbackDialog(
@@ -37,4 +39,15 @@ fun RateAppFallbackDialog(
             }
         },
     )
+}
+
+@Preview
+@Composable
+private fun RateAppFallbackDialogPreview() {
+    DfmTheme {
+        RateAppFallbackDialog(
+            onDismiss = {},
+            onCtaClick = {},
+        )
+    }
 }

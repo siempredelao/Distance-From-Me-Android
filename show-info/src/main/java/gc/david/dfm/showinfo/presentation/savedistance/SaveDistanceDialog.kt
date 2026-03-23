@@ -32,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.tooling.preview.Preview
+import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.showinfo.R
 
@@ -48,13 +50,13 @@ internal fun SaveDistanceDialog(
         text = {
             Column {
                 Text(stringResource(R.string.alias_dialog_message))
-                Spacer(Modifier.Companion.height(Spacing.s))
+                Spacer(Modifier.height(Spacing.s))
                 OutlinedTextField(
                     value = alias,
                     onValueChange = { alias = it },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Companion.Sentences,
+                        capitalization = KeyboardCapitalization.Sentences,
                     ),
                 )
             }
@@ -65,4 +67,15 @@ internal fun SaveDistanceDialog(
             }
         },
     )
+}
+
+@Preview
+@Composable
+private fun SaveDistanceDialogPreview() {
+    DfmTheme {
+        SaveDistanceDialog(
+            onDismiss = {},
+            onConfirm = {},
+        )
+    }
 }

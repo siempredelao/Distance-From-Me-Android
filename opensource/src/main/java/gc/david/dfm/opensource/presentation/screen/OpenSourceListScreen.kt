@@ -51,6 +51,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
@@ -176,6 +178,63 @@ private fun SharedTransitionScope.OpenSourceLibraryCard(
                         animatedVisibilityScope = animatedVisibilityScope,
                     ),
             )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun OpenSourceListScreenLoadingPreview() {
+    DfmTheme {
+        androidx.compose.animation.SharedTransitionLayout {
+            androidx.compose.animation.AnimatedVisibility(visible = true) {
+                OpenSourceListScreen(
+                    uiState = OpenSourceUiState.Loading,
+                    animatedVisibilityScope = this,
+                    onLibraryClick = {},
+                    onBack = {},
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun OpenSourceListScreenContentPreview() {
+    DfmTheme {
+        androidx.compose.animation.SharedTransitionLayout {
+            androidx.compose.animation.AnimatedVisibility(visible = true) {
+                OpenSourceListScreen(
+                    uiState = OpenSourceUiState.Content(
+                        libraries = listOf(
+                            OpenSourceLibraryUiModel(
+                                name = "Kotlin",
+                                description = "The Kotlin Programming Language",
+                                author = "JetBrains",
+                                version = "1.9.0",
+                                link = "https://kotlinlang.org/",
+                                licenseTitle = "Apache License 2.0",
+                                licenseDescription = "Licensed under the Apache License, Version 2.0",
+                                year = "2024"
+                            ),
+                            OpenSourceLibraryUiModel(
+                                name = "Compose",
+                                description = "Android's modern toolkit for building native UI",
+                                author = "Google",
+                                version = "1.5.0",
+                                link = "https://developer.android.com/jetpack/compose",
+                                licenseTitle = "Apache License 2.0",
+                                licenseDescription = "Licensed under the Apache License, Version 2.0",
+                                year = "2024"
+                            ),
+                        )
+                    ),
+                    animatedVisibilityScope = this,
+                    onLibraryClick = {},
+                    onBack = {},
+                )
+            }
         }
     }
 }

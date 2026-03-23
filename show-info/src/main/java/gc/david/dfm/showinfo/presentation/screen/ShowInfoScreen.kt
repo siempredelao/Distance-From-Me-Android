@@ -56,7 +56,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
@@ -204,4 +206,48 @@ internal fun ShowInfoScreen(
     }
 }
 
-// TODO add previews
+@Preview
+@Composable
+private fun ShowInfoScreenPreview() {
+    DfmTheme {
+        ShowInfoScreen(
+            uiState = ShowInfoUiState(
+                originAddress = "123 Main Street, New York, NY 10001",
+                destinationAddress = "456 Park Avenue, New York, NY 10022",
+                distanceMessage = "3.2 km",
+                isLoading = false,
+            ),
+            saveUserMessage = null,
+            onBackPress = {},
+            onShare = {},
+            onRefresh = {},
+            onSave = {},
+            onUserMessageShown = {},
+            onShareDialogShown = {},
+            onSaveUserMessageShown = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ShowInfoScreenLoadingPreview() {
+    DfmTheme {
+        ShowInfoScreen(
+            uiState = ShowInfoUiState(
+                originAddress = "",
+                destinationAddress = "",
+                distanceMessage = "",
+                isLoading = true,
+            ),
+            saveUserMessage = null,
+            onBackPress = {},
+            onShare = {},
+            onRefresh = {},
+            onSave = {},
+            onUserMessageShown = {},
+            onShareDialogShown = {},
+            onSaveUserMessageShown = {},
+        )
+    }
+}
