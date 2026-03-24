@@ -23,7 +23,9 @@ import gc.david.dfm.common.Coordinates
 import gc.david.dfm.distance.data.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
-import gc.david.dfm.main.presentation.model.LineColor
+import gc.david.dfm.main.presentation.model.MapUiState
+import gc.david.dfm.main.presentation.model.MarkerData
+import gc.david.dfm.main.presentation.model.PolylineData
 import gc.david.dfm.settings.domain.model.CameraAnimation
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -33,57 +35,34 @@ import org.mockito.kotlin.whenever
 
 internal class MapStateMapperTest {
 
-    private lateinit var context: Context
-    private lateinit var resources: Resources
-    private lateinit var mapper: MapStateMapper
-
-    private val lineWidth = 5f
+    private val context = mock<Context>()
+    private val resources = mock<Resources>()
+    private val mapper = MapStateMapper(context)
 
     @BeforeEach
     fun setUp() {
-        resources = mock()
-        whenever(resources.getDimension(R.dimen.map_line_width)).thenReturn(lineWidth)
-        
-        context = mock()
         whenever(context.resources).thenReturn(resources)
-        
-        mapper = MapStateMapper(context)
+        whenever(resources.getDimension(R.dimen.map_line_width)).thenReturn(LINE_WIDTH)
     }
 
     @Test
-    fun `toMapUiState creates an empty state for empty coordinates`() {
+    fun `creates an empty state for empty coordinates`() {
         val model = createDrawDistanceModel(coordinates = emptyList())
 
-        val result = mapper.toMapUiState(model)
+        val actual = mapper.toMapUiState(model)
 
-        assertTrue(result.markers.isEmpty())
-        assertTrue(result.polylines.isEmpty())
-        assertNull(result.cameraUpdate)
-        assertTrue(result.clearMap)
+        val expected = MapUiState(
+            markers = emptyList(),
+            polylines = emptyList(),
+            cameraUpdate = null,
+            clearMap = true
+        )
+        assertEquals(expected, actual)
     }
 
+    // TODO add previous behavior where only the end point had a marker?
     @Test
-    fun `toMapUiState creates a marker at end for manual mode`() {
-        val coords = listOf(
-            Coordinates(0.0, 0.0),
-            Coordinates(1.0, 1.0),
-            Coordinates(2.0, 2.0)
-        )
-        val model = createDrawDistanceModel(
-            coordinates = coords,
-            source = DrawDistanceUiModel.Source.MANUAL,
-            distanceMode = DistanceMode.FROM_CURRENT_POINT
-        )
-
-        val result = mapper.toMapUiState(model)
-
-        assertEquals(1, result.markers.size)
-        assertEquals(coords.last(), result.markers[0].position)
-        assertTrue(result.markers[0].showInfoWindow)
-    }
-
-    @Test
-    fun `toMapUiState creates markers at start and end for database mode`() {
+    fun `creates markers at start and end for FROM_CURRENT_POINT mode`() {
         val coords = listOf(
             Coordinates(0.0, 0.0),
             Coordinates(1.0, 1.0),
@@ -92,38 +71,45 @@ internal class MapStateMapperTest {
         val model = createDrawDistanceModel(
             coordinates = coords,
             source = DrawDistanceUiModel.Source.DATABASE,
-            distanceMode = DistanceMode.FROM_CURRENT_POINT
+            distanceMode = DistanceMode.FROM_CURRENT_POINT,
+            cameraAnimation = CameraAnimation.None
         )
 
-        val result = mapper.toMapUiState(model)
+        val actual = mapper.toMapUiState(model)
 
-        assertEquals(2, result.markers.size)
-        assertEquals(coords.first(), result.markers[0].position)
-        assertEquals(coords.last(), result.markers[1].position)
-        assertTrue(result.markers[1].showInfoWindow)
+        val expected = MapUiState(
+            markers = listOf(
+                MarkerData(
+                    position = Coordinates(0.0, 0.0),
+                    infoWindow = MarkerData.InfoWindow.None
+                ),
+                MarkerData(
+                    position = Coordinates(2.0, 2.0),
+                    infoWindow = MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+                )
+            ),
+            polylines = listOf(
+                PolylineData(
+                    start = Coordinates(0.0, 0.0),
+                    end = Coordinates(1.0, 1.0),
+                    color = PolylineData.LineColor.YELLOW,
+                    width = LINE_WIDTH
+                ),
+                PolylineData(
+                    start = Coordinates(1.0, 1.0),
+                    end = Coordinates(2.0, 2.0),
+                    color = PolylineData.LineColor.YELLOW,
+                    width = LINE_WIDTH
+                )
+            ),
+            cameraUpdate = null,
+            clearMap = true
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
-    fun `toMapUiState creates markers at start and end for FROM_ANY_POINT mode`() {
-        val coords = listOf(
-            Coordinates(0.0, 0.0),
-            Coordinates(1.0, 1.0)
-        )
-        val model = createDrawDistanceModel(
-            coordinates = coords,
-            source = DrawDistanceUiModel.Source.MANUAL,
-            distanceMode = DistanceMode.FROM_ANY_POINT
-        )
-
-        val result = mapper.toMapUiState(model)
-
-        assertEquals(2, result.markers.size)
-        assertEquals(coords.first(), result.markers[0].position)
-        assertEquals(coords.last(), result.markers[1].position)
-    }
-
-    @Test
-    fun `toMapUiState creates green polylines for manual source`() {
+    fun `creates markers at start and end for FROM_ANY_POINT mode`() {
         val coords = listOf(
             Coordinates(0.0, 0.0),
             Coordinates(1.0, 1.0),
@@ -131,37 +117,46 @@ internal class MapStateMapperTest {
         )
         val model = createDrawDistanceModel(
             coordinates = coords,
-            source = DrawDistanceUiModel.Source.MANUAL
+            source = DrawDistanceUiModel.Source.MANUAL,
+            distanceMode = DistanceMode.FROM_ANY_POINT,
+            cameraAnimation = CameraAnimation.None
         )
 
-        val result = mapper.toMapUiState(model)
+        val actual = mapper.toMapUiState(model)
 
-        assertEquals(2, result.polylines.size)
-        result.polylines.forEach { polyline ->
-            assertEquals(LineColor.GREEN, polyline.color)
-            assertEquals(lineWidth, polyline.width)
-        }
+        val expected = MapUiState(
+            markers = listOf(
+                MarkerData(
+                    position = Coordinates(0.0, 0.0),
+                    infoWindow = MarkerData.InfoWindow.None
+                ),
+                MarkerData(
+                    position = Coordinates(2.0, 2.0),
+                    infoWindow = MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+                )
+            ),
+            polylines = listOf(
+                PolylineData(
+                    start = Coordinates(0.0, 0.0),
+                    end = Coordinates(1.0, 1.0),
+                    color = PolylineData.LineColor.GREEN,
+                    width = LINE_WIDTH
+                ),
+                PolylineData(
+                    start = Coordinates(1.0, 1.0),
+                    end = Coordinates(2.0, 2.0),
+                    color = PolylineData.LineColor.GREEN,
+                    width = LINE_WIDTH
+                )
+            ),
+            cameraUpdate = null,
+            clearMap = true
+        )
+        assertEquals(expected, actual)
     }
 
     @Test
-    fun `toMapUiState creates yellow polylines for database source`() {
-        val coords = listOf(
-            Coordinates(0.0, 0.0),
-            Coordinates(1.0, 1.0)
-        )
-        val model = createDrawDistanceModel(
-            coordinates = coords,
-            source = DrawDistanceUiModel.Source.DATABASE
-        )
-
-        val result = mapper.toMapUiState(model)
-
-        assertEquals(1, result.polylines.size)
-        assertEquals(LineColor.YELLOW, result.polylines[0].color)
-    }
-
-    @Test
-    fun `toMapUiState creates a FitBounds camera update for Centre animation`() {
+    fun `creates a FitBounds camera update for Centre animation`() {
         val coords = listOf(
             Coordinates(0.0, 0.0),
             Coordinates(1.0, 1.0)
@@ -171,14 +166,17 @@ internal class MapStateMapperTest {
             cameraAnimation = CameraAnimation.Animate.Centre
         )
 
-        val result = mapper.toMapUiState(model)
+        val actual = mapper.toMapUiState(model)
 
-        assertNotNull(result.cameraUpdate)
-        assertTrue(result.cameraUpdate is CameraUpdate.FitBounds)
+        val expectedCameraUpdate = CameraUpdate.FitBounds(
+            coordinates = coords,
+            padding = 100
+        )
+        assertEquals(expectedCameraUpdate, actual.cameraUpdate)
     }
 
     @Test
-    fun `toMapUiState creates a MoveTo camera update for Destination animation`() {
+    fun `creates a MoveTo camera update for Destination animation`() {
         val coords = listOf(
             Coordinates(0.0, 0.0),
             Coordinates(1.0, 1.0)
@@ -188,16 +186,14 @@ internal class MapStateMapperTest {
             cameraAnimation = CameraAnimation.Animate.Destination
         )
 
-        val result = mapper.toMapUiState(model)
+        val actual = mapper.toMapUiState(model)
 
-        assertNotNull(result.cameraUpdate)
-        assertTrue(result.cameraUpdate is CameraUpdate.MoveTo)
-        val moveToUpdate = result.cameraUpdate as CameraUpdate.MoveTo
-        assertEquals(coords.last(), moveToUpdate.position)
+        val expectedCameraUpdate = CameraUpdate.MoveTo(position = coords.last())
+        assertEquals(expectedCameraUpdate, actual.cameraUpdate)
     }
 
     @Test
-    fun `toMapUiState does not create a camera update for None animation`() {
+    fun `does not create a camera update for None animation`() {
         val coords = listOf(
             Coordinates(0.0, 0.0),
             Coordinates(1.0, 1.0)
@@ -213,8 +209,8 @@ internal class MapStateMapperTest {
     }
 
     @Test
-    fun `toMapUiState sets marker title with distance info`() {
-        val coords = listOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0))
+    fun `sets marker title with distance info`() {
+        val coords = listOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0), Coordinates(2.0, 2.0))
         val distanceName = "Distance: "
         val formattedDistance = "1.5 km"
         val model = createDrawDistanceModel(
@@ -225,8 +221,13 @@ internal class MapStateMapperTest {
 
         val result = mapper.toMapUiState(model)
 
-        val lastMarker = result.markers.last()
-        assertEquals(distanceName + formattedDistance, lastMarker.title)
+        val expectedMarkers = listOf(
+            MarkerData(
+                position = Coordinates(2.0, 2.0),
+                infoWindow = MarkerData.InfoWindow.Visible(title = distanceName + formattedDistance)
+            )
+        )
+        assertEquals(expectedMarkers, result.markers)
     }
 
     private fun createDrawDistanceModel(
@@ -245,6 +246,11 @@ internal class MapStateMapperTest {
             distanceMode = distanceMode,
             cameraAnimation = cameraAnimation
         )
+    }
+
+    private companion object {
+
+        const val LINE_WIDTH = 5f
     }
 }
 

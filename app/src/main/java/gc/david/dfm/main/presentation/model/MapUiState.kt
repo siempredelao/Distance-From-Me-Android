@@ -35,9 +35,19 @@ data class MapUiState(
  */
 data class MarkerData(
     val position: Coordinates,
-    val title: String? = null,
-    val showInfoWindow: Boolean = false
-)
+    val infoWindow: InfoWindow = InfoWindow.None
+) {
+    
+    /**
+     * Info window state for a marker.
+     */
+    sealed interface InfoWindow {
+        
+        data object None : InfoWindow
+        
+        data class Visible(val title: String) : InfoWindow
+    }
+}
 
 /**
  * Data for rendering a polyline on the map.
@@ -47,14 +57,15 @@ data class PolylineData(
     val end: Coordinates,
     val color: LineColor,
     val width: Float
-)
+) {
 
-/**
- * Color options for polylines.
- */
-enum class LineColor {
-    GREEN,   // For manual distances
-    YELLOW   // For database distances
+    /**
+     * Color options for polylines.
+     */
+    enum class LineColor {
+        GREEN,   // For manual distances
+        YELLOW   // For database distances
+    }
 }
 
 /**

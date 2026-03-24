@@ -21,7 +21,6 @@ import gc.david.dfm.R
 import gc.david.dfm.distance.data.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
-import gc.david.dfm.main.presentation.model.LineColor
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
@@ -55,19 +54,18 @@ class MapStateMapper(private val context: Context) {
 
         return buildList {
             coordinates.forEachIndexed { index, coordinate ->
+                val isLastMarker = index == coordinates.lastIndex
                 // Show marker at start (for DATABASE or FROM_ANY_POINT) or at end
                 val shouldShowMarker =
                     (index == 0 && (model.source == DrawDistanceUiModel.Source.DATABASE ||
                             model.distanceMode == DistanceMode.FROM_ANY_POINT)) ||
-                            index == coordinates.size - 1
+                            isLastMarker
 
                 if (shouldShowMarker) {
-                    val isLastMarker = index == coordinates.size - 1
                     add(
                         MarkerData(
                             position = coordinate,
-                            title = if (isLastMarker) model.distanceName + model.formattedDistance else null,
-                            showInfoWindow = isLastMarker
+                            infoWindow = createInfoWindow(isLastMarker, model)
                         )
                     )
                 }
@@ -75,15 +73,19 @@ class MapStateMapper(private val context: Context) {
         }
     }
 
+    private fun createInfoWindow(isLastMarker: Boolean, model: DrawDistanceUiModel) =
+        if (isLastMarker) {
+            MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+        } else {
+            MarkerData.InfoWindow.None
+        }
+
     private fun createPolylines(model: DrawDistanceUiModel): List<PolylineData> {
         val coordinates = model.positionList
         if (coordinates.size < 2) return emptyList()
 
         val lineWidth = context.resources.getDimension(R.dimen.map_line_width)
-        val color = when (model.source) {
-            DrawDistanceUiModel.Source.MANUAL -> LineColor.GREEN
-            DrawDistanceUiModel.Source.DATABASE -> LineColor.YELLOW
-        }
+        val color = createLineColor(model.source)
 
         return buildList {
             for (i in 0 until coordinates.lastIndex) {
@@ -98,6 +100,12 @@ class MapStateMapper(private val context: Context) {
             }
         }
     }
+
+    private fun createLineColor(source: DrawDistanceUiModel.Source) =
+        when (source) {
+            DrawDistanceUiModel.Source.MANUAL -> PolylineData.LineColor.GREEN
+            DrawDistanceUiModel.Source.DATABASE -> PolylineData.LineColor.YELLOW
+        }
 
     private fun createCameraUpdate(model: DrawDistanceUiModel): CameraUpdate? {
         if (model.positionList.isEmpty()) return null

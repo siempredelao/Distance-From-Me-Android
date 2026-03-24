@@ -22,7 +22,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.main.presentation.model.CameraUpdate
-import gc.david.dfm.main.presentation.model.LineColor
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
@@ -61,9 +60,14 @@ class MapRenderer {
             MarkerOptions().position(markerData.position.toLatLng())
         ) ?: return
 
-        markerData.title?.let { marker.title = it }
-        if (markerData.showInfoWindow) {
-            marker.showInfoWindow()
+        when (val infoWindow = markerData.infoWindow) {
+            is MarkerData.InfoWindow.Visible -> {
+                marker.title = infoWindow.title
+                marker.showInfoWindow()
+            }
+            MarkerData.InfoWindow.None -> {
+                // No info window
+            }
         }
     }
 
@@ -102,10 +106,10 @@ class MapRenderer {
         googleMap.animateCamera(update)
     }
 
-    private fun LineColor.toAndroidColor(): Int {
+    private fun PolylineData.LineColor.toAndroidColor(): Int {
         return when (this) {
-            LineColor.GREEN -> Color.GREEN
-            LineColor.YELLOW -> Color.YELLOW
+            PolylineData.LineColor.GREEN -> Color.GREEN
+            PolylineData.LineColor.YELLOW -> Color.YELLOW
         }
     }
 }
