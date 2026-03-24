@@ -49,7 +49,11 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 
 ## Testing
 
-The project has **100% test coverage** for critical components (ViewModels, Mappers, Repositories, Formatters, UseCases). 🎉
+The project has comprehensive test coverage for all critical components:
+- **100% file coverage** 🎉 - All ViewModels, Mappers, Repositories, Formatters, and UseCases have unit tests
+- **~80% branch coverage** 🟡 - Most code branches (if/when/else) are tested
+
+For detailed branch coverage analysis, see [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 
 ### Run all unit tests
 
@@ -73,11 +77,22 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 ```
 
 ### Test Coverage Summary
+
+#### File Coverage (All classes have tests)
 - ✅ **UseCases**: 100% (9/9)
 - ✅ **Mappers**: 100% (12/12)
 - ✅ **Formatters**: 100% (1/1)
 - ✅ **ViewModels**: 100% (8/8)
 - ✅ **Repositories**: 100% (7/7)
+
+#### Branch Coverage (Code paths tested)
+- ✅ **UseCases**: ~100% - All if/when branches covered
+- ✅ **Repositories**: ~100% - All if/when branches covered
+- ✅ **Formatters**: ~100% - All formatting paths covered
+- ✅ **Mappers**: ~98% - Almost all branches covered
+- ✅ **ViewModels**: ~78% - Most flows fully tested
+
+**Overall**: 100% file coverage, ~86% branch coverage. See detailed analysis in [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 
 ## Contributions
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 
