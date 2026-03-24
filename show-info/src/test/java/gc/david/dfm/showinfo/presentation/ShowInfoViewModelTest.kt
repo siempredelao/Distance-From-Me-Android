@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -96,7 +97,188 @@ internal class ShowInfoViewModelTest {
         assertEquals("network problems", viewModel.uiState.value.userMessage)
     }
 
-    // TODO add more unit tests
+    @Test
+    fun `onRefresh calls load with stored parameters`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
+        viewModel.onStart()
+
+        viewModel.onRefresh()
+
+        assertEquals("network problems", viewModel.uiState.value.userMessage)
+    }
+
+    @Test
+    fun `onShare creates share intent data with correct values`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        val address = createAddress("Test Address")
+        setupSuccessfulStart(coordinatesList)
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+        whenever(shareInfoMessageMapper.getSubject()).thenReturn("Subject")
+        whenever(shareInfoMessageMapper.mapMessage(any(), any(), any())).thenReturn("Message")
+        whenever(resourceProvider.get(R.string.action_bar_item_social_share_title)).thenReturn("Share")
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onShare()
+
+        val shareData = viewModel.uiState.value.shareIntentData
+        assertEquals("Share", shareData?.title)
+        assertEquals("Subject", shareData?.subject)
+        assertEquals("Message", shareData?.message)
+    }
+
+    @Test
+    fun `onShareDialogShown clears share intent data`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        val address = createAddress("Test Address")
+        setupSuccessfulStart(coordinatesList)
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+        whenever(shareInfoMessageMapper.getSubject()).thenReturn("Subject")
+        whenever(shareInfoMessageMapper.mapMessage(any(), any(), any())).thenReturn("Message")
+        whenever(resourceProvider.get(R.string.action_bar_item_social_share_title)).thenReturn("Share")
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+        viewModel.onShare()
+
+        viewModel.onShareDialogShown()
+
+        assertEquals(null, viewModel.uiState.value.shareIntentData)
+    }
+
+    @Test
+    fun `onSave shows save dialog with correct parameters`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        val address = createAddress("Test Address")
+        setupSuccessfulStart(coordinatesList)
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onSave()
+
+        val saveDialog = viewModel.uiState.value.showSaveDialog
+        assertEquals(coordinatesList, saveDialog?.positionsList)
+        assertEquals("100 m", saveDialog?.distance)
+    }
+
+    @Test
+    fun `onSaveDialogDismissed clears save dialog`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        val address = createAddress("Test Address")
+        setupSuccessfulStart(coordinatesList)
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+        viewModel.onSave()
+
+        viewModel.onSaveDialogDismissed()
+
+        assertEquals(null, viewModel.uiState.value.showSaveDialog)
+    }
+
+    @Test
+    fun `onUserMessageShown clears user message`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
+        viewModel.onStart()
+
+        viewModel.onUserMessageShown()
+
+        assertEquals(null, viewModel.uiState.value.userMessage)
+    }
+
+    @Test
+    fun `load with success resolves addresses correctly`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        val address1 = createAddress("Address 1")
+        val address2 = createAddress("Address 2")
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address1))))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address2))))
+
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(false, viewModel.uiState.value.isLoading)
+        assertTrue(viewModel.uiState.value.originAddress.contains("Address 1"))
+        assertTrue(viewModel.uiState.value.destinationAddress.contains("Address 2"))
+    }
+
+    @Test
+    fun `resolveAddress with empty address list shows error message`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
+        whenever(resourceProvider.get(R.string.error_no_address_found_message)).thenReturn("No address found")
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(emptyList())))
+
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        assertEquals("No address found", viewModel.uiState.value.originAddress)
+        assertEquals("No address found", viewModel.uiState.value.destinationAddress)
+    }
+
+    @Test
+    fun `resolveAddress with error maps error message`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        val exception = Exception("Geocoding error")
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
+        whenever(geocodingErrorMessageMapper.map(exception)).thenReturn("Geocoding failed")
+        whenever(getAddressNameByCoordinatesUseCase(any())).thenReturn(Result.failure(exception))
+
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        assertEquals("Geocoding failed", viewModel.uiState.value.originAddress)
+        assertEquals("Geocoding failed", viewModel.uiState.value.destinationAddress)
+    }
+
+    private fun setupSuccessfulStart(coordinatesList: List<Coordinates>) {
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
+    }
+
+    private fun createAddress(formattedAddress: String) =
+        gc.david.dfm.address.domain.model.Address(
+            formattedAddress,
+            gc.david.dfm.address.domain.model.Coordinates(1.0, 1.0)
+        )
 
     private companion object {
 

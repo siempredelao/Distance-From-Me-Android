@@ -97,4 +97,57 @@ class ElevationViewModelTest {
         val expectedElevationModel = ElevationUiModel(elevation.results, "m")
         assertEquals(expectedElevationModel, viewModel.uiState.value.elevation)
     }
+
+    @Test
+    fun `onHideChartHandled clears hide chart flag`() = runTest {
+        val dummyList = emptyList<Coordinates>()
+        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(false)
+        viewModel.onCoordinatesSelected(dummyList)
+        assertTrue(viewModel.uiState.value.hideChart)
+
+        viewModel.onHideChartHandled()
+
+        assertEquals(false, viewModel.uiState.value.hideChart)
+    }
+
+    @Test
+    fun `handles error when use case fails`() = runTest {
+        val coordinatesList = listOf(Coordinates(1.0, 2.0))
+        val unitSystem = UnitSystem.METRIC
+        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(unitSystem)
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val exception = Exception("Elevation error")
+        whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.failure(exception))
+
+        viewModel.onCoordinatesSelected(coordinatesList)
+        testScheduler.advanceUntilIdle()
+
+        // Should not crash, error is logged
+        assertEquals(null, viewModel.uiState.value.elevation)
+    }
+
+    @Test
+    fun `formats elevation results with correct altitude normalization`() = runTest {
+        val coordinatesList = listOf(Coordinates(1.0, 2.0), Coordinates(3.0, 4.0))
+        val unitSystem = UnitSystem.IMPERIAL
+        val rawElevations = listOf(100.5, 200.7, 300.9)
+        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(unitSystem)
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(distanceFormatter.formatAltitude(100.5, unitSystem)).thenReturn(329.72)
+        whenever(distanceFormatter.formatAltitude(200.7, unitSystem)).thenReturn(658.46)
+        whenever(distanceFormatter.formatAltitude(300.9, unitSystem)).thenReturn(987.20)
+        whenever(distanceFormatter.getAltitudeUnitLabel(unitSystem)).thenReturn("ft")
+        val elevation = Elevation(rawElevations, ElevationStatus.OK)
+        whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.success(elevation))
+
+        viewModel.onCoordinatesSelected(coordinatesList)
+        testScheduler.advanceUntilIdle()
+
+        val result = viewModel.uiState.value.elevation
+        assertEquals(3, result?.elevationList?.size)
+        assertEquals("ft", result?.altitudeUnit)
+        assertEquals(329.72, result?.elevationList?.get(0))
+    }
 }
