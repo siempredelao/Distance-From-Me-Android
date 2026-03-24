@@ -49,13 +49,13 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 
 ## Testing
 
-The project has **70.5% test coverage** for critical components (ViewModels, Mappers, Repositories, Formatters, UseCases).
+The project has **100% test coverage** for critical components (ViewModels, Mappers, Repositories, Formatters, UseCases). 🎉
 
 ### Run all unit tests
 
 ```bash
 # Run all module tests with visual progress feedback
-cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core-distances common show-info address faq opensource elevation settings; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
+cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core-distances common show-info address faq opensource elevation settings app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
 
 # Or run tests for all modules at once (debug variant)
 ./gradlew testDebugUnitTest
@@ -69,14 +69,15 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 ./gradlew :opensource:testDebugUnitTest
 ./gradlew :elevation:testDebugUnitTest
 ./gradlew :settings:testDebugUnitTest
+./gradlew :app:testDebugUnitTest
 ```
 
 ### Test Coverage Summary
 - ✅ **UseCases**: 100% (9/9)
 - ✅ **Mappers**: 100% (12/12)
 - ✅ **Formatters**: 100% (1/1)
-- ✅ **ViewModels**: 87.5% (7/8)
-- ⚠️ **Repositories**: 42.9% (3/7)
+- ✅ **ViewModels**: 100% (8/8)
+- ✅ **Repositories**: 100% (7/7)
 
 ## Contributions
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 
