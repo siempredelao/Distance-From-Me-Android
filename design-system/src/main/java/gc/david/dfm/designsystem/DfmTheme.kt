@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
+// TODO: Migrate to Material 3 Design System (Material You dynamic colors, updated typography, modern components)
 private val DfmColorScheme = lightColorScheme(
     primary = DfmGreen,
     onPrimary = DfmOnPrimary,

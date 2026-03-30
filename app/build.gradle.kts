@@ -105,6 +105,7 @@ kotlin {
 
 dependencies {
 
+	implementation(libs.androidx.activity.compose)
 	implementation(libs.androidx.activity.ktx)
 	implementation(libs.androidx.cardview)
 	implementation(libs.androidx.collection.ktx)
@@ -121,6 +122,8 @@ dependencies {
 	implementation(libs.lifecycle.runtime)
 	implementation(libs.lifecycle.viewmodel)
 	implementation(libs.lottie)
+	implementation(libs.lottie.compose)
+	implementation(libs.maps.compose)
 	implementation(libs.material.components)
 	implementation(libs.okhttp)
 	implementation(libs.okhttp.coroutines)
@@ -128,6 +131,7 @@ dependencies {
 	implementation(libs.playservices.maps)
 	implementation(libs.timber)
 	implementation(platform(libs.compose.bom))
+	implementation(libs.compose.material.icons)
 	implementation(libs.compose.material3)
 	implementation(libs.compose.ui)
 	implementation(libs.compose.ui.tooling.preview)
