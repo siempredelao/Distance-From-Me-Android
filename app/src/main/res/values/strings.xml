@@ -27,7 +27,7 @@
     <string name="menu_help_feedback_title" translatable="false">Help &amp; feedback</string>
     <string name="menu_about_title" translatable="false">Open source</string>
     <string name="snackbar_location_permission_needed">This feature needs location permissions.</string>
-    <string name="snackbar_location_permission_action">Settings</string>
+    <string name="snackbar_location_permission_action">Open settings</string>
 
     <string name="toast_loading_position">Searching your position. Please, wait</string>
     <string name="toast_no_find_address">No backend service available or very poor network signal. Try again in a while</string>
@@ -42,6 +42,11 @@
 
     <string name="toast_first_point_needed">Starting point needed. Please select a point.</string>
 
+    <!-- PERMISSION RATIONALE DIALOG -->
+    <string name="permission_rationale_title">Location Permission Required</string>
+    <string name="permission_rationale_message">This app needs location access to show distances from your current position. Grant permission to continue.\nIf you cancel, you can always select positions from any point on the map.</string>
+    <string name="permission_rationale_grant">Grant Permission</string>
+    <string name="permission_rationale_cancel">Cancel</string>
 
     <!-- ACTIVITY FEEDBACK -->
     <string name="toast_send_feedback_error">There are no email clients installed</string>
