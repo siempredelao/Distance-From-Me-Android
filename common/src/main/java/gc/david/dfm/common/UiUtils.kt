@@ -39,27 +39,6 @@ object UiUtils {
         Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
     }
 
-    fun dumpIntentToString(intent: Intent?): String {
-        if (intent == null) {
-            return "intent is null"
-        }
-
-        var intentAsString = StringBuilder()
-        val bundle = intent.extras
-
-        if (bundle != null) {
-            val keys = bundle.keySet()
-            intentAsString.append("intent=[ ")
-            for (key in keys) {
-                intentAsString.append(key).append("=").append(bundle.get(key)).append(", ")
-            }
-            intentAsString.append(" ]")
-        } else {
-            intentAsString = StringBuilder("intent with empty bundle")
-        }
-        return intentAsString.toString()
-    }
-
     fun dumpBundleToString(bundle: Bundle?): String {
         return bundle?.toString() ?: "bundle is null"
     }
