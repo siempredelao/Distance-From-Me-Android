@@ -21,6 +21,9 @@
 
     <string name="action_bar_search_title">Search</string>
     <string name="action_bar_search_hint">Search Distance From Me</string>
+    <string name="search_bar_open_menu">Menu</string>
+    <string name="search_bar_close">Close search</string>
+    <string name="search_bar_clear">Clear</string>
     <string name="menu_load_title">Load distance</string>
     <string name="menu_rate_app_title">Rate app</string>
     <string name="menu_settings_title">Settings</string>

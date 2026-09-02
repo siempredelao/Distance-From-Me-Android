@@ -18,6 +18,9 @@
 <resources>
     <string name="action_bar_search_title">Circare</string>
     <string name="action_bar_search_hint">Cercare Distance From Me</string>
+    <string name="search_bar_open_menu">Menu</string>
+    <string name="search_bar_close">Chiudi ricerca</string>
+    <string name="search_bar_clear">Cancella</string>
     <string name="toast_no_find_address">Servizio inattivo o segnale di rete molto povera. Riprova tra qualche minuto.</string>
     <string name="toast_loading_position">Cercando posizione, aspettare per favore.</string>
     <string name="menu_load_title">Caricare distanza</string>

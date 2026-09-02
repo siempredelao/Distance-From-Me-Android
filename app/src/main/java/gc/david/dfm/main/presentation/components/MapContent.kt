@@ -16,6 +16,9 @@
 
 package gc.david.dfm.main.presentation.components
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
@@ -50,6 +53,8 @@ fun MapContent(
     onMapClick: (LatLng) -> Unit,
     onMapLongClick: (LatLng) -> Unit,
     onMarkerClick: (MarkerData) -> Unit,
+    onCameraUpdateHandled: () -> Unit,
+    onMapClearHandled: () -> Unit,
     modifier: Modifier = Modifier,
     properties: MapProperties,
     uiSettings: MapUiSettings,
@@ -60,6 +65,14 @@ fun MapContent(
     LaunchedEffect(mapState.cameraUpdate) {
         mapState.cameraUpdate?.let { cameraUpdate ->
             cameraPositionState.animate(cameraUpdate.toCameraUpdate())
+            onCameraUpdateHandled()
+        }
+    }
+
+    // Handle map clear
+    LaunchedEffect(mapState.clearMap) {
+        if (mapState.clearMap) {
+            onMapClearHandled()
         }
     }
 
@@ -82,6 +95,7 @@ fun MapContent(
         cameraPositionState = cameraPositionState,
         properties = properties,
         uiSettings = uiSettings,
+        contentPadding = WindowInsets.navigationBars.asPaddingValues(),
         onMapClick = onMapClick,
         onMapLongClick = onMapLongClick,
     ) {
@@ -216,6 +230,8 @@ private fun MapContentPreview() {
         onMapClick = {},
         onMapLongClick = {},
         onMarkerClick = {},
+        onCameraUpdateHandled = {},
+        onMapClearHandled = {},
         modifier = Modifier,
         properties = MapProperties(),
         uiSettings = MapUiSettings(zoomControlsEnabled = false)

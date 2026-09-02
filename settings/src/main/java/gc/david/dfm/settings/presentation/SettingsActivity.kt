@@ -29,7 +29,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ActivitySettingsBinding.inflate(layoutInflater).apply {
             setContentView(root)
-            setSupportActionBar(tbMain.root)
+            setSupportActionBar(tbMain)
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

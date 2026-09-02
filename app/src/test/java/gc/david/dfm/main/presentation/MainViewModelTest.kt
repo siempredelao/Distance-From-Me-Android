@@ -71,6 +71,7 @@ class MainViewModelTest {
         whenever(getDistancesUseCase()).thenReturn(flowOf(emptyList()))
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(emptyList()))
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
         
         viewModel = MainViewModel(
             getDistancesUseCase,
@@ -92,37 +93,23 @@ class MainViewModelTest {
     @Test
     fun `onStart shows connection issue when offline`() {
         whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(buildConfigProvider.isReleaseBuild()).thenReturn(false)
 
         viewModel.onStart()
 
         assertTrue(viewModel.uiState.value.showConnectionIssue)
+        assertTrue(viewModel.uiState.value.sideNavigationState.showCrashMenuItem)
     }
 
     @Test
     fun `onStart does not show connection issue when online`() {
         whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(buildConfigProvider.isReleaseBuild()).thenReturn(true)
 
         viewModel.onStart()
 
         assertFalse(viewModel.uiState.value.showConnectionIssue)
-    }
-
-    @Test
-    fun `onMenuReady shows force crash item for debug builds`() {
-        whenever(buildConfigProvider.isReleaseBuild()).thenReturn(false)
-
-        viewModel.onMenuReady()
-
-        assertTrue(viewModel.uiState.value.showForceCrashItem)
-    }
-
-    @Test
-    fun `onMenuReady hides force crash item for release builds`() {
-        whenever(buildConfigProvider.isReleaseBuild()).thenReturn(true)
-
-        viewModel.onMenuReady()
-
-        assertFalse(viewModel.uiState.value.showForceCrashItem)
+        assertFalse(viewModel.uiState.value.sideNavigationState.showCrashMenuItem)
     }
 
     @Test
@@ -176,7 +163,7 @@ class MainViewModelTest {
 
     @Test
     fun `initial state does not show force crash item`() {
-        assertFalse(viewModel.uiState.value.showForceCrashItem)
+        assertFalse(viewModel.uiState.value.sideNavigationState.showCrashMenuItem)
     }
 
     @Test
@@ -185,9 +172,9 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `showLoadDistancesItem is updated when distances are loaded`() = runTest {
+    fun `showLoadMenuItem is updated when distances are loaded`() = runTest {
         // Initial state should not show the item
-        assertFalse(viewModel.uiState.value.showLoadDistancesItem)
+        assertFalse(viewModel.uiState.value.sideNavigationState.showLoadMenuItem)
     }
 }
 

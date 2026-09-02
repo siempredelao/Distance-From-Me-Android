@@ -63,6 +63,6 @@ class OnboardActivity : AppCompatActivity() {
 
     companion object {
 
-        private val TAG = "OnboardActivity"
+        private const val TAG = "OnboardActivity"
     }
 }

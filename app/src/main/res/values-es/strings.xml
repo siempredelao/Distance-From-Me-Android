@@ -18,6 +18,9 @@
 <resources>
     <string name="action_bar_search_title">Buscar</string>
     <string name="action_bar_search_hint">Buscar Distance From Me</string>
+    <string name="search_bar_open_menu">Menú</string>
+    <string name="search_bar_close">Cerrar búsqueda</string>
+    <string name="search_bar_clear">Borrar</string>
     <string name="toast_no_find_address">Servicio inactivo o señal de red muy pobre. Pruebe de nuevo pasados unos instantes</string>
     <string name="toast_loading_position">Buscando su posición. Por favor, espere unos instantes</string>
     <string name="menu_load_title">Cargar distancia</string>

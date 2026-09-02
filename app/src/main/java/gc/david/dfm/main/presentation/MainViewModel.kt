@@ -39,6 +39,7 @@ import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.MarkerData
+import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.settings.domain.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -85,9 +86,31 @@ class MainViewModel(
     private var isUserSelectingPoints: Boolean = false
 
     init {
+        // Initialize with current distance mode and side navigation state
+        val initialDistanceMode = distanceModeProvider.get()
+        _uiState.update { 
+            it.copy(
+                distanceMode = initialDistanceMode,
+                sideNavigationState = it.sideNavigationState.copy(
+                    selectedItemId = when (initialDistanceMode) {
+                        DistanceMode.FROM_CURRENT_POINT -> SideNavigationItemId.CURRENT_POSITION
+                        DistanceMode.FROM_ANY_POINT -> SideNavigationItemId.ANY_POSITION
+                    }
+                )
+            )
+        }
+        
         distances
             .map { it.isNotEmpty() }
-            .onEach { hasDistances -> _uiState.update { it.copy(showLoadDistancesItem = hasDistances) } }
+            .onEach { hasDistances -> 
+                _uiState.update { 
+                    it.copy(
+                        sideNavigationState = it.sideNavigationState.copy(
+                            showLoadMenuItem = hasDistances
+                        )
+                    )
+                } 
+            }
             .launchIn(viewModelScope)
     }
 
@@ -95,13 +118,20 @@ class MainViewModel(
         if (!connectionManager.isOnline()) {
             _uiState.update { it.copy(showConnectionIssue = true) }
         }
-    }
+        _uiState.update { 
+            it.copy(
+                sideNavigationState = it.sideNavigationState.copy(
+                    showCrashMenuItem = !buildConfigProvider.isReleaseBuild()
+                )
+            )
+        }
 
-    /**
-     * Triggered when the menu is already built and ready to be updated.
-     */
-    fun onMenuReady() {
-        _uiState.update { it.copy(showForceCrashItem = !buildConfigProvider.isReleaseBuild()) }
+        // Request location permission on startup if mode is FROM_CURRENT_POINT
+        if (distanceModeProvider.get() == DistanceMode.FROM_CURRENT_POINT) {
+            if (!permissionChecker.isLocationPermissionGranted()) {
+                _uiState.update { it.copy(requestLocationPermission = true) }
+            }
+        }
     }
 
     /**
@@ -134,6 +164,14 @@ class MainViewModel(
 
     fun onDistanceFromCurrentPositionSet() {
         distanceModeProvider.set(DistanceMode.FROM_CURRENT_POINT)
+        _uiState.update { 
+            it.copy(
+                distanceMode = DistanceMode.FROM_CURRENT_POINT,
+                sideNavigationState = it.sideNavigationState.copy(
+                    selectedItemId = SideNavigationItemId.CURRENT_POSITION
+                )
+            )
+        }
         resetMap()
         if (!permissionChecker.isLocationPermissionGranted()) {
             _uiState.update { it.copy(showLocationPermissionSnackbar = true) }
@@ -142,6 +180,14 @@ class MainViewModel(
 
     fun onDistanceFromAnyPositionSet() {
         distanceModeProvider.set(DistanceMode.FROM_ANY_POINT)
+        _uiState.update { 
+            it.copy(
+                distanceMode = DistanceMode.FROM_ANY_POINT,
+                sideNavigationState = it.sideNavigationState.copy(
+                    selectedItemId = SideNavigationItemId.ANY_POSITION
+                )
+            )
+        }
         resetMap()
     }
 
@@ -218,7 +264,7 @@ class MainViewModel(
         }
         coordinatesRepository.append(coordinates)
         
-        // Update map with markers for each coordinate
+        // Update map with simple markers (no distance info yet)
         val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
         _uiState.update { 
             it.copy(mapState = it.mapState.copy(markers = markers)) 
@@ -295,7 +341,7 @@ class MainViewModel(
                     markers = emptyList(),
                     polylines = emptyList()
                 ),
-                hideChart = true
+                showChart = false
             ) 
         }
     }
@@ -328,8 +374,8 @@ class MainViewModel(
         _uiState.update { it.copy(mapState = it.mapState.copy(clearMap = false)) }
     }
 
-    fun onHideChartHandled() {
-        _uiState.update { it.copy(hideChart = false) }
+    fun onShowChartHandled() {
+        _uiState.update { it.copy(showChart = false) }
     }
 
     fun onInfoWindowClick() {
@@ -346,6 +392,10 @@ class MainViewModel(
 
     fun onLocationPermissionSnackbarShown() {
         _uiState.update { it.copy(showLocationPermissionSnackbar = false) }
+    }
+
+    fun onLocationPermissionRequestHandled() {
+        _uiState.update { it.copy(requestLocationPermission = false) }
     }
 
     private fun CoordinatesRepository.setList(list: List<Coordinates>) {

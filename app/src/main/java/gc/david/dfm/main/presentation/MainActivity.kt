@@ -19,71 +19,57 @@ package gc.david.dfm.main.presentation
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.app.SearchManager
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
-import android.view.MenuItem
-import androidx.activity.addCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
-import androidx.core.view.GravityCompat
-import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
-import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.*
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.maps.model.LatLng
+import gc.david.dfm.PermissionChecker
+import gc.david.dfm.R
+import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
-import gc.david.dfm.common.collectOnStarted
-import gc.david.dfm.adapter.MarkerInfoWindowAdapter
-import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.systemService
-import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.connectivity.ConnectionIssuesDialogFragment
-import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.databinding.ActivityMainBinding
+import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.distance.data.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel
-import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.location.GeofencingLocationManager
+import gc.david.dfm.main.presentation.model.SideNavigationItemId
+import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
+import gc.david.dfm.main.presentation.screen.MainScreen
 import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
-import gc.david.dfm.main.presentation.animation.AnimatorUtil
-import gc.david.dfm.main.presentation.dialog.AddressSuggestionsDialogFragment
-import gc.david.dfm.main.presentation.dialog.DistanceSelectionDialogFragment
-import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 
-class MainActivity :
-        AppCompatActivity(),
-        OnMapReadyCallback,
-        GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMapClickListener,
-        GoogleMap.OnInfoWindowClickListener {
+class MainActivity : FragmentActivity() {
 
     private val appContext: Context by inject()
-    private val mapRenderer: MapRenderer by inject()
     private val permissionChecker: PermissionChecker by inject()
     private val locationManager: GeofencingLocationManager by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
 
-    private lateinit var binding: ActivityMainBinding
-
-    private var googleMap: GoogleMap? = null
 
     @SuppressLint("MissingPermission")
     private val permissionLauncher = registerForActivityResult(
@@ -93,413 +79,226 @@ class MainActivity :
         if (granted) {
             Timber.tag(TAG).d("permissions GRANTED")
             UiUtils.toastIt(R.string.toast_loading_position, appContext)
-            googleMap?.isMyLocationEnabled = true
-            binding.fabMyLocation.isVisible = true
             locationManager.startAfterPermissionGranted()
         } else {
             Timber.tag(TAG).d("permissions DENIED/INTERRUPTED")
-            binding.fabMyLocation.isVisible = false
-            binding.nvDrawer.menu.findItem(R.id.menu_any_position).isChecked = true
-            resetMap()
+            mainViewModel.resetMap()
         }
     }
-
-    private fun isMinimiseButtonShown(): Boolean = binding.fabShowChart.isShown
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
 
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+        )
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater).apply {
-            setContentView(root)
-            fabMyLocation.setOnClickListener { onMyLocationClick() }
-            fabShowChart.setOnClickListener { onShowChartClick() }
-
-            setSupportActionBar(tbMain.root)
-            supportActionBar?.apply {
-                setDisplayHomeAsUpEnabled(true)
-                val upArrow = ContextCompat.getDrawable(appContext, R.drawable.ic_menu_white_24dp)
-                setHomeAsUpIndicator(upArrow)
-            }
-
-            nvDrawer.setNavigationItemSelectedListener { menuItem ->
-                drawerLayout.closeDrawers()
-                when (menuItem.itemId) {
-                    R.id.menu_current_position -> {
-                        mainViewModel.onDistanceFromCurrentPositionSet()
-                        menuItem.isChecked = true
-                        true
-                    }
-                    R.id.menu_any_position -> {
-                        mainViewModel.onDistanceFromAnyPositionSet()
-                        menuItem.isChecked = true
-                        true
-                    }
-                    R.id.menu_rate_app -> {
-                        showRateDialog()
-                        true
-                    }
-                    R.id.menu_settings -> {
-                        SettingsActivity.open(this@MainActivity)
-                        true
-                    }
-                    R.id.menu_help_feedback -> {
-                        FaqActivity.open(this@MainActivity)
-                        true
-                    }
-                    R.id.menu_about -> {
-                        AboutActivity.open(this@MainActivity)
-                        true
-                    }
-                    else -> false
-                }
-            }
-            elevationChartView.setOnCloseListener { animateHideChart() }
-
-            val mapFragment = map2.getFragment<SupportMapFragment>()
-            mapFragment.getMapAsync(this@MainActivity)
-        }
-
-        onBackPressedDispatcher.addCallback(this) {
-            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                binding.drawerLayout.closeDrawer(GravityCompat.START)
-            } else {
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-            }
-        }
 
         lifecycle.addObserver(locationManager)
         locationManager.setOnLocationChangedListener(mainViewModel::onLocationChanged)
 
-        observeElevationViewModel()
-        observeAddressViewModel()
-        observeMainViewModel()
-        mainViewModel.onStart()
-
-        handleIntents(intent)
-    }
-
-    private fun observeElevationViewModel() = collectOnStarted {
-        elevationViewModel.uiState.collect { state ->
-            if (state.hideChart) {
-                hideChart()
-                elevationViewModel.onHideChartHandled()
-            }
-            state.elevation?.let { buildChart(it) }
-        }
-    }
-
-    private fun observeAddressViewModel() = collectOnStarted {
-        addressViewModel.uiState.collect { state ->
-            binding.progressView.isVisible = state.isLoading
-
-            if (state.showConnectionIssue) {
-                ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
-                addressViewModel.onConnectionIssueShown()
-            }
-
-            state.errorMessage?.let {
-                UiUtils.toastIt(it, appContext)
-                addressViewModel.onErrorMessageShown()
-            }
-
-            state.addressFound?.let {
-                showPositionByName(it)
-                addressViewModel.onAddressHandled()
-            }
-
-            state.multipleAddressesFound?.let {
-                showAddressSelectionDialog(it)
-                addressViewModel.onMultipleAddressesHandled()
-            }
-        }
-    }
-
-    private fun observeMainViewModel() = collectOnStarted {
-        mainViewModel.uiState.collect { state ->
-            with(binding.tbMain.root.menu) {
-                Timber.tag(TAG).d("showLoadDistancesItem ${state.showLoadDistancesItem}")
-                findItem(R.id.action_load)?.isVisible = state.showLoadDistancesItem
-                findItem(R.id.action_crash)?.isVisible = state.showForceCrashItem
-            }
-
-            if (state.showConnectionIssue) {
-                ConnectionIssuesDialogFragment().show(supportFragmentManager, null)
-                mainViewModel.onConnectionIssueShown()
-            }
-
-            state.errorMessage?.let {
-                UiUtils.toastIt(it, appContext)
-                mainViewModel.onErrorMessageShown()
-            }
-
-            state.selectFromDistancesLoaded?.let {
-                showLoadedDistancesDialog(it)
-                mainViewModel.onDistancesLoadedHandled()
-            }
-
-            state.triggerElevationUpdate?.let { coordinates ->
-                elevationViewModel.onCoordinatesSelected(coordinates)
-                mainViewModel.onElevationUpdateHandled()
-            }
-
-            // Render map state using MapRenderer
-            googleMap?.let { map ->
-                mapRenderer.render(map, state.mapState)
+        setContent {
+            DfmTheme {
+                val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+                val elevationUiState by elevationViewModel.uiState.collectAsStateWithLifecycle()
+                val addressUiState by addressViewModel.uiState.collectAsStateWithLifecycle()
                 
-                // Handle one-time events after rendering
-                if (state.mapState.clearMap) {
-                    mainViewModel.onMapClearHandled()
+                val snackbarHostState = remember { SnackbarHostState() }
+                var showChart by rememberSaveable { mutableStateOf(false) }
+
+                // Handle elevation state
+                LaunchedEffect(elevationUiState.elevation) {
+                    if (elevationUiState.elevation != null) {
+                        showChart = true
+                    }
                 }
-                if (state.mapState.cameraUpdate != null) {
-                    mainViewModel.onCameraUpdateHandled()
+
+                // Handle showChart from both ViewModels
+                LaunchedEffect(elevationUiState.showChart, mainUiState.showChart) {
+                    if (elevationUiState.showChart) {
+                        showChart = true
+                        elevationViewModel.onShowChartHandled()
+                    }
+                    if (!mainUiState.showChart && showChart) {
+                        showChart = false
+                        mainViewModel.onShowChartHandled()
+                    }
                 }
-            }
 
-            state.searchAddress?.let {
-                addressViewModel.onAddressSearch(it)
-                mainViewModel.onSearchAddressHandled()
-            }
+                // Handle address state
+                LaunchedEffect(addressUiState.errorMessage) {
+                    addressUiState.errorMessage?.let {
+                        UiUtils.toastIt(it, appContext)
+                        addressViewModel.onErrorMessageShown()
+                    }
+                }
 
-            if (state.hideChart) {
-                hideChart()
-                mainViewModel.onHideChartHandled()
-            }
+                LaunchedEffect(addressUiState.addressFound) {
+                    addressUiState.addressFound?.let { address ->
+                        mainViewModel.onPositionByNameResolved(address.coordinates.toCommonCoordinates())
+                        addressViewModel.onAddressHandled()
+                    }
+                }
 
-            if (state.openShowInfo) {
-                ShowInfoActivity.open(this@MainActivity)
-                mainViewModel.onOpenShowInfoHandled()
-            }
+                LaunchedEffect(addressUiState.showConnectionIssue) {
+                    if (addressUiState.showConnectionIssue) {
+                        UiUtils.toastIt("No internet connection", appContext)
+                        addressViewModel.onConnectionIssueShown()
+                    }
+                }
 
-            if (state.showLocationPermissionSnackbar) {
-                Snackbar
-                    .make(
-                        binding.drawerLayout,
-                        R.string.snackbar_location_permission_needed,
-                        Snackbar.LENGTH_INDEFINITE
+                // Handle main state
+                LaunchedEffect(mainUiState.showConnectionIssue) {
+                    if (mainUiState.showConnectionIssue) {
+                        UiUtils.toastIt("No internet connection", appContext)
+                        mainViewModel.onConnectionIssueShown()
+                    }
+                }
+
+                LaunchedEffect(mainUiState.errorMessage) {
+                    mainUiState.errorMessage?.let {
+                        UiUtils.toastIt(it, appContext)
+                        mainViewModel.onErrorMessageShown()
+                    }
+                }
+
+                LaunchedEffect(mainUiState.triggerElevationUpdate) {
+                    mainUiState.triggerElevationUpdate?.let { coordinates ->
+                        elevationViewModel.onCoordinatesSelected(coordinates)
+                        mainViewModel.onElevationUpdateHandled()
+                    }
+                }
+
+                LaunchedEffect(mainUiState.searchAddress) {
+                    mainUiState.searchAddress?.let {
+                        addressViewModel.onAddressSearch(it)
+                        mainViewModel.onSearchAddressHandled()
+                    }
+                }
+
+                LaunchedEffect(mainUiState.openShowInfo) {
+                    if (mainUiState.openShowInfo) {
+                        ShowInfoActivity.open(this@MainActivity)
+                        mainViewModel.onOpenShowInfoHandled()
+                    }
+                }
+
+                LaunchedEffect(mainUiState.showLocationPermissionSnackbar) {
+                    if (mainUiState.showLocationPermissionSnackbar) {
+                        val result = snackbarHostState.showSnackbar(
+                            message = getString(R.string.snackbar_location_permission_needed),
+                            actionLabel = getString(R.string.snackbar_location_permission_action)
+                        )
+                        if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = "package:$packageName".toUri()
+                            startActivity(intent)
+                        }
+                        mainViewModel.onLocationPermissionSnackbarShown()
+                    }
+                }
+
+                // Permission rationale dialog - shown when permission is needed
+                if (mainUiState.requestLocationPermission) {
+                    PermissionRationaleDialog(
+                        onRequestPermission = {
+                            mainViewModel.onLocationPermissionRequestHandled()
+                            permissionLauncher.launch(PERMISSIONS)
+                        },
+                        onDismiss = {
+                            mainViewModel.onLocationPermissionRequestHandled()
+                            mainViewModel.onDistanceFromAnyPositionSet()
+                        }
                     )
-                    .setAction(R.string.snackbar_location_permission_action) {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.data = "package:$packageName".toUri()
-                        startActivity(intent)
-                    }
-                    .show()
-                mainViewModel.onLocationPermissionSnackbarShown()
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map.apply {
-            uiSettings.isMyLocationButtonEnabled = false
-            mapType = GoogleMap.MAP_TYPE_HYBRID
-            setOnMapLongClickListener(this@MainActivity)
-            setOnMapClickListener(this@MainActivity)
-            setOnInfoWindowClickListener(this@MainActivity)
-            setInfoWindowAdapter(MarkerInfoWindowAdapter(this@MainActivity))
-        }
-
-        resetMap()
-
-        if (!permissionChecker.isLocationPermissionGranted()) {
-            permissionLauncher.launch(PERMISSIONS)
-        } else {
-            UiUtils.toastIt(R.string.toast_loading_position, appContext)
-            googleMap?.isMyLocationEnabled = true
-            binding.fabMyLocation.isVisible = true
-        }
-    }
-
-    override fun onMapLongClick(point: LatLng) {
-        mainViewModel.onMapLongClick(point.toCoordinates())
-    }
-
-    override fun onMapClick(point: LatLng) {
-        mainViewModel.onMapClick(point.toCoordinates())
-    }
-
-    override fun onInfoWindowClick(marker: Marker) {
-        Timber.tag(TAG).d("onInfoWindowClick")
-        mainViewModel.onInfoWindowClick()
-    }
-
-    private fun resetMap() {
-        Timber.tag(TAG).d("resetMap")
-        mainViewModel.resetMap()
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        Timber.tag(TAG).d("onNewIntent %s", UiUtils.dumpIntentToString(intent))
-        super.onNewIntent(intent)
-
-        setIntent(intent)
-        handleIntents(intent)
-    }
-
-    //region intent handling
-    private fun handleIntents(intent: Intent?) {
-        intent ?: return
-        when (intent.action) {
-            Intent.ACTION_SEARCH -> handleSearchIntent(intent)
-        }
-    }
-
-    private fun handleSearchIntent(intent: Intent) {
-        val query = intent.getStringExtra(SearchManager.QUERY) ?: return
-        mainViewModel.onAddressSearch(query)
-        binding.tbMain.root.menu.findItem(R.id.action_search).collapseActionView()
-    }
-    //endregion
-
-    //region menu handing
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-
-        menu.findItem(R.id.action_search).apply {
-            with(actionView as SearchView) {
-                val searchManager = systemService<SearchManager>(SEARCH_SERVICE)
-                setSearchableInfo(searchManager.getSearchableInfo(componentName))
-                isSubmitButtonEnabled = false
-                isQueryRefinementEnabled = true
-                setIconifiedByDefault(true)
-            }
-        }
-
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        mainViewModel.onMenuReady()
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                Timber.tag(TAG).d("onOptionsItemSelected home")
-                binding.drawerLayout.openDrawer(GravityCompat.START)
-                return true
-            }
-            R.id.action_search -> {
-                Timber.tag(TAG).d("onOptionsItemSelected search")
-                return true
-            }
-            R.id.action_load -> {
-                Timber.tag(TAG).d("onOptionsItemSelected load distances from ddbb")
-                mainViewModel.onLoadDistancesClick()
-                return true
-            }
-            R.id.action_crash -> {
-                Timber.tag(TAG).d("onOptionsItemSelected crash")
-                mainViewModel.onForceCrashClick()
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
-    //endregion menu handling
-
-    private fun showLoadedDistancesDialog(distances: List<Distance>) {
-        DistanceSelectionDialogFragment()
-                .apply {
-                    setDistanceList(distances)
-                    setOnDialogActionListener { position ->
-                        val distance = distances[position]
-                        mainViewModel.onDistanceToShowSelected(distance)
-                    }
                 }
-                .show(supportFragmentManager, null)
-    }
 
-    private fun showRateDialog() {
-        Timber.tag(TAG).d("showRateDialog")
-
-        InAppReviewHandler.rateApp(this)
-    }
-
-    /**
-     * Called when the Activity is restarted, even before it becomes visible.
-     */
-    @SuppressLint("MissingPermission")
-    public override fun onStart() {
-        Timber.tag(TAG).d("onStart")
-
-        super.onStart()
-        if (permissionChecker.isLocationPermissionGranted()) {
-            googleMap?.isMyLocationEnabled = true
-            binding.fabMyLocation.isVisible = true
-        } else {
-            binding.fabMyLocation.isVisible = false
+                MainScreen(
+                    mapState = mainUiState.mapState,
+                    sideNavigationState = mainUiState.sideNavigationState,
+                    snackbarHostState = snackbarHostState,
+                    isLoading = addressUiState.isLoading,
+                    elevationData = elevationUiState.elevation,
+                    showChart = showChart,
+                    showChartFab = elevationUiState.elevation != null && !showChart,
+                    distancesToLoad = mainUiState.selectFromDistancesLoaded,
+                    addressSuggestions = addressUiState.multipleAddressesFound,
+                    isMyLocationEnabled = mainUiState.distanceMode == DistanceMode.FROM_CURRENT_POINT 
+                            && permissionChecker.isLocationPermissionGranted(),
+                    onSearchQuery = { query ->
+                        mainViewModel.onAddressSearch(query)
+                    },
+                    onMapClick = { latLng ->
+                        mainViewModel.onMapClick(latLng.toCoordinates())
+                    },
+                    onMapLongClick = { latLng ->
+                        mainViewModel.onMapLongClick(latLng.toCoordinates())
+                    },
+                    onMarkerClick = { 
+                        mainViewModel.onInfoWindowClick()
+                    },
+                    onNavigationItemClick = { itemId ->
+                        when (itemId) {
+                            SideNavigationItemId.CURRENT_POSITION -> {
+                                mainViewModel.onDistanceFromCurrentPositionSet()
+                            }
+                            SideNavigationItemId.ANY_POSITION -> {
+                                mainViewModel.onDistanceFromAnyPositionSet()
+                            }
+                            SideNavigationItemId.RATE_APP -> {
+                                InAppReviewHandler.rateApp(this@MainActivity)
+                            }
+                            SideNavigationItemId.SETTINGS -> {
+                                SettingsActivity.open(this@MainActivity)
+                            }
+                            SideNavigationItemId.HELP_FEEDBACK -> {
+                                FaqActivity.open(this@MainActivity)
+                            }
+                            SideNavigationItemId.ABOUT -> {
+                                AboutActivity.open(this@MainActivity)
+                            }
+                            SideNavigationItemId.LOAD -> {
+                                mainViewModel.onLoadDistancesClick()
+                            }
+                            SideNavigationItemId.CRASH -> {
+                                mainViewModel.onForceCrashClick()
+                            }
+                        }
+                    },
+                    onMyLocationClick = {
+                        mainViewModel.onMyLocationButtonClick()
+                    },
+                    onShowChartClick = {
+                        showChart = true
+                    },
+                    onElevationChartClose = {
+                        showChart = false
+                    },
+                    onDistanceSelected = { distance ->
+                        mainViewModel.onDistanceToShowSelected(distance)
+                        mainViewModel.onDistancesLoadedHandled()
+                    },
+                    onDistanceSelectionDismiss = {
+                        mainViewModel.onDistancesLoadedHandled()
+                    },
+                    onAddressSelected = { address ->
+                        addressViewModel.onAddressSelected(address)
+                        addressViewModel.onMultipleAddressesHandled()
+                    },
+                    onAddressSuggestionsDismiss = {
+                        addressViewModel.onMultipleAddressesHandled()
+                    },
+                    onCameraUpdateHandled = {
+                        mainViewModel.onCameraUpdateHandled()
+                    },
+                    onMapClearHandled = {
+                        mainViewModel.onMapClearHandled()
+                    }
+                )
+            }
         }
-    }
 
-    public override fun onDestroy() {
-        Timber.tag(TAG).d("onDestroy")
-
-        hideChart()
-        super.onDestroy()
-    }
-
-    private fun fixMapPadding() {
-        Timber.tag(TAG).d("fixMapPadding elevationChartShown ${binding.elevationChartView.isShown}")
-        googleMap?.setPadding(
-                0,
-                if (binding.elevationChartView.isShown) binding.elevationChartView.height else 0,
-                0,
-                0)
-    }
-
-    private fun hideChart() {
-        binding.elevationChartView.isInvisible = true
-        binding.fabShowChart.isInvisible = true
-        fixMapPadding()
-    }
-
-    private fun showChart() {
-        binding.elevationChartView.isVisible = true
-        fixMapPadding()
-    }
-
-    private fun buildChart(elevation: ElevationUiModel) {
-        binding.elevationChartView.setElevationProfile(elevation.elevationList)
-        binding.elevationChartView.setTitle(elevation.altitudeUnit)
-
-        if (!isMinimiseButtonShown()) {
-            showChart()
-        }
-    }
-
-    private fun animateHideChart() {
-        AnimatorUtil.replaceViews(binding.elevationChartView, binding.fabShowChart)
-    }
-
-    private fun animateShowChart() {
-        AnimatorUtil.replaceViews(binding.fabShowChart, binding.elevationChartView)
-    }
-
-    private fun onShowChartClick() {
-        animateShowChart()
-    }
-
-    private fun onMyLocationClick() {
-        mainViewModel.onMyLocationButtonClick()
-    }
-
-    private fun showAddressSelectionDialog(addressList: List<Address>) {
-        val addressSuggestionsDialogFragment = AddressSuggestionsDialogFragment()
-        addressSuggestionsDialogFragment.setAddressList(addressList)
-        addressSuggestionsDialogFragment.setOnDialogActionListener {
-            position -> addressViewModel.onAddressSelected(addressList[position])
-        }
-        addressSuggestionsDialogFragment.show(supportFragmentManager, null)
-    }
-
-    private fun showPositionByName(address: Address) {
-        Timber.tag(TAG).d("showPositionByName $address")
-
-        mainViewModel.onPositionByNameResolved(address.coordinates.toCommonCoordinates())
+        mainViewModel.onStart()
     }
 
     companion object {

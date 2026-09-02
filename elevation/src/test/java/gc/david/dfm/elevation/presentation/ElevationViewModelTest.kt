@@ -67,7 +67,7 @@ class ElevationViewModelTest {
 
         viewModel.onCoordinatesSelected(dummyList)
 
-        assertTrue(viewModel.uiState.value.hideChart)
+        assertEquals(false, viewModel.uiState.value.showChart)
     }
 
     @Test
@@ -78,7 +78,7 @@ class ElevationViewModelTest {
 
         viewModel.onCoordinatesSelected(dummyList)
 
-        assertTrue(viewModel.uiState.value.hideChart)
+        assertEquals(false, viewModel.uiState.value.showChart)
     }
 
     @Test
@@ -96,18 +96,25 @@ class ElevationViewModelTest {
 
         val expectedElevationModel = ElevationUiModel(elevation.results, "m")
         assertEquals(expectedElevationModel, viewModel.uiState.value.elevation)
+        assertTrue(viewModel.uiState.value.showChart)
     }
 
     @Test
-    fun `onHideChartHandled clears hide chart flag`() = runTest {
-        val dummyList = emptyList<Coordinates>()
-        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(false)
-        viewModel.onCoordinatesSelected(dummyList)
-        assertTrue(viewModel.uiState.value.hideChart)
+    fun `onShowChartHandled clears show chart flag`() = runTest {
+        val coordinatesList = emptyList<Coordinates>()
+        val unitSystem = UnitSystem.METRIC
+        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(unitSystem)
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(distanceFormatter.getAltitudeUnitLabel(unitSystem)).thenReturn("m")
+        val elevation = Elevation(emptyList(), ElevationStatus.OK)
+        whenever(getElevationByCoordinatesUseCase(any())).thenReturn(Result.success(elevation))
+        viewModel.onCoordinatesSelected(coordinatesList)
+        assertTrue(viewModel.uiState.value.showChart)
 
-        viewModel.onHideChartHandled()
+        viewModel.onShowChartHandled()
 
-        assertEquals(false, viewModel.uiState.value.hideChart)
+        assertEquals(false, viewModel.uiState.value.showChart)
     }
 
     @Test

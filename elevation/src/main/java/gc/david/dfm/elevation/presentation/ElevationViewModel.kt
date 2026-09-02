@@ -48,7 +48,7 @@ class ElevationViewModel(
 
     fun onCoordinatesSelected(coordinates: List<Coordinates>) {
         if (!settingsRepository.shouldShowElevationChart() || !connectionManager.isOnline()) {
-            _uiState.update { it.copy(hideChart = true) }
+            _uiState.update { it.copy(showChart = false) }
             return
         }
 
@@ -60,7 +60,10 @@ class ElevationViewModel(
                     }
                 val altitudeUnit = distanceFormatter.getAltitudeUnitLabel(unitSystem)
                 _uiState.update { current ->
-                    current.copy(elevation = ElevationUiModel(normalizedElevationList, altitudeUnit))
+                    current.copy(
+                        elevation = ElevationUiModel(normalizedElevationList, altitudeUnit),
+                        showChart = true
+                    )
                 }
             }, {
                 Timber.tag(TAG).e(it)
@@ -68,8 +71,8 @@ class ElevationViewModel(
         }
     }
 
-    fun onHideChartHandled() {
-        _uiState.update { it.copy(hideChart = false) }
+    fun onShowChartHandled() {
+        _uiState.update { it.copy(showChart = false) }
     }
 
     private companion object {

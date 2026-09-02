@@ -30,7 +30,6 @@ import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
-import gc.david.dfm.main.presentation.MapRenderer
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -45,6 +44,5 @@ val appModule = module {
     factory { GeofencingLocationManager(get(), get()) }
     single<BuildConfigProvider> { DefaultBuildConfigProvider() }
     single { MapStateMapper(get()) }
-    single { MapRenderer() }
     viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }

@@ -18,6 +18,9 @@
 <resources>
     <string name="action_bar_search_title">Suche</string>
     <string name="action_bar_search_hint">Distance From Me suchen</string>
+    <string name="search_bar_open_menu">Menü</string>
+    <string name="search_bar_close">Suche schließen</string>
+    <string name="search_bar_clear">Löschen</string>
     <string name="toast_no_find_address">Dienst inaktiv oder sehr schlechte Netzwerk-Signal. Bitte versuchen Sie es später noch einmal</string>
     <string name="toast_loading_position">Suche Ihrer Position im Vorgang. Bitte warten</string>
     <string name="menu_load_title">Entfernung laden</string>
