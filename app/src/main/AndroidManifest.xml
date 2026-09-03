@@ -45,7 +45,6 @@
         <activity
             android:name=".onboarding.presentation.OnboardActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:theme="@style/CustomActionBarTheme.Onboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
