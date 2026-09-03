@@ -5,8 +5,8 @@ targetSdk = "36"
 compileSdk = "36"
 
 # App version
-appVersionCode = "30"
-appVersionName = "3.5"
+appVersionCode = "32"
+appVersionName = "4.0"
 
 # Library versions
 activityKtx = "1.12.4"
