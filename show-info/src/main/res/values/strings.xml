@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name" translatable="false">Distance From Me</string>
+    <string name="action_bar_item_social_share_title">Share</string>
+    <string name="action_bar_item_refresh_title">Refresh data</string>
+    <string name="action_bar_item_save_title">Save</string>
+    <string name="info_current_position_title">Current estimated position:</string>
+    <string name="info_destination_position_title">Estimated destination:</string>
+    <string name="info_distance_title">Distance: %s</string>
+    <string name="error_no_address_found_message">No address found for location</string>
+    <string name="share_distance_from_message">From</string>
+    <string name="share_distance_to_message">To</string>
+    <string name="share_distance_there_are_message">There are</string>
+    <string name="toast_no_location_found">Error trying to get address. Use refresh button</string>
+    <string name="toast_network_problems">Wireless connection failed. Turn on your wireless connection and try again refreshing</string>
+    <string name="alias_dialog_title">Alias</string>
+    <string name="alias_dialog_message">Assign an alias to this distance:</string>
+    <string name="alias_dialog_accept">Accept</string>
+    <string name="alias_dialog_with_name_toast">Distance \"%s\" correctly saved</string>
+    <string name="alias_dialog_no_name_toast">Distance correctly saved</string>
+    <string name="save_distance_error">Unable to save distance. Try again later.</string>
+</resources>

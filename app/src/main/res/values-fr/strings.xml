@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2019 David Aguiar Gonzalez
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,64 +17,19 @@
 
 <resources>
     <string name="action_bar_search_title">Rechercher</string>
-    <string name="action_bar_item_social_share_title">Partager</string>
     <string name="action_bar_search_hint">Rechercher Distance From Me</string>
-    <string name="progressdialog_search_position_title">Recherche</string>
-    <string name="progressdialog_search_position_message">Attendez, s\'il vous plaît!</string>
+    <string name="search_bar_open_menu">Menu</string>
+    <string name="search_bar_close">Fermer la recherche</string>
+    <string name="search_bar_clear">Effacer</string>
     <string name="toast_no_find_address">Le service est inactif ou votre signal de réseau est très pauvre. Veuillez réessayer ultérieurement.</string>
-    <string name="toast_no_results">Aucun résultat trouvé avec ces mots. Essayez à nouveau avec des autres mots.</string>
     <string name="toast_loading_position">En recherchant de votre position. Attendez, s\'il vous plaît!</string>
     <string name="menu_load_title">Chargez distance</string>
-    <string name="dialog_connection_problems_negative_button">Pas maintenant</string>
-    <string name="dialog_connection_problems_message">Pas de connexion réseau activée, voulez-vous l\'activer?</string>
-    <string name="dialog_connection_problems_positive_button">Activer</string>
     <string name="dialog_select_address_title">Choisissez une direction</string>
     <string name="dialog_load_distances_title">Choisissez une distance</string>
     <string name="menu_rate_app_title">Noter application</string>
-    <string name="dialog_rate_app_title">Noter cette application</string>
-    <string name="dialog_rate_app_message">Si Distance From Me vous plaît, donnez-lui 5 étoiles et laissez un joli commentaire, s\'il vous plaît. Autrement vous pouvez aussi vous plaindre à propos de quelque erreur ou écrire une suggestion par email à l\'équipe de développement.</string>
-    <string name="dialog_rate_app_positive_button">Aller à Play Store</string>
-    <string name="dialog_rate_app_negative_button">Dites-nous!</string>
     <string name="toast_send_feedback_error">Pas de client de messagerie installé</string>
     <string name="menu_settings_title">Paramètres</string>
-    <string name="toast_distances_deleted">Distances éliminées</string>
-    <string name="category_centre_title">Calcul des distances</string>
-    <string name="dialog_centre_map_title">Centrer carte</string>
-    <string name="preference_centre_map_summary">Où centrer la carte lorsque la distance est calculée</string>
-    <string name="animation_destination_item">Centrer en destination</string>
-    <string name="animation_center_item">Regarder les deux lieus</string>
-    <string name="category_db_title">Registre des distances</string>
-    <string name="preference_delete_distances_title">Effacer distances</string>
-    <string name="preference_delete_distances_summary">Touchez pour effacer toutes les distances sauvegardées</string>
-    <string name="elevation_chart_title">Profil d\'élévation (%s)</string>
-    <string name="preference_show_elevation_title">Montrer profil d\'élévation</string>
-    <string name="preference_show_elevation_summary">Calcule le profil d\'élévation. Cette tâche peut prendre un certain temps selon votre connexion.</string>
-    <string name="info_current_position_title">Position actuelle estimée:</string>
-    <string name="info_destination_position_title">Destination approchée:</string>
-    <string name="error_no_address_found_message">Aucun résultat trouvé</string>
-    <string name="info_distance_title">Distance: %s</string>
-    <string name="action_bar_item_refresh_title">Actualiser data</string>
-    <string name="action_bar_item_save_title">Sauvegarder</string>
-    <string name="share_distance_from_message">De</string>
-    <string name="share_distance_to_message">À</string>
-    <string name="share_distance_there_are_message">Il y a</string>
-    <string name="toast_no_location_found">Pas possible obtenir la direction. Appuyez sur le bouton Actualiser pour rafraichir l\'information</string>
-    <string name="toast_network_problems">Aucune connexion réseau n\'est disponible actuellement. Vérifiez l\'etat de votre connexion réseau</string>
-    <string name="alias_dialog_title">Alias</string>
-    <string name="alias_dialog_message">Associez un surnom à la distance:</string>
-    <string name="alias_dialog_accept">Accepter</string>
-    <string name="alias_dialog_with_name_toast">Distance \"%s\" bien sauvegardée</string>
-    <string name="alias_dialog_no_name_toast">Distance bien sauvegardée</string>
-    <string name="preference_centre_map_title">Centrer carte</string>
     <string name="toast_first_point_needed">Indiquez un point de départ, s\'il vous plaît</string>
-    <string name="no_animation_item">Pas d\'animation</string>
     <string name="navigation_drawer_starting_point_current_position_item">Position actuelle</string>
     <string name="navigation_drawer_starting_point_any_position_item">N\'importe quelle position</string>
-    <string name="dialog_connection_problems_title">Problème de connexion</string>
-    <string name="category_unit_title">Unité de mesure</string>
-    <string name="preference_unit_dialog_title">Sélectionnez l\'unité</string>
-    <string name="preference_unit_entry_EU">métros, kilómetros</string>
-    <string name="preference_unit_entry_US">miles, yards, pieds</string>
-    <string name="preference_unit_summary">Choisissez une unité de mesure. Par défaut, il est choisi en tenant compte de la langue de votre appareil.</string>
-    <string name="preference_unit_title">Sélectionnez l\'unité préférée</string>
 </resources>

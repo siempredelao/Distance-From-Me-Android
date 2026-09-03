@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018 David Aguiar Gonzalez
+# Copyright (c) 2021 David Aguiar Gonzalez
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-# Crashlytics (https://docs.fabric.io/android/crashlytics/dex-and-proguard.html)
--keepattributes *Annotation*
--keepattributes SourceFile,LineNumberTable
--keep public class * extends java.lang.Exception
--printmapping mapping.txt
--keep class com.crashlytics.** { *; }
--dontwarn com.crashlytics.**
+# Firebase Crashlytics (https://firebase.google.com/docs/crashlytics/get-deobfuscated-reports?platform=android)
+-keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+-keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.

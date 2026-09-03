@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2026 David Aguiar Gonzalez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package gc.david.dfm.elevation.data.mapper
+
+import gc.david.dfm.elevation.data.model.ElevationEntity
+import gc.david.dfm.elevation.domain.model.Elevation
+import gc.david.dfm.elevation.data.model.ElevationStatus as DataElevationStatus
+import gc.david.dfm.elevation.domain.model.ElevationStatus as DomainElevationStatus
+
+/**
+ * Created by david on 13.01.17.
+ *
+ *
+ * Mapper class used to transform [ElevationEntity] in the Data layer
+ * to [Elevation] in the Domain layer.
+ */
+class ElevationEntityDataMapper {
+
+    fun transform(elevationEntity: ElevationEntity): Elevation {
+        val elevationList = elevationEntity.results.map { it.elevation }
+        val status = mapStatus(elevationEntity.status)
+        return Elevation(elevationList, status)
+    }
+
+    private fun mapStatus(dataStatus: DataElevationStatus): DomainElevationStatus {
+        return when (dataStatus) {
+            DataElevationStatus.OK -> DomainElevationStatus.OK
+            DataElevationStatus.INVALID_REQUEST -> DomainElevationStatus.INVALID_REQUEST
+            DataElevationStatus.OVER_QUERY_LIMIT -> DomainElevationStatus.OVER_QUERY_LIMIT
+            DataElevationStatus.REQUEST_DENIED -> DomainElevationStatus.REQUEST_DENIED
+            DataElevationStatus.UNKNOWN_ERROR -> DomainElevationStatus.UNKNOWN_ERROR
+        }
+    }
+}

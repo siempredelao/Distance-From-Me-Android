@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "50471058812",
+    "firebase_url": "https://distance-from-me-2019.firebaseio.com",
+    "project_id": "distance-from-me-2019",
+    "storage_bucket": "distance-from-me-2019.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50471058812:android:18278275f8233fb1aab8f9",
+        "android_client_info": {
+          "package_name": "gc.david.dfm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "50471058812-au7u7gse5pbmkl5efj9aiecbe7okaaf5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWxQ7r8mkxWFcXTFL9rQQlugQr4v3AMMw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "50471058812-au7u7gse5pbmkl5efj9aiecbe7okaaf5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

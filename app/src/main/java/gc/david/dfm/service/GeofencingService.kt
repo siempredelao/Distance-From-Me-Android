@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 David Aguiar Gonzalez
+ * Copyright (c) 2026 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,116 +16,119 @@
 
 package gc.david.dfm.service
 
-import android.app.IntentService
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.location.Location
-import android.os.Bundle
+import android.os.IBinder
+import android.os.Looper
 import androidx.core.os.bundleOf
+import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
+import timber.log.Timber
 
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationListener
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
+@SuppressLint("MissingPermission")
+class GeofencingService : Service() {
 
-import gc.david.dfm.map.LocationUtils
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-class GeofencingService :
-        IntentService("GeofencingService"),
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
-
-    private var googleApiClient: GoogleApiClient? = null
     private var locationRequest: LocationRequest? = null
+    private var locationCallback: LocationCallback? = null
+    private var previousLatLng = LatLng(-180.0, -180.0)
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        stopLocationUpdates()
+        return super.onUnbind(intent)
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        createGoogleApiClient()
-        googleApiClient?.connect()
-        createLocationRequest()
-
-        return Service.START_STICKY
-    }
-
-    override fun onHandleIntent(intent: Intent?) {
-        // nothing
-    }
-
-    override fun onConnected(bundle: Bundle?) {
-        val lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
-        if (lastKnownLocation != null) {
-            sendUpdate(lastKnownLocation)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.lastLocation?.let { sendUpdate(it) }
+            }
         }
 
-        startLocationUpdates()
+        fusedLocationClient
+            .lastLocation
+            .addOnSuccessListener { lastKnownLocation -> lastKnownLocation?.let { sendUpdate(it) } }
+            .addOnFailureListener {
+                Timber.tag(TAG).e("Error trying to get last GPS location")
+            }
+
+        locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            UPDATE_INTERVAL_IN_MILLISECONDS
+        ).apply {
+            // Set the interval ceiling to one minute
+            setMinUpdateIntervalMillis(FAST_INTERVAL_CEILING_IN_MILLISECONDS)
+        }
+            .build()
+            .also {
+                // Start location tracking
+                fusedLocationClient
+                    .requestLocationUpdates(it, locationCallback!!, Looper.getMainLooper())
+            }
+
+        return START_STICKY
     }
 
-    override fun onConnectionSuspended(cause: Int) {
-        // nothing
-    }
-
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        // nothing
-    }
-
-    override fun onLocationChanged(location: Location) {
-        sendUpdate(location)
-    }
-
-    @Synchronized
-    private fun createGoogleApiClient() {
-        googleApiClient = GoogleApiClient.Builder(this).addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build()
+    override fun onDestroy() {
+        stopLocationUpdates()
     }
 
     private fun stopLocationUpdates() {
-        if (googleApiClient?.isConnected == true) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this)
-        }
-    }
-
-    private fun createLocationRequest() {
-        locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS
-            // Set the interval ceiling to one minute
-            fastestInterval = LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS
-        }
-    }
-
-    private fun startLocationUpdates() {
-        val googleApiClient = googleApiClient ?: return
-        val locationRequest = locationRequest ?: return
-        if (googleApiClient.isConnected) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this)
+        locationCallback?.let {
+            fusedLocationClient.removeLocationUpdates(it)
         }
     }
 
     private fun sendUpdate(location: Location) {
+        if (!isLocationUpdate(location.toLatLng(), previousLatLng)) return
+
         val locationIntent = Intent(GEOFENCE_RECEIVER_ACTION).apply {
+            setPackage(applicationContext.packageName)
             val bundle =
-                    bundleOf(
-                            GEOFENCE_RECEIVER_LATITUDE_KEY to location.latitude,
-                            GEOFENCE_RECEIVER_LONGITUDE_KEY to location.longitude
-                    )
+                bundleOf(
+                    GEOFENCE_RECEIVER_LATITUDE_KEY to location.latitude,
+                    GEOFENCE_RECEIVER_LONGITUDE_KEY to location.longitude
+                )
             putExtras(bundle)
         }
         applicationContext.sendBroadcast(locationIntent)
+        previousLatLng = location.toLatLng()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopLocationUpdates()
-        googleApiClient?.disconnect()
-    }
+    private fun isLocationUpdate(location: LatLng, previousLatLng: LatLng) =
+        location.latitude != previousLatLng.latitude ||
+                location.longitude != previousLatLng.longitude
+
+    private fun Location.toLatLng() = LatLng(this.latitude, this.longitude)
 
     companion object {
 
         const val GEOFENCE_RECEIVER_ACTION = "geofence.receiver.action"
         const val GEOFENCE_RECEIVER_LATITUDE_KEY = "geofence.receiver.latitude.key"
         const val GEOFENCE_RECEIVER_LONGITUDE_KEY = "geofence.receiver.longitude.key"
+
+        /*
+         * Constants for location update parameters
+         */
+        // Milliseconds per second
+        private const val MILLISECONDS_PER_SECOND = 1000L
+        // The update interval
+        private const val UPDATE_INTERVAL_IN_SECONDS = 5
+        // Update interval in milliseconds
+        private const val UPDATE_INTERVAL_IN_MILLISECONDS = (MILLISECONDS_PER_SECOND * UPDATE_INTERVAL_IN_SECONDS)
+        // A fast interval ceiling
+        private const val FAST_CEILING_IN_SECONDS = 1
+        // A fast ceiling of update intervals, used when the app is visible
+        private const val FAST_INTERVAL_CEILING_IN_MILLISECONDS = (MILLISECONDS_PER_SECOND * FAST_CEILING_IN_SECONDS)
+
+        private const val TAG = "GeofencingService"
     }
 }

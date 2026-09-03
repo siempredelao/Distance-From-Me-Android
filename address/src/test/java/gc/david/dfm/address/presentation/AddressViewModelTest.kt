@@ -1,0 +1,282 @@
+/*
+ * Copyright (c) 2026 David Aguiar Gonzalez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package gc.david.dfm.address.presentation
+
+import gc.david.dfm.ConnectionManager
+import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.common.presentation.ResourceProvider
+import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.model.AddressCollection
+import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+
+/**
+ * Created by david on 15.01.17.
+ */
+@ExperimentalCoroutinesApi
+class AddressViewModelTest {
+
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
+
+    private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameUseCase>()
+    private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
+    private val connectionManager = mock<ConnectionManager>()
+    private val resourceProvider = mock<ResourceProvider>()
+    private val geocodingErrorMessageMapper = GeocodingErrorMessageMapper(resourceProvider)
+
+    private val viewModel =
+        AddressViewModel(
+            getAddressCoordinatesByNameUseCase,
+            getAddressNameByCoordinatesUseCase,
+            connectionManager,
+            resourceProvider,
+            geocodingErrorMessageMapper
+        )
+
+
+    @Test
+    fun `shows connection problems dialog when no connection available in position by name`() {
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(any())).thenReturn("random string")
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertTrue(viewModel.uiState.value.showConnectionIssue)
+    }
+
+    @Test
+    fun `executes coordinates by name use case when connection available`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val locationName = LOCATION_NAME
+        getAddressCoordinatesByNameFailure("Failure")
+
+        viewModel.onAddressSearch(locationName)
+
+        verify(getAddressCoordinatesByNameUseCase)(locationName)
+    }
+
+    @Test
+    fun `hides progress dialog when position by name use case succeeds`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val addressCollection = EMPTY_ADDRESS_COLLECTION
+        getAddressCoordinatesByNameSuccess(addressCollection)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertEquals(false, viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `shows no matches when position by name use case return zero results`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val addressCollection = EMPTY_ADDRESS_COLLECTION
+        getAddressCoordinatesByNameSuccess(addressCollection)
+        val message = "no matches"
+        whenever(resourceProvider.get(any())).thenReturn(message)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertEquals(message, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `shows position by name when use case return one result`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val address = ADDRESS
+        val addressList = mutableListOf(address)
+        val addressCollection = AddressCollection(addressList)
+        getAddressCoordinatesByNameSuccess(addressCollection)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertEquals(address, viewModel.uiState.value.addressFound)
+    }
+
+    @Test
+    fun `shows address selection dialog when position by name use case return several results`() =
+        runTest {
+            whenever(connectionManager.isOnline()).thenReturn(true)
+            val address = ADDRESS
+            val addressList = mutableListOf(address, address)
+            val addressCollection = AddressCollection(addressList)
+            getAddressCoordinatesByNameSuccess(addressCollection)
+
+            viewModel.onAddressSearch(LOCATION_NAME)
+
+            assertEquals(
+                addressCollection.addressList,
+                viewModel.uiState.value.multipleAddressesFound
+            )
+        }
+
+    @Test
+    fun `hides progress dialog when position by name use case fails`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val errorMessage = ERROR_MESSAGE
+        getAddressCoordinatesByNameFailure(errorMessage)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertEquals(false, viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `shows error when position by name use case fails`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val errorMessage = ERROR_MESSAGE
+        getAddressCoordinatesByNameFailure(errorMessage)
+        val mappedMessage = "friendly error"
+        whenever(resourceProvider.get(any())).thenReturn(mappedMessage)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertEquals(mappedMessage, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `select address in dialog shows position by name with address`() {
+        val address = ADDRESS
+
+        viewModel.onAddressSelected(address)
+
+        assertEquals(address, viewModel.uiState.value.addressFound)
+    }
+
+    @Test
+    fun `shows connection problems dialog when no connection available in position by coordinates`() {
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(any())).thenReturn("random string")
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        assertTrue(viewModel.uiState.value.showConnectionIssue)
+    }
+
+    @Test
+    fun `executes name by coordinates use case when connection available`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        getAddressNameByCoordinatesFailure("Failure")
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        verify(getAddressNameByCoordinatesUseCase)(any())
+    }
+
+    @Test
+    fun `hides progress dialog when use case succeeds in position by coordinates`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val addressCollection = EMPTY_ADDRESS_COLLECTION
+        getAddressNameByCoordinatesSuccess(addressCollection)
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        assertEquals(false, viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `shows no matches when position by coordinates use case return zero results`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val addressCollection = EMPTY_ADDRESS_COLLECTION
+        getAddressNameByCoordinatesSuccess(addressCollection)
+        val message = "no matches"
+        whenever(resourceProvider.get(any())).thenReturn(message)
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        assertEquals(message, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `shows position by coordinates when use case return one result`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val address = ADDRESS
+        val addressList = mutableListOf(address)
+        val addressCollection = AddressCollection(addressList)
+        getAddressNameByCoordinatesSuccess(addressCollection)
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        assertEquals(address, viewModel.uiState.value.addressFound)
+    }
+
+    @Test
+    fun `hides progress dialog when position by coordinates use case fails`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val errorMessage = ERROR_MESSAGE
+        getAddressNameByCoordinatesFailure(errorMessage)
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        assertEquals(false, viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `shows error when position by coordinates use case fails`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val errorMessage = ERROR_MESSAGE
+        getAddressNameByCoordinatesFailure(errorMessage)
+        val mappedMessage = "friendly error"
+        whenever(resourceProvider.get(any())).thenReturn(mappedMessage)
+
+        viewModel.onAddressSearch(COORDINATES)
+
+        assertEquals(mappedMessage, viewModel.uiState.value.errorMessage)
+    }
+
+    private suspend fun getAddressCoordinatesByNameSuccess(addressCollection: AddressCollection) {
+        whenever(getAddressCoordinatesByNameUseCase(any()))
+            .thenReturn(Result.success(addressCollection))
+    }
+
+    private suspend fun getAddressCoordinatesByNameFailure(errorMessage: String) {
+        whenever(getAddressCoordinatesByNameUseCase(any()))
+            .thenReturn(Result.failure(Exception(errorMessage)))
+    }
+
+    private suspend fun getAddressNameByCoordinatesSuccess(addressCollection: AddressCollection) {
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.success(addressCollection))
+    }
+
+    private suspend fun getAddressNameByCoordinatesFailure(errorMessage: String) {
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(Result.failure(Exception(errorMessage)))
+    }
+
+    companion object {
+
+        private const val LOCATION_NAME = "fake location name"
+        private const val ERROR_MESSAGE = "fake errorMessage"
+
+        private val COORDINATES = Coordinates(0.0, 0.0)
+        private val ADDRESS = gc.david.dfm.address.domain.model.Address(LOCATION_NAME, COORDINATES)
+        private val EMPTY_ADDRESS_COLLECTION = AddressCollection(ArrayList())
+    }
+}

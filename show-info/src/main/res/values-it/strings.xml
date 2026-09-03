@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_bar_item_social_share_title">Condividiere</string>
+    <string name="info_current_position_title">Posizione corrente approssimativa:</string>
+    <string name="info_destination_position_title">Destinazione approssimativa:</string>
+    <string name="error_no_address_found_message">Indirizzo non trovato</string>
+    <string name="info_distance_title">Distanza: %s</string>
+    <string name="action_bar_item_refresh_title">Aggiornare dati</string>
+    <string name="action_bar_item_save_title">Salvare</string>
+    <string name="share_distance_from_message">Da</string>
+    <string name="share_distance_to_message">A</string>
+    <string name="share_distance_there_are_message">Ci sono</string>
+    <string name="toast_no_location_found">Impossibile ottenere l\'indirizzo. Fare clic sul pulsante Aggiorna per aggiornare l\'informazioni</string>
+    <string name="toast_network_problems">Connessione a Internet non è attiva. Attivare la connessione e riprovare</string>
+    <string name="alias_dialog_title">Alias</string>
+    <string name="alias_dialog_message">Associare un alias alla distanza:</string>
+    <string name="alias_dialog_accept">Acettare</string>
+    <string name="alias_dialog_with_name_toast">Distanza \"%s\" salvata correttamente</string>
+    <string name="alias_dialog_no_name_toast">Distanza salvata correttamente</string>
+    <string name="save_distance_error">Impossibile salvare la distanza. Riprova più tardi.</string>
+</resources>

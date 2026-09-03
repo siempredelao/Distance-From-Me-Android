@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toast_no_results">No s\'han trobat resultats.</string>
+    <string name="geocoding_error_invalid_request">Cerca no vàlida. Torna-ho a provar.</string>
+    <string name="geocoding_error_quota">S’ha superat la quota del servei. Torna-ho a provar més tard.</string>
+    <string name="geocoding_error_rate_limited">Massa sol·licituds. Torna-ho a provar en uns minuts.</string>
+    <string name="geocoding_error_request_denied">Sol·licitud denegada. Revisa la configuració.</string>
+    <string name="geocoding_error_unknown">Error del servidor. Torna-ho a provar.</string>
+    <string name="geocoding_error_generic">No s’ha pogut obtenir la ubicació. Torna-ho a provar.</string>
+</resources>

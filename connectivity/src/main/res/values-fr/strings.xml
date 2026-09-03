@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_connection_problems_title">Problème de connexion</string>
+    <string name="dialog_connection_problems_message">Pas de connexion réseau activée, voulez-vous l\'activer?</string>
+    <string name="dialog_connection_problems_negative_button">Pas maintenant</string>
+    <string name="dialog_connection_problems_positive_button">Activer</string>
+</resources>

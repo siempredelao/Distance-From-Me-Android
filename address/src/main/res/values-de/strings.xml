@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toast_no_results">Keine Daten gefunden.</string>
+    <string name="geocoding_error_invalid_request">Ungültige Suche. Bitte erneut versuchen.</string>
+    <string name="geocoding_error_quota">Dienstkontingent überschritten. Bitte später erneut versuchen.</string>
+    <string name="geocoding_error_rate_limited">Zu viele Anfragen. Bitte in ein paar Minuten erneut versuchen.</string>
+    <string name="geocoding_error_request_denied">Anfrage abgelehnt. Bitte Konfiguration prüfen.</string>
+    <string name="geocoding_error_unknown">Serverfehler. Bitte erneut versuchen.</string>
+    <string name="geocoding_error_generic">Ort konnte nicht ermittelt werden. Bitte erneut versuchen.</string>
+</resources>

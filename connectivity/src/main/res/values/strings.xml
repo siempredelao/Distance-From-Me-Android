@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_connection_problems_title">Connection problems</string>
+    <string name="dialog_connection_problems_message">No wireless or network connection available, would you like to enable?</string>
+    <string name="dialog_connection_problems_negative_button">Do nothing</string>
+    <string name="dialog_connection_problems_positive_button">Enable</string>
+</resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 David Aguiar Gonzalez
+ * Copyright (c) 2026 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,20 @@
 package gc.david.dfm.initializers
 
 import android.app.Application
-import gc.david.dfm.DFMPreferences
-import gc.david.dfm.map.Haversine
-import java.util.*
+import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.settings.domain.SettingsRepository
+import java.util.Locale
 
-class DefaultUnitInitializer : Initializer {
+class DefaultUnitInitializer(
+    private val settingsRepository: SettingsRepository
+) : Initializer {
 
-    private val isAmericanLocale: Boolean
-        get() = Haversine.isAmericanLocale(Locale.getDefault())
+    private val isImperialLocale: Boolean
+        get() = Locale.getDefault() == Locale.US
 
     override fun init(application: Application) {
-        val defaultUnit = DFMPreferences.getMeasureUnitPreference(application)
-        if (defaultUnit == null) {
-            DFMPreferences.setMeasureUnitPreference(
-                    application,
-                    if (isAmericanLocale) DFMPreferences.MEASURE_AMERICAN_UNIT_VALUE
-                    else DFMPreferences.MEASURE_EUROPEAN_UNIT_VALUE
-            )
-        }
+        settingsRepository.setUnitSystemPreference(
+            if (isImperialLocale) UnitSystem.IMPERIAL else UnitSystem.METRIC
+        )
     }
 }

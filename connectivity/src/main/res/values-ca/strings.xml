@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_connection_problems_title">Problema en la connexió</string>
+    <string name="dialog_connection_problems_message">Cap connexió inalàmbrica activada, desitja activar-la?</string>
+    <string name="dialog_connection_problems_negative_button">Ara no</string>
+    <string name="dialog_connection_problems_positive_button">Activar</string>
+</resources>

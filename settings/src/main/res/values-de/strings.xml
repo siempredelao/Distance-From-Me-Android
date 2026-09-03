@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="toast_distances_deleted">Entfernungen gelöschten</string>
+    <string name="category_centre_title">Entfernung Maßnahme</string>
+    <string name="dialog_centre_map_title">Karte zentrieren</string>
+    <string name="preference_centre_map_summary">Wo die Karte im Abstand Mess zeigt</string>
+    <string name="preference_centre_map_title">Karte zentrieren</string>
+    <string name="animation_destination_item">In Ziel zu zentrieren</string>
+    <string name="animation_center_item">In der Mitte zu zentrieren</string>
+    <string name="no_animation_item">Keine Animation</string>
+    <string name="preference_show_elevation_title">Höhenprofil zeigen</string>
+    <string name="preference_show_elevation_summary">Berechnet Höhenprofil. Diese Aufgabe kann einige Zeit dauern, je nach Netzwerk</string>
+    <string name="category_db_title">Entfernung Register</string>
+    <string name="preference_delete_distances_title">Entfernungen Löschen</string>
+    <string name="preference_delete_distances_summary">Berühren, um alle gespeicherten Entfernungen löschen</string>
+    <string name="category_unit_title">Maßeinheit</string>
+    <string name="preference_unit_dialog_title">Wählen Sie die Maßeinheit</string>
+    <string name="preference_unit_entry_EU">Meter, Kilometer</string>
+    <string name="preference_unit_entry_US">Meilen, Yards, Füße</string>
+    <string name="preference_unit_summary">Wählen Sie eine Maßeinheit. Standardmäßig in Bezug auf Ihre aktuelle Geräte Sprache sie gesetzt ist.</string>
+    <string name="preference_unit_title">Wählen Sie bevorzugte Einheit</string>
+</resources>

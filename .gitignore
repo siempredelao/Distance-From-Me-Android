@@ -10,7 +10,12 @@ build
 # Local configuration file (sdk path, etc)
 local.properties
 *.iml
-app/src/main/res/values/other.xml
-app/src/debug/res/values/other.xml
-app/src/beta/res/values/other.xml
-app/crashlytics.properties
+
+# API keys specific to build variants
+*/src/debug/res/values/other.xml
+*/src/release/res/values/other.xml
+app/src/*/res/values/other.xml
+/common/src/main/res/values/other.xml
+
+# Keystore properties (local signing config)
+keystore.properties

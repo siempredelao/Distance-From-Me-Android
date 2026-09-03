@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 David Aguiar Gonzalez
+ * Copyright (c) 2026 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package gc.david.dfm.initializers
 
 import android.app.Application
-import javax.inject.Inject
 
-class Initializers @Inject constructor(private val initializers: Array<Initializer>) : Initializer {
+class Initializers(private val initializers: Array<Initializer>) : Initializer {
 
     override fun init(application: Application) {
         initializers.forEach {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 David Aguiar Gonzalez
+ * Copyright (c) 2026 David Aguiar Gonzalez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,44 @@
 package gc.david.dfm
 
 import android.app.Application
-import gc.david.dfm.dagger.DaggerRootComponent
-import gc.david.dfm.dagger.RootModule
+import gc.david.dfm.address.di.addressModule
+import gc.david.dfm.common.commonModule
+import gc.david.dfm.core.distances.di.coreDistancesModule
+import gc.david.dfm.di.appModule
+import gc.david.dfm.elevation.di.elevationModule
+import gc.david.dfm.faq.di.faqModule
+import gc.david.dfm.settings.di.settingsModule
+import gc.david.dfm.opensource.di.openSourceModule
+import gc.david.dfm.showinfo.di.showInfoModule
 import gc.david.dfm.initializers.Initializers
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 /**
  * Created by David on 28/10/2014.
  */
 class DFMApplication : Application() {
 
-    @Inject
-    lateinit var initializers: Initializers
+    val initializers: Initializers by inject()
 
     override fun onCreate() {
         super.onCreate()
 
-        DaggerRootComponent.builder()
-                .rootModule(RootModule(this))
-                .build()
-                .inject(this)
+        startKoin {
+            androidContext(this@DFMApplication)
+            modules(
+                addressModule,
+                appModule,
+                coreDistancesModule,
+                commonModule,
+                elevationModule,
+                faqModule,
+                openSourceModule,
+                settingsModule,
+                showInfoModule
+            )
+        }
 
         initializers.init(this)
     }

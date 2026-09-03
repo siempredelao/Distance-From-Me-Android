@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="toast_no_results">No matches were found</string>
+    <string name="geocoding_error_invalid_request">Invalid search. Try again.</string>
+    <string name="geocoding_error_quota">Service quota exceeded. Try again later.</string>
+    <string name="geocoding_error_rate_limited">Too many requests. Try again in a few minutes.</string>
+    <string name="geocoding_error_request_denied">Request denied. Please check configuration.</string>
+    <string name="geocoding_error_unknown">Server error. Please try again.</string>
+    <string name="geocoding_error_generic">Unable to get location. Please try again.</string>
+</resources>
