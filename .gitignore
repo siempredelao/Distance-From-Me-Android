@@ -16,3 +16,6 @@ local.properties
 */src/release/res/values/other.xml
 app/src/*/res/values/other.xml
 /common/src/main/res/values/other.xml
+
+# Keystore properties (local signing config)
+keystore.properties

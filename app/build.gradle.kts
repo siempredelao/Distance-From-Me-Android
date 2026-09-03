@@ -15,6 +15,8 @@
  */
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
 	alias(libs.plugins.android.application)
@@ -29,6 +31,22 @@ android {
 
 	namespace = "gc.david.dfm"
 	compileSdk = libs.versions.compileSdk.get().toInt()
+
+	// Load signing properties from keystore.properties (keep this file out of VCS)
+	val keystoreProperties = Properties()
+	val keystorePropertiesFile = rootProject.file("keystore.properties")
+	if (keystorePropertiesFile.exists()) {
+		keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+	}
+
+	signingConfigs {
+		create("release") {
+			keyAlias = keystoreProperties["keyAlias"] as String
+			keyPassword = keystoreProperties["keyPassword"] as String
+			storeFile = file(keystoreProperties["storeFile"] as String)
+			storePassword = keystoreProperties["storePassword"] as String
+		}
+	}
 
 	defaultConfig {
 		applicationId = "gc.david.dfm"
@@ -65,6 +83,8 @@ android {
 		release {
 			isMinifyEnabled = true
 			isShrinkResources = true
+			// Use the signing config loaded from keystore.properties
+			signingConfig = signingConfigs.getByName("release")
 			val proguards = fileTree("proguard") {
 				include("*.pro")
 			}
