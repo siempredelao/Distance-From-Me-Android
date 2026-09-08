@@ -26,6 +26,8 @@
     <string name="search_bar_clear">Clear</string>
     <string name="menu_load_title">Load distance</string>
     <string name="menu_rate_app_title">Rate app</string>
+    <string name="rate_app_prompt">Do you enjoy using this app?</string>
+    <string name="rate_app_cta">Rate it now</string>
     <string name="menu_settings_title">Settings</string>
     <string name="menu_help_feedback_title" translatable="false">Help &amp; feedback</string>
     <string name="menu_about_title" translatable="false">Open source</string>

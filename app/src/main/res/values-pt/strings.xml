@@ -27,6 +27,8 @@
     <string name="dialog_select_address_title">Escolha una direçao</string>
     <string name="dialog_load_distances_title">Escolha una distância</string>
     <string name="menu_rate_app_title">Avaliar aplicativo</string>
+    <string name="rate_app_prompt">Você gosta de usar este aplicativo?</string>
+    <string name="rate_app_cta">Avalie agora</string>
     <string name="toast_send_feedback_error">Nenhum cliente de e-mail disponível</string>
     <string name="menu_settings_title">Preferências</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualquer posição</string>

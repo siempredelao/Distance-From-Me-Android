@@ -58,7 +58,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
 import gc.david.dfm.main.presentation.components.AppNavigationRail
@@ -67,6 +66,7 @@ import gc.david.dfm.main.presentation.components.ElevationChart
 import gc.david.dfm.main.presentation.components.LottieProgress
 import gc.david.dfm.main.presentation.components.MapContent
 import gc.david.dfm.main.presentation.components.TransparentSearchBar
+import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
@@ -85,7 +85,7 @@ fun MainScreen(
     elevationData: ElevationUiModel?,
     showChart: Boolean,
     showChartFab: Boolean,
-    distancesToLoad: List<Distance>?,
+    distancesToLoad: List<DistanceSelectionUiModel>?,
     addressSuggestions: List<Address>?,
     isMyLocationEnabled: Boolean,
     onSearchQuery: (String) -> Unit,
@@ -96,7 +96,8 @@ fun MainScreen(
     onMyLocationClick: () -> Unit,
     onShowChartClick: () -> Unit,
     onElevationChartClose: () -> Unit,
-    onDistanceSelected: (Distance) -> Unit,
+    onDistanceSelected: (id: Long, name: String) -> Unit,
+    onRateAppClick: () -> Unit,
     onDistanceSelectionDismiss: () -> Unit,
     onAddressSelected: (Address) -> Unit,
     onAddressSuggestionsDismiss: () -> Unit,
@@ -249,17 +250,18 @@ fun MainScreen(
         }
 
         // Dialogs
-        distancesToLoad?.let { distances ->
+        distancesToLoad?.let { items ->
             DistanceSelectionDialog(
-                distances = distances,
+                list = items,
                 onDistanceSelected = onDistanceSelected,
+                onRateAppClick = onRateAppClick,
                 onDismiss = onDistanceSelectionDismiss
             )
         }
 
-        addressSuggestions?.let { addresses ->
+        addressSuggestions?.let { items ->
             AddressSuggestionsDialog(
-                addresses = addresses,
+                addresses = items,
                 onAddressSelected = onAddressSelected,
                 onDismiss = onAddressSuggestionsDismiss
             )

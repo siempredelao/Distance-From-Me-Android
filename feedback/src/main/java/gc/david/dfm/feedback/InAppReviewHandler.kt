@@ -16,6 +16,9 @@
 
 package gc.david.dfm.feedback
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
@@ -26,17 +29,17 @@ object InAppReviewHandler {
 
     private const val TAG = "InAppReviewHandler"
 
-    fun rateApp(activity: FragmentActivity) {
-        showRateApp(activity)
+    fun rateApp(activity: FragmentActivity, skipFallbackDialog: Boolean = false) {
+        showRateApp(activity, skipFallbackDialog)
     }
 
     /**
      * Shows rate app bottom sheet using In-App review API
-     * The bottom sheet might or might not shown depending on the Quotas and limitations
+     * The bottom sheet might or might not show depending on the Quotas and limitations
      * https://developer.android.com/guide/playcore/in-app-review#quotas
      * We show fallback dialog if there is any error
      */
-    private fun showRateApp(activity: FragmentActivity) {
+    private fun showRateApp(activity: FragmentActivity, skipFallbackDialog: Boolean) {
         val reviewManager = ReviewManagerFactory.create(activity)
         val request: Task<ReviewInfo> = reviewManager.requestReviewFlow()
         request.addOnCompleteListener { task ->
@@ -47,7 +50,17 @@ object InAppReviewHandler {
                 flow.addOnCompleteListener { Timber.tag(TAG).i("Review process finished") }
             } else {
                 Timber.tag(TAG).d("showRateApp failure")
-                RateAppFallbackDialogFragment().show(activity.supportFragmentManager, null)
+                if (skipFallbackDialog) {
+                    Timber.tag(TAG).d("openPlayStoreAppPage")
+
+                    try {
+                        activity.startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=gc.david.dfm".toUri()))
+                    } catch (e: ActivityNotFoundException) {
+                        Timber.tag(TAG).e(e, "Unable to open Play Store, rooted device?")
+                    }
+                } else {
+                    RateAppFallbackDialogFragment().show(activity.supportFragmentManager, null)
+                }
             }
         }
     }

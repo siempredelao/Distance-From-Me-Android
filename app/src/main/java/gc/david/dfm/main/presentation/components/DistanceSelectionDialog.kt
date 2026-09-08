@@ -16,6 +16,7 @@
 
 package gc.david.dfm.main.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,29 +24,36 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.R
-import gc.david.dfm.core.distances.domain.model.Distance
+import gc.david.dfm.designsystem.DfmGreen
 import gc.david.dfm.designsystem.Spacing
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 
 /**
  * Dialog showing saved distances to load.
  */
 @Composable
 fun DistanceSelectionDialog(
-    distances: List<Distance>,
-    onDistanceSelected: (Distance) -> Unit,
+    list: List<DistanceSelectionUiModel>,
+    onDistanceSelected: (id: Long, name: String) -> Unit,
+    onRateAppClick: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -54,34 +62,13 @@ fun DistanceSelectionDialog(
         title = { Text(stringResource(R.string.dialog_load_distances_title)) },
         text = {
             LazyColumn {
-                itemsIndexed(distances) { _, distance ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onDistanceSelected(distance)
-                                onDismiss()
-                            }
-                            .padding(vertical = Spacing.s)
-                    ) {
-                        Text(
-                            text = distance.name,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = distance.distance,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                            Text(
-                                text = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                    .format(distance.date),
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
+                items(list) { item ->
+                    when (item) {
+                        is DistanceSelectionUiModel.Distance ->
+                            Distance(item, onDistanceSelected, onDismiss)
+
+                        is DistanceSelectionUiModel.RateApp ->
+                            RateCta(item, onRateAppClick, onDismiss)
                     }
                 }
             }
@@ -91,31 +78,110 @@ fun DistanceSelectionDialog(
     )
 }
 
+@Composable
+private fun Distance(
+    item: DistanceSelectionUiModel.Distance,
+    onDistanceSelected: (id: Long, name: String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onDistanceSelected(item.id, item.name)
+                onDismiss()
+            }
+            .padding(vertical = Spacing.s)
+    ) {
+        Text(
+            text = item.name,
+            fontWeight = FontWeight.Bold
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = item.distance,
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = item.date,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+
+@Composable
+private fun RateCta(
+    item: DistanceSelectionUiModel.RateApp,
+    onRateAppClick: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = Spacing.xs)
+            .clip(RoundedCornerShape(Spacing.l))
+            .background(DfmGreen)
+            .padding(vertical = Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = item.title,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = Spacing.s)
+        )
+        OutlinedButton(
+            onClick = {
+                onRateAppClick()
+                onDismiss()
+            },
+            colors = ButtonDefaults.outlinedButtonColors().copy(containerColor = Color.White),
+            modifier = Modifier.padding(end = Spacing.s)
+        ) {
+            Text(text = item.ctaText, color = DfmGreen)
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun DistanceSelectionDialogPreview() {
     DistanceSelectionDialog(
-        distances = listOf(
-            Distance(
+        list = listOf(
+            DistanceSelectionUiModel.Distance(
                 id = 1,
                 name = "Home to Office",
                 distance = "5.2 km",
-                date = Date()
+                date = "Sunday 28th November 2025"
             ),
-            Distance(
+            DistanceSelectionUiModel.Distance(
                 id = 2,
                 name = "Park to Library",
                 distance = "2.8 km",
-                date = Date()
+                date = "Sunday 28th November 2025"
             ),
-            Distance(
+            DistanceSelectionUiModel.RateApp(
+                title = "Do you enjoy using this app?",
+                ctaText = "Rate it now"
+            ),
+            DistanceSelectionUiModel.Distance(
                 id = 3,
                 name = "Airport to Hotel",
                 distance = "15.7 km",
-                date = Date()
+                date = "Sunday 28th November 2025"
             )
         ),
-        onDistanceSelected = {},
+        onDistanceSelected = { _, _ -> },
+        onRateAppClick = {},
         onDismiss = {}
     )
 }

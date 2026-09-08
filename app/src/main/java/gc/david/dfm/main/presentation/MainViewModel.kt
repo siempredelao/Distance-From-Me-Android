@@ -19,43 +19,45 @@ package gc.david.dfm.main.presentation
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.*
+import gc.david.dfm.ConnectionManager
+import gc.david.dfm.PermissionChecker
+import gc.david.dfm.R
 import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
-import gc.david.dfm.toCoordinates
-import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.model.DistanceMode
-import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
-import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
-import gc.david.dfm.main.presentation.model.MainUiState
+import gc.david.dfm.distance.data.CurrentLocationProvider
+import gc.david.dfm.distance.data.DistanceModeProvider
+import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.main.domain.GetStoredDistancesUseCase
+import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
+import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
+import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.toCoordinates
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainViewModel(
     private val getDistancesUseCase: GetDistancesUseCase,
+    private val getStoredDistancesUseCase: GetStoredDistancesUseCase,
     private val getPositionListUseCase: GetPositionListUseCase,
     private val connectionManager: ConnectionManager,
     private val resourceProvider: ResourceProvider,
@@ -67,15 +69,14 @@ class MainViewModel(
     private val distanceCalculator: DistanceCalculator,
     private val distanceFormatter: DistanceFormatter,
     private val buildConfigProvider: BuildConfigProvider,
-    private val mapStateMapper: MapStateMapper
+    private val mapStateMapper: MapStateMapper,
+    private val loadDistancesMapper: LoadDistancesMapper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    private val distances = getDistancesUseCase()
-        .catch { Timber.tag(TAG).e(it) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    // TODO verify that all strings everywhere are translated!
     private val coordinates get() = coordinatesRepository.observeDistance().value
     private val unitSystem: UnitSystem
         get() = settingsRepository.getUnitSystemPreference()
@@ -88,7 +89,7 @@ class MainViewModel(
     init {
         // Initialize with current distance mode and side navigation state
         val initialDistanceMode = distanceModeProvider.get()
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 distanceMode = initialDistanceMode,
                 sideNavigationState = it.sideNavigationState.copy(
@@ -99,17 +100,17 @@ class MainViewModel(
                 )
             )
         }
-        
-        distances
+
+        getDistancesUseCase()
             .map { it.isNotEmpty() }
-            .onEach { hasDistances -> 
-                _uiState.update { 
+            .onEach { hasDistances ->
+                _uiState.update {
                     it.copy(
                         sideNavigationState = it.sideNavigationState.copy(
                             showLoadMenuItem = hasDistances
                         )
                     )
-                } 
+                }
             }
             .launchIn(viewModelScope)
     }
@@ -118,7 +119,7 @@ class MainViewModel(
         if (!connectionManager.isOnline()) {
             _uiState.update { it.copy(showConnectionIssue = true) }
         }
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 sideNavigationState = it.sideNavigationState.copy(
                     showCrashMenuItem = !buildConfigProvider.isReleaseBuild()
@@ -138,25 +139,28 @@ class MainViewModel(
      * Triggered when the user taps on the "Show distances" menu item.
      */
     fun onLoadDistancesClick() {
-        val current = distances.value
-        if (current.isNotEmpty()) {
-            _uiState.update { it.copy(selectFromDistancesLoaded = current) }
-        }
+        getStoredDistancesUseCase()
+            .map(loadDistancesMapper::map)
+            .catch { Timber.tag(TAG).e(it) }
+            .onEach {
+                _uiState.update { state -> state.copy(selectFromDistancesLoaded = it) }
+            }
+            .launchIn(viewModelScope)
     }
 
     /**
      * Triggered when the user selects a distance from the loaded distances dialog.
      */
-    fun onDistanceToShowSelected(distance: Distance) {
+    fun onDistanceToShowSelected(id: Long, name: String) {
         viewModelScope.launch {
-            val result = getPositionListUseCase(distance.id)
+            val result = getPositionListUseCase(id)
 
             result.fold({
                 val coordinates = it.toCoordinates()
                 coordinatesRepository.setList(coordinates)
 
-                plotDistances(coordinates, distance.name + "\n", DrawDistanceUiModel.Source.DATABASE)
-            },{
+                plotDistances(coordinates, name + "\n", DrawDistanceUiModel.Source.DATABASE)
+            }, {
                 Timber.tag(TAG).e(Exception("Unable to get position by id."))
             })
         }
@@ -164,7 +168,7 @@ class MainViewModel(
 
     fun onDistanceFromCurrentPositionSet() {
         distanceModeProvider.set(DistanceMode.FROM_CURRENT_POINT)
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 distanceMode = DistanceMode.FROM_CURRENT_POINT,
                 sideNavigationState = it.sideNavigationState.copy(
@@ -180,7 +184,7 @@ class MainViewModel(
 
     fun onDistanceFromAnyPositionSet() {
         distanceModeProvider.set(DistanceMode.FROM_ANY_POINT)
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 distanceMode = DistanceMode.FROM_ANY_POINT,
                 sideNavigationState = it.sideNavigationState.copy(
@@ -195,8 +199,8 @@ class MainViewModel(
         val currentLocation = currentLocationProvider.get()
         if (currentLocation != CurrentLocationProvider.UNDEFINED) {
             val coordinates = Coordinates(currentLocation.lat, currentLocation.lon)
-            _uiState.update { 
-                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates))) 
+            _uiState.update {
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates)))
             }
         }
     }
@@ -209,8 +213,8 @@ class MainViewModel(
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
             val coordinates = Coordinates(location.latitude, location.longitude)
-            _uiState.update { 
-                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.ZoomTo(coordinates))) 
+            _uiState.update {
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.ZoomTo(coordinates)))
             }
             appHasJustStarted = false
         }
@@ -263,11 +267,11 @@ class MainViewModel(
             }
         }
         coordinatesRepository.append(coordinates)
-        
+
         // Update map with simple markers (no distance info yet)
         val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
-        _uiState.update { 
-            it.copy(mapState = it.mapState.copy(markers = markers)) 
+        _uiState.update {
+            it.copy(mapState = it.mapState.copy(markers = markers))
         }
     }
 
@@ -334,7 +338,7 @@ class MainViewModel(
     fun resetMap() {
         isUserSelectingPoints = false
         coordinatesRepository.clear()
-        _uiState.update { 
+        _uiState.update {
             it.copy(
                 mapState = it.mapState.copy(
                     clearMap = true,
@@ -342,7 +346,7 @@ class MainViewModel(
                     polylines = emptyList()
                 ),
                 showChart = false
-            ) 
+            )
         }
     }
 

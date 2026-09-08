@@ -50,8 +50,8 @@ import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.location.GeofencingLocationManager
-import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
+import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
 import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.settings.presentation.SettingsActivity
@@ -274,9 +274,12 @@ class MainActivity : FragmentActivity() {
                     onElevationChartClose = {
                         showChart = false
                     },
-                    onDistanceSelected = { distance ->
-                        mainViewModel.onDistanceToShowSelected(distance)
+                    onDistanceSelected = { id, name ->
+                        mainViewModel.onDistanceToShowSelected(id, name)
                         mainViewModel.onDistancesLoadedHandled()
+                    },
+                    onRateAppClick = {
+                        InAppReviewHandler.rateApp(this@MainActivity, skipFallbackDialog = true)
                     },
                     onDistanceSelectionDismiss = {
                         mainViewModel.onDistancesLoadedHandled()
