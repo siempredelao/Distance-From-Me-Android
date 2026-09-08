@@ -114,8 +114,8 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `initial state does not show force crash item`() {
-        assertFalse(viewModel.uiState.value.sideNavigationState.showCrashMenuItem)
+    fun `initial state does not show debug options`() {
+        assertFalse(viewModel.uiState.value.sideNavigationState.showDebugOptions)
     }
 
     @Test
@@ -131,7 +131,7 @@ class MainViewModelTest {
         viewModel.onStart()
 
         assertTrue(viewModel.uiState.value.showConnectionIssue)
-        assertTrue(viewModel.uiState.value.sideNavigationState.showCrashMenuItem)
+        assertTrue(viewModel.uiState.value.sideNavigationState.showDebugOptions)
     }
 
     @Test
@@ -142,7 +142,7 @@ class MainViewModelTest {
         viewModel.onStart()
 
         assertFalse(viewModel.uiState.value.showConnectionIssue)
-        assertFalse(viewModel.uiState.value.sideNavigationState.showCrashMenuItem)
+        assertFalse(viewModel.uiState.value.sideNavigationState.showDebugOptions)
     }
 
     @Test

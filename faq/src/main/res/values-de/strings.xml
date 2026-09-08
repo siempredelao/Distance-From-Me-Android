@@ -15,4 +15,24 @@
   ~ limitations under the License.
   -->
 
-<resources></resources>
+<resources>
+    <string name="faq_title">Hilfe &amp; Feedback</string>
+    <string name="faq_navigate_back">Zurück</string>
+    <string name="faq_error_message">Fragen konnten nicht geladen werden, bitte später erneut versuchen.</string>
+    <string name="faq_question_distance">Wie kann ich eine Entfernung ermitteln?</string>
+    <string name="faq_answer_distance">Drücken Sie einfach lange auf die Karte :)</string>
+    <string name="faq_question_distance_current_position">Wie kann ich eine Entfernung von meiner aktuellen Position zu einem beliebigen Punkt auf der Karte ermitteln?</string>
+    <string name="faq_answer_distance_current_position">Wählen Sie in der Seitenleiste &quot;Aktuelle Position&quot; aus und drücken Sie dann lange auf den gewünschten Ort auf der Karte.</string>
+    <string name="faq_question_distance_any_position">Wie kann ich eine Entfernung von einer beliebigen Position zu einer anderen Position auf der Karte ermitteln?</string>
+    <string name="faq_answer_distance_any_position">Wählen Sie in der Seitenleiste &quot;Irgendeine Position&quot; aus und drücken Sie dann lange auf den gewünschten Ort auf der Karte.</string>
+    <string name="faq_question_permission_current_position">Muss ich die &quot;Standort&quot;-Berechtigung erteilen, um Entfernungen vom aktuellen Punkt zu erhalten?</string>
+    <string name="faq_answer_permission_current_position">Ja.</string>
+    <string name="faq_question_permission_any_position">Muss ich die &quot;Standort&quot;-Berechtigung erteilen, um Entfernungen von einem beliebigen Punkt zu erhalten?</string>
+    <string name="faq_answer_permission_any_position">Nein.</string>
+    <string name="faq_question_multiple_points">Wie kann ich eine Entfernung mit mehreren Punkten erstellen?</string>
+    <string name="faq_answer_multiple_points">Klicken Sie auf die gewünschten Punkte und machen Sie einen langen Klick auf den letzten Punkt.</string>
+    <string name="faq_question_reset_map">Wie kann ich den Status der Karte zurücksetzen?</string>
+    <string name="faq_answer_reset_map">Wählen Sie in der Seitenleiste einen beliebigen Positionsmodus aus.</string>
+    <string name="faq_question_gps_accuracy">Warum ist meine GPS-Position nicht genau?</string>
+    <string name="faq_answer_gps_accuracy">Dieses Problem könnte mit dem GPS-Sensor Ihres Geräts zusammenhängen.</string>
+</resources>

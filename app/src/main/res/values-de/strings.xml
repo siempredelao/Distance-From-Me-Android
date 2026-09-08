@@ -34,4 +34,17 @@
     <string name="navigation_drawer_starting_point_current_position_item">Aktuelle Position</string>
     <string name="toast_first_point_needed">Startpunkt benötigt. Bitte wählen Sie einen Punkt.</string>
     <string name="navigation_drawer_starting_point_any_position_item">Irgendeine Position</string>
+
+    <string name="fab_show_chart_description">Diagramm anzeigen</string>
+    <string name="fab_my_location_description">Mein Standort</string>
+    <string name="menu_licenses_title">Lizenzen</string>
+    <string name="menu_help_feedback_title">Hilfe &amp; Feedback</string>
+    <string name="permission_rationale_title">Standortberechtigung erforderlich</string>
+    <string name="permission_rationale_message">Diese App benötigt Zugriff auf den Standort, um Entfernungen von Ihrer aktuellen Position anzuzeigen. Erteilen Sie die Berechtigung, um fortzufahren.\nWenn Sie abbrechen, können Sie jederzeit Positionen an einer beliebigen Stelle auf der Karte auswählen.</string>
+    <string name="permission_rationale_grant">Berechtigung erteilen</string>
+    <string name="permission_rationale_cancel">Abbrechen</string>
+    <string name="snackbar_location_permission_needed">Diese Funktion benötigt Standortberechtigungen.</string>
+    <string name="snackbar_location_permission_action">Einstellungen öffnen</string>
+    <string name="toast_no_internet_connection">Keine Internetverbindung</string>
+    <string name="play_services_not_supported">Dieses Gerät wird von Google Play Services nicht unterstützt.</string>
 </resources>

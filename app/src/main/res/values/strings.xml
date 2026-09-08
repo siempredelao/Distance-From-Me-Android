@@ -29,8 +29,8 @@
     <string name="rate_app_prompt">Do you enjoy using this app?</string>
     <string name="rate_app_cta">Rate it now</string>
     <string name="menu_settings_title">Settings</string>
-    <string name="menu_help_feedback_title" translatable="false">Help &amp; feedback</string>
-    <string name="menu_about_title" translatable="false">Open source</string>
+    <string name="menu_help_feedback_title">Help &amp; feedback</string>
+    <string name="menu_licenses_title">Licenses</string>
     <string name="snackbar_location_permission_needed">This feature needs location permissions.</string>
     <string name="snackbar_location_permission_action">Open settings</string>
 
@@ -55,4 +55,7 @@
 
     <!-- ACTIVITY FEEDBACK -->
     <string name="toast_send_feedback_error">There are no email clients installed</string>
+
+    <string name="toast_no_internet_connection">No internet connection</string>
+    <string name="play_services_not_supported">This device is not supported by Google Play Services.</string>
 </resources>

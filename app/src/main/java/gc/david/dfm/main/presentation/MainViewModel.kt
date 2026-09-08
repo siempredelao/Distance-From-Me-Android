@@ -76,7 +76,6 @@ class MainViewModel(
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    // TODO verify that all strings everywhere are translated!
     private val coordinates get() = coordinatesRepository.observeDistance().value
     private val unitSystem: UnitSystem
         get() = settingsRepository.getUnitSystemPreference()
@@ -122,7 +121,7 @@ class MainViewModel(
         _uiState.update {
             it.copy(
                 sideNavigationState = it.sideNavigationState.copy(
-                    showCrashMenuItem = !buildConfigProvider.isReleaseBuild()
+                    showDebugOptions = !buildConfigProvider.isReleaseBuild()
                 )
             )
         }

@@ -15,4 +15,24 @@
   ~ limitations under the License.
   -->
 
-<resources></resources>
+<resources>
+    <string name="faq_title">Ayuda y comentarios</string>
+    <string name="faq_navigate_back">Volver</string>
+    <string name="faq_error_message">No se pueden obtener las preguntas, inténtelo de nuevo más tarde.</string>
+    <string name="faq_question_distance">¿Cómo puedo obtener una distancia?</string>
+    <string name="faq_answer_distance">¡Solo tienes que mantener pulsado el mapa! :)</string>
+    <string name="faq_question_distance_current_position">¿Cómo puedo obtener la distancia desde mi posición actual hasta cualquier punto del mapa?</string>
+    <string name="faq_answer_distance_current_position">En la barra lateral, selecciona &quot;Posición actual&quot; y luego realiza una pulsación larga en el lugar deseado del mapa.</string>
+    <string name="faq_question_distance_any_position">¿Cómo puedo obtener la distancia desde cualquier posición a otra posición del mapa?</string>
+    <string name="faq_answer_distance_any_position">En la barra lateral, selecciona &quot;Cualquier posición&quot; y luego realiza una pulsación larga en el lugar deseado del mapa.</string>
+    <string name="faq_question_permission_current_position">¿Necesito conceder el permiso de &quot;Ubicación&quot; para obtener distancias desde el punto actual?</string>
+    <string name="faq_answer_permission_current_position">Sí.</string>
+    <string name="faq_question_permission_any_position">¿Necesito conceder el permiso de &quot;Ubicación&quot; para obtener distancias desde cualquier punto?</string>
+    <string name="faq_answer_permission_any_position">No.</string>
+    <string name="faq_question_multiple_points">¿Cómo puedo crear una distancia con varios puntos?</string>
+    <string name="faq_answer_multiple_points">Haz clics sencillos en los puntos deseados y un clic largo en el último.</string>
+    <string name="faq_question_reset_map">¿Cómo puedo restablecer el estado del mapa?</string>
+    <string name="faq_answer_reset_map">Selecciona cualquier modo de posición en la barra lateral.</string>
+    <string name="faq_question_gps_accuracy">¿Por qué mi posición GPS no es precisa?</string>
+    <string name="faq_answer_gps_accuracy">Este problema podría estar relacionado con el sensor GPS de tu dispositivo.</string>
+</resources>

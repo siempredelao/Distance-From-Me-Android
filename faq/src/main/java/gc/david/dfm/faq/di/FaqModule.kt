@@ -31,6 +31,6 @@ val faqModule = module {
     factory { GetFaqsUseCase(get()) }
     factory { FaqEntityDataMapper() }
     single<FaqRepository> { BaseFaqRepository(get(), get()) }
-    single { FaqDiskDataSource() }
+    single { FaqDiskDataSource(get()) }
 }
 

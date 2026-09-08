@@ -73,7 +73,7 @@ fun AppNavigationRail(
     onItemClick: (SideNavigationItemId) -> Unit,
     onClose: () -> Unit,
     showLoadMenuItem: Boolean,
-    showCrashMenuItem: Boolean,
+    showDebugOptions: Boolean,
     modifier: Modifier = Modifier,
 ) {
     NavigationRail(
@@ -148,7 +148,7 @@ fun AppNavigationRail(
                 onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) }
             )
 
-            val openSourceLabel = stringResource(R.string.menu_about_title)
+            val openSourceLabel = stringResource(R.string.menu_licenses_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Info, contentDescription = openSourceLabel) },
                 label = { if (isExpanded) Text(openSourceLabel) },
@@ -156,7 +156,7 @@ fun AppNavigationRail(
                 onClick = { onItemClick(SideNavigationItemId.ABOUT) }
             )
 
-            if (showCrashMenuItem) {
+            if (showDebugOptions) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.m))
                 Text(text = "Debug section", textAlign = TextAlign.Center, color = Color.Red)
                 Spacer(modifier = Modifier.height(Spacing.m))
@@ -236,7 +236,7 @@ private fun AppNavigationRailCollapsedPreview() {
         onItemClick = {},
         onClose = {},
         showLoadMenuItem = true,
-        showCrashMenuItem = true
+        showDebugOptions = true
     )
 }
 
@@ -249,7 +249,7 @@ private fun AppNavigationRailExpandedPreview() {
         onItemClick = {},
         onClose = {},
         showLoadMenuItem = true,
-        showCrashMenuItem = true
+        showDebugOptions = true
     )
 }
 

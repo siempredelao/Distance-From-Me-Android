@@ -51,12 +51,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
+import gc.david.dfm.R
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
@@ -204,7 +206,7 @@ fun MainScreen(
                     },
                     onClose = { isRailVisible = false },
                     showLoadMenuItem = sideNavigationState.showLoadMenuItem,
-                    showCrashMenuItem = sideNavigationState.showCrashMenuItem
+                    showDebugOptions = sideNavigationState.showDebugOptions
                 )
             }
 
@@ -232,7 +234,7 @@ fun MainScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ShowChart,
-                            contentDescription = "Show Chart"
+                            contentDescription = stringResource(R.string.fab_show_chart_description)
                         )
                     }
                 }
@@ -243,7 +245,7 @@ fun MainScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.MyLocation,
-                        contentDescription = "My Location"
+                        contentDescription = stringResource(R.string.fab_my_location_description)
                     )
                 }
             }

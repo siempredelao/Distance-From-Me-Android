@@ -143,7 +143,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(addressUiState.showConnectionIssue) {
                     if (addressUiState.showConnectionIssue) {
-                        UiUtils.toastIt("No internet connection", appContext)
+                        UiUtils.toastIt(R.string.toast_no_internet_connection, appContext)
                         addressViewModel.onConnectionIssueShown()
                     }
                 }
@@ -151,7 +151,7 @@ class MainActivity : FragmentActivity() {
                 // Handle main state
                 LaunchedEffect(mainUiState.showConnectionIssue) {
                     if (mainUiState.showConnectionIssue) {
-                        UiUtils.toastIt("No internet connection", appContext)
+                        UiUtils.toastIt(R.string.toast_no_internet_connection, appContext)
                         mainViewModel.onConnectionIssueShown()
                     }
                 }

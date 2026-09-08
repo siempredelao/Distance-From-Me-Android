@@ -34,4 +34,17 @@
     <string name="toast_first_point_needed">Indiquez un point de départ, s\'il vous plaît</string>
     <string name="navigation_drawer_starting_point_current_position_item">Position actuelle</string>
     <string name="navigation_drawer_starting_point_any_position_item">N\'importe quelle position</string>
+
+    <string name="fab_show_chart_description">Afficher le graphique d\'élévation</string>
+    <string name="fab_my_location_description">Ma position</string>
+    <string name="menu_licenses_title">Licences</string>
+    <string name="menu_help_feedback_title">Aide et retours</string>
+    <string name="permission_rationale_title">Autorisation de localisation requise</string>
+    <string name="permission_rationale_message">Cette application nécessite l\'accès à la localisation pour afficher les distances depuis votre position actuelle. Accordez l\'autorisation pour continuer.\nSi vous annulez, vous pouvez toujours sélectionner des positions depuis n\'importe quel point de la carte.</string>
+    <string name="permission_rationale_grant">Accorder l\'autorisation</string>
+    <string name="permission_rationale_cancel">Annuler</string>
+    <string name="snackbar_location_permission_needed">Cette fonctionnalité nécessite les autorisations de localisation.</string>
+    <string name="snackbar_location_permission_action">Ouvrir les paramètres</string>
+    <string name="toast_no_internet_connection">Pas de connexion Internet</string>
+    <string name="play_services_not_supported">Cet appareil n’est pas pris en charge par Google Play Services.</string>
 </resources>
