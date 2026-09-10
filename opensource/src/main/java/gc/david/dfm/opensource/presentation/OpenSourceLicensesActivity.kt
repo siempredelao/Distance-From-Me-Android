@@ -35,7 +35,7 @@ import gc.david.dfm.opensource.presentation.screen.OpenSourceDetailScreen
 import gc.david.dfm.opensource.presentation.screen.OpenSourceListScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class AboutActivity : ComponentActivity() {
+class OpenSourceLicensesActivity : ComponentActivity() {
 
     private val viewModel: OpenSourceViewModel by viewModel()
 
@@ -87,8 +87,8 @@ class AboutActivity : ComponentActivity() {
     companion object {
 
         fun open(activity: Activity) {
-            val openAboutActivityIntent = Intent(activity, AboutActivity::class.java)
-            activity.startActivity(openAboutActivityIntent)
+            val openOpenSourceLicensesActivityIntent = Intent(activity, OpenSourceLicensesActivity::class.java)
+            activity.startActivity(openOpenSourceLicensesActivityIntent)
         }
     }
 }

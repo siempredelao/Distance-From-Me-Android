@@ -100,7 +100,6 @@ android {
 
 	buildFeatures {
 		compose = true
-		viewBinding = true
 		buildConfig = true
 	}
 
@@ -132,6 +131,7 @@ dependencies {
 	implementation(libs.androidx.constraintlayout)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.preference)
+	implementation(libs.splashscreen)
 	implementation(libs.coroutines)
 	implementation(libs.crashlytics)
 	implementation(libs.gson)
@@ -155,6 +155,7 @@ dependencies {
 	implementation(libs.compose.material3)
 	implementation(libs.compose.ui)
 	implementation(libs.compose.ui.tooling.preview)
+    implementation(project(":about"))
     implementation(project(":address"))
     implementation(project(":common"))
     implementation(project(":connectivity"))

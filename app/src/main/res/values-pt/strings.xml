@@ -27,9 +27,24 @@
     <string name="dialog_select_address_title">Escolha una direçao</string>
     <string name="dialog_load_distances_title">Escolha una distância</string>
     <string name="menu_rate_app_title">Avaliar aplicativo</string>
-    <string name="toast_send_feedback_error">Nenhum cliente de e-mail disponível</string>
+    <string name="rate_app_prompt">Você gosta de usar este aplicativo?</string>
+    <string name="rate_app_cta">Avalie agora</string>
+    <string name="toast_send_feedback_error">Nenhum cliente de correio eletrónico disponível</string>
     <string name="menu_settings_title">Preferências</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualquer posição</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posição Atual</string>
     <string name="toast_first_point_needed">Por favor, indica um ponto de partida.</string>
+
+    <string name="fab_show_chart_description">Mostrar gráfico de elevação</string>
+    <string name="fab_my_location_description">Minha localização</string>
+    <string name="menu_about_title">Sobre</string>
+    <string name="menu_help_feedback_title">Ajuda e feedback</string>
+    <string name="permission_rationale_title">Permissão de localização necessária</string>
+    <string name="permission_rationale_message">Este aplicativo precisa de acesso à localização para mostrar distâncias a partir da sua posição atual. Conceda a permissão para continuar.\nSe cancelar, pode sempre selecionar posições de qualquer ponto no mapa.</string>
+    <string name="permission_rationale_grant">Conceder permissão</string>
+    <string name="permission_rationale_cancel">Cancelar</string>
+    <string name="snackbar_location_permission_needed">Esta funcionalidade necessita de permissões de localização.</string>
+    <string name="snackbar_location_permission_action">Abrir definições</string>
+    <string name="toast_no_internet_connection">Sem ligação à internet</string>
+    <string name="play_services_not_supported">Este dispositivo não é suportado pelo Google Play Services.</string>
 </resources>

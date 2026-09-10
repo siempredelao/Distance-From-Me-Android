@@ -27,9 +27,24 @@
     <string name="dialog_select_address_title">Triï una adreça</string>
     <string name="dialog_load_distances_title">Triï una distància</string>
     <string name="menu_rate_app_title">Puntua aplicació</string>
+    <string name="rate_app_prompt">T\'agrada fer servir aquesta aplicació?</string>
+    <string name="rate_app_cta">Puntua-la</string>
     <string name="toast_send_feedback_error">No hi ha clients d\'email disponibles</string>
     <string name="menu_settings_title">Preferències</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsevol posició</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posició actual</string>
     <string name="toast_first_point_needed">Si us plau, assenyale un punt inicial.</string>
+
+    <string name="fab_show_chart_description">Mostra gràfic d\'elevació</string>
+    <string name="fab_my_location_description">La meva ubicació</string>
+    <string name="menu_about_title">Quant a</string>
+    <string name="menu_help_feedback_title">Ajuda i comentaris</string>
+    <string name="permission_rationale_title">Permís de localització necessari</string>
+    <string name="permission_rationale_message">Aquesta aplicació necessita accés a la localització per mostrar distàncies des de la seva posició actual. Concedeixi el permís per continuar.\nSi cancel·la, sempre pot seleccionar posicions des de qualsevol punt del mapa.</string>
+    <string name="permission_rationale_grant">Concedir permís</string>
+    <string name="permission_rationale_cancel">Cancel·lar</string>
+    <string name="snackbar_location_permission_needed">Aquesta funció necessita permisos de localització.</string>
+    <string name="snackbar_location_permission_action">Obrir configuració</string>
+    <string name="toast_no_internet_connection">Sense connexió a internet</string>
+    <string name="play_services_not_supported">Aquest dispositiu no és compatible amb Google Play Services.</string>
 </resources>

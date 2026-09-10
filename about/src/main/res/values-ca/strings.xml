@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <string name="about_title">Quant a</string>
+    <string name="cd_back">Enrere</string>
+    <string name="greeting_title">Hola! 👋😀</string>
+    <string name="greeting_message">Gràcies per descarregar Distance From Me — significa molt per a mi. Sóc en David i aquest és el meu projecte personal. Espero que gaudeixis de l\'aplicació tant com jo gaudeixo creant-la, i que et faci la vida una mica més fàcil.</string>
+    <string name="version_title">Versió de l\'app</string>
+    <string name="version_unknown">Versió desconeguda</string>
+    <string name="links_title">Enllaços</string>
+    <string name="link_github">Perfil de GitHub</string>
+    <string name="link_google_play">Obrir a Google Play</string>
+    <string name="link_open_source_licenses">Veure llicències de codi obert</string>
+    <string name="whats_new_title">Novetats</string>
+    <string name="whats_new_message">L\'aplicació és més fàcil de navegar, el mapa és més fluid d\'utilitzar, les traduccions són més clares i petits ajustos fan que l\'experiència sigui més fiable.</string>
+    <string name="translations_title">Traduccions</string>
+    <string name="translations_message">Aquesta app està disponible en diversos idiomes. Si trobes un error o vols suggerir una millor traducció, toca aquí per escriure\'m un email.</string>
+    <string name="translations_email_subject">Comentaris sobre traduccions de Distance From Me</string>
+</resources>

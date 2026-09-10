@@ -17,9 +17,12 @@
 package gc.david.dfm.onboarding.presentation
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import gc.david.dfm.R
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.main.presentation.MainActivity
 import timber.log.Timber
@@ -28,6 +31,11 @@ import timber.log.Timber
  * Created by david on 07.11.16.
  */
 class OnboardActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -54,7 +62,7 @@ class OnboardActivity : AppCompatActivity() {
                         ?.show()
             } else {
                 Timber.tag(TAG).e("checkPlayServices device not supported, finishing")
-                UiUtils.toastIt("This device is not supported by Google Play Services.", this)
+                UiUtils.toastIt(R.string.play_services_not_supported, this)
 
                 finish()
             }

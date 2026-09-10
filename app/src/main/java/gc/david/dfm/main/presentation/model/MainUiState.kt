@@ -17,7 +17,6 @@
 package gc.david.dfm.main.presentation.model
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.distance.data.model.DistanceMode
 
 data class MainUiState(
@@ -26,7 +25,7 @@ data class MainUiState(
     val sideNavigationState: SideNavigationUiState = SideNavigationUiState(),
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
-    val selectFromDistancesLoaded: List<Distance>? = null,
+    val selectFromDistancesLoaded: List<DistanceSelectionUiModel>? = null,
     val searchAddress: String? = null,
     val showChart: Boolean = false,
     val showLocationPermissionSnackbar: Boolean = false,

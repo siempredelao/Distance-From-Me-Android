@@ -20,11 +20,11 @@ package gc.david.dfm.main.presentation.model
  * UI state for the side navigation rail.
  *
  * @property selectedItemId The currently selected navigation item
- * @property showLoadMenuItem Whether to show the Load menu item (debug)
- * @property showCrashMenuItem Whether to show the Crash menu item (debug)
+ * @property showLoadMenuItem Whether to show the Load menu item
+ * @property showDebugOptions Whether to show a set of menu items useful while developing the app
  */
 data class SideNavigationUiState(
     val selectedItemId: SideNavigationItemId? = SideNavigationItemId.CURRENT_POSITION,
     val showLoadMenuItem: Boolean = false,
-    val showCrashMenuItem: Boolean = false,
+    val showDebugOptions: Boolean = false,
 )

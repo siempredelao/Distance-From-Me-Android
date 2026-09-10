@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.PermissionChecker
 import gc.david.dfm.R
+import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
@@ -50,10 +51,9 @@ import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.location.GeofencingLocationManager
-import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
+import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
-import gc.david.dfm.opensource.presentation.AboutActivity
 import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import org.koin.android.ext.android.inject
@@ -143,7 +143,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(addressUiState.showConnectionIssue) {
                     if (addressUiState.showConnectionIssue) {
-                        UiUtils.toastIt("No internet connection", appContext)
+                        UiUtils.toastIt(R.string.toast_no_internet_connection, appContext)
                         addressViewModel.onConnectionIssueShown()
                     }
                 }
@@ -151,7 +151,7 @@ class MainActivity : FragmentActivity() {
                 // Handle main state
                 LaunchedEffect(mainUiState.showConnectionIssue) {
                     if (mainUiState.showConnectionIssue) {
-                        UiUtils.toastIt("No internet connection", appContext)
+                        UiUtils.toastIt(R.string.toast_no_internet_connection, appContext)
                         mainViewModel.onConnectionIssueShown()
                     }
                 }
@@ -274,9 +274,12 @@ class MainActivity : FragmentActivity() {
                     onElevationChartClose = {
                         showChart = false
                     },
-                    onDistanceSelected = { distance ->
-                        mainViewModel.onDistanceToShowSelected(distance)
+                    onDistanceSelected = { id, name ->
+                        mainViewModel.onDistanceToShowSelected(id, name)
                         mainViewModel.onDistancesLoadedHandled()
+                    },
+                    onRateAppClick = {
+                        InAppReviewHandler.rateApp(this@MainActivity, skipFallbackDialog = true)
                     },
                     onDistanceSelectionDismiss = {
                         mainViewModel.onDistancesLoadedHandled()

@@ -16,31 +16,50 @@
 
 package gc.david.dfm.faq.data
 
+import gc.david.dfm.common.presentation.ResourceProvider
+import gc.david.dfm.faq.R
 import gc.david.dfm.faq.data.model.FaqEntity
 import kotlinx.coroutines.delay
 
 /**
  * Created by david on 19.12.16.
  */
-class FaqDiskDataSource {
+class FaqDiskDataSource(private val resourceProvider: ResourceProvider) {
 
     private val questionsAndAnswers = mutableSetOf(
-            FaqEntity("How can I get a distance?",
-                    "Just do a long press in the map :)"),
-            FaqEntity("How can I get a distance from my current position to any position in the map?",
-                    "In the side bar, select \"Current position\" item and then perform a long press in the desired place in the map."),
-            FaqEntity("How can I get a distance from any position to another position in the map?",
-                    "In the side bar, select \"Any position\" item ant then perform a long press in the desired place in the map."),
-            FaqEntity("Do I need to grant \"Location\" permission to get distances from current point?",
-                    "Yes."),
-            FaqEntity("Do I need to grant \"Location\" permission to get distances from any point?",
-                    "No."),
-            FaqEntity("How can I create a multiple points distance?",
-                    "Perform single clicks in the desired points and a long click in the last one."),
-            FaqEntity("How can I reset the status of the map?",
-                    "Select any position mode in the side bar."),
-            FaqEntity("Why my GPS position is not accurate?",
-                    "This issue could be related to your device GPS sensor."))
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_distance),
+            resourceProvider.get(R.string.faq_answer_distance)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_distance_current_position),
+            resourceProvider.get(R.string.faq_answer_distance_current_position)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_distance_any_position),
+            resourceProvider.get(R.string.faq_answer_distance_any_position)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_permission_current_position),
+            resourceProvider.get(R.string.faq_answer_permission_current_position)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_permission_any_position),
+            resourceProvider.get(R.string.faq_answer_permission_any_position)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_multiple_points),
+            resourceProvider.get(R.string.faq_answer_multiple_points)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_reset_map),
+            resourceProvider.get(R.string.faq_answer_reset_map)
+        ),
+        FaqEntity(
+            resourceProvider.get(R.string.faq_question_gps_accuracy),
+            resourceProvider.get(R.string.faq_answer_gps_accuracy)
+        )
+    )
 
     suspend fun getFaqs(): Set<FaqEntity> {
         waitToMakeThisFeatureMoreInteresting()

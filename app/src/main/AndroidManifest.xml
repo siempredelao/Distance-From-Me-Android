@@ -34,7 +34,8 @@
         android:name=".DFMApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme">
 
@@ -45,7 +46,7 @@
         <activity
             android:name=".onboarding.presentation.OnboardActivity"
             android:exported="true"
-            android:theme="@style/CustomActionBarTheme.Onboard">
+            android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

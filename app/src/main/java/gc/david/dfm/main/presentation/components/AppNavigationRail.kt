@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -73,7 +72,7 @@ fun AppNavigationRail(
     onItemClick: (SideNavigationItemId) -> Unit,
     onClose: () -> Unit,
     showLoadMenuItem: Boolean,
-    showCrashMenuItem: Boolean,
+    showDebugOptions: Boolean,
     modifier: Modifier = Modifier,
 ) {
     NavigationRail(
@@ -148,15 +147,15 @@ fun AppNavigationRail(
                 onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) }
             )
 
-            val openSourceLabel = stringResource(R.string.menu_about_title)
+            val aboutLabel = stringResource(R.string.menu_about_title)
             NavigationRailItem(
-                icon = { Icon(Icons.Default.Info, contentDescription = openSourceLabel) },
-                label = { if (isExpanded) Text(openSourceLabel) },
+                icon = { Icon(Icons.Default.Info, contentDescription = aboutLabel) },
+                label = { if (isExpanded) Text(aboutLabel) },
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.ABOUT) }
             )
 
-            if (showCrashMenuItem) {
+            if (showDebugOptions) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.m))
                 Text(text = "Debug section", textAlign = TextAlign.Center, color = Color.Red)
                 Spacer(modifier = Modifier.height(Spacing.m))
@@ -200,9 +199,11 @@ private fun NavigationRailHeader(
                     .padding(vertical = 24.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher),
+                    painter = painterResource(id = gc.david.dfm.common.R.mipmap.ic_launcher_foreground),
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(0.35f)
+                        .height(72.dp),
                     contentScale = ContentScale.Fit
                 )
 
@@ -236,7 +237,7 @@ private fun AppNavigationRailCollapsedPreview() {
         onItemClick = {},
         onClose = {},
         showLoadMenuItem = true,
-        showCrashMenuItem = true
+        showDebugOptions = true
     )
 }
 
@@ -249,7 +250,7 @@ private fun AppNavigationRailExpandedPreview() {
         onItemClick = {},
         onClose = {},
         showLoadMenuItem = true,
-        showCrashMenuItem = true
+        showDebugOptions = true
     )
 }
 

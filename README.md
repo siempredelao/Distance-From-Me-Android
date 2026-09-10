@@ -1,5 +1,5 @@
 # Distance From Me
-![Image](/app/src/main/res/drawable-xxhdpi/ic_launcher.png)
+![Image](/common/src/release/res/mipmap-xxhdpi/ic_launcher.webp)
 
 ## What is it?
 *Distance From Me* is an Android application whose objective is to calculate straight-line distances.
@@ -20,6 +20,7 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | Module | Description |
 |---|---|
 | `:app` | Main application module |
+| `:about` | About screen and app information |
 | `:address` | Address / geocoding feature |
 | `:common` | Shared resources and utilities |
 | `:connectivity` | Connection issues UI |
@@ -51,7 +52,7 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 
 The project has comprehensive test coverage for all critical components:
 - **100% file coverage** 🎉 - All ViewModels, Mappers, Repositories, Formatters, and UseCases have unit tests
-- **~80% branch coverage** 🟡 - Most code branches (if/when/else) are tested
+- **~88% branch coverage** 🟡 - Most code branches (if/when/else) are tested, including the expanded `MainViewModel` flow coverage
 
 For detailed branch coverage analysis, see [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 
@@ -90,9 +91,9 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 - ✅ **Repositories**: ~100% - All if/when branches covered
 - ✅ **Formatters**: ~100% - All formatting paths covered
 - ✅ **Mappers**: ~98% - Almost all branches covered
-- ✅ **ViewModels**: ~78% - Most flows fully tested
-
-**Overall**: 100% file coverage, ~86% branch coverage. See detailed analysis in [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
+- ✅ **ViewModels**: ~82% - Main application flows and edge cases are now well covered
+ 
+**Overall**: 100% file coverage, ~88% branch coverage. See detailed analysis in [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 
 ## Contributions
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 

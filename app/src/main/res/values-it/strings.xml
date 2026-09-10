@@ -27,9 +27,24 @@
     <string name="dialog_select_address_title">Scegliere un indirizzo</string>
     <string name="dialog_load_distances_title">Scegliere una distanza</string>
     <string name="menu_rate_app_title">Valuta app</string>
+    <string name="rate_app_prompt">Ti piace usare questa app?</string>
+    <string name="rate_app_cta">Votala adesso</string>
     <string name="toast_send_feedback_error">Non c\'e client di posta elettronica disponibile</string>
     <string name="menu_settings_title">Preferenze</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsiasi posizione</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posizione attuale</string>
     <string name="toast_first_point_needed">Si prega di indicare un punto di partenza.</string>
+
+    <string name="fab_show_chart_description">Mostra grafico di elevazione</string>
+    <string name="fab_my_location_description">La mia posizione</string>
+    <string name="menu_about_title">Informazioni</string>
+    <string name="menu_help_feedback_title">Aiuto e feedback</string>
+    <string name="permission_rationale_title">Permesso di posizione richiesto</string>
+    <string name="permission_rationale_message">Questa app necessita dell\'accesso alla posizione per mostrare le distanze dalla tua posizione attuale. Concedi il permesso per continuare.\nSe annulli, puoi sempre selezionare posizioni da qualsiasi punto della mappa.</string>
+    <string name="permission_rationale_grant">Concedi permesso</string>
+    <string name="permission_rationale_cancel">Annulla</string>
+    <string name="snackbar_location_permission_needed">Questa funzione richiede i permessi di posizione.</string>
+    <string name="snackbar_location_permission_action">Apri impostazioni</string>
+    <string name="toast_no_internet_connection">Nessuna connessione Internet</string>
+    <string name="play_services_not_supported">Questo dispositivo non è supportato da Google Play Services.</string>
 </resources>

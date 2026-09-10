@@ -15,4 +15,24 @@
   ~ limitations under the License.
   -->
 
-<resources></resources>
+<resources>
+    <string name="faq_title">Ajuda i comentaris</string>
+    <string name="faq_navigate_back">Tornar enrere</string>
+    <string name="faq_error_message">No s\'han pogut obtenir les preguntes, provi-ho més tard.</string>
+    <string name="faq_question_distance">Com puc obtenir una distància?</string>
+    <string name="faq_answer_distance">Només cal fer una pressió llarga al mapa :)</string>
+    <string name="faq_question_distance_current_position">Com puc obtenir una distància entre la meva posició actual i qualsevol punt del mapa?</string>
+    <string name="faq_answer_distance_current_position">A la barra lateral, seleccioni &quot;Posició actual&quot; i després faci una pressió llarga al lloc desitjat del mapa.</string>
+    <string name="faq_question_distance_any_position">Com puc obtenir una distància entre qualsevol posició i una altra del mapa?</string>
+    <string name="faq_answer_distance_any_position">A la barra lateral, seleccioni &quot;Qualsevol posició&quot; i després faci una pressió llarga al lloc desitjat del mapa.</string>
+    <string name="faq_question_permission_current_position">He de concedir el permís de &quot;localització&quot; per obtenir distàncies des del punt actual?</string>
+    <string name="faq_answer_permission_current_position">Sí.</string>
+    <string name="faq_question_permission_any_position">He de concedir el permís de &quot;localització&quot; per obtenir distàncies des de qualsevol punt?</string>
+    <string name="faq_answer_permission_any_position">No.</string>
+    <string name="faq_question_multiple_points">Com puc crear una distància amb múltiples punts?</string>
+    <string name="faq_answer_multiple_points">Faci clics simples als punts desitjats i un clic llarg a l\'últim.</string>
+    <string name="faq_question_reset_map">Com puc reiniciar l\'estat del mapa?</string>
+    <string name="faq_answer_reset_map">Seleccioneu qualsevol mode de posició a la barra lateral.</string>
+    <string name="faq_question_gps_accuracy">Per què la meva posició GPS no és precisa?</string>
+    <string name="faq_answer_gps_accuracy">Aquest problema pot estar relacionat amb el sensor GPS del vostre dispositiu.</string>
+</resources>

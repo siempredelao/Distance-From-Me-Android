@@ -28,7 +28,9 @@ import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.location.GeofencingLocationManager
+import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
+import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -44,5 +46,7 @@ val appModule = module {
     factory { GeofencingLocationManager(get(), get()) }
     single<BuildConfigProvider> { DefaultBuildConfigProvider() }
     single { MapStateMapper(get()) }
-    viewModel { MainViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LoadDistancesMapper(get()) }
+    single { GetStoredDistancesUseCase(get()) }
+    viewModel { MainViewModel(get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }

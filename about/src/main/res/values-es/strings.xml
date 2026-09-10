@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <string name="about_title">Acerca de</string>
+    <string name="cd_back">Atrás</string>
+    <string name="greeting_title">¡Hola! 👋😀</string>
+    <string name="greeting_message">Gracias por descargar Distance From Me — significa mucho para mí. Soy David y este es mi proyecto personal. Espero que disfrutes usando la app tanto como yo disfruté creándola, y que también te haga la vida un poco más fácil.</string>
+    <string name="version_title">Versión de la app</string>
+    <string name="version_unknown">Versión desconocida</string>
+    <string name="links_title">Enlaces</string>
+    <string name="link_github">Perfil de GitHub</string>
+    <string name="link_google_play">Abrir en Google Play</string>
+    <string name="link_open_source_licenses">Ver licencias de código abierto</string>
+    <string name="whats_new_title">Novedades</string>
+    <string name="whats_new_message">La app es más fácil de navegar, el mapa se usa con más fluidez, las traducciones son más claras y pequeños ajustes hacen la experiencia más fiable.</string>
+    <string name="translations_title">Traducciones</string>
+    <string name="translations_message">Esta app está disponible en varios idiomas. Si encuentras un error o quieres sugerir una mejor traducción, toca aquí para escribirme un email.</string>
+    <string name="translations_email_subject">Comentarios sobre traducciones de Distance From Me</string>
+</resources>

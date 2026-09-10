@@ -15,19 +15,8 @@
   ~ limitations under the License.
   -->
 
-<layer-list
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:opacity="opaque">
-
-    <item>
-        <bitmap
-            android:gravity="center|fill"
-            android:src="@drawable/onboard_background"/>
-    </item>
-
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/ic_launcher"/>
-    </item>
-</layer-list>
+<resources>
+    <string name="opensource_title">Llicències de codi obert</string>
+    <string name="opensource_navigate_back">Tornar enrere</string>
+    <string name="opensource_open_in_browser">Obrir al navegador</string>
+</resources>
