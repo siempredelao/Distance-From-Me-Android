@@ -37,7 +37,7 @@
 
     <string name="fab_show_chart_description">Mostra gràfic d\'elevació</string>
     <string name="fab_my_location_description">La meva ubicació</string>
-    <string name="menu_licenses_title">Llicències</string>
+    <string name="menu_about_title">Quant a</string>
     <string name="menu_help_feedback_title">Ajuda i comentaris</string>
     <string name="permission_rationale_title">Permís de localització necessari</string>
     <string name="permission_rationale_message">Aquesta aplicació necessita accés a la localització per mostrar distàncies des de la seva posició actual. Concedeixi el permís per continuar.\nSi cancel·la, sempre pot seleccionar posicions des de qualsevol punt del mapa.</string>

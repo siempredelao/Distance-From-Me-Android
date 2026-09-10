@@ -148,10 +148,10 @@ fun AppNavigationRail(
                 onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) }
             )
 
-            val openSourceLabel = stringResource(R.string.menu_licenses_title)
+            val aboutLabel = stringResource(R.string.menu_about_title)
             NavigationRailItem(
-                icon = { Icon(Icons.Default.Info, contentDescription = openSourceLabel) },
-                label = { if (isExpanded) Text(openSourceLabel) },
+                icon = { Icon(Icons.Default.Info, contentDescription = aboutLabel) },
+                label = { if (isExpanded) Text(aboutLabel) },
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.ABOUT) }
             )

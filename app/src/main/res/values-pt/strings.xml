@@ -37,7 +37,7 @@
 
     <string name="fab_show_chart_description">Mostrar gráfico de elevação</string>
     <string name="fab_my_location_description">Minha localização</string>
-    <string name="menu_licenses_title">Licenças</string>
+    <string name="menu_about_title">Sobre</string>
     <string name="menu_help_feedback_title">Ajuda e feedback</string>
     <string name="permission_rationale_title">Permissão de localização necessária</string>
     <string name="permission_rationale_message">Este aplicativo precisa de acesso à localização para mostrar distâncias a partir da sua posição atual. Conceda a permissão para continuar.\nSe cancelar, pode sempre selecionar posições de qualquer ponto no mapa.</string>
