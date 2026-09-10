@@ -16,6 +16,7 @@
 
 package gc.david.dfm.about.presentation.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -140,14 +143,13 @@ private fun HeaderSection() {
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
+            Image(
+                painter = painterResource(id = gc.david.dfm.common.R.drawable.ic_launcher),
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(0.35f)
-                    .height(72.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(Spacing.m),
-                    ),
+                    .height(72.dp),
+                contentScale = ContentScale.Fit,
             )
 
             Spacer(modifier = Modifier.height(Spacing.m))

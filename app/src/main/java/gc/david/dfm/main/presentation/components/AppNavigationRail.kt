@@ -200,7 +200,7 @@ private fun NavigationRailHeader(
                     .padding(vertical = 24.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher),
+                    painter = painterResource(id = gc.david.dfm.common.R.drawable.ic_launcher),
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
                     contentScale = ContentScale.Fit
