@@ -53,7 +53,7 @@ import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
-import gc.david.dfm.opensource.presentation.AboutActivity
+import gc.david.dfm.opensource.presentation.OpenSourceLicensesActivity
 import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import org.koin.android.ext.android.inject
@@ -255,7 +255,7 @@ class MainActivity : FragmentActivity() {
                                 FaqActivity.open(this@MainActivity)
                             }
                             SideNavigationItemId.ABOUT -> {
-                                AboutActivity.open(this@MainActivity)
+                                OpenSourceLicensesActivity.open(this@MainActivity)
                             }
                             SideNavigationItemId.LOAD -> {
                                 mainViewModel.onLoadDistancesClick()
