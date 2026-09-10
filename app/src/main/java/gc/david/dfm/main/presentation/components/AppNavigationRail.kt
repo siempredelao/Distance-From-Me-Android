@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -200,9 +199,11 @@ private fun NavigationRailHeader(
                     .padding(vertical = 24.dp)
             ) {
                 Image(
-                    painter = painterResource(id = gc.david.dfm.common.R.drawable.ic_launcher),
+                    painter = painterResource(id = gc.david.dfm.common.R.mipmap.ic_launcher_foreground),
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(0.35f)
+                        .height(72.dp),
                     contentScale = ContentScale.Fit
                 )
 

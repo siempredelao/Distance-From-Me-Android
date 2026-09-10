@@ -19,15 +19,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
 
-    <item>
-        <bitmap
-            android:gravity="center|fill"
-            android:src="@drawable/onboard_background"/>
-    </item>
+    <item
+        android:drawable="@drawable/onboard_background"
+        android:gravity="center|fill" />
 
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/ic_launcher"/>
-    </item>
+    <item
+        android:drawable="@mipmap/ic_launcher"
+        android:gravity="center" />
 </layer-list>

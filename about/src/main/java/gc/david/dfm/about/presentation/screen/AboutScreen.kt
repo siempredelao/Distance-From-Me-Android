@@ -135,7 +135,7 @@ private fun HeaderSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp)
+            .height(150.dp)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(Spacing.l),
@@ -144,7 +144,7 @@ private fun HeaderSection() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = gc.david.dfm.common.R.drawable.ic_launcher),
+                painter = painterResource(id = gc.david.dfm.common.R.mipmap.ic_launcher_foreground),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(0.35f)
@@ -152,7 +152,7 @@ private fun HeaderSection() {
                 contentScale = ContentScale.Fit,
             )
 
-            Spacer(modifier = Modifier.height(Spacing.m))
+            Spacer(modifier = Modifier.height(Spacing.s))
 
             Text(
                 text = stringResource(R.string.app_name),
