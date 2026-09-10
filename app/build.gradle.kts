@@ -131,6 +131,7 @@ dependencies {
 	implementation(libs.androidx.constraintlayout)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.preference)
+	implementation(libs.splashscreen)
 	implementation(libs.coroutines)
 	implementation(libs.crashlytics)
 	implementation(libs.gson)

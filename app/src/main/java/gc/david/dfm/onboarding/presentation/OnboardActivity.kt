@@ -17,7 +17,9 @@
 package gc.david.dfm.onboarding.presentation
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import gc.david.dfm.R
@@ -29,6 +31,11 @@ import timber.log.Timber
  * Created by david on 07.11.16.
  */
 class OnboardActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onResume() {
         super.onResume()

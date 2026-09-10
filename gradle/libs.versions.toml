@@ -42,6 +42,7 @@ playServicesLocation = "21.3.0"
 playServicesMaps = "20.0.0"
 preference = "1.2.1"
 room = "2.8.4"
+splashscreen = "1.2.0"
 timber = "5.0.1"
 
 [libraries]
@@ -83,6 +84,7 @@ playservices-maps = { module = "com.google.android.gms:play-services-maps", vers
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 # Test dependencies

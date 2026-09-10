@@ -46,7 +46,7 @@
         <activity
             android:name=".onboarding.presentation.OnboardActivity"
             android:exported="true"
-            android:theme="@style/CustomActionBarTheme.Onboard">
+            android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
