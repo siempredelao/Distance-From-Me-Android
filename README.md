@@ -20,6 +20,7 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | Module | Description |
 |---|---|
 | `:app` | Main application module |
+| `:about` | About screen and app information |
 | `:address` | Address / geocoding feature |
 | `:common` | Shared resources and utilities |
 | `:connectivity` | Connection issues UI |

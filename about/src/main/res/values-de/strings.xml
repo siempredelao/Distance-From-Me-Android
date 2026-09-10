@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+
+    <string name="about_title">Info</string>
+    <string name="cd_back">Zurück</string>
+    <string name="greeting_title">Hallo 👋😀</string>
+    <string name="greeting_message">Danke, dass du Distance From Me heruntergeladen hast — das bedeutet mir viel. Ich bin David, und das ist mein persönliches Projekt. Ich hoffe wirklich, dass du die App genauso sehr genießt wie ich sie entwickelt habe und dass sie dir den Alltag ein kleines bisschen leichter macht.</string>
+    <string name="version_title">App-Version</string>
+    <string name="version_unknown">Unbekannte Version</string>
+    <string name="links_title">Links</string>
+    <string name="link_github">GitHub-Profil</string>
+    <string name="link_google_play">Im Google Play Store öffnen</string>
+    <string name="link_open_source_licenses">Open-Source-Lizenzen ansehen</string>
+    <string name="whats_new_title">Neuigkeiten</string>
+    <string name="whats_new_message">Die App ist einfacher zu bedienen, die Karte lässt sich flüssiger nutzen, die Übersetzungen sind klarer und kleine Verbesserungen machen die gesamte Erfahrung zuverlässiger.</string>
+    <string name="translations_title">Übersetzungen</string>
+    <string name="translations_message">Diese App ist in mehreren Sprachen verfügbar. Wenn du einen Fehler findest oder eine bessere Übersetzung vorschlagen möchtest, tippe hier, um mir eine E-Mail zu schreiben.</string>
+    <string name="translations_email_subject">Übersetzungsfeedback für Distance From Me</string>
+</resources>

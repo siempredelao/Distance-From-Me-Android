@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.PermissionChecker
 import gc.david.dfm.R
+import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
@@ -53,7 +54,6 @@ import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
-import gc.david.dfm.opensource.presentation.OpenSourceLicensesActivity
 import gc.david.dfm.settings.presentation.SettingsActivity
 import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import org.koin.android.ext.android.inject
@@ -255,7 +255,7 @@ class MainActivity : FragmentActivity() {
                                 FaqActivity.open(this@MainActivity)
                             }
                             SideNavigationItemId.ABOUT -> {
-                                OpenSourceLicensesActivity.open(this@MainActivity)
+                                AboutActivity.open(this@MainActivity)
                             }
                             SideNavigationItemId.LOAD -> {
                                 mainViewModel.onLoadDistancesClick()
