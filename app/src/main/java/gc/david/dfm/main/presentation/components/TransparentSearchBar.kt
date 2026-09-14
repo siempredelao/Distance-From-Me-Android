@@ -50,6 +50,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -129,6 +130,7 @@ fun TransparentSearchBar(
                         modifier = Modifier
                             .widthIn(max = 300.dp)
                             .focusRequester(focusRequester)
+                            .testTag("toolbar_search_text_field")
                     )
                 }
             },
@@ -142,7 +144,10 @@ fun TransparentSearchBar(
                         )
                     }
                 } else {
-                    IconButton(onClick = onMenuClick) {
+                    IconButton(
+                        onClick = onMenuClick,
+                        modifier = Modifier.testTag("toolbar_open_menu")
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = stringResource(R.string.search_bar_open_menu),
@@ -153,7 +158,10 @@ fun TransparentSearchBar(
             },
             actions = {
                 if (!isSearchActive) {
-                    IconButton(onClick = { isSearchActive = true }) {
+                    IconButton(
+                        onClick = { isSearchActive = true },
+                        modifier = Modifier.testTag("toolbar_search_button")
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.action_bar_search_title),

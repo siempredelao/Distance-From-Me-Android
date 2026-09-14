@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -145,7 +146,10 @@ internal fun ShowInfoScreen(
                             )
                         }
                     }
-                    IconButton(onClick = onSave) {
+                    IconButton(
+                        onClick = onSave,
+                        modifier = Modifier.testTag("save_distance_button")
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Save,
                             contentDescription = stringResource(R.string.action_bar_item_save_title),

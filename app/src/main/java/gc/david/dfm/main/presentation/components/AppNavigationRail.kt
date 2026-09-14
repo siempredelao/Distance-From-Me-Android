@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -144,7 +145,8 @@ fun AppNavigationRail(
                 icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = faqLabel) },
                 label = { if (isExpanded) Text(faqLabel) },
                 selected = false,
-                onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) }
+                onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) },
+                modifier = Modifier.testTag("navigation_rail_menu_faq")
             )
 
             val aboutLabel = stringResource(R.string.menu_about_title)
@@ -152,7 +154,8 @@ fun AppNavigationRail(
                 icon = { Icon(Icons.Default.Info, contentDescription = aboutLabel) },
                 label = { if (isExpanded) Text(aboutLabel) },
                 selected = false,
-                onClick = { onItemClick(SideNavigationItemId.ABOUT) }
+                onClick = { onItemClick(SideNavigationItemId.ABOUT) },
+                modifier = Modifier.testTag("navigation_rail_menu_about")
             )
 
             if (showDebugOptions) {

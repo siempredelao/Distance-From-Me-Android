@@ -55,11 +55,13 @@ android {
 		versionName = libs.versions.appVersionName.get()
 		versionCode = libs.versions.appVersionCode.get().toInt()
 		androidResources.localeFilters.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
+
+		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
 
 	buildTypes {
 		debug {
-			versionNameSuffix = "-dev"
+//			versionNameSuffix = "-dev"
 
 			// Uncomment this to test ProGuard before release
 //			isMinifyEnabled = true
@@ -111,6 +113,14 @@ android {
     testOptions {
         unitTests.all {
             it.useJUnitPlatform()
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/LICENSE.md"
+            excludes += "/META-INF/LICENSE-notice.md"
         }
     }
 
@@ -177,4 +187,12 @@ dependencies {
 	testImplementation(project(":test-support"))
     
     testRuntimeOnly(libs.junit.jupiter.engine)
+
+	androidTestImplementation(platform(libs.compose.bom))
+	androidTestImplementation(libs.androidx.testrules)
+	androidTestImplementation(libs.androidx.testrunner)
+	androidTestImplementation(libs.androidx.testjunit)
+	androidTestImplementation(libs.androidx.ui.test.junit4)
+	androidTestImplementation(libs.uiautomator)
+	androidTestImplementation(libs.screengrab)
 }

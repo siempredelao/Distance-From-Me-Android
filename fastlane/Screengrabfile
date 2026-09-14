@@ -1,0 +1,27 @@
+# fastlane/Screengrabfile configuration
+# For more information, check out https://docs.fastlane.tools/actions/screengrab/
+
+# The package name of your app
+app_package_name "gc.david.dfm"
+
+# The package name of your Android system tests
+tests_package_name "gc.david.dfm.test"
+
+# The instrumentation runner to use
+test_instrumentation_runner "androidx.test.runner.AndroidJUnitRunner"
+
+# The directory where the screenshots should be stored
+output_directory "fastlane/screenshots"
+
+# The path to your app APK
+app_apk_path "app/build/outputs/apk/debug/app-debug.apk"
+
+# The path to your tests APK
+tests_apk_path "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+
+# Clear all previously generated screenshots before creating new ones
+clear_previous_screenshots true
+
+use_adb_root true
+
+locales ['es-ES']
