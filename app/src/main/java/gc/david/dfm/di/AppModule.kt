@@ -27,6 +27,7 @@ import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
+import gc.david.dfm.initializers.MapInitializer
 import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
@@ -37,7 +38,7 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get())) }
+    single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get()), MapInitializer()) }
     single { Initializers(get()) }
     single { DistanceModeProvider() }
     single { CurrentLocationProvider() }

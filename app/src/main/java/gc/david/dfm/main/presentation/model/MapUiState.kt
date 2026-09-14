@@ -77,5 +77,5 @@ sealed interface CameraUpdate {
 
     data class MoveTo(val position: Coordinates) : CameraUpdate
 
-    data class FitBounds(val coordinates: List<Coordinates>, val padding: Int = 100) : CameraUpdate
+    data class FitBounds(val coordinates: List<Coordinates>, val padding: Int) : CameraUpdate
 }
