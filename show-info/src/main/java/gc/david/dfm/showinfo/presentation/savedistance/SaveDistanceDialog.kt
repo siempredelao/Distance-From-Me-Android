@@ -64,7 +64,10 @@ internal fun SaveDistanceDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(alias) }) {
+            TextButton(
+                onClick = { onConfirm(alias) },
+                modifier = Modifier.testTag("save_distance_confirm_button")
+            ) {
                 Text(stringResource(R.string.alias_dialog_accept))
             }
         },

@@ -132,26 +132,28 @@ class ScreenshotsTest {
             if (suggestions.fetchSemanticsNodes().isNotEmpty()) {
                 suggestions[0].performClick()
             }
+            Thread.sleep(5000)
 
+            // Uncomment when query limit is reset
             // 5. Tap on the show chart FloatingActionButton, verify that the elevation chart is shown and Take a screenshot.
             // Wait for map to settle and elevation to load (using waitUntil for robustness)
-            composeTestRule.waitUntil(timeoutMillis = 20000) {
-                composeTestRule.onAllNodesWithTag("fab_show_chart").fetchSemanticsNodes()
-                    .isNotEmpty()
-            }
-
-            composeTestRule.onNodeWithTag("fab_show_chart").performClick()
-            Thread.sleep(1000)
-            composeTestRule.onNodeWithTag("elevation_chart").assertIsDisplayed()
-            Screengrab.screenshot("06_ElevationChart")
+//            composeTestRule.waitUntil(timeoutMillis = 20000) {
+//                composeTestRule.onAllNodesWithTag("fab_show_chart").fetchSemanticsNodes()
+//                    .isNotEmpty()
+//            }
+//
+//            composeTestRule.onNodeWithTag("fab_show_chart").performClick()
+//            Thread.sleep(1000)
+//            composeTestRule.onNodeWithTag("elevation_chart").assertIsDisplayed()
+//            Screengrab.screenshot("06_ElevationChart")
 
             // 6. Tap on the marker info window to open the details screen
             // Info window is a native view. We search for standard distance units.
             val infoWindow =
                 device.findObject(UiSelector().descriptionContains("km")).takeIf { it.exists() }
-                    ?: device.findObject(UiSelector().descriptionContains("mi"))
+                    ?: device.findObject(UiSelector().descriptionContains("mi")).takeIf { it.exists() }
 
-            if (infoWindow.exists()) {
+            if (infoWindow != null) {
                 val rect = infoWindow.bounds
                 // To avoid clicking the marker itself (which centers the map), 
                 // we click the top part of the detected info window area.
@@ -171,23 +173,42 @@ class ScreenshotsTest {
             // 9. Type "De Las Canteras a Morro Jable"
             composeTestRule.onNodeWithTag("save_distance_text_field")
                 .performTextInput("De Las Canteras a Morro Jable")
-
-
             Thread.sleep(1000)
 
-            
             // Hide keyboard and floating menu before taking the screenshot
+            // On emulators, the first pressBack usually hides the keyboard.
             device.pressBack()
             Thread.sleep(1000)
 
-
-
-            // 9. Type "De Las Canteras a Morro Jable"
-            composeTestRule.onNodeWithTag("save_distance_text_field")
-                .performTextInput("De Las Canteras a Morro Jable")
-
             // 10 .Take a screenshot
             Screengrab.screenshot("08_SaveDistanceDialog")
+
+            // 11. Save the distance
+            composeTestRule.onNodeWithTag("save_distance_confirm_button").performClick()
+            Thread.sleep(1000)
+
+            // 12. Exit the screen
+            composeTestRule.onNodeWithTag("show_info_back_button").performClick()
+            Thread.sleep(1000)
+
+            // 13. Open Menu
+            composeTestRule.onNodeWithTag("toolbar_open_menu").performClick()
+            Thread.sleep(1000)
+            composeTestRule.onNodeWithTag("navigation_rail_menu_load_distances").performClick()
+            Thread.sleep(2000)
+
+            // 14. Select the first saved distance
+            composeTestRule.onAllNodesWithTag("distance_selection_item")[0].performClick()
+            Thread.sleep(2000)
+
+            // 15. Verify distance is shown on map (info window exists)
+            val finalInfoWindow = device.findObject(UiSelector().descriptionContains("km")).takeIf { it.exists() }
+                ?: device.findObject(UiSelector().descriptionContains("mi")).takeIf { it.exists() }
+            
+            if (finalInfoWindow == null || !finalInfoWindow.exists()) {
+                throw Exception("Distance not shown on map after loading.")
+            }
+            Screengrab.screenshot("09_LoadedDistance")
         }
     }
 }

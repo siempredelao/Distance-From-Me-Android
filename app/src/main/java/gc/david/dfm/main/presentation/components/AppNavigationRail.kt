@@ -118,7 +118,8 @@ fun AppNavigationRail(
                     icon = { Icon(Icons.Default.FolderOpen, contentDescription = loadDistancesLabel) },
                     label = { if (isExpanded) Text(loadDistancesLabel) },
                     selected = false,
-                    onClick = { onItemClick(SideNavigationItemId.LOAD) }
+                    onClick = { onItemClick(SideNavigationItemId.LOAD) },
+                    modifier = Modifier.testTag("navigation_rail_menu_load_distances")
                 )
             }
 

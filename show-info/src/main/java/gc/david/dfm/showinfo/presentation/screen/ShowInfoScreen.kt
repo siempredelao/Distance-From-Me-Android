@@ -116,7 +116,10 @@ internal fun ShowInfoScreen(
                 windowInsets = WindowInsets.statusBars,
                 title = { Text(stringResource(R.string.app_name)) },
                 navigationIcon = {
-                    IconButton(onClick = onBackPress) {
+                    IconButton(
+                        onClick = onBackPress,
+                        modifier = Modifier.testTag("show_info_back_button")
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = null,
