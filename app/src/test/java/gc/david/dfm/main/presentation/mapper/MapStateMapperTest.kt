@@ -27,7 +27,8 @@ import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
 import gc.david.dfm.settings.domain.model.CameraAnimation
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -170,7 +171,7 @@ internal class MapStateMapperTest {
 
         val expectedCameraUpdate = CameraUpdate.FitBounds(
             coordinates = coords,
-            padding = 100
+            padding = 200
         )
         assertEquals(expectedCameraUpdate, actual.cameraUpdate)
     }

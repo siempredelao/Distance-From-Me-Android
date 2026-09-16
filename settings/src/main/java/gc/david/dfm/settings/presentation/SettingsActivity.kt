@@ -39,6 +39,11 @@ class SettingsActivity : AppCompatActivity() {
                 .commit()
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
+    }
+
     companion object {
 
         fun open(activity: Activity) {

@@ -34,5 +34,5 @@ val addressModule = module {
     factory { AddressCollectionEntityDataMapper() }
     factory { GeocodingErrorMessageMapper(get()) }
     single<AddressRepository> { BaseAddressRepository(get()) }
-    single { AddressRemoteDataSource(get()) }
+    single { AddressRemoteDataSource(get(), get()) }
 }

@@ -116,7 +116,7 @@ class MapStateMapper(private val context: Context) {
             is CameraAnimation.Animate.Centre -> {
                 CameraUpdate.FitBounds(
                     coordinates = model.positionList,
-                    padding = 100
+                    padding = 200
                 )
             }
 
