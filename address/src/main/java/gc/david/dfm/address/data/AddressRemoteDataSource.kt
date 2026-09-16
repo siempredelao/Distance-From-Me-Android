@@ -20,12 +20,17 @@ import com.google.gson.Gson
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
 import timber.log.Timber
 
-class AddressRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
+class AddressRemoteDataSource(
+    geocodeApiKeyProvider: GeocodeApiKeyProvider,
+    private val ioDispatcher: CoroutineDispatcher
+) {
 
     private val client = OkHttpClient()
     private val gson = Gson()
@@ -43,9 +48,9 @@ class AddressRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
         val request = Request.Builder().url(url).header("content-type", "application/json").build()
 
         val response = client.newCall(request).executeAsync()
-        val addressCollectionEntity =
-                gson.fromJson(response.body.charStream(), AddressCollectionEntity::class.java)
-        return addressCollectionEntity
+        return withContext(ioDispatcher) {
+            gson.fromJson(response.body.charStream(), AddressCollectionEntity::class.java)
+        }
     }
 
     private fun getNameByCoordinatesUrl(coordinates: Coordinates): String {

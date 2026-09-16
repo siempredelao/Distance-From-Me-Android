@@ -19,12 +19,17 @@ package gc.david.dfm.elevation.data
 import com.google.gson.Gson
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.elevation.data.model.ElevationEntity
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
 import timber.log.Timber
 
-class ElevationRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
+class ElevationRemoteDataSource(
+    geocodeApiKeyProvider: GeocodeApiKeyProvider,
+    private val ioDispatcher: CoroutineDispatcher
+) {
 
     private val client = OkHttpClient()
     private val gson = Gson()
@@ -41,9 +46,9 @@ class ElevationRemoteDataSource(geocodeApiKeyProvider: GeocodeApiKeyProvider) {
                 .build()
         val response = client.newCall(request).executeAsync()
 
-        val elevationEntity =
-                gson.fromJson(response.body.charStream(), ElevationEntity::class.java)
-        return elevationEntity
+        return withContext(ioDispatcher) {
+            gson.fromJson(response.body.charStream(), ElevationEntity::class.java)
+        }
     }
 
     companion object {

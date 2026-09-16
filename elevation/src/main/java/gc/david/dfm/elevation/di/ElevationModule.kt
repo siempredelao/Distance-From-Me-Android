@@ -30,5 +30,5 @@ val elevationModule = module {
     factory { GetElevationByCoordinatesUseCase(get()) }
     factory { ElevationEntityDataMapper() }
     single<ElevationRepository> { BaseElevationRepository(get(), get()) }
-    single { ElevationRemoteDataSource(get()) }
+    single { ElevationRemoteDataSource(get(), get()) }
 }
