@@ -16,7 +16,13 @@
 
 package gc.david.dfm.elevation.data.model
 
-class ElevationEntity(val results: List<Result> = emptyList(), val status: ElevationStatus)
+import kotlinx.serialization.Serializable
+
+@Serializable
+class ElevationEntity(
+    val results: List<Result> = emptyList(),
+    val status: ElevationStatus = ElevationStatus.UNKNOWN_ERROR
+)
 
 enum class ElevationStatus {
     /**

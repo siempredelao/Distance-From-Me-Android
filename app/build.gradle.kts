@@ -134,7 +134,6 @@ dependencies {
 	implementation(libs.splashscreen)
 	implementation(libs.coroutines)
 	implementation(libs.crashlytics)
-	implementation(libs.gson)
 	implementation(libs.koin)
 	implementation(libs.koin.android)
 	debugImplementation(libs.compose.ui.tooling)

@@ -16,10 +16,10 @@
 
 package gc.david.dfm.address.data
 
-import com.google.gson.Gson
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.common.data.googleApiJson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -33,7 +33,6 @@ class AddressRemoteDataSource(
 ) {
 
     private val client = OkHttpClient()
-    private val gson = Gson()
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity {
@@ -49,7 +48,7 @@ class AddressRemoteDataSource(
 
         val response = client.newCall(request).executeAsync()
         return withContext(ioDispatcher) {
-            gson.fromJson(response.body.charStream(), AddressCollectionEntity::class.java)
+            response.use { googleApiJson.decodeFromString<AddressCollectionEntity>(it.body.string()) }
         }
     }
 

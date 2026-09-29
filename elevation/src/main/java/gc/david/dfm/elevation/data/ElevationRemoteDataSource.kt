@@ -16,8 +16,8 @@
 
 package gc.david.dfm.elevation.data
 
-import com.google.gson.Gson
 import gc.david.dfm.GeocodeApiKeyProvider
+import gc.david.dfm.common.data.googleApiJson
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -32,7 +32,6 @@ class ElevationRemoteDataSource(
 ) {
 
     private val client = OkHttpClient()
-    private val gson = Gson()
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
@@ -47,7 +46,7 @@ class ElevationRemoteDataSource(
         val response = client.newCall(request).executeAsync()
 
         return withContext(ioDispatcher) {
-            gson.fromJson(response.body.charStream(), ElevationEntity::class.java)
+            response.use { googleApiJson.decodeFromString<ElevationEntity>(it.body.string()) }
         }
     }
 

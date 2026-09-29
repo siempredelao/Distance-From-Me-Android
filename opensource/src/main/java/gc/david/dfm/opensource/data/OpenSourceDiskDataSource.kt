@@ -71,14 +71,14 @@ class OpenSourceDiskDataSource {
             "Apache-2.0",
             "2019"
         )
-        private val GSON = OpenSourceLibraryEntity(
-            "Gson",
-            "A Java serialization/deserialization library that can convert Java Objects into JSON and back.",
-            "Google Inc.",
-            "2.13.2",
-            "https://github.com/google/gson",
+        private val KOTLINX_SERIALIZATION = OpenSourceLibraryEntity(
+            "kotlinx.serialization",
+            "Kotlin multiplatform / multi-format reflectionless serialization.",
+            "JetBrains s.r.o.",
+            "1.11.0",
+            "https://github.com/Kotlin/kotlinx.serialization",
             "Apache-2.0",
-            "2008"
+            "2017"
         )
         private val CONSTRAINT_LAYOUT = OpenSourceLibraryEntity(
             "ConstraintLayout",
@@ -173,7 +173,7 @@ class OpenSourceDiskDataSource {
             LOTTIE,
             MATERIAL_COMPONENTS,
             OKHTTP,
-            GSON,
+            KOTLINX_SERIALIZATION,
             CONSTRAINT_LAYOUT,
             LEAK_CANARY,
             TIMBER,

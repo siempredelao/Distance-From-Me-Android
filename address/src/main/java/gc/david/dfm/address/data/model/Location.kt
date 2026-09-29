@@ -16,8 +16,10 @@
 
 package gc.david.dfm.address.data.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 class Location(
-        @SerializedName("lat") val latitude: Double,
-        @SerializedName("lng") val longitude: Double)
+        @SerialName("lat") val latitude: Double,
+        @SerialName("lng") val longitude: Double)

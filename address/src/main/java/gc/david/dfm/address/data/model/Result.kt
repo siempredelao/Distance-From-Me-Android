@@ -16,8 +16,10 @@
 
 package gc.david.dfm.address.data.model
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 class Result(
-        @SerializedName("formatted_address") val formattedAddress: String,
+        @SerialName("formatted_address") val formattedAddress: String,
         val geometry: Geometry)

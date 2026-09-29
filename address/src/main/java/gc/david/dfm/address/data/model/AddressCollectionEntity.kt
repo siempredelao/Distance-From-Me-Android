@@ -16,7 +16,13 @@
 
 package gc.david.dfm.address.data.model
 
-class AddressCollectionEntity(val results: List<Result> = emptyList(), val status: GeocodingStatus)
+import kotlinx.serialization.Serializable
+
+@Serializable
+class AddressCollectionEntity(
+    val results: List<Result> = emptyList(),
+    val status: GeocodingStatus = GeocodingStatus.UNKNOWN_ERROR
+)
 
 enum class GeocodingStatus {
     /**

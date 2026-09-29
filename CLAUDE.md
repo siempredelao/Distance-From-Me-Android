@@ -38,7 +38,7 @@ Each screen is its own Activity, launched through a `companion object { fun open
 
 ### Layering inside a feature module
 Packages are `data/` → `domain/` → `presentation/` → `di/`:
-- `data/`: `*RemoteDataSource` (OkHttp + Gson calls to Google Geocoding/Elevation APIs, with JSON parsing moved onto the injected IO `CoroutineDispatcher`) or `*DiskDataSource`. `Base*Repository` implements the domain `*Repository` interface. `data/mapper/*EntityDataMapper` turns entities into domain models.
+- `data/`: `*RemoteDataSource` (OkHttp calls to Google Geocoding/Elevation APIs, parsed with kotlinx.serialization using the shared `googleApiJson` from `:common`, on the injected IO `CoroutineDispatcher`) or `*DiskDataSource`. `Base*Repository` implements the domain `*Repository` interface. `data/mapper/*EntityDataMapper` turns entities into domain models.
 - `domain/`: repository interface, domain models, and `*UseCase` classes with `suspend operator fun invoke(...)` that return `kotlin.Result` and catch exceptions themselves.
 - `presentation/`: a `ViewModel` that exposes `StateFlow<*UiState>`, UI mappers, and Compose `screen/`. `:settings` still uses a preference `Fragment`, and `:elevation` uses a GraphView-based `ElevationChartView`.
 - `di/`: a Koin `module { }` (for example `addressModule`). **Every new Koin module has to be added to `startKoin { modules(...) }` in `app/.../DFMApplication.kt`.** Constructor injection uses positional `get()` calls, so a changed constructor signature means updating the matching `get()` count in the module.

@@ -24,11 +24,11 @@ crashlyticsPlugin = "3.0.3"
 googleServices = "4.4.4"
 gradle = "8.13.2"
 graphview = "4.2.2"
-gson = "2.13.2"
 junit5 = "5.11.4"
 koin = "4.1.0"
 kotlin = "2.3.10"
 ksp = "2.3.6"
+kotlinxSerialization = "1.11.0"
 leakCanary = "2.14"
 lifecycle = "2.10.0"
 lottie = "6.7.1"
@@ -66,9 +66,9 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx", version.ref = "crashlytics" }
 graphview = { module = "com.jjoe64:graphview", version.ref = "graphview" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
@@ -103,5 +103,6 @@ crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyti
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room"}

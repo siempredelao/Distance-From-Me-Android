@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -57,7 +58,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines)
     implementation(libs.graphview)
-    implementation(libs.gson)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.lifecycle.runtime)

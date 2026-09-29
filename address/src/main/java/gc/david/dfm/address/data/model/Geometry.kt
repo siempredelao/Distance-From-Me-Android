@@ -16,4 +16,7 @@
 
 package gc.david.dfm.address.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Geometry(val location: Location)

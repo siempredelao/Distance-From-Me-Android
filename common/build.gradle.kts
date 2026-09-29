@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.koin)
     implementation(libs.koin.android)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.material.components)
     implementation(libs.timber)
 

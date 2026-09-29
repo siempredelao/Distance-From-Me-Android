@@ -39,7 +39,7 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 * [Koin](https://github.com/InsertKoinIO/koin)
 * [Room](https://developer.android.com/topic/libraries/architecture/room)
 * [OkHttp](https://square.github.io/okhttp/)
-* [Gson](https://github.com/google/gson)
+* [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
 * [Material Components](https://github.com/material-components/material-components-android)
 * [Lottie](https://github.com/airbnb/lottie-android)
 * [Timber](https://github.com/JakeWharton/timber)

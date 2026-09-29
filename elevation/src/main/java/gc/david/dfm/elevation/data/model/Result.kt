@@ -16,4 +16,7 @@
 
 package gc.david.dfm.elevation.data.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class Result(val elevation: Double)
