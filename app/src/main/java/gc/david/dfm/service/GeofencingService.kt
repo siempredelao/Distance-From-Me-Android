@@ -47,11 +47,12 @@ class GeofencingService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        locationCallback = object : LocationCallback() {
+        val callback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { sendUpdate(it) }
             }
         }
+        locationCallback = callback
 
         fusedLocationClient
             .lastLocation
@@ -70,8 +71,7 @@ class GeofencingService : Service() {
             .build()
             .also {
                 // Start location tracking
-                fusedLocationClient
-                    .requestLocationUpdates(it, locationCallback!!, Looper.getMainLooper())
+                fusedLocationClient.requestLocationUpdates(it, callback, Looper.getMainLooper())
             }
 
         return START_STICKY

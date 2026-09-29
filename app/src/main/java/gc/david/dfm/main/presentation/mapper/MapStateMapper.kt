@@ -110,17 +110,17 @@ class MapStateMapper(private val context: Context) {
     private fun createCameraUpdate(model: DrawDistanceUiModel): CameraUpdate? {
         if (model.positionList.isEmpty()) return null
 
-        if (model.cameraAnimation !is CameraAnimation.Animate) return null
-
         return when (model.cameraAnimation) {
-            is CameraAnimation.Animate.Centre -> {
+            CameraAnimation.None -> null
+
+            CameraAnimation.Animate.Centre -> {
                 CameraUpdate.FitBounds(
                     coordinates = model.positionList,
                     padding = 200
                 )
             }
 
-            is CameraAnimation.Animate.Destination -> {
+            CameraAnimation.Animate.Destination -> {
                 CameraUpdate.MoveTo(position = model.positionList.last())
             }
         }

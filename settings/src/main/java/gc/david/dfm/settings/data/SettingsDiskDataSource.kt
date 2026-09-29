@@ -24,7 +24,8 @@ import androidx.preference.PreferenceManager
 class SettingsDiskDataSource(private val context: Context) {
 
     fun getMeasureUnitPreference(): String {
-        return getPreferences().getString(MEASURE_UNIT_KEY, MEASURE_EUROPEAN_UNIT_VALUE)!!
+        return getPreferences().getString(MEASURE_UNIT_KEY, MEASURE_EUROPEAN_UNIT_VALUE)
+            ?: MEASURE_EUROPEAN_UNIT_VALUE
     }
 
     fun setMeasureUnitPreference(unit: String) {

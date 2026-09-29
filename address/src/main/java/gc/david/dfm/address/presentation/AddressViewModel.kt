@@ -59,13 +59,13 @@ class AddressViewModel(
             val result = getAddressCoordinatesByNameUseCase(locationName)
             _uiState.update { current ->
                 result.fold({ collection ->
-                    when {
-                        collection.addressList.isEmpty() ->
+                    when (collection.addressList.size) {
+                        0 ->
                             current.copy(
                                 isLoading = false,
                                 errorMessage = resourceProvider.get(R.string.toast_no_results),
                             )
-                        collection.addressList.size == 1 ->
+                        1 ->
                             current.copy(
                                 isLoading = false,
                                 addressFound = collection.addressList.first(),
@@ -105,8 +105,8 @@ class AddressViewModel(
             val result = getAddressNameByCoordinatesUseCase(coordinates)
             _uiState.update { current ->
                 result.fold({ collection ->
-                    when {
-                        collection.addressList.isEmpty() ->
+                    when (val address = collection.addressList.firstOrNull()) {
+                        null ->
                             current.copy(
                                 isLoading = false,
                                 errorMessage = resourceProvider.get(R.string.toast_no_results),
@@ -114,7 +114,7 @@ class AddressViewModel(
                         else ->
                             current.copy(
                                 isLoading = false,
-                                addressFound = collection.addressList.first(),
+                                addressFound = address,
                             )
                     }
                 }, { error ->

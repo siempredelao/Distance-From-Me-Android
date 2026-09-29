@@ -83,6 +83,7 @@ class MainViewModel(
 
     // Moves to current position if app has just started
     private var appHasJustStarted = true
+
     // Determines whether a multi-point distance is being marked on the map
     private var isUserSelectingPoints: Boolean = false
 
@@ -128,10 +129,10 @@ class MainViewModel(
         }
 
         // Request location permission on startup if mode is FROM_CURRENT_POINT
-        if (distanceModeProvider.get() == DistanceMode.FROM_CURRENT_POINT) {
-            if (!permissionChecker.isLocationPermissionGranted()) {
-                _uiState.update { it.copy(requestLocationPermission = true) }
-            }
+        if (distanceModeProvider.get() == DistanceMode.FROM_CURRENT_POINT &&
+            !permissionChecker.isLocationPermissionGranted()
+        ) {
+            _uiState.update { it.copy(requestLocationPermission = true) }
         }
     }
 
@@ -224,48 +225,36 @@ class MainViewModel(
     fun onMapClick(coordinates: Coordinates) {
         Timber.tag(TAG).d("onMapClick $coordinates")
 
-        // TODO simplify this
-        if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
-            if (!isUserSelectingPoints) {
-                coordinatesRepository.clear()
-                _uiState.update {
-                    it.copy(
-                        mapState = it.mapState.copy(
-                            clearMap = true,
-                            markers = emptyList(),
-                            polylines = emptyList()
-                        )
-                    )
+        val origin = when (distanceModeProvider.get()) {
+            DistanceMode.FROM_ANY_POINT -> null
+            DistanceMode.FROM_CURRENT_POINT -> {
+                val currentLocation = currentLocationProvider.get()
+                if (currentLocation == CurrentLocationProvider.UNDEFINED) {
+                    isUserSelectingPoints = false
+                    return // Without current location, we cannot calculate any distance
                 }
+                Coordinates(currentLocation.lat, currentLocation.lon)
             }
+        }
 
-            isUserSelectingPoints = true
-        } else {
-            val currentLocation = currentLocationProvider.get()
-            if (currentLocation == CurrentLocationProvider.UNDEFINED) {
-                isUserSelectingPoints = false
-                return // Without current location, we cannot calculate any distance
-            }
-
-            if (!isUserSelectingPoints) {
-                coordinatesRepository.clear()
-                _uiState.update {
-                    it.copy(
-                        mapState = it.mapState.copy(
-                            clearMap = true,
-                            markers = emptyList(),
-                            polylines = emptyList()
-                        )
+        if (!isUserSelectingPoints) {
+            coordinatesRepository.clear()
+            _uiState.update {
+                it.copy(
+                    mapState = it.mapState.copy(
+                        clearMap = true,
+                        markers = emptyList(),
+                        polylines = emptyList()
                     )
-                }
+                )
             }
-            isUserSelectingPoints = true
+        }
+        isUserSelectingPoints = true
 
-            // To calculate the distance from the current position,
-            // we effectively need the current position ;)
-            if (this@MainViewModel.coordinates.isEmpty()) {
-                coordinatesRepository.append(Coordinates(currentLocation.lat, currentLocation.lon))
-            }
+        // To calculate the distance from the current position,
+        // we effectively need the current position ;)
+        if (origin != null && this@MainViewModel.coordinates.isEmpty()) {
+            coordinatesRepository.append(origin)
         }
         coordinatesRepository.append(coordinates)
 
@@ -277,10 +266,8 @@ class MainViewModel(
     }
 
     fun onPositionByNameResolved(coordinates: Coordinates) {
-        if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
-            if (this@MainViewModel.coordinates.isNotEmpty()) {
-                onMapLongClick(coordinates)
-            } else {
+        when (distanceModeProvider.get()) {
+            DistanceMode.FROM_ANY_POINT if this@MainViewModel.coordinates.isEmpty() -> {
                 coordinatesRepository.append(coordinates)
                 val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
                 _uiState.update {
@@ -292,8 +279,10 @@ class MainViewModel(
                     )
                 }
             }
-        } else {
-            onMapLongClick(coordinates)
+
+            DistanceMode.FROM_ANY_POINT, DistanceMode.FROM_CURRENT_POINT -> onMapLongClick(
+                coordinates
+            )
         }
     }
 
@@ -301,22 +290,27 @@ class MainViewModel(
         Timber.tag(TAG).d("onMapLongClick $coordinates")
         isUserSelectingPoints = true
 
-        if (distanceModeProvider.get() == DistanceMode.FROM_ANY_POINT) {
-            if (this@MainViewModel.coordinates.isEmpty()) {
-                _uiState.update { it.copy(errorMessage = resourceProvider.get(R.string.toast_first_point_needed)) }
-                return
-            }
-        } else {
-            val currentLocation = currentLocationProvider.get()
-            if (currentLocation == CurrentLocationProvider.UNDEFINED) {
-                isUserSelectingPoints = false
-                return // Without current location, we cannot calculate any distance
+        when (distanceModeProvider.get()) {
+            DistanceMode.FROM_ANY_POINT -> {
+                if (this@MainViewModel.coordinates.isEmpty()) {
+                    _uiState.update { it.copy(errorMessage = resourceProvider.get(R.string.toast_first_point_needed)) }
+                    return
+                }
             }
 
-            // To calculate the distance from the current position,
-            // we effectively need the current position ;)
-            if (this@MainViewModel.coordinates.isEmpty()) {
-                coordinatesRepository.append(Coordinates(currentLocation.lat, currentLocation.lon))
+            DistanceMode.FROM_CURRENT_POINT -> {
+                val currentLocation = currentLocationProvider.get()
+                if (currentLocation == CurrentLocationProvider.UNDEFINED) {
+                    isUserSelectingPoints = false
+                    return // Without current location, we cannot calculate any distance
+                }
+
+                // To calculate the distance from the current position,
+                // we effectively need the current position ;)
+                if (this@MainViewModel.coordinates.isEmpty()) {
+                    coordinatesRepository
+                        .append(Coordinates(currentLocation.lat, currentLocation.lon))
+                }
             }
         }
 

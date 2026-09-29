@@ -23,16 +23,19 @@ import gc.david.dfm.common.presentation.ResourceProvider
 class GeocodingErrorMessageMapper(private val resourceProvider: ResourceProvider) {
     fun map(error: Throwable): String =
         when (error) {
-            is GeocodingException.InvalidRequest ->
-                resourceProvider.get(R.string.geocoding_error_invalid_request)
-            is GeocodingException.OverDailyLimit ->
-                resourceProvider.get(R.string.geocoding_error_quota)
-            is GeocodingException.OverQueryLimit ->
-                resourceProvider.get(R.string.geocoding_error_rate_limited)
-            is GeocodingException.RequestDenied ->
-                resourceProvider.get(R.string.geocoding_error_request_denied)
-            is GeocodingException.UnknownError ->
-                resourceProvider.get(R.string.geocoding_error_unknown)
+            is GeocodingException -> when (error) {
+                is GeocodingException.InvalidRequest ->
+                    resourceProvider.get(R.string.geocoding_error_invalid_request)
+                is GeocodingException.OverDailyLimit ->
+                    resourceProvider.get(R.string.geocoding_error_quota)
+                is GeocodingException.OverQueryLimit ->
+                    resourceProvider.get(R.string.geocoding_error_rate_limited)
+                is GeocodingException.RequestDenied ->
+                    resourceProvider.get(R.string.geocoding_error_request_denied)
+                is GeocodingException.UnknownError ->
+                    resourceProvider.get(R.string.geocoding_error_unknown)
+            }
+            // Network, parsing and any other non-API failure
             else ->
                 resourceProvider.get(R.string.geocoding_error_generic)
         }

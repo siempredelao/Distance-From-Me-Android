@@ -34,16 +34,10 @@ class UnitConverter {
      */
     fun convertDistance(metres: Double, system: UnitSystem): Pair<Double, String> {
         return when (system) {
-            UnitSystem.IMPERIAL -> if (metres >= MILE_IN_METRES) {
-                (metres / MILE_IN_METRES) to "mi"
-            } else {
-                (metres * YARDS_PER_METRE) to "yd"
-            }
-            UnitSystem.METRIC -> if (metres >= KILOMETRE_IN_METRES) {
-                (metres / KILOMETRE_IN_METRES) to "km"
-            } else {
-                metres to "m"
-            }
+            UnitSystem.IMPERIAL if metres >= MILE_IN_METRES -> (metres / MILE_IN_METRES) to "mi"
+            UnitSystem.IMPERIAL -> (metres * YARDS_PER_METRE) to "yd"
+            UnitSystem.METRIC if metres >= KILOMETRE_IN_METRES -> (metres / KILOMETRE_IN_METRES) to "km"
+            UnitSystem.METRIC -> metres to "m"
         }
     }
 
