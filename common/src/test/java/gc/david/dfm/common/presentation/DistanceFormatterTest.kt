@@ -18,15 +18,30 @@ package gc.david.dfm.common.presentation
 
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.domain.model.UnitSystem
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.Locale
 
 class DistanceFormatterTest {
 
+    private val defaultLocale = Locale.getDefault()
     private val converter = mock<UnitConverter>()
-    private val formatter = DistanceFormatter(converter)
+    private lateinit var formatter: DistanceFormatter
+
+    @BeforeEach
+    fun setup() {
+        Locale.setDefault(Locale.US)
+        formatter = DistanceFormatter(converter)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        Locale.setDefault(defaultLocale)
+    }
 
     @Test
     fun `formatDistance formats metric kilometers correctly`() {
