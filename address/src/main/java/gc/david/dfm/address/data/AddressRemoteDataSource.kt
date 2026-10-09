@@ -19,6 +19,7 @@ package gc.david.dfm.address.data
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.common.data.HttpException
 import gc.david.dfm.common.data.googleApiJson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -29,10 +30,10 @@ import timber.log.Timber
 
 class AddressRemoteDataSource(
     geocodeApiKeyProvider: GeocodeApiKeyProvider,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val client: OkHttpClient = OkHttpClient(),
 ) {
 
-    private val client = OkHttpClient()
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity {
@@ -48,7 +49,10 @@ class AddressRemoteDataSource(
 
         val response = client.newCall(request).executeAsync()
         return withContext(ioDispatcher) {
-            response.use { googleApiJson.decodeFromString<AddressCollectionEntity>(it.body.string()) }
+            response.use {
+                if (!it.isSuccessful) throw HttpException(it.code)
+                googleApiJson.decodeFromString<AddressCollectionEntity>(it.body.string())
+            }
         }
     }
 

@@ -29,10 +29,10 @@ import org.koin.dsl.module
 
 val addressModule = module {
     viewModel { AddressViewModel(get(), get(), get(), get(), get()) }
-    factory { GetAddressNameByCoordinatesUseCase(get(), get()) }
-    factory { GetAddressCoordinatesByNameUseCase(get(), get()) }
+    factory { GetAddressNameByCoordinatesUseCase(get()) }
+    factory { GetAddressCoordinatesByNameUseCase(get()) }
     factory { AddressCollectionEntityDataMapper() }
     factory { GeocodingErrorMessageMapper(get()) }
-    single<AddressRepository> { BaseAddressRepository(get()) }
+    single<AddressRepository> { BaseAddressRepository(get(), get()) }
     single { AddressRemoteDataSource(get(), get()) }
 }

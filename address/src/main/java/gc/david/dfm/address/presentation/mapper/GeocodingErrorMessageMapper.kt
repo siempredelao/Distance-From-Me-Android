@@ -17,27 +17,20 @@
 package gc.david.dfm.address.presentation.mapper
 
 import gc.david.dfm.address.R
-import gc.david.dfm.address.domain.GeocodingException
+import gc.david.dfm.address.domain.GeocodingError
 import gc.david.dfm.common.presentation.ResourceProvider
 
 class GeocodingErrorMessageMapper(private val resourceProvider: ResourceProvider) {
-    fun map(error: Throwable): String =
-        when (error) {
-            is GeocodingException -> when (error) {
-                is GeocodingException.InvalidRequest ->
-                    resourceProvider.get(R.string.geocoding_error_invalid_request)
-                is GeocodingException.OverDailyLimit ->
-                    resourceProvider.get(R.string.geocoding_error_quota)
-                is GeocodingException.OverQueryLimit ->
-                    resourceProvider.get(R.string.geocoding_error_rate_limited)
-                is GeocodingException.RequestDenied ->
-                    resourceProvider.get(R.string.geocoding_error_request_denied)
-                is GeocodingException.UnknownError ->
-                    resourceProvider.get(R.string.geocoding_error_unknown)
-            }
-            // Network, parsing and any other non-API failure
-            else ->
-                resourceProvider.get(R.string.geocoding_error_generic)
-        }
-}
 
+    fun map(error: GeocodingError): String =
+        when (error) {
+            GeocodingError.INVALID_REQUEST -> resourceProvider.get(R.string.geocoding_error_invalid_request)
+            GeocodingError.OVER_DAILY_LIMIT -> resourceProvider.get(R.string.geocoding_error_quota)
+            GeocodingError.OVER_QUERY_LIMIT -> resourceProvider.get(R.string.geocoding_error_rate_limited)
+            GeocodingError.REQUEST_DENIED -> resourceProvider.get(R.string.geocoding_error_request_denied)
+            GeocodingError.UNKNOWN_ERROR -> resourceProvider.get(R.string.geocoding_error_unknown)
+        }
+
+    /** Message for when no answer was received at all, such as a network or parsing failure. */
+    fun unexpectedFailureMessage(): String = resourceProvider.get(R.string.geocoding_error_generic)
+}

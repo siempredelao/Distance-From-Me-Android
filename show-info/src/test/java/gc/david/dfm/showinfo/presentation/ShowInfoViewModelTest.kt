@@ -17,6 +17,8 @@
 package gc.david.dfm.showinfo.presentation
 
 import gc.david.dfm.ConnectionManager
+import gc.david.dfm.address.domain.GeocodingError
+import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
@@ -40,6 +42,7 @@ import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ShowInfoViewModelTest {
@@ -119,7 +122,7 @@ internal class ShowInfoViewModelTest {
         val address = createAddress("Test Address")
         setupSuccessfulStart(coordinatesList)
         whenever(getAddressNameByCoordinatesUseCase(any()))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+            .thenReturn(GeocodingResult.Found(listOf(address)))
         whenever(shareInfoMessageMapper.getSubject()).thenReturn("Subject")
         whenever(shareInfoMessageMapper.mapMessage(any(), any(), any())).thenReturn("Message")
         whenever(resourceProvider.get(R.string.action_bar_item_social_share_title)).thenReturn("Share")
@@ -140,7 +143,7 @@ internal class ShowInfoViewModelTest {
         val address = createAddress("Test Address")
         setupSuccessfulStart(coordinatesList)
         whenever(getAddressNameByCoordinatesUseCase(any()))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+            .thenReturn(GeocodingResult.Found(listOf(address)))
         whenever(shareInfoMessageMapper.getSubject()).thenReturn("Subject")
         whenever(shareInfoMessageMapper.mapMessage(any(), any(), any())).thenReturn("Message")
         whenever(resourceProvider.get(R.string.action_bar_item_social_share_title)).thenReturn("Share")
@@ -159,7 +162,7 @@ internal class ShowInfoViewModelTest {
         val address = createAddress("Test Address")
         setupSuccessfulStart(coordinatesList)
         whenever(getAddressNameByCoordinatesUseCase(any()))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+            .thenReturn(GeocodingResult.Found(listOf(address)))
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
 
@@ -176,7 +179,7 @@ internal class ShowInfoViewModelTest {
         val address = createAddress("Test Address")
         setupSuccessfulStart(coordinatesList)
         whenever(getAddressNameByCoordinatesUseCase(any()))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address))))
+            .thenReturn(GeocodingResult.Found(listOf(address)))
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
         viewModel.onSave()
@@ -214,8 +217,8 @@ internal class ShowInfoViewModelTest {
         whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(getAddressNameByCoordinatesUseCase(any()))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address1))))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(listOf(address2))))
+            .thenReturn(GeocodingResult.Found(listOf(address1)))
+            .thenReturn(GeocodingResult.Found(listOf(address2)))
 
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
@@ -236,7 +239,7 @@ internal class ShowInfoViewModelTest {
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(resourceProvider.get(R.string.error_no_address_found_message)).thenReturn("No address found")
         whenever(getAddressNameByCoordinatesUseCase(any()))
-            .thenReturn(Result.success(gc.david.dfm.address.domain.model.AddressCollection(emptyList())))
+            .thenReturn(GeocodingResult.NoResults)
 
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
@@ -246,23 +249,54 @@ internal class ShowInfoViewModelTest {
     }
 
     @Test
-    fun `resolveAddress with error maps error message`() = runTest {
+    fun `resolveAddress with unexpected failure shows generic message`() = runTest {
         val coordinatesList = listOf(COORDS_1, COORDS_2)
-        val exception = Exception("Geocoding error")
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
-        whenever(geocodingErrorMessageMapper.map(exception)).thenReturn("Geocoding failed")
-        whenever(getAddressNameByCoordinatesUseCase(any())).thenReturn(Result.failure(exception))
+        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn("Geocoding failed")
+        whenever(getAddressNameByCoordinatesUseCase(any())).thenAnswer { throw IOException("Network error") }
 
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
 
         assertEquals("Geocoding failed", viewModel.uiState.value.originAddress)
         assertEquals("Geocoding failed", viewModel.uiState.value.destinationAddress)
+    }
+
+    @Test
+    fun `resolveAddress with rejected request maps rejection message`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        setupSuccessfulStart(coordinatesList)
+        whenever(geocodingErrorMessageMapper.map(GeocodingError.REQUEST_DENIED)).thenReturn("Request denied")
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(GeocodingResult.Rejected(GeocodingError.REQUEST_DENIED))
+
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        assertEquals("Request denied", viewModel.uiState.value.originAddress)
+        assertEquals("Request denied", viewModel.uiState.value.destinationAddress)
+    }
+
+    @Test
+    fun `one failing lookup does not prevent the other address from resolving`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        setupSuccessfulStart(coordinatesList)
+        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn("Geocoding failed")
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenAnswer { throw IOException("Network error") }
+            .thenReturn(GeocodingResult.Found(listOf(createAddress("Address 2"))))
+
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(false, viewModel.uiState.value.isLoading)
+        assertEquals("Geocoding failed", viewModel.uiState.value.originAddress)
+        assertTrue(viewModel.uiState.value.destinationAddress.contains("Address 2"))
     }
 
     private fun setupSuccessfulStart(coordinatesList: List<Coordinates>) {

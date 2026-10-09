@@ -16,9 +16,20 @@
 
 package gc.david.dfm.address.data.mapper
 
-import gc.david.dfm.address.data.model.*
+import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.address.data.model.Geometry
+import gc.david.dfm.address.data.model.GeocodingStatus
+import gc.david.dfm.address.data.model.Location
+import gc.david.dfm.address.data.model.Result
+import gc.david.dfm.address.domain.GeocodingError
+import gc.david.dfm.address.domain.GeocodingResult
+import gc.david.dfm.address.domain.model.Address
+import gc.david.dfm.address.domain.model.Coordinates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.EnumSource
 
 /**
  * Created by david on 15.01.17.
@@ -28,22 +39,43 @@ class AddressCollectionEntityDataMapperTest {
     private val mapper = AddressCollectionEntityDataMapper()
 
     @Test
-    fun `transforms address collection entity to address collection`() {
-        val fakeAddress = "address"
-        val latitude = 1.0
-        val longitude = 2.0
-        val location = Location(latitude, longitude)
-        val geometry = Geometry(location)
-        val result = Result(fakeAddress, geometry)
-        val results = mutableListOf(result)
-        val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
+    fun `transforms results to Found addresses when status is OK`() {
+        val entity = AddressCollectionEntity(
+            results = listOf(Result("address", Geometry(Location(1.0, 2.0)))),
+            status = GeocodingStatus.OK
+        )
 
-        val addressCollection = mapper.transform(addressCollectionEntity)
+        val result = mapper.transform(entity)
 
-        assertEquals(1, addressCollection.addressList.size)
-        val address = addressCollection.addressList[0]
-        assertEquals(address.coordinates.latitude, latitude, 0.0)
-        assertEquals(address.coordinates.longitude, longitude, 0.0)
-        assertEquals(address.formattedAddress, fakeAddress)
+        assertEquals(GeocodingResult.Found(listOf(Address("address", Coordinates(1.0, 2.0)))), result)
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = GeocodingStatus::class, names = ["OK", "ZERO_RESULTS"])
+    fun `transforms a successful status without results to NoResults`(status: GeocodingStatus) {
+        val entity = AddressCollectionEntity(results = emptyList(), status = status)
+
+        val result = mapper.transform(entity)
+
+        assertEquals(GeocodingResult.NoResults, result)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "INVALID_REQUEST, INVALID_REQUEST",
+        "OVER_DAILY_LIMIT, OVER_DAILY_LIMIT",
+        "OVER_QUERY_LIMIT, OVER_QUERY_LIMIT",
+        "REQUEST_DENIED, REQUEST_DENIED",
+        "UNKNOWN_ERROR, UNKNOWN_ERROR",
+    )
+    fun `transforms a rejecting status to Rejected with the matching error`(
+        status: GeocodingStatus,
+        error: GeocodingError,
+    ) {
+        val entity = AddressCollectionEntity(status = status)
+
+        val result = mapper.transform(entity)
+
+        assertEquals(GeocodingResult.Rejected(error), result)
     }
 }

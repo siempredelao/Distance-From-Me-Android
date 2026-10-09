@@ -16,38 +16,10 @@
 
 package gc.david.dfm.address.domain
 
-import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
-import gc.david.dfm.address.data.model.GeocodingStatus
-import gc.david.dfm.address.domain.model.AddressCollection
+class GetAddressCoordinatesByNameUseCase(private val repository: AddressRepository) {
 
-class GetAddressCoordinatesByNameUseCase(
-    private val repository: AddressRepository,
-    private val mapper: AddressCollectionEntityDataMapper
-) {
-
-    suspend operator fun invoke(locationName: String): Result<AddressCollection> {
-        return try {
-            val addressCollectionEntity = repository.getCoordinatesByName(locationName)
-            if (addressCollectionEntity.status in setOf(
-                    GeocodingStatus.OK,
-                    GeocodingStatus.ZERO_RESULTS
-                )
-            ) {
-                val addressCollection = mapper.transform(addressCollectionEntity)
-                val limitedAddressCollection = limitAmountOfAddresses(addressCollection)
-                Result.success(limitedAddressCollection)
-            } else {
-                Result.failure(GeocodingException.from(addressCollectionEntity.status))
-            }
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
-    }
-
-    private fun limitAmountOfAddresses(addressCollection: AddressCollection): AddressCollection {
-        val addressList = addressCollection.addressList
-        return addressCollection.copy(addressList = addressList.take(MAX_BY_NAME))
-    }
+    suspend operator fun invoke(locationName: String): GeocodingResult =
+        repository.getCoordinatesByName(locationName).limitedTo(MAX_BY_NAME)
 
     companion object {
 

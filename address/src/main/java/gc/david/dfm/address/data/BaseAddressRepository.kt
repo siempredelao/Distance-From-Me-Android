@@ -16,18 +16,19 @@
 
 package gc.david.dfm.address.data
 
-import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.domain.AddressRepository
+import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.model.Coordinates
 
-class BaseAddressRepository(private val remoteDataSource: AddressRemoteDataSource)
-    : AddressRepository {
+class BaseAddressRepository(
+    private val remoteDataSource: AddressRemoteDataSource,
+    private val mapper: AddressCollectionEntityDataMapper,
+) : AddressRepository {
 
-    override suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity {
-        return remoteDataSource.getNameByCoordinates(coordinates)
-    }
+    override suspend fun getNameByCoordinates(coordinates: Coordinates): GeocodingResult =
+        mapper.transform(remoteDataSource.getNameByCoordinates(coordinates))
 
-    override suspend fun getCoordinatesByName(name: String): AddressCollectionEntity {
-        return remoteDataSource.getCoordinatesByName(name)
-    }
+    override suspend fun getCoordinatesByName(name: String): GeocodingResult =
+        mapper.transform(remoteDataSource.getCoordinatesByName(name))
 }

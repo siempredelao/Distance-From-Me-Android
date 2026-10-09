@@ -17,8 +17,10 @@
 package gc.david.dfm.address.data.mapper
 
 import gc.david.dfm.address.data.model.AddressCollectionEntity
+import gc.david.dfm.address.data.model.GeocodingStatus
+import gc.david.dfm.address.domain.GeocodingError
+import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.address.domain.model.Coordinates
 
 /**
@@ -26,15 +28,23 @@ import gc.david.dfm.address.domain.model.Coordinates
  *
  *
  * Mapper class used to transform [AddressCollectionEntity] in the Data layer
- * to [AddressCollection] in the Domain layer.
+ * to [GeocodingResult] in the Domain layer.
  */
 class AddressCollectionEntityDataMapper {
 
-    fun transform(addressCollectionEntity: AddressCollectionEntity): AddressCollection {
-        val addressList = addressCollectionEntity.results.map {
-            val location = it.geometry.location
-            Address(it.formattedAddress, Coordinates(location.latitude, location.longitude))
+    fun transform(addressCollectionEntity: AddressCollectionEntity): GeocodingResult =
+        when (addressCollectionEntity.status) {
+            GeocodingStatus.OK, GeocodingStatus.ZERO_RESULTS -> {
+                val addresses = addressCollectionEntity.results.map {
+                    val location = it.geometry.location
+                    Address(it.formattedAddress, Coordinates(location.latitude, location.longitude))
+                }
+                if (addresses.isEmpty()) GeocodingResult.NoResults else GeocodingResult.Found(addresses)
+            }
+            GeocodingStatus.INVALID_REQUEST -> GeocodingResult.Rejected(GeocodingError.INVALID_REQUEST)
+            GeocodingStatus.OVER_DAILY_LIMIT -> GeocodingResult.Rejected(GeocodingError.OVER_DAILY_LIMIT)
+            GeocodingStatus.OVER_QUERY_LIMIT -> GeocodingResult.Rejected(GeocodingError.OVER_QUERY_LIMIT)
+            GeocodingStatus.REQUEST_DENIED -> GeocodingResult.Rejected(GeocodingError.REQUEST_DENIED)
+            GeocodingStatus.UNKNOWN_ERROR -> GeocodingResult.Rejected(GeocodingError.UNKNOWN_ERROR)
         }
-        return AddressCollection(addressList)
-    }
 }

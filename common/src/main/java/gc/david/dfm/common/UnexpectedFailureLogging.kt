@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain.model
+package gc.david.dfm.common
+
+import timber.log.Timber
+import java.io.IOException
 
 /**
- * Created by david on 13.01.17.
+ * Logs a failure that is not a modelled outcome. Connectivity failures are expected and frequent,
+ * so they are logged without the exception (a Crashlytics breadcrumb in release builds). Anything
+ * else is logged with it (a Crashlytics non-fatal), because it points to a bug or a changed
+ * server contract.
  */
-data class AddressCollection(val addressList: List<Address>)
+fun logUnexpectedFailure(tag: String, error: Throwable) {
+    if (error is IOException) {
+        Timber.tag(tag).w("Connectivity failure: %s", error)
+    } else {
+        Timber.tag(tag).e(error)
+    }
+}

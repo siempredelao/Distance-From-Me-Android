@@ -19,11 +19,13 @@ package gc.david.dfm.showinfo.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.ConnectionManager
+import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
-import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.logUnexpectedFailure
+import gc.david.dfm.common.suspendRunCatching
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.model.UnitSystem
@@ -96,10 +98,13 @@ class ShowInfoViewModel(
         viewModelScope.launch {
             val originPosition = positionsList.first()
             val destinationPosition = positionsList.last()
-            val originAddressDeferred =
-                async { getAddressNameByCoordinatesUseCase(originPosition.toAddressCoordinate()) }
-            val destinationAddressDeferred =
-                async { getAddressNameByCoordinatesUseCase(destinationPosition.toAddressCoordinate()) }
+            // Each lookup catches its own failure, so one failing doesn't cancel the other
+            val originAddressDeferred = async {
+                suspendRunCatching { getAddressNameByCoordinatesUseCase(originPosition.toAddressCoordinate()) }
+            }
+            val destinationAddressDeferred = async {
+                suspendRunCatching { getAddressNameByCoordinatesUseCase(destinationPosition.toAddressCoordinate()) }
+            }
             val (originAddressResult, destinationAddressResult) =
                 originAddressDeferred.await() to destinationAddressDeferred.await()
 
@@ -113,21 +118,25 @@ class ShowInfoViewModel(
         }
     }
 
-    private fun resolveAddress(result: Result<AddressCollection>, coordinates: Coordinates) =
-        result.fold({ collection ->
-            val addressList = collection.addressList
-            if (addressList.isEmpty()) {
-                resourceProvider.get(R.string.error_no_address_found_message)
-            } else {
-                addressFormatter.format(
-                    addressList.first().formattedAddress,
-                    coordinates.latitude,
-                    coordinates.longitude,
-                )
+    private fun resolveAddress(result: Result<GeocodingResult>, coordinates: Coordinates): String =
+        result.fold({ geocodingResult ->
+            when (geocodingResult) {
+                is GeocodingResult.Found ->
+                    addressFormatter.format(
+                        geocodingResult.addresses.first().formattedAddress,
+                        coordinates.latitude,
+                        coordinates.longitude,
+                    )
+                GeocodingResult.NoResults ->
+                    resourceProvider.get(R.string.error_no_address_found_message)
+                is GeocodingResult.Rejected -> {
+                    Timber.tag(TAG).e("Geocoding rejected: %s", geocodingResult.error)
+                    geocodingErrorMessageMapper.map(geocodingResult.error)
+                }
             }
         }, { error ->
-            Timber.tag(TAG).e(error)
-            geocodingErrorMessageMapper.map(error)
+            logUnexpectedFailure(TAG, error)
+            geocodingErrorMessageMapper.unexpectedFailureMessage()
         })
 
     fun onShare() {

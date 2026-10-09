@@ -17,7 +17,7 @@
 package gc.david.dfm.address.presentation.mapper
 
 import gc.david.dfm.address.R
-import gc.david.dfm.address.domain.GeocodingException
+import gc.david.dfm.address.domain.GeocodingError
 import gc.david.dfm.common.presentation.ResourceProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -30,55 +30,55 @@ internal class GeocodingErrorMessageMapperTest {
     private val mapper = GeocodingErrorMessageMapper(resourceProvider)
 
     @Test
-    fun `maps InvalidRequest to invalid request string`() {
+    fun `maps INVALID_REQUEST to invalid request string`() {
         whenever(resourceProvider.get(R.string.geocoding_error_invalid_request)).thenReturn("invalid")
 
-        val result = mapper.map(GeocodingException.InvalidRequest())
+        val result = mapper.map(GeocodingError.INVALID_REQUEST)
 
         assertEquals("invalid", result)
     }
 
     @Test
-    fun `maps OverDailyLimit to quota string`() {
+    fun `maps OVER_DAILY_LIMIT to quota string`() {
         whenever(resourceProvider.get(R.string.geocoding_error_quota)).thenReturn("quota")
 
-        val result = mapper.map(GeocodingException.OverDailyLimit())
+        val result = mapper.map(GeocodingError.OVER_DAILY_LIMIT)
 
         assertEquals("quota", result)
     }
 
     @Test
-    fun `maps OverQueryLimit to rate limited string`() {
+    fun `maps OVER_QUERY_LIMIT to rate limited string`() {
         whenever(resourceProvider.get(R.string.geocoding_error_rate_limited)).thenReturn("rate_limited")
 
-        val result = mapper.map(GeocodingException.OverQueryLimit())
+        val result = mapper.map(GeocodingError.OVER_QUERY_LIMIT)
 
         assertEquals("rate_limited", result)
     }
 
     @Test
-    fun `maps RequestDenied to request denied string`() {
+    fun `maps REQUEST_DENIED to request denied string`() {
         whenever(resourceProvider.get(R.string.geocoding_error_request_denied)).thenReturn("denied")
 
-        val result = mapper.map(GeocodingException.RequestDenied())
+        val result = mapper.map(GeocodingError.REQUEST_DENIED)
 
         assertEquals("denied", result)
     }
 
     @Test
-    fun `maps UnknownError to unknown string`() {
+    fun `maps UNKNOWN_ERROR to unknown string`() {
         whenever(resourceProvider.get(R.string.geocoding_error_unknown)).thenReturn("unknown")
 
-        val result = mapper.map(GeocodingException.UnknownError())
+        val result = mapper.map(GeocodingError.UNKNOWN_ERROR)
 
         assertEquals("unknown", result)
     }
 
     @Test
-    fun `maps any other throwable to generic string`() {
+    fun `unexpected failure message is the generic string`() {
         whenever(resourceProvider.get(R.string.geocoding_error_generic)).thenReturn("generic")
 
-        val result = mapper.map(IllegalStateException("boom"))
+        val result = mapper.unexpectedFailureMessage()
 
         assertEquals("generic", result)
     }

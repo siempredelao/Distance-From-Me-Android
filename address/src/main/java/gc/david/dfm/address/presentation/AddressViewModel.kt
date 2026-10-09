@@ -17,21 +17,22 @@
 package gc.david.dfm.address.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.R
+import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.presentation.model.AddressUiState
+import gc.david.dfm.common.launchCatching
+import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.ResourceProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class AddressViewModel(
     private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase,
@@ -55,33 +56,31 @@ class AddressViewModel(
     private fun onSearchPositionByNameWithConnectionAvailable(locationName: String) {
         _uiState.update { it.copy(isLoading = true) }
 
-        viewModelScope.launch {
+        launchCatching(onError = ::onUnexpectedFailure) {
             val result = getAddressCoordinatesByNameUseCase(locationName)
             _uiState.update { current ->
-                result.fold({ collection ->
-                    when (collection.addressList.size) {
-                        0 ->
-                            current.copy(
-                                isLoading = false,
-                                errorMessage = resourceProvider.get(R.string.toast_no_results),
-                            )
-                        1 ->
-                            current.copy(
-                                isLoading = false,
-                                addressFound = collection.addressList.first(),
-                            )
-                        else ->
-                            current.copy(
-                                isLoading = false,
-                                multipleAddressesFound = collection.addressList,
-                            )
-                    }
-                }, { error ->
-                    current.copy(
-                        isLoading = false,
-                        errorMessage = geocodingErrorMessageMapper.map(error),
-                    )
-                })
+                when (result) {
+                    is GeocodingResult.Found if result.addresses.size == 1 ->
+                        current.copy(
+                            isLoading = false,
+                            addressFound = result.addresses.first(),
+                        )
+                    is GeocodingResult.Found ->
+                        current.copy(
+                            isLoading = false,
+                            multipleAddressesFound = result.addresses,
+                        )
+                    GeocodingResult.NoResults ->
+                        current.copy(
+                            isLoading = false,
+                            errorMessage = resourceProvider.get(R.string.toast_no_results),
+                        )
+                    is GeocodingResult.Rejected ->
+                        current.copy(
+                            isLoading = false,
+                            errorMessage = geocodingErrorMessageMapper.map(result.error),
+                        )
+                }
             }
         }
     }
@@ -101,29 +100,37 @@ class AddressViewModel(
     private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: Coordinates) {
         _uiState.update { it.copy(isLoading = true) }
 
-        viewModelScope.launch {
+        launchCatching(onError = ::onUnexpectedFailure) {
             val result = getAddressNameByCoordinatesUseCase(coordinates)
             _uiState.update { current ->
-                result.fold({ collection ->
-                    when (val address = collection.addressList.firstOrNull()) {
-                        null ->
-                            current.copy(
-                                isLoading = false,
-                                errorMessage = resourceProvider.get(R.string.toast_no_results),
-                            )
-                        else ->
-                            current.copy(
-                                isLoading = false,
-                                addressFound = address,
-                            )
-                    }
-                }, { error ->
-                    current.copy(
-                        isLoading = false,
-                        errorMessage = geocodingErrorMessageMapper.map(error),
-                    )
-                })
+                when (result) {
+                    is GeocodingResult.Found ->
+                        current.copy(
+                            isLoading = false,
+                            addressFound = result.addresses.first(),
+                        )
+                    GeocodingResult.NoResults ->
+                        current.copy(
+                            isLoading = false,
+                            errorMessage = resourceProvider.get(R.string.toast_no_results),
+                        )
+                    is GeocodingResult.Rejected ->
+                        current.copy(
+                            isLoading = false,
+                            errorMessage = geocodingErrorMessageMapper.map(result.error),
+                        )
+                }
             }
+        }
+    }
+
+    private fun onUnexpectedFailure(error: Throwable) {
+        logUnexpectedFailure(TAG, error)
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                errorMessage = geocodingErrorMessageMapper.unexpectedFailureMessage(),
+            )
         }
     }
 
@@ -141,5 +148,10 @@ class AddressViewModel(
 
     fun onMultipleAddressesHandled() {
         _uiState.update { it.copy(multipleAddressesFound = null) }
+    }
+
+    private companion object {
+
+        const val TAG = "AddressViewModel"
     }
 }

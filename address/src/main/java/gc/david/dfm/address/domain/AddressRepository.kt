@@ -16,16 +16,12 @@
 
 package gc.david.dfm.address.domain
 
-import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
 
-/**
- * Created by david on 12.01.17.
- */
 interface AddressRepository {
 
-    suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity
+    suspend fun getNameByCoordinates(coordinates: Coordinates): GeocodingResult
 
-    suspend fun getCoordinatesByName(name: String): AddressCollectionEntity
+    suspend fun getCoordinatesByName(name: String): GeocodingResult
 
 }

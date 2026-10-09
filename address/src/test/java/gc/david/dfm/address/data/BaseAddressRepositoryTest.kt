@@ -16,77 +16,63 @@
 
 package gc.david.dfm.address.data
 
+import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.AddressCollectionEntity
-import gc.david.dfm.address.data.model.GeocodingStatus
+import gc.david.dfm.address.domain.GeocodingError
+import gc.david.dfm.address.domain.GeocodingResult
+import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 class BaseAddressRepositoryTest {
 
     private val remoteDataSource = mock<AddressRemoteDataSource>()
-    private val repository = BaseAddressRepository(remoteDataSource)
+    private val mapper = mock<AddressCollectionEntityDataMapper>()
+    private val repository = BaseAddressRepository(remoteDataSource, mapper)
 
     @Test
-    fun `getNameByCoordinates returns result from remote data source`() = runTest {
-        val coordinates = Coordinates(40.7128, -74.0060)
-        val expectedResult = AddressCollectionEntity(
-            status = GeocodingStatus.OK,
-            results = emptyList()
-        )
-        whenever(remoteDataSource.getNameByCoordinates(coordinates)).thenReturn(expectedResult)
+    fun `getNameByCoordinates returns the mapped remote response`() = runTest {
+        val entity = AddressCollectionEntity()
+        val mapped = GeocodingResult.Found(listOf(Address("New York", COORDINATES)))
+        whenever(remoteDataSource.getNameByCoordinates(COORDINATES)).thenReturn(entity)
+        whenever(mapper.transform(entity)).thenReturn(mapped)
 
-        val result = repository.getNameByCoordinates(coordinates)
+        val result = repository.getNameByCoordinates(COORDINATES)
 
-        assertEquals(expectedResult, result)
-        verify(remoteDataSource).getNameByCoordinates(coordinates)
+        assertEquals(mapped, result)
     }
 
     @Test
-    fun `getCoordinatesByName returns result from remote data source`() = runTest {
-        val name = "New York"
-        val expectedResult = AddressCollectionEntity(
-            status = GeocodingStatus.OK,
-            results = emptyList()
-        )
-        whenever(remoteDataSource.getCoordinatesByName(name)).thenReturn(expectedResult)
+    fun `getCoordinatesByName returns the mapped remote response`() = runTest {
+        val entity = AddressCollectionEntity()
+        val mapped = GeocodingResult.Rejected(GeocodingError.INVALID_REQUEST)
+        whenever(remoteDataSource.getCoordinatesByName(NAME)).thenReturn(entity)
+        whenever(mapper.transform(entity)).thenReturn(mapped)
 
-        val result = repository.getCoordinatesByName(name)
+        val result = repository.getCoordinatesByName(NAME)
 
-        assertEquals(expectedResult, result)
-        verify(remoteDataSource).getCoordinatesByName(name)
+        assertEquals(mapped, result)
     }
 
     @Test
-    fun `getNameByCoordinates handles zero results status`() = runTest {
-        val coordinates = Coordinates(0.0, 0.0)
-        val expectedResult = AddressCollectionEntity(
-            status = GeocodingStatus.ZERO_RESULTS,
-            results = emptyList()
-        )
-        whenever(remoteDataSource.getNameByCoordinates(coordinates)).thenReturn(expectedResult)
+    fun `propagates remote data source failures`() = runTest {
+        val exception = IOException("Network error")
+        whenever(remoteDataSource.getCoordinatesByName(NAME)).thenAnswer { throw exception }
 
-        val result = repository.getNameByCoordinates(coordinates)
+        val thrown = runCatching { repository.getCoordinatesByName(NAME) }.exceptionOrNull()
 
-        assertEquals(GeocodingStatus.ZERO_RESULTS, result.status)
+        assertSame(exception, thrown)
     }
 
-    @Test
-    fun `getCoordinatesByName handles invalid request status`() = runTest {
-        val name = ""
-        val expectedResult = AddressCollectionEntity(
-            status = GeocodingStatus.INVALID_REQUEST,
-            results = emptyList()
-        )
-        whenever(remoteDataSource.getCoordinatesByName(name)).thenReturn(expectedResult)
+    private companion object {
 
-        val result = repository.getCoordinatesByName(name)
-
-        assertEquals(GeocodingStatus.INVALID_REQUEST, result.status)
+        const val NAME = "New York"
+        val COORDINATES = Coordinates(40.7128, -74.0060)
     }
 }
-

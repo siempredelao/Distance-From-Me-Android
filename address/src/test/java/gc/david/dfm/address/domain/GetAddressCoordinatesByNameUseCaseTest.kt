@@ -16,86 +16,53 @@
 
 package gc.david.dfm.address.domain
 
-import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
-import gc.david.dfm.address.data.model.*
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.AddressCollection
 import gc.david.dfm.address.domain.model.Coordinates
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 /**
  * Created by david on 15.01.17.
  */
-@ExperimentalCoroutinesApi
 class GetAddressCoordinatesByNameUseCaseTest {
 
     private val repository = mock<AddressRepository>()
-    private val mapper = mock<AddressCollectionEntityDataMapper>()
 
-    private val useCase = GetAddressCoordinatesByNameUseCase(repository, mapper)
+    private val useCase = GetAddressCoordinatesByNameUseCase(repository)
 
     @Test
-    fun `loads empty address when address collection model is correct`() = runTest {
-        val addressCollectionEntity =
-            AddressCollectionEntity(emptyList(), GeocodingStatus.ZERO_RESULTS)
-        whenever(repository.getCoordinatesByName(anyString()))
-            .thenReturn(addressCollectionEntity)
-        val addressCollection = AddressCollection(mutableListOf())
-        whenever(mapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
+    fun `returns the repository result`() = runTest {
+        val rejected = GeocodingResult.Rejected(GeocodingError.INVALID_REQUEST)
+        whenever(repository.getCoordinatesByName(LOCATION_NAME)).thenReturn(rejected)
 
-        val result = useCase.invoke(LOCATION_NAME)
+        val result = useCase(LOCATION_NAME)
 
-        assertEquals(kotlin.Result.success(addressCollection), result)
+        assertEquals(rejected, result)
     }
 
     @Test
-    fun `loads non empty address when address collection model is correct`() = runTest {
-        val latitude = 1.0
-        val longitude = 1.0
-        val location = Location(latitude, longitude)
-        val geometry = Geometry(location)
-        val results = ArrayList<Result>()
-        results.add(Result(LOCATION_NAME, geometry))
-        val addressCollectionEntity = AddressCollectionEntity(results, GeocodingStatus.OK)
-        whenever(repository.getCoordinatesByName(anyString()))
-            .thenReturn(addressCollectionEntity)
-        val address = Address(LOCATION_NAME, Coordinates(latitude, longitude))
-        val addressList = mutableListOf(address)
-        val addressCollection = AddressCollection(addressList)
-        whenever(mapper.transform(addressCollectionEntity)).thenReturn(addressCollection)
+    fun `limits Found to five addresses`() = runTest {
+        val addresses = (1..10).map { Address("Address $it", Coordinates(it.toDouble(), it.toDouble())) }
+        whenever(repository.getCoordinatesByName(LOCATION_NAME)).thenReturn(GeocodingResult.Found(addresses))
 
-        val result = useCase.invoke(LOCATION_NAME)
+        val result = useCase(LOCATION_NAME)
 
-        assertEquals(kotlin.Result.success(addressCollection), result)
+        assertEquals(GeocodingResult.Found(addresses.take(5)), result)
     }
 
     @Test
-    fun `returns error when address collection model is not correct`() = runTest {
-        val addressCollectionEntity =
-            AddressCollectionEntity(status = GeocodingStatus.INVALID_REQUEST)
-        whenever(repository.getCoordinatesByName(anyString())).thenReturn(addressCollectionEntity)
+    fun `propagates repository failures`() = runTest {
+        val exception = IOException("Network error")
+        whenever(repository.getCoordinatesByName(LOCATION_NAME)).thenAnswer { throw exception }
 
-        val result = useCase.invoke(LOCATION_NAME)
+        val thrown = runCatching { useCase(LOCATION_NAME) }.exceptionOrNull()
 
-        assertTrue(result.exceptionOrNull() is GeocodingException.InvalidRequest)
-    }
-
-    @Test
-    fun `returns error when repository call fails`() = runTest {
-        val throwable = Throwable()
-        whenever(repository.getCoordinatesByName(anyString()))
-            .thenAnswer { throw throwable }
-
-        val result = useCase.invoke(LOCATION_NAME)
-
-        assertEquals(kotlin.Result.failure<AddressCollectionEntity>(throwable), result)
+        assertSame(exception, thrown)
     }
 
     companion object {
