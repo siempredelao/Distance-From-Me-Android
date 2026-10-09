@@ -25,16 +25,17 @@ import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.testsupport.CoroutineExtension
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@ExperimentalCoroutinesApi
 class OpenSourceViewModelTest {
 
     @JvmField
@@ -47,11 +48,10 @@ class OpenSourceViewModelTest {
 
     private val viewModel = OpenSourceViewModel(useCase, uiMapper, resourceProvider)
 
-
     @Test
     fun `onStart Given use case succeeds Then returns Content with mapped models`() = runTest {
         val libraryEntities = listOf(DUMMY_LIBRARY)
-        whenever(useCase()).thenReturn(Result.success(libraryEntities))
+        whenever(useCase()).thenReturn(libraryEntities)
         val libraryModel = DUMMY_LIBRARY_UI_MODEL
         whenever(uiMapper(libraryEntities)).thenReturn(listOf(libraryModel))
 
@@ -63,8 +63,8 @@ class OpenSourceViewModelTest {
     }
 
     @Test
-    fun `onStart Given use case fails Then returns Error with message`() = runTest {
-        whenever(useCase()).thenReturn(Result.failure(Throwable()))
+    fun `onStart Given use case throws Then returns Error with message`() = runTest {
+        whenever(useCase()).thenAnswer { throw IllegalStateException("Invalid license") }
         val errorMessage = "error message"
         whenever(resourceProvider.get(R.string.opensourcelibrary_error_message)).thenReturn(errorMessage)
 
@@ -73,6 +73,45 @@ class OpenSourceViewModelTest {
         verify(useCase)()
         val state = viewModel.uiState.value
         assertEquals(OpenSourceUiState.Error(errorMessage), state)
+    }
+
+    @Test
+    fun `onStart Given content already loaded Then does not load again`() = runTest {
+        whenever(useCase()).thenReturn(listOf(DUMMY_LIBRARY))
+        whenever(uiMapper(listOf(DUMMY_LIBRARY))).thenReturn(listOf(DUMMY_LIBRARY_UI_MODEL))
+        viewModel.onStart()
+
+        viewModel.onStart()
+
+        verify(useCase, times(1))()
+        assertEquals(OpenSourceUiState.Content(listOf(DUMMY_LIBRARY_UI_MODEL)), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `onStart Given a load in progress Then does not start another`() = runTest {
+        val pendingLibraries = CompletableDeferred<List<OpenSourceLibrary>>()
+        whenever(useCase()).doSuspendableAnswer { pendingLibraries.await() }
+        viewModel.onStart()
+
+        viewModel.onStart()
+
+        verify(useCase, times(1))()
+        assertEquals(OpenSourceUiState.Loading, viewModel.uiState.value)
+    }
+
+    @Test
+    fun `onStart Given a previous load failed Then loads again`() = runTest {
+        whenever(resourceProvider.get(R.string.opensourcelibrary_error_message)).thenReturn("error message")
+        whenever(useCase())
+            .thenAnswer { throw IllegalStateException("Invalid license") }
+            .thenReturn(listOf(DUMMY_LIBRARY))
+        whenever(uiMapper(listOf(DUMMY_LIBRARY))).thenReturn(listOf(DUMMY_LIBRARY_UI_MODEL))
+        viewModel.onStart()
+
+        viewModel.onStart()
+
+        verify(useCase, times(2))()
+        assertEquals(OpenSourceUiState.Content(listOf(DUMMY_LIBRARY_UI_MODEL)), viewModel.uiState.value)
     }
 
     companion object {

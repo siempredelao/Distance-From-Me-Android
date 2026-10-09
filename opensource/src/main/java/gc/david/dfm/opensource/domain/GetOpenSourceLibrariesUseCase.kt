@@ -23,12 +23,5 @@ import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
  */
 class GetOpenSourceLibrariesUseCase(private val repository: OpenSourceRepository) {
 
-    suspend operator fun invoke(): Result<List<OpenSourceLibrary>> {
-        return try {
-            val openSourceLibraries = repository.getOpenSourceLibraries()
-            Result.success(openSourceLibraries)
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
-    }
+    suspend operator fun invoke(): List<OpenSourceLibrary> = repository.getOpenSourceLibraries()
 }

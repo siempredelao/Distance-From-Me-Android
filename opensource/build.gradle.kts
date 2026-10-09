@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.compose.runtime.livedata)
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.koin)
     implementation(libs.koin.android)

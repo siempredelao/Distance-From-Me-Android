@@ -17,17 +17,18 @@
 package gc.david.dfm.opensource.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import gc.david.dfm.common.launchCatching
+import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class OpenSourceViewModel(
     private val getOpenSourceLibrariesUseCase: GetOpenSourceLibrariesUseCase,
@@ -38,22 +39,27 @@ class OpenSourceViewModel(
     private val _uiState = MutableStateFlow<OpenSourceUiState>(OpenSourceUiState.Loading)
     val uiState: StateFlow<OpenSourceUiState> = _uiState.asStateFlow()
 
+    private var loadJob: Job? = null
+
     fun onStart() {
+        // The Activity calls this on every creation, so a configuration change must not reload
+        if (loadJob?.isActive == true || _uiState.value is OpenSourceUiState.Content) return
+
         _uiState.update { OpenSourceUiState.Loading }
 
-        viewModelScope.launch {
-            val result = getOpenSourceLibrariesUseCase()
-
-            result.fold(
-                onSuccess = { libraries ->
-                    _uiState.update { OpenSourceUiState.Content(uiMapper(libraries)) }
-                },
-                onFailure = {
-                    _uiState.update {
-                        OpenSourceUiState.Error(resourceProvider.get(R.string.opensourcelibrary_error_message))
-                    }
-                }
-            )
+        loadJob = launchCatching(onError = { error ->
+            logUnexpectedFailure(TAG, error)
+            _uiState.update {
+                OpenSourceUiState.Error(resourceProvider.get(R.string.opensourcelibrary_error_message))
+            }
+        }) {
+            val libraries = getOpenSourceLibrariesUseCase()
+            _uiState.update { OpenSourceUiState.Content(uiMapper(libraries)) }
         }
+    }
+
+    private companion object {
+
+        const val TAG = "OpenSourceViewModel"
     }
 }

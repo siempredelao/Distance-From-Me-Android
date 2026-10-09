@@ -27,13 +27,4 @@ class OpenSourceLibraryEntity(
     val link: String,
     val licenseCode: String,
     val licenseYear: String
-) {
-
-    companion object {
-
-        const val APACHE_2_0_LICENSE_CODE = "Apache-2.0"
-        const val MIT_LICENSE_CODE = "MIT"
-        const val EPL_1_0_LICENSE_CODE = "EPL-1.0"
-        const val COPYRIGHT_LICENSE_CODE = "Copyright"
-    }
-}
+)

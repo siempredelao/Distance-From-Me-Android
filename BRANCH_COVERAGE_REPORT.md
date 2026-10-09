@@ -9,7 +9,7 @@
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  📦 FILE COVERAGE:        100% ✅ (35/35 classes)          │
-│  🌿 BRANCH COVERAGE:       88% ✅ (117/133 branches)       │
+│  🌿 BRANCH COVERAGE:       88% ✅ (119/135 branches)       │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Per Component Type:                                 │   │
@@ -32,8 +32,8 @@ See [README.md](README.md) for quick testing commands.
 | **Repositories** | 6 | 6 ✅ | ~10 | ~10 | **100%** ✅ | **100%** ✅ |
 | **Formatters** | 3 | 3 ✅ | ~2 | ~2 | **100%** ✅ | **100%** ✅ |
 | **Mappers** | 11 | 11 ✅ | ~25 | ~24 | **100%** ✅ | **98%** ✅ |
-| **ViewModels** | 7 | 7 ✅ | ~77 | ~63 | **100%** ✅ | **82%** ✅ |
-| **TOTAL** | **35** | **35** ✅ | **~133** | **~117** | **100%** 🎉 | **~88%** ✅ |
+| **ViewModels** | 7 | 7 ✅ | ~79 | ~65 | **100%** ✅ | **82%** ✅ |
+| **TOTAL** | **35** | **35** ✅ | **~135** | **~119** | **100%** 🎉 | **~88%** ✅ |
 **Key Notes**: 
 - ✅ **File Coverage 100%** = All critical classes have at least ONE test file
 - ✅ **Branch Coverage 88%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
@@ -104,7 +104,7 @@ See [README.md](README.md) for quick testing commands.
 | **ShowInfoViewModel** | 8 | 12 | ~8 | ~7 | **~90%** | ✅ High |
 | **ElevationViewModel** | 6 | 8 | ~4 | ~4 | **~90%** | ✅ High |
 | **AddressViewModel** | 8 | ~15 | ~6 | ~5 | **~85%** | ✅ High |
-| **OpenSourceViewModel** | 4 | ~4 | ~3 | ~3 | **~85%** | ✅ High |
+| **OpenSourceViewModel** | 1 | 5 | ~5 | ~5 | **100%** | ✅ High |
 | **SettingsViewModel** | 5 | ~5 | ~3 | ~3 | **~80%** | ✅ High |
 | **MainViewModel** | 25+ | ~20 | ~50 | ~28 | **~56%** | 🟡 Improved |
 | **AVERAGE** | - | - | - | - | **~82%** | ✅ |

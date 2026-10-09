@@ -16,19 +16,19 @@
 
 package gc.david.dfm.opensource.domain
 
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
+import gc.david.dfm.opensource.domain.model.License
 import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
-import org.junit.jupiter.api.Assertions.assertEquals
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 /**
  * Created by david on 26.01.17.
  */
-@ExperimentalCoroutinesApi
 class GetOpenSourceLibrariesUseCaseTest {
 
     private val repository = mock<OpenSourceRepository>()
@@ -36,22 +36,22 @@ class GetOpenSourceLibrariesUseCaseTest {
     private val useCase = GetOpenSourceLibrariesUseCase(repository)
 
     @Test
-    fun `returns result from repository on success`() = runTest {
-        val openSourceLibraryList = emptyList<OpenSourceLibrary>()
-        whenever(repository.getOpenSourceLibraries()).thenReturn(openSourceLibraryList)
+    fun `returns the libraries from the repository`() = runTest {
+        val libraries = listOf(OpenSourceLibrary("Koin", "", "", "", "", License.APACHE_V2, ""))
+        whenever(repository.getOpenSourceLibraries()).thenReturn(libraries)
 
-        val result = useCase.invoke()
+        val result = useCase()
 
-        assertEquals(Result.success(openSourceLibraryList), result)
+        assertEquals(libraries, result)
     }
 
     @Test
-    fun `returns error message on failure`() = runTest {
-        val throwable = Throwable()
-        whenever(repository.getOpenSourceLibraries()).thenAnswer { throw throwable }
+    fun `propagates repository failures`() = runTest {
+        val exception = IOException("Read error")
+        whenever(repository.getOpenSourceLibraries()).thenAnswer { throw exception }
 
-        val result = useCase.invoke()
+        val thrown = runCatching { useCase() }.exceptionOrNull()
 
-        assertEquals(Result.failure<List<OpenSourceLibraryEntity>>(throwable), result)
+        assertSame(exception, thrown)
     }
 }

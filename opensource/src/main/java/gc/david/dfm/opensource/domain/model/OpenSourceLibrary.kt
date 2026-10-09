@@ -16,8 +16,6 @@
 
 package gc.david.dfm.opensource.domain.model
 
-import gc.david.dfm.opensource.data.model.OpenSourceLibraryEntity
-
 data class OpenSourceLibrary(
     val name: String,
     val description: String,
@@ -29,14 +27,14 @@ data class OpenSourceLibrary(
 )
 
 enum class License(val code: String) {
-    APACHE_V2(OpenSourceLibraryEntity.APACHE_2_0_LICENSE_CODE),
-    MIT(OpenSourceLibraryEntity.MIT_LICENSE_CODE),
-    EPL_1_0(OpenSourceLibraryEntity.EPL_1_0_LICENSE_CODE),
-    COPYRIGHT(OpenSourceLibraryEntity.COPYRIGHT_LICENSE_CODE);
+    APACHE_V2("Apache-2.0"),
+    MIT("MIT"),
+    EPL_1_0("EPL-1.0"),
+    COPYRIGHT("Copyright");
 
     companion object {
 
         fun fromCode(code: String) =
-            values().find { it.code == code } ?: error("Invalid license with code $code")
+            entries.find { it.code == code } ?: error("Invalid license with code $code")
     }
 }
