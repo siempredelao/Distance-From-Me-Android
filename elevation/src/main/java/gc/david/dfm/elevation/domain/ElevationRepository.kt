@@ -16,12 +16,10 @@
 
 package gc.david.dfm.elevation.domain
 
-import gc.david.dfm.elevation.domain.model.Elevation
-
 /**
  * Created by david on 05.01.17.
  */
 interface ElevationRepository {
 
-    suspend fun getElevation(coordinatesPath: String, maxSamples: Int): Elevation
+    suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationResult
 }

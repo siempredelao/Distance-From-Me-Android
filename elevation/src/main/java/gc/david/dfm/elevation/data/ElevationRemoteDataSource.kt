@@ -17,37 +17,25 @@
 package gc.david.dfm.elevation.data
 
 import gc.david.dfm.GeocodeApiKeyProvider
-import gc.david.dfm.common.data.googleApiJson
+import gc.david.dfm.common.data.getGoogleApiJson
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.coroutines.executeAsync
 import timber.log.Timber
 
 class ElevationRemoteDataSource(
     geocodeApiKeyProvider: GeocodeApiKeyProvider,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val client: OkHttpClient = OkHttpClient(),
 ) {
 
-    private val client = OkHttpClient()
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
         val urlNoKey = "https://maps.googleapis.com/maps/api/elevation/json?path=$coordinatesPath&samples=$maxSamples"
         Timber.tag(TAG).d(urlNoKey)
 
-        val url = "$urlNoKey&key=$geocodeApiKey"
-
-        val request = Request.Builder().url(url)
-                .header("content-type", "application/json")
-                .build()
-        val response = client.newCall(request).executeAsync()
-
-        return withContext(ioDispatcher) {
-            response.use { googleApiJson.decodeFromString<ElevationEntity>(it.body.string()) }
-        }
+        return client.getGoogleApiJson("$urlNoKey&key=$geocodeApiKey", ioDispatcher)
     }
 
     companion object {

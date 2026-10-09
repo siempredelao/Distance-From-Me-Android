@@ -9,7 +9,7 @@
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  📦 FILE COVERAGE:        100% ✅ (35/35 classes)          │
-│  🌿 BRANCH COVERAGE:       88% ✅ (119/135 branches)       │
+│  🌿 BRANCH COVERAGE:       88% ✅ (122/138 branches)       │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Per Component Type:                                 │   │
@@ -18,7 +18,7 @@
 │  │ Repositories    ████████████████████ 100% ✅        │   │
 │  │ Formatters      ████████████████████ 100% ✅        │   │
 │  │ Mappers         ███████████████████░  98% ✅        │   │
-│  │ ViewModels      ███████████████████░  82% ✅        │   │
+│  │ ViewModels      ███████████████████░  83% ✅        │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -28,12 +28,12 @@ See [README.md](README.md) for quick testing commands.
 ### File Coverage vs Branch Coverage Comparison
 | Component | Files | Files w/Tests | Branches | Branches Covered | File Coverage | Branch Coverage |
 |-----------|-------|---------------|----------|------------------|---------------|-----------------|
-| **UseCases** | 8 | 8 ✅ | ~19 | ~19 | **100%** ✅ | **100%** ✅ |
+| **UseCases** | 8 | 8 ✅ | ~18 | ~18 | **100%** ✅ | **100%** ✅ |
 | **Repositories** | 6 | 6 ✅ | ~10 | ~10 | **100%** ✅ | **100%** ✅ |
 | **Formatters** | 3 | 3 ✅ | ~2 | ~2 | **100%** ✅ | **100%** ✅ |
-| **Mappers** | 11 | 11 ✅ | ~25 | ~24 | **100%** ✅ | **98%** ✅ |
-| **ViewModels** | 7 | 7 ✅ | ~79 | ~65 | **100%** ✅ | **82%** ✅ |
-| **TOTAL** | **35** | **35** ✅ | **~135** | **~119** | **100%** 🎉 | **~88%** ✅ |
+| **Mappers** | 11 | 11 ✅ | ~26 | ~25 | **100%** ✅ | **98%** ✅ |
+| **ViewModels** | 7 | 7 ✅ | ~82 | ~68 | **100%** ✅ | **83%** ✅ |
+| **TOTAL** | **35** | **35** ✅ | **~138** | **~122** | **100%** 🎉 | **~88%** ✅ |
 **Key Notes**: 
 - ✅ **File Coverage 100%** = All critical classes have at least ONE test file
 - ✅ **Branch Coverage 88%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
@@ -46,7 +46,7 @@ See [README.md](README.md) for quick testing commands.
 | GetAddressNameByCoordinatesUseCase | 1 | 3 | **100%** | ✅ |
 | SaveDistanceUseCase | 1 | 2 | **100%** | ✅ |
 | GetPositionListUseCase | 1 | 2 | **100%** | ✅ |
-| GetElevationByCoordinatesUseCase | 1 | 3 | **100%** | ✅ |
+| GetElevationByCoordinatesUseCase | 1 | 2 | **100%** | ✅ |
 | GetOpenSourceLibrariesUseCase | 1 | 1 | **100%** | ✅ |
 | ClearDistancesUseCase | 1 | 2 | **100%** | ✅ |
 | GetDistancesUseCase | 1 | 1 | **100%** | ✅ |
@@ -85,7 +85,7 @@ See [README.md](README.md) for quick testing commands.
 | Mapper | Methods | Branches | Coverage | Status |
 |--------|---------|----------|----------|---------|
 | LicenseMapper | 1 | 4 | **100%** | ✅ |
-| ElevationEntityDataMapper | 1 | 5 | **100%** | ✅ |
+| ElevationEntityDataMapper | 1 | 6 | **100%** | ✅ |
 | OpenSourceLibraryMapper | 2 | 4 | **100%** | ✅ |
 | DistanceEntityMapper | 2 | 1 | **100%** | ✅ |
 | PositionEntityMapper | 2 | 0 | **100%** | ✅ |
@@ -97,17 +97,17 @@ See [README.md](README.md) for quick testing commands.
 | **AVERAGE** | - | - | **~98%** | ✅ |
 **Key mappers** with when/if branches are fully tested (LicenseMapper, ElevationEntityDataMapper).
 ---
-### 5️⃣ ViewModels (~82% Branch Coverage) ✅
+### 5️⃣ ViewModels (~83% Branch Coverage) ✅
 | ViewModel | Methods | Tests | Branches | Covered | Branch % | Status |
 |-----------|---------|-------|----------|---------|----------|---------|
 | **SaveDistanceViewModel** | 3 | 5 | ~2 | ~2 | **~90%** | ✅ High |
 | **ShowInfoViewModel** | 8 | 12 | ~8 | ~7 | **~90%** | ✅ High |
-| **ElevationViewModel** | 6 | 8 | ~4 | ~4 | **~90%** | ✅ High |
+| **ElevationViewModel** | 2 | 10 | ~7 | ~7 | **100%** | ✅ High |
 | **AddressViewModel** | 8 | ~15 | ~6 | ~5 | **~85%** | ✅ High |
 | **OpenSourceViewModel** | 1 | 5 | ~5 | ~5 | **100%** | ✅ High |
 | **SettingsViewModel** | 5 | ~5 | ~3 | ~3 | **~80%** | ✅ High |
 | **MainViewModel** | 25+ | ~20 | ~50 | ~28 | **~56%** | 🟡 Improved |
-| **AVERAGE** | - | - | - | - | **~82%** | ✅ |
+| **AVERAGE** | - | - | - | - | **~83%** | ✅ |
 ---
 **All Tests Status**: ✅ PASSING  
 **Quality Assessment**: ✅ Production-Ready

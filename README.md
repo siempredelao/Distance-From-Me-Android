@@ -96,7 +96,7 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 - ✅ **Repositories**: ~100% - All if/when branches covered
 - ✅ **Formatters**: ~100% - All formatting paths covered
 - ✅ **Mappers**: ~98% - Almost all branches covered
-- ✅ **ViewModels**: ~82% - Main application flows and edge cases are now well covered
+- ✅ **ViewModels**: ~83% - Main application flows and edge cases are now well covered
  
 **Overall**: 100% file coverage, ~88% branch coverage. See detailed analysis in [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 

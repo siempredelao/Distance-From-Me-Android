@@ -18,94 +18,46 @@ package gc.david.dfm.elevation.data
 
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
-import gc.david.dfm.elevation.data.model.ElevationStatus
-import gc.david.dfm.elevation.data.model.Result
-import gc.david.dfm.elevation.domain.model.Elevation
-import gc.david.dfm.elevation.domain.model.ElevationStatus as DomainElevationStatus
+import gc.david.dfm.elevation.domain.ElevationResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.io.IOException
 
 class BaseElevationRepositoryTest {
 
     private val remoteDataSource = mock<ElevationRemoteDataSource>()
-    private val mapper = ElevationEntityDataMapper()
+    private val mapper = mock<ElevationEntityDataMapper>()
     private val repository = BaseElevationRepository(remoteDataSource, mapper)
 
     @Test
-    fun `getElevation returns mapped elevation from remote data source`() = runTest {
-        val coordinatesPath = "40.7128,-74.0060|40.7589,-73.9851"
-        val maxSamples = 100
-        val elevationEntity = ElevationEntity(
-            results = listOf(Result(10.5), Result(20.3)),
-            status = ElevationStatus.OK
-        )
-        val expectedElevation = Elevation(
-            results = listOf(10.5, 20.3),
-            status = DomainElevationStatus.OK
-        )
-        whenever(remoteDataSource.getElevation(coordinatesPath, maxSamples))
-            .thenReturn(elevationEntity)
+    fun `getElevation returns the mapped remote response`() = runTest {
+        val entity = ElevationEntity()
+        val mapped = ElevationResult.Found(listOf(10.5, 20.3))
+        whenever(remoteDataSource.getElevation(PATH, MAX_SAMPLES)).thenReturn(entity)
+        whenever(mapper.transform(entity)).thenReturn(mapped)
 
-        val result = repository.getElevation(coordinatesPath, maxSamples)
+        val result = repository.getElevation(PATH, MAX_SAMPLES)
 
-        assertEquals(expectedElevation.results, result.results)
-        assertEquals(expectedElevation.status, result.status)
-        verify(remoteDataSource).getElevation(coordinatesPath, maxSamples)
+        assertEquals(mapped, result)
     }
 
     @Test
-    fun `getElevation handles empty results`() = runTest {
-        val coordinatesPath = "0.0,0.0"
-        val maxSamples = 10
-        val elevationEntity = ElevationEntity(
-            results = emptyList(),
-            status = ElevationStatus.OK
-        )
-        whenever(remoteDataSource.getElevation(coordinatesPath, maxSamples))
-            .thenReturn(elevationEntity)
+    fun `getElevation propagates remote data source failures`() = runTest {
+        val exception = IOException("Network error")
+        whenever(remoteDataSource.getElevation(PATH, MAX_SAMPLES)).thenAnswer { throw exception }
 
-        val result = repository.getElevation(coordinatesPath, maxSamples)
+        val thrown = runCatching { repository.getElevation(PATH, MAX_SAMPLES) }.exceptionOrNull()
 
-        assertEquals(0, result.results.size)
-        assertEquals(DomainElevationStatus.OK, result.status)
+        assertSame(exception, thrown)
     }
 
-    @Test
-    fun `getElevation handles error status`() = runTest {
-        val coordinatesPath = "invalid"
-        val maxSamples = 10
-        val elevationEntity = ElevationEntity(
-            results = emptyList(),
-            status = ElevationStatus.INVALID_REQUEST
-        )
-        whenever(remoteDataSource.getElevation(coordinatesPath, maxSamples))
-            .thenReturn(elevationEntity)
+    private companion object {
 
-        val result = repository.getElevation(coordinatesPath, maxSamples)
-
-        assertEquals(DomainElevationStatus.INVALID_REQUEST, result.status)
-    }
-
-    @Test
-    fun `getElevation maps multiple elevation points correctly`() = runTest {
-        val coordinatesPath = "path"
-        val maxSamples = 5
-        val elevations = listOf(100.0, 150.0, 200.0, 175.0, 125.0)
-        val elevationEntity = ElevationEntity(
-            results = elevations.map { Result(it) },
-            status = ElevationStatus.OK
-        )
-        whenever(remoteDataSource.getElevation(coordinatesPath, maxSamples))
-            .thenReturn(elevationEntity)
-
-        val result = repository.getElevation(coordinatesPath, maxSamples)
-
-        assertEquals(5, result.results.size)
-        assertEquals(elevations, result.results)
+        const val PATH = "40.7128,-74.006|40.7589,-73.9851"
+        const val MAX_SAMPLES = 100
     }
 }
-

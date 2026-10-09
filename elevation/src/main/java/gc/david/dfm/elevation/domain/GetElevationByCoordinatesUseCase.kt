@@ -17,27 +17,12 @@
 package gc.david.dfm.elevation.domain
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.elevation.domain.model.Elevation
-import gc.david.dfm.elevation.domain.model.ElevationStatus
 
 class GetElevationByCoordinatesUseCase(private val repository: ElevationRepository) {
 
-    suspend operator fun invoke(coordinatesList: List<Coordinates>): Result<Elevation> {
-        return if (coordinatesList.isEmpty()) {
-            Result.failure(Exception("Empty coordinates list"))
-        } else {
-            try {
-                val coordinatesPath = getCoordinatesPath(coordinatesList)
-                val elevation = repository.getElevation(coordinatesPath, ELEVATION_SAMPLES)
-                if (elevation.status == ElevationStatus.OK) {
-                    Result.success(elevation)
-                } else {
-                    Result.failure(Exception(elevation.status.toString()))
-                }
-            } catch (exception: Throwable) {
-                Result.failure(exception)
-            }
-        }
+    suspend operator fun invoke(coordinatesList: List<Coordinates>): ElevationResult {
+        require(coordinatesList.isNotEmpty()) { "An elevation profile needs at least one coordinate" }
+        return repository.getElevation(getCoordinatesPath(coordinatesList), ELEVATION_SAMPLES)
     }
 
     private fun getCoordinatesPath(coordinatesList: List<Coordinates>): String {

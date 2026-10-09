@@ -19,13 +19,9 @@ package gc.david.dfm.address.data
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
-import gc.david.dfm.common.data.HttpException
-import gc.david.dfm.common.data.googleApiJson
+import gc.david.dfm.common.data.getGoogleApiJson
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.coroutines.executeAsync
 import timber.log.Timber
 
 class AddressRemoteDataSource(
@@ -44,17 +40,8 @@ class AddressRemoteDataSource(
         return executeRequest(getCoordinatesByNameUrl(name))
     }
 
-    private suspend fun executeRequest(url: String): AddressCollectionEntity {
-        val request = Request.Builder().url(url).header("content-type", "application/json").build()
-
-        val response = client.newCall(request).executeAsync()
-        return withContext(ioDispatcher) {
-            response.use {
-                if (!it.isSuccessful) throw HttpException(it.code)
-                googleApiJson.decodeFromString<AddressCollectionEntity>(it.body.string())
-            }
-        }
-    }
+    private suspend fun executeRequest(url: String): AddressCollectionEntity =
+        client.getGoogleApiJson(url, ioDispatcher)
 
     private fun getNameByCoordinatesUrl(coordinates: Coordinates): String {
         val parameter = "latlng=${coordinates.latitude},${coordinates.longitude}"

@@ -17,32 +17,28 @@
 package gc.david.dfm.elevation.data.mapper
 
 import gc.david.dfm.elevation.data.model.ElevationEntity
-import gc.david.dfm.elevation.domain.model.Elevation
-import gc.david.dfm.elevation.data.model.ElevationStatus as DataElevationStatus
-import gc.david.dfm.elevation.domain.model.ElevationStatus as DomainElevationStatus
+import gc.david.dfm.elevation.data.model.ElevationStatus
+import gc.david.dfm.elevation.domain.ElevationError
+import gc.david.dfm.elevation.domain.ElevationResult
 
 /**
  * Created by david on 13.01.17.
  *
  *
  * Mapper class used to transform [ElevationEntity] in the Data layer
- * to [Elevation] in the Domain layer.
+ * to [ElevationResult] in the Domain layer.
  */
 class ElevationEntityDataMapper {
 
-    fun transform(elevationEntity: ElevationEntity): Elevation {
-        val elevationList = elevationEntity.results.map { it.elevation }
-        val status = mapStatus(elevationEntity.status)
-        return Elevation(elevationList, status)
-    }
-
-    private fun mapStatus(dataStatus: DataElevationStatus): DomainElevationStatus {
-        return when (dataStatus) {
-            DataElevationStatus.OK -> DomainElevationStatus.OK
-            DataElevationStatus.INVALID_REQUEST -> DomainElevationStatus.INVALID_REQUEST
-            DataElevationStatus.OVER_QUERY_LIMIT -> DomainElevationStatus.OVER_QUERY_LIMIT
-            DataElevationStatus.REQUEST_DENIED -> DomainElevationStatus.REQUEST_DENIED
-            DataElevationStatus.UNKNOWN_ERROR -> DomainElevationStatus.UNKNOWN_ERROR
+    fun transform(elevationEntity: ElevationEntity): ElevationResult =
+        when (elevationEntity.status) {
+            ElevationStatus.OK -> {
+                val samples = elevationEntity.results.map { it.elevation }
+                if (samples.isEmpty()) ElevationResult.NoData else ElevationResult.Found(samples)
+            }
+            ElevationStatus.INVALID_REQUEST -> ElevationResult.Rejected(ElevationError.INVALID_REQUEST)
+            ElevationStatus.OVER_QUERY_LIMIT -> ElevationResult.Rejected(ElevationError.OVER_QUERY_LIMIT)
+            ElevationStatus.REQUEST_DENIED -> ElevationResult.Rejected(ElevationError.REQUEST_DENIED)
+            ElevationStatus.UNKNOWN_ERROR -> ElevationResult.Rejected(ElevationError.UNKNOWN_ERROR)
         }
-    }
 }

@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.material.components)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.coroutines)
     implementation(libs.timber)
 
     testImplementation(libs.junit.jupiter.api)
