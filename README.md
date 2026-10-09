@@ -63,7 +63,7 @@ For detailed branch coverage analysis, see [BRANCH_COVERAGE_REPORT.md](BRANCH_CO
 
 ```bash
 # Run all module tests with visual progress feedback
-cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core-distances common show-info address faq opensource elevation settings app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
+cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core-distances common show-info address opensource elevation settings app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
 
 # Or run tests for all modules at once (debug variant)
 ./gradlew testDebugUnitTest
@@ -73,7 +73,6 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 ./gradlew :common:testDebugUnitTest
 ./gradlew :show-info:testDebugUnitTest
 ./gradlew :address:testDebugUnitTest
-./gradlew :faq:testDebugUnitTest
 ./gradlew :opensource:testDebugUnitTest
 ./gradlew :elevation:testDebugUnitTest
 ./gradlew :settings:testDebugUnitTest

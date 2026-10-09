@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.faq.data.mapper
+package gc.david.dfm.faq.presentation.model
 
-import gc.david.dfm.faq.data.model.FaqEntity
-import gc.david.dfm.faq.domain.model.Faq
+import androidx.annotation.StringRes
 
-class FaqEntityDataMapper {
-
-    fun transform(faqEntity: FaqEntity): Faq {
-        return Faq(faqEntity.question, faqEntity.answer)
-    }
-}
+data class Faq(@param:StringRes val question: Int, @param:StringRes val answer: Int)

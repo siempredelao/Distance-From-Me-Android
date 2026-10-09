@@ -18,7 +18,6 @@
 <resources>
     <string name="faq_title">Ayuda y comentarios</string>
     <string name="faq_navigate_back">Volver</string>
-    <string name="faq_error_message">No se pueden obtener las preguntas, inténtelo de nuevo más tarde.</string>
     <string name="faq_question_distance">¿Cómo puedo obtener una distancia?</string>
     <string name="faq_answer_distance">¡Solo tienes que mantener pulsado el mapa! :)</string>
     <string name="faq_question_distance_current_position">¿Cómo puedo obtener la distancia desde mi posición actual hasta cualquier punto del mapa?</string>

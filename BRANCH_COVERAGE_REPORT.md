@@ -8,8 +8,8 @@
 │  TEST COVERAGE DASHBOARD                                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  📦 FILE COVERAGE:        100% ✅ (39/39 classes)          │
-│  🌿 BRANCH COVERAGE:       88% ✅ (121/137 branches)       │
+│  📦 FILE COVERAGE:        100% ✅ (35/35 classes)          │
+│  🌿 BRANCH COVERAGE:       88% ✅ (117/133 branches)       │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Per Component Type:                                 │   │
@@ -28,12 +28,12 @@ See [README.md](README.md) for quick testing commands.
 ### File Coverage vs Branch Coverage Comparison
 | Component | Files | Files w/Tests | Branches | Branches Covered | File Coverage | Branch Coverage |
 |-----------|-------|---------------|----------|------------------|---------------|-----------------|
-| **UseCases** | 9 | 9 ✅ | ~20 | ~20 | **100%** ✅ | **100%** ✅ |
-| **Repositories** | 7 | 7 ✅ | ~10 | ~10 | **100%** ✅ | **100%** ✅ |
+| **UseCases** | 8 | 8 ✅ | ~19 | ~19 | **100%** ✅ | **100%** ✅ |
+| **Repositories** | 6 | 6 ✅ | ~10 | ~10 | **100%** ✅ | **100%** ✅ |
 | **Formatters** | 3 | 3 ✅ | ~2 | ~2 | **100%** ✅ | **100%** ✅ |
-| **Mappers** | 12 | 12 ✅ | ~25 | ~24 | **100%** ✅ | **98%** ✅ |
-| **ViewModels** | 8 | 8 ✅ | ~80 | ~66 | **100%** ✅ | **82%** ✅ |
-| **TOTAL** | **39** | **39** ✅ | **~137** | **~121** | **100%** 🎉 | **~88%** ✅ |
+| **Mappers** | 11 | 11 ✅ | ~25 | ~24 | **100%** ✅ | **98%** ✅ |
+| **ViewModels** | 7 | 7 ✅ | ~77 | ~63 | **100%** ✅ | **82%** ✅ |
+| **TOTAL** | **35** | **35** ✅ | **~133** | **~117** | **100%** 🎉 | **~88%** ✅ |
 **Key Notes**: 
 - ✅ **File Coverage 100%** = All critical classes have at least ONE test file
 - ✅ **Branch Coverage 88%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
@@ -47,7 +47,6 @@ See [README.md](README.md) for quick testing commands.
 | SaveDistanceUseCase | 1 | 2 | **100%** | ✅ |
 | GetPositionListUseCase | 1 | 2 | **100%** | ✅ |
 | GetElevationByCoordinatesUseCase | 1 | 3 | **100%** | ✅ |
-| GetFaqsUseCase | 1 | 1 | **100%** | ✅ |
 | GetOpenSourceLibrariesUseCase | 1 | 1 | **100%** | ✅ |
 | ClearDistancesUseCase | 1 | 2 | **100%** | ✅ |
 | GetDistancesUseCase | 1 | 1 | **100%** | ✅ |
@@ -63,7 +62,6 @@ See [README.md](README.md) for quick testing commands.
 | BaseElevationRepository | 1 | 0 | **100%** | ✅ |
 | BaseCoordinatesRepository | 3 | 0 | **100%** | ✅ |
 | BaseDistanceRepository | 4 | 0 | **100%** | ✅ |
-| BaseFaqRepository | 1 | 0 | **100%** | ✅ |
 | BaseOpenSourceRepository | 1 | 0 | **100%** | ✅ |
 | **AVERAGE** | - | - | **100%** | ✅ |
 **BaseSettingsRepository** has the most branches (6) - all tested:
@@ -92,7 +90,6 @@ See [README.md](README.md) for quick testing commands.
 | DistanceEntityMapper | 2 | 1 | **100%** | ✅ |
 | PositionEntityMapper | 2 | 0 | **100%** | ✅ |
 | AddressCollectionEntityDataMapper | 1 | 0 | **100%** | ✅ |
-| FaqEntityDataMapper | 1 | 0 | **100%** | ✅ |
 | OpenSourceLibraryUiMapper | 1 | 0 | **100%** | ✅ |
 | GeocodingErrorMessageMapper | 1 | ~7 | **~95%** | ✅ |
 | MapStateMapper | 1 | ~3 | **~95%** | ✅ |
@@ -107,7 +104,6 @@ See [README.md](README.md) for quick testing commands.
 | **ShowInfoViewModel** | 8 | 12 | ~8 | ~7 | **~90%** | ✅ High |
 | **ElevationViewModel** | 6 | 8 | ~4 | ~4 | **~90%** | ✅ High |
 | **AddressViewModel** | 8 | ~15 | ~6 | ~5 | **~85%** | ✅ High |
-| **FaqViewModel** | 4 | ~4 | ~3 | ~3 | **~85%** | ✅ High |
 | **OpenSourceViewModel** | 4 | ~4 | ~3 | ~3 | **~85%** | ✅ High |
 | **SettingsViewModel** | 5 | ~5 | ~3 | ~3 | **~80%** | ✅ High |
 | **MainViewModel** | 25+ | ~20 | ~50 | ~28 | **~56%** | 🟡 Improved |

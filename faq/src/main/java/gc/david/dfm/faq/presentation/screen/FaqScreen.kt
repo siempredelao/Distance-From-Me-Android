@@ -18,10 +18,8 @@ package gc.david.dfm.faq.presentation.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,41 +28,34 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.faq.R
-import gc.david.dfm.faq.domain.model.Faq
-import gc.david.dfm.faq.presentation.model.FaqUiState
+import gc.david.dfm.faq.presentation.model.Faq
+import gc.david.dfm.faq.presentation.model.faqs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FaqScreen(
-    uiState: FaqUiState,
+    faqs: List<Faq>,
     onBack: () -> Unit,
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,35 +75,13 @@ fun FaqScreen(
                 ),
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
-        when (uiState) {
-            is FaqUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is FaqUiState.Content -> {
-                LazyColumn(
-                    modifier = Modifier.padding(innerPadding),
-                    contentPadding = PaddingValues(Spacing.s),
-                ) {
-                    items(uiState.faqs) { faq ->
-                        FaqCard(faq = faq)
-                    }
-                }
-            }
-
-            is FaqUiState.Error -> {
-                LaunchedEffect(uiState.message) {
-                    snackbarHostState.showSnackbar(uiState.message)
-                }
+        LazyColumn(
+            modifier = Modifier.padding(innerPadding),
+            contentPadding = PaddingValues(Spacing.s),
+        ) {
+            items(faqs) { faq ->
+                FaqCard(faq = faq)
             }
         }
     }
@@ -136,12 +105,12 @@ private fun FaqCard(faq: Faq) {
             ),
         ) {
             Text(
-                text = faq.question,
+                text = stringResource(faq.question),
                 style = MaterialTheme.typography.titleSmall,
             )
             AnimatedVisibility(visible = expanded) {
                 Text(
-                    text = faq.answer,
+                    text = stringResource(faq.answer),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(top = Spacing.m),
                 )
@@ -152,36 +121,10 @@ private fun FaqCard(faq: Faq) {
 
 @Preview
 @Composable
-private fun FaqScreenLoadingPreview() {
+private fun FaqScreenPreview() {
     DfmTheme {
         FaqScreen(
-            uiState = FaqUiState.Loading,
-            onBack = {},
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun FaqScreenContentPreview() {
-    DfmTheme {
-        FaqScreen(
-            uiState = FaqUiState.Content(
-                faqs = listOf(
-                    Faq(
-                        question = "How do I measure a distance?",
-                        answer = "Tap on the map to set the origin and destination points. The distance will be calculated automatically."
-                    ),
-                    Faq(
-                        question = "Can I save my measurements?",
-                        answer = "Yes, you can save your distance measurements by tapping the save button in the info screen."
-                    ),
-                    Faq(
-                        question = "How accurate are the measurements?",
-                        answer = "The measurements are based on GPS coordinates and use the Haversine formula for accuracy."
-                    ),
-                )
-            ),
+            faqs = faqs,
             onBack = {},
         )
     }

@@ -18,7 +18,6 @@
 <resources>
     <string name="faq_title">Ajuda i comentaris</string>
     <string name="faq_navigate_back">Tornar enrere</string>
-    <string name="faq_error_message">No s\'han pogut obtenir les preguntes, provi-ho més tard.</string>
     <string name="faq_question_distance">Com puc obtenir una distància?</string>
     <string name="faq_answer_distance">Només cal fer una pressió llarga al mapa :)</string>
     <string name="faq_question_distance_current_position">Com puc obtenir una distància entre la meva posició actual i qualsevol punt del mapa?</string>
