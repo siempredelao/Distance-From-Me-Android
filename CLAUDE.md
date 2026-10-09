@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew :address:testDebugUnitTest         # one module
 ./gradlew :app:testDebugUnitTest --tests "gc.david.dfm.main.presentation.MainViewModelTest"          # one class
 ./gradlew :app:testDebugUnitTest --tests "gc.david.dfm.main.presentation.MainViewModelTest.someTest*" # one method (pattern)
+./gradlew :support:konsist:test              # Konsist architecture and convention guards (JVM module, not part of testDebugUnitTest)
 ./gradlew lint                               # Android lint (app/lint.xml is empty, so defaults apply)
 ```
 
@@ -32,6 +33,7 @@ SDK levels, app `versionCode`/`versionName`, and all dependency versions are in 
 - `:common` holds cross-cutting abstractions: `ConnectionManager`, `PermissionChecker`, `GeocodeApiKeyProvider`, `BuildConfigProvider`, `ResourceProvider`, `DistanceCalculator`/`UnitConverter`/`DistanceFormatter`, and the `CoordinatesRepository` interface. Feature modules share state through these interfaces, and `:app` supplies the implementations. For example, `ShowInfoViewModel` reads the points the user drew through `CoordinatesRepository`, which is backed by `CoordinatesMemoryDataSource` in `:app`.
 - `:core-distances` is the Room database (`DFMDatabase`) plus the distance and position use cases. Room schemas are exported to `core-distances/schemas/`. Commit the new schema JSON when you change entities.
 - `:test-support` provides `CoroutineExtension`, the JUnit 5 extension that swaps `Dispatchers.Main`.
+- `:support:konsist` is a plain Kotlin JVM module whose tests use Konsist to parse every module's sources and enforce the conventions in this file: layer dependencies, use case and ViewModel shape, repository naming, Koin registration, Activity `open` functions, license headers, and test presence. When you add a convention, add a guard there too.
 
 ### Navigation
 Each screen is its own Activity, launched through a `companion object { fun open(activity) }` (for example `SettingsActivity.open(this)`, called from `MainActivity`). There is no Navigation component.

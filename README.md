@@ -30,7 +30,9 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | `:faq` | FAQ / Help & Feedback feature |
 | `:feedback` | In-app review dialog |
 | `:opensource` | Open source licenses screen |
+| `:settings` | Settings screen (unit system and camera animation preferences) |
 | `:show-info` | Distance detail and sharing screen |
+| `:support:konsist` | Konsist guards that enforce architecture and code conventions |
 | `:test-support` | Shared test utilities |
 
 ## Main libraries used
@@ -47,6 +49,7 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 * [LeakCanary](https://github.com/square/leakcanary)
 * [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics)
 * [Mockito](https://site.mockito.org/)
+* [Konsist](https://docs.konsist.lemonappdev.com/)
 
 ## Testing
 
@@ -75,6 +78,9 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 ./gradlew :elevation:testDebugUnitTest
 ./gradlew :settings:testDebugUnitTest
 ./gradlew :app:testDebugUnitTest
+
+# Run the Konsist architecture and convention guards
+./gradlew :support:konsist:test
 ```
 
 ### Test Coverage Summary
