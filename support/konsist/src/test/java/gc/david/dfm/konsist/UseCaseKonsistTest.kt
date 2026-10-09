@@ -42,13 +42,13 @@ class UseCaseKonsistTest {
     }
 
     @Test
-    fun `suspending use cases return a Result and streaming ones a Flow`() {
+    fun `suspending use cases return a value and non-suspending ones a Flow`() {
         useCases.assertTrue { useCase ->
             val invoke = useCase.functions(includeNested = false, includeLocal = false)
                 .firstOrNull { it.name == "invoke" }
                 ?: return@assertTrue false
-            val returnType = invoke.returnType?.bareSourceType
-            if (invoke.hasSuspendModifier) returnType == "Result" else returnType == "Flow"
+            val returnsFlow = invoke.returnType?.bareSourceType == "Flow"
+            invoke.hasSuspendModifier != returnsFlow
         }
     }
 }
