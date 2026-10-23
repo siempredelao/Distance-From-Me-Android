@@ -1,5 +1,4 @@
-# Distance From Me
-![Image](/common/src/release/res/mipmap-xxhdpi/ic_launcher.webp)
+![Distance From Me](art/social-preview.png)
 
 ## What is it?
 *Distance From Me* is an Android application whose objective is to calculate straight-line distances.
