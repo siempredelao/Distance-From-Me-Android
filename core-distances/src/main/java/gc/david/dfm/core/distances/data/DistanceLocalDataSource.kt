@@ -16,6 +16,7 @@
 
 package gc.david.dfm.core.distances.data
 
+import androidx.room.withTransaction
 import gc.david.dfm.core.distances.data.database.DFMDatabase
 import gc.david.dfm.core.distances.data.database.model.DistanceEntity
 import gc.david.dfm.core.distances.data.database.model.PositionEntity
@@ -38,19 +39,23 @@ class DistanceLocalDataSource(
 ) {
 
     suspend fun insert(distance: NewDistance) {
-        val rowID =
-            database.distanceDao().insert(
-                DistanceEntity(
-                    id = null,
-                    name = distance.name,
-                    distance = distance.distanceText,
-                    date = distance.date
+        // One transaction, so that a failure while inserting the positions does not leave behind
+        // a distance without them
+        database.withTransaction {
+            val rowID =
+                database.distanceDao().insert(
+                    DistanceEntity(
+                        id = null,
+                        name = distance.name,
+                        distance = distance.distanceText,
+                        date = distance.date
+                    )
                 )
-            )
 
-        if (rowID == -1L) {
-            throw InsertDistanceException()
-        } else {
+            if (rowID == -1L) {
+                throw InsertDistanceException()
+            }
+
             val positionListWithDistanceId =
                 distance.positions
                     .map {
@@ -62,7 +67,6 @@ class DistanceLocalDataSource(
                         )
                     }
             database.positionDao().insertMany(positionListWithDistanceId)
-            return
         }
     }
 
@@ -73,8 +77,10 @@ class DistanceLocalDataSource(
 
     suspend fun clear() {
         with(database) {
-            distanceDao().deleteAll()
-            positionDao().deleteAll()
+            withTransaction {
+                distanceDao().deleteAll()
+                positionDao().deleteAll()
+            }
         }
     }
 
