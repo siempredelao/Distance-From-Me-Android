@@ -17,9 +17,9 @@
 package gc.david.dfm.core.distances.data
 
 import gc.david.dfm.core.distances.domain.DistanceRepository
+import gc.david.dfm.core.distances.domain.PositionListResult
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
-import gc.david.dfm.core.distances.domain.model.Position
 import kotlinx.coroutines.flow.Flow
 
 class BaseDistanceRepository(
@@ -36,7 +36,8 @@ class BaseDistanceRepository(
         localDataSource.clear()
     }
 
-    override suspend fun getPositionListById(distanceId: Long): List<Position> {
-        return localDataSource.getPositionListById(distanceId)
+    override suspend fun getPositionListById(distanceId: Long): PositionListResult {
+        val positions = localDataSource.getPositionListById(distanceId)
+        return if (positions.isEmpty()) PositionListResult.NotFound else PositionListResult.Found(positions)
     }
 }

@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.domain.model.NewDistance
 import gc.david.dfm.core.distances.domain.model.NewPosition
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -33,41 +32,30 @@ class SaveDistanceUseCaseTest {
 
     private val useCase = SaveDistanceUseCase(repository)
 
-    @Test
-    fun `returns Unit on success`() = runTest {
-        val newDistance = NewDistance(
-            name = "Test Distance",
-            distanceText = "10 km",
-            date = Date(),
-            positions = listOf(
-                NewPosition(latitude = 1.0, longitude = 2.0),
-                NewPosition(latitude = 3.0, longitude = 4.0)
-            )
+    private val newDistance = NewDistance(
+        name = "Test Distance",
+        distanceText = "10 km",
+        date = Date(),
+        positions = listOf(
+            NewPosition(latitude = 1.0, longitude = 2.0),
+            NewPosition(latitude = 3.0, longitude = 4.0)
         )
-        whenever(repository.insert(newDistance)).thenReturn(Unit)
+    )
 
-        val result = useCase(newDistance)
+    @Test
+    fun `inserts the distance into the repository`() = runTest {
+        useCase(newDistance)
 
-        assertTrue(result.isSuccess)
-        assertEquals(Unit, result.getOrNull())
         verify(repository).insert(newDistance)
     }
 
     @Test
-    fun `returns failure on error`() = runTest {
-        val newDistance = NewDistance(
-            name = "Test Distance",
-            distanceText = "10 km",
-            date = Date(),
-            positions = emptyList()
-        )
-        val exception = Exception("Database error")
+    fun `propagates repository failures`() = runTest {
+        val exception = IllegalStateException("Database error")
         whenever(repository.insert(newDistance)).thenAnswer { throw exception }
 
-        val result = useCase(newDistance)
+        val thrown = assertThrows<IllegalStateException> { useCase(newDistance) }
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
+        assertSame(exception, thrown)
     }
 }
-

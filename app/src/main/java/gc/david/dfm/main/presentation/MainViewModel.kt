@@ -26,10 +26,13 @@ import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.common.launchCatching
+import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
+import gc.david.dfm.core.distances.domain.PositionListResult
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.data.model.DistanceMode
@@ -53,7 +56,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainViewModel(
@@ -154,17 +156,18 @@ class MainViewModel(
      * Triggered when the user selects a distance from the loaded distances dialog.
      */
     fun onDistanceToShowSelected(id: Long, name: String) {
-        viewModelScope.launch {
-            val result = getPositionListUseCase(id)
+        launchCatching(onError = { logUnexpectedFailure(TAG, it) }) {
+            when (val result = getPositionListUseCase(id)) {
+                is PositionListResult.Found -> {
+                    val coordinates = result.positions.toCoordinates()
+                    coordinatesRepository.setList(coordinates)
 
-            result.fold({
-                val coordinates = it.toCoordinates()
-                coordinatesRepository.setList(coordinates)
+                    plotDistances(coordinates, name + "\n", DrawDistanceUiModel.Source.DATABASE)
+                }
 
-                plotDistances(coordinates, name + "\n", DrawDistanceUiModel.Source.DATABASE)
-            }, {
-                Timber.tag(TAG).e(Exception("Unable to get position by id."))
-            })
+                // Keep the current drawing instead of clearing the map for a distance with nothing to show
+                PositionListResult.NotFound -> Timber.tag(TAG).w("Distance $id has no positions")
+            }
         }
     }
 

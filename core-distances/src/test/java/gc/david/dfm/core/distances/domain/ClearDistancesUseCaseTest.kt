@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.core.distances.domain
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-@ExperimentalCoroutinesApi
 class ClearDistancesUseCaseTest {
 
     private val repository = mock<DistanceRepository>()
@@ -31,21 +30,19 @@ class ClearDistancesUseCaseTest {
     private val useCase = ClearDistancesUseCase(repository)
 
     @Test
-    fun `returns Unit on success`() = runTest {
-        whenever(repository.clear()).thenReturn(Unit)
+    fun `clears the repository`() = runTest {
+        useCase()
 
-        val result = useCase.invoke()
-
-        assertEquals(Result.success(Unit), result)
+        verify(repository).clear()
     }
 
     @Test
-    fun `returns error message on failure`() = runTest {
-        val throwable = Throwable()
-        whenever(repository.clear()).thenAnswer { throw throwable }
+    fun `propagates repository failures`() = runTest {
+        val exception = IllegalStateException("Database error")
+        whenever(repository.clear()).thenAnswer { throw exception }
 
-        val result = useCase.invoke()
+        val thrown = assertThrows<IllegalStateException> { useCase() }
 
-        assertEquals(Result.failure<Unit>(throwable), result)
+        assertSame(exception, thrown)
     }
 }

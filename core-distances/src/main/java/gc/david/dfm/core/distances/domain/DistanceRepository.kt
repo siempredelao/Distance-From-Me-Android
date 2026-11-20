@@ -18,7 +18,6 @@ package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
-import gc.david.dfm.core.distances.domain.model.Position
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -32,5 +31,5 @@ interface DistanceRepository {
 
     suspend fun clear()
 
-    suspend fun getPositionListById(distanceId: Long): List<Position>
+    suspend fun getPositionListById(distanceId: Long): PositionListResult
 }

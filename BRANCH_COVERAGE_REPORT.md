@@ -9,7 +9,7 @@
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  📦 FILE COVERAGE:        100% ✅ (35/35 classes)          │
-│  🌿 BRANCH COVERAGE:       88% ✅ (122/138 branches)       │
+│  🌿 BRANCH COVERAGE:       88% ✅ (121/137 branches)       │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Per Component Type:                                 │   │
@@ -33,7 +33,7 @@ See [README.md](README.md) for quick testing commands.
 | **Formatters** | 3 | 3 ✅ | ~2 | ~2 | **100%** ✅ | **100%** ✅ |
 | **Mappers** | 11 | 11 ✅ | ~26 | ~25 | **100%** ✅ | **98%** ✅ |
 | **ViewModels** | 7 | 7 ✅ | ~82 | ~68 | **100%** ✅ | **83%** ✅ |
-| **TOTAL** | **35** | **35** ✅ | **~138** | **~122** | **100%** 🎉 | **~88%** ✅ |
+| **TOTAL** | **35** | **35** ✅ | **~137** | **~121** | **100%** 🎉 | **~88%** ✅ |
 **Key Notes**: 
 - ✅ **File Coverage 100%** = All critical classes have at least ONE test file
 - ✅ **Branch Coverage 88%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
@@ -44,11 +44,11 @@ See [README.md](README.md) for quick testing commands.
 |---------|---------|----------|----------|---------|
 | GetAddressCoordinatesByNameUseCase | 1 | 3 | **100%** | ✅ |
 | GetAddressNameByCoordinatesUseCase | 1 | 3 | **100%** | ✅ |
-| SaveDistanceUseCase | 1 | 2 | **100%** | ✅ |
-| GetPositionListUseCase | 1 | 2 | **100%** | ✅ |
+| SaveDistanceUseCase | 1 | 1 | **100%** | ✅ |
+| GetPositionListUseCase | 1 | 1 | **100%** | ✅ |
 | GetElevationByCoordinatesUseCase | 1 | 2 | **100%** | ✅ |
 | GetOpenSourceLibrariesUseCase | 1 | 1 | **100%** | ✅ |
-| ClearDistancesUseCase | 1 | 2 | **100%** | ✅ |
+| ClearDistancesUseCase | 1 | 1 | **100%** | ✅ |
 | GetDistancesUseCase | 1 | 1 | **100%** | ✅ |
 | GetStoredDistancesUseCase | 1 | 1 | **100%** | ✅ |
 | **AVERAGE** | - | - | **100%** | ✅ |
@@ -61,7 +61,7 @@ See [README.md](README.md) for quick testing commands.
 | BaseAddressRepository | 2 | 0 | **100%** | ✅ |
 | BaseElevationRepository | 1 | 0 | **100%** | ✅ |
 | BaseCoordinatesRepository | 3 | 0 | **100%** | ✅ |
-| BaseDistanceRepository | 4 | 0 | **100%** | ✅ |
+| BaseDistanceRepository | 4 | 2 | **100%** | ✅ |
 | BaseOpenSourceRepository | 1 | 0 | **100%** | ✅ |
 | **AVERAGE** | - | - | **100%** | ✅ |
 **BaseSettingsRepository** has the most branches (6) - all tested:

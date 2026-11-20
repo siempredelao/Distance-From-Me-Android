@@ -28,7 +28,9 @@ import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
+import gc.david.dfm.core.distances.domain.PositionListResult
 import gc.david.dfm.core.distances.domain.model.Distance
+import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.data.model.DistanceMode
@@ -40,7 +42,9 @@ import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
+import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.settings.domain.model.CameraAnimation
 import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -165,6 +169,46 @@ class MainViewModelTest {
         viewModel.onLoadDistancesClick()
 
         assertEquals(expected, viewModel.uiState.value.selectFromDistancesLoaded)
+    }
+
+    @Test
+    fun `onDistanceToShowSelected plots the stored positions`() = runTest {
+        val positions = listOf(Position(40.0, -3.0), Position(41.0, -4.0))
+        val coordinates = listOf(Coordinates(40.0, -3.0), Coordinates(41.0, -4.0))
+        val mapState = MapUiState(clearMap = true)
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
+        whenever(distanceFormatter.formatDistance(any(), any())).thenReturn("157 km")
+        whenever(settingsRepository.getCameraAnimation()).thenReturn(CameraAnimation.None)
+        whenever(mapStateMapper.toMapUiState(any())).thenReturn(mapState)
+
+        viewModel.onDistanceToShowSelected(1L, "Home")
+
+        verify(coordinatesRepository).clear()
+        coordinates.forEach { verify(coordinatesRepository).append(it) }
+        assertEquals(mapState, viewModel.uiState.value.mapState)
+        assertEquals(coordinates, viewModel.uiState.value.triggerElevationUpdate)
+    }
+
+    @Test
+    fun `onDistanceToShowSelected keeps the map when the distance has no positions`() = runTest {
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.NotFound)
+        val mapState = viewModel.uiState.value.mapState
+
+        viewModel.onDistanceToShowSelected(1L, "Home")
+
+        verify(coordinatesRepository, never()).clear()
+        assertEquals(mapState, viewModel.uiState.value.mapState)
+    }
+
+    @Test
+    fun `onDistanceToShowSelected keeps the map when loading the positions fails`() = runTest {
+        whenever(getPositionListUseCase(1L)).thenAnswer { throw IllegalStateException("Database error") }
+        val mapState = viewModel.uiState.value.mapState
+
+        viewModel.onDistanceToShowSelected(1L, "Home")
+
+        verify(coordinatesRepository, never()).clear()
+        assertEquals(mapState, viewModel.uiState.value.mapState)
     }
 
     @Test

@@ -17,8 +17,9 @@
 package gc.david.dfm.showinfo.presentation.savedistance
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.launchCatching
+import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
 import gc.david.dfm.core.distances.domain.model.NewDistance
@@ -29,9 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.util.*
 
 class SaveDistanceViewModel(
@@ -63,23 +62,22 @@ class SaveDistanceViewModel(
                     },
             )
 
-        viewModelScope.launch {
+        launchCatching(onError = ::onSaveFailed) {
             withContext(NonCancellable) {
-                val result = saveDistanceUseCase(newDistance)
-
-                result.fold({
-                    val message = if (name.isNotEmpty()) {
-                        resourceProvider.get(R.string.alias_dialog_with_name_toast, name)
-                    } else {
-                        resourceProvider.get(R.string.alias_dialog_no_name_toast)
-                    }
-                    _userMessage.update { message }
-                }, {
-                    Timber.tag(TAG).e(it, "Unable to insert distance into database.")
-                    _userMessage.update { resourceProvider.get(R.string.save_distance_error) }
-                })
+                saveDistanceUseCase(newDistance)
             }
+            val message = if (name.isNotEmpty()) {
+                resourceProvider.get(R.string.alias_dialog_with_name_toast, name)
+            } else {
+                resourceProvider.get(R.string.alias_dialog_no_name_toast)
+            }
+            _userMessage.update { message }
         }
+    }
+
+    private fun onSaveFailed(error: Throwable) {
+        logUnexpectedFailure(TAG, error)
+        _userMessage.update { resourceProvider.get(R.string.save_distance_error) }
     }
 
     fun onUserMessageShown() {

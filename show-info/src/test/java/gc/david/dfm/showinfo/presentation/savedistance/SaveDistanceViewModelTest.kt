@@ -61,7 +61,6 @@ class SaveDistanceViewModelTest {
         val name = "My Distance"
         viewModel.onStart(positions, distance)
 
-        whenever(saveDistanceUseCase(any())).thenReturn(Result.success(Unit))
         whenever(resourceProvider.get(R.string.alias_dialog_with_name_toast, name))
             .thenReturn("Saved as $name")
 
@@ -79,7 +78,6 @@ class SaveDistanceViewModelTest {
         val distance = "10 km"
         viewModel.onStart(positions, distance)
 
-        whenever(saveDistanceUseCase(any())).thenReturn(Result.success(Unit))
         whenever(resourceProvider.get(R.string.alias_dialog_no_name_toast))
             .thenReturn("Saved without name")
 
@@ -96,8 +94,8 @@ class SaveDistanceViewModelTest {
         val distance = "10 km"
         viewModel.onStart(positions, distance)
 
-        val exception = Exception("Database error")
-        whenever(saveDistanceUseCase(any())).thenReturn(Result.failure(exception))
+        val exception = IllegalStateException("Database error")
+        whenever(saveDistanceUseCase(any())).thenAnswer { throw exception }
         whenever(resourceProvider.get(R.string.save_distance_error))
             .thenReturn("Error saving distance")
 
@@ -114,7 +112,6 @@ class SaveDistanceViewModelTest {
         val distance = "10 km"
         viewModel.onStart(positions, distance)
 
-        whenever(saveDistanceUseCase(any())).thenReturn(Result.success(Unit))
         whenever(resourceProvider.get(R.string.alias_dialog_no_name_toast))
             .thenReturn("Saved")
 

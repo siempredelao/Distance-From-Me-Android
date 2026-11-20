@@ -17,7 +17,8 @@
 package gc.david.dfm.settings.presentation
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import gc.david.dfm.common.launchCatching
+import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
 import gc.david.dfm.settings.R
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SettingsViewModel(
@@ -40,14 +40,11 @@ class SettingsViewModel(
     fun onClearData() {
         Timber.tag(TAG).d("onClearData")
 
-        viewModelScope.launch {
-            clearDistancesUseCase().fold({
-                _uiState.update { 
-                    it.copy(successMessage = resourceProvider.get(R.string.toast_distances_deleted))
-                }
-            },{
-                Timber.tag(TAG).e(Exception("Unable to clear database."))
-            })
+        launchCatching(onError = { logUnexpectedFailure(TAG, it) }) {
+            clearDistancesUseCase()
+            _uiState.update {
+                it.copy(successMessage = resourceProvider.get(R.string.toast_distances_deleted))
+            }
         }
     }
 

@@ -13,22 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.core.distances.domain
-
-import gc.david.dfm.core.distances.domain.model.Position
 
 /**
  * Created by david on 16.01.17.
  */
 class GetPositionListUseCase(private val repository: DistanceRepository) {
 
-    suspend operator fun invoke(distanceId: Long): Result<List<Position>> {
-        return try {
-            val positionList = repository.getPositionListById(distanceId)
-            Result.success(positionList)
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
-    }
+    suspend operator fun invoke(distanceId: Long): PositionListResult =
+        repository.getPositionListById(distanceId)
 }

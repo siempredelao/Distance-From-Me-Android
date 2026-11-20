@@ -16,6 +16,7 @@
 
 package gc.david.dfm.core.distances.data
 
+import gc.david.dfm.core.distances.domain.PositionListResult
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
 import gc.david.dfm.core.distances.domain.model.NewPosition
@@ -70,7 +71,7 @@ class BaseDistanceRepositoryTest {
     }
 
     @Test
-    fun `getPositionListById returns positions from local data source`() = runTest {
+    fun `getPositionListById returns the positions found by the local data source`() = runTest {
         val distanceId = 1L
         val positions = listOf(
             Position(latitude = 1.0, longitude = 2.0),
@@ -80,8 +81,16 @@ class BaseDistanceRepositoryTest {
 
         val result = repository.getPositionListById(distanceId)
 
-        assertEquals(positions, result)
-        verify(localDataSource).getPositionListById(distanceId)
+        assertEquals(PositionListResult.Found(positions), result)
+    }
+
+    @Test
+    fun `getPositionListById returns not found when the distance has no positions`() = runTest {
+        whenever(localDataSource.getPositionListById(1L)).thenReturn(emptyList())
+
+        val result = repository.getPositionListById(1L)
+
+        assertEquals(PositionListResult.NotFound, result)
     }
 }
 

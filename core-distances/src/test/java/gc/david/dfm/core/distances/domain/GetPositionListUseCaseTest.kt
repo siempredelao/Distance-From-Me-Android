@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.domain.model.Position
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class GetPositionListUseCaseTest {
@@ -32,42 +31,32 @@ class GetPositionListUseCaseTest {
     private val useCase = GetPositionListUseCase(repository)
 
     @Test
-    fun `returns position list on success`() = runTest {
-        val distanceId = 1L
-        val positions = listOf(
-            Position(latitude = 1.0, longitude = 2.0),
-            Position(latitude = 3.0, longitude = 4.0)
+    fun `returns the positions found by the repository`() = runTest {
+        val found = PositionListResult.Found(
+            listOf(
+                Position(latitude = 1.0, longitude = 2.0),
+                Position(latitude = 3.0, longitude = 4.0)
+            )
         )
-        whenever(repository.getPositionListById(distanceId)).thenReturn(positions)
+        whenever(repository.getPositionListById(1L)).thenReturn(found)
 
-        val result = useCase(distanceId)
-
-        assertTrue(result.isSuccess)
-        assertEquals(positions, result.getOrNull())
-        verify(repository).getPositionListById(distanceId)
+        assertEquals(found, useCase(1L))
     }
 
     @Test
-    fun `returns empty list when no positions found`() = runTest {
-        val distanceId = 1L
-        whenever(repository.getPositionListById(distanceId)).thenReturn(emptyList())
+    fun `returns not found when the repository finds no positions`() = runTest {
+        whenever(repository.getPositionListById(1L)).thenReturn(PositionListResult.NotFound)
 
-        val result = useCase(distanceId)
-
-        assertTrue(result.isSuccess)
-        assertEquals(emptyList<Position>(), result.getOrNull())
+        assertEquals(PositionListResult.NotFound, useCase(1L))
     }
 
     @Test
-    fun `returns failure on error`() = runTest {
-        val distanceId = 1L
-        val exception = Exception("Database error")
-        whenever(repository.getPositionListById(distanceId)).thenAnswer { throw exception }
+    fun `propagates repository failures`() = runTest {
+        val exception = IllegalStateException("Database error")
+        whenever(repository.getPositionListById(1L)).thenAnswer { throw exception }
 
-        val result = useCase(distanceId)
+        val thrown = assertThrows<IllegalStateException> { useCase(1L) }
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
+        assertSame(exception, thrown)
     }
 }
-

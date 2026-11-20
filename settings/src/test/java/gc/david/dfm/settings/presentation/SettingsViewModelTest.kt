@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 /**
@@ -47,12 +49,21 @@ class SettingsViewModelTest {
 
     @Test
     fun `onClearData Given use case succeeds Then shows success message`() = runTest {
-        whenever(clearDistancesUseCase()).thenReturn(Result.success(Unit))
         val successMessage = "success"
         whenever(resourceProvider.get(any())).thenReturn(successMessage)
 
         viewModel.onClearData()
 
         assertEquals(SettingsUiState(successMessage = successMessage), viewModel.uiState.value)
+    }
+
+    @Test
+    fun `onClearData Given use case fails Then shows no success message`() = runTest {
+        whenever(clearDistancesUseCase()).thenAnswer { throw IllegalStateException("Database error") }
+
+        viewModel.onClearData()
+
+        assertEquals(SettingsUiState(), viewModel.uiState.value)
+        verify(resourceProvider, never()).get(any())
     }
 }

@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.core.distances.domain
 
 class ClearDistancesUseCase(private val repository: DistanceRepository) {
 
-    suspend operator fun invoke(): Result<Unit> {
-        return try {
-            repository.clear()
-            Result.success(Unit)
-        } catch (exception: Throwable) {
-            Result.failure(exception)
-        }
-    }
+    suspend operator fun invoke() = repository.clear()
 }

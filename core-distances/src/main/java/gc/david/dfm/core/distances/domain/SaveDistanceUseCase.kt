@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.domain.model.NewDistance
@@ -23,12 +22,5 @@ import gc.david.dfm.core.distances.domain.model.NewDistance
  */
 class SaveDistanceUseCase(private val repository: DistanceRepository) {
 
-    suspend operator fun invoke(distance: NewDistance): Result<Unit> {
-        return try {
-            repository.insert(distance)
-            Result.success(Unit)
-        } catch (exception: Exception) {
-            Result.failure(exception)
-        }
-    }
+    suspend operator fun invoke(distance: NewDistance) = repository.insert(distance)
 }
