@@ -21,8 +21,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceDialog
 import gc.david.dfm.showinfo.presentation.savedistance.SaveDistanceViewModel
@@ -39,16 +40,16 @@ class ShowInfoActivity : ComponentActivity() {
         Timber.tag(TAG).d("onCreate")
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            showInfoViewModel.onStart()
-        }
+        showInfoViewModel.onStart()
 
         setContent {
-            val uiState by showInfoViewModel.uiState.collectAsState()
-            val saveUserMessage by saveDistanceViewModel.userMessage.collectAsState()
+            val uiState by showInfoViewModel.uiState.collectAsStateWithLifecycle()
+            val saveUserMessage by saveDistanceViewModel.userMessage.collectAsStateWithLifecycle()
 
-            if (uiState.shouldFinish) {
-                finish()
+            LaunchedEffect(uiState.shouldFinish) {
+                if (uiState.shouldFinish) {
+                    finish()
+                }
             }
 
             DfmTheme {

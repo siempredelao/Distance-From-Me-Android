@@ -64,9 +64,12 @@ class ShowInfoViewModel(
     private val unitSystem: UnitSystem
         get() = settingsRepository.getUnitSystemPreference()
 
-    private lateinit var inputParams: InputParams
+    // Null until onStart finds a distance to show, for example after process death
+    private var inputParams: InputParams? = null
 
     fun onStart() {
+        if (inputParams != null) return
+
         val positionsList = coordinatesRepository.observeDistance().value
         if (positionsList.isEmpty()) {
             _uiState.update { it.copy(shouldFinish = true) }
@@ -81,7 +84,8 @@ class ShowInfoViewModel(
     }
 
     fun onRefresh() {
-        load(inputParams.distance, inputParams.positionsList)
+        val params = inputParams ?: return
+        load(params.distance, params.positionsList)
     }
 
     private fun load(distance: String, positionsList: List<Coordinates>) {
@@ -140,13 +144,14 @@ class ShowInfoViewModel(
         })
 
     fun onShare() {
+        val params = inputParams ?: return
         val state = _uiState.value
         val subject = shareInfoMessageMapper.getSubject()
         val message =
             shareInfoMessageMapper.mapMessage(
                 originAddress = state.originAddress,
                 destinationAddress = state.destinationAddress,
-                distance = inputParams.distance,
+                distance = params.distance,
             )
 
         _uiState.update {
@@ -165,7 +170,8 @@ class ShowInfoViewModel(
     }
 
     fun onSave() {
-        _uiState.update { it.copy(showSaveDialog = SaveDialogData(inputParams.positionsList, inputParams.distance)) }
+        val params = inputParams ?: return
+        _uiState.update { it.copy(showSaveDialog = SaveDialogData(params.positionsList, params.distance)) }
     }
 
     fun onSaveDialogDismissed() {

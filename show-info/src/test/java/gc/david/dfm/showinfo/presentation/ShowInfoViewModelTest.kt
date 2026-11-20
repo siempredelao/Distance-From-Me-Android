@@ -31,6 +31,7 @@ import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
+import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
 import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import java.io.IOException
 
@@ -297,6 +301,33 @@ internal class ShowInfoViewModelTest {
         assertEquals(false, viewModel.uiState.value.isLoading)
         assertEquals("Geocoding failed", viewModel.uiState.value.originAddress)
         assertTrue(viewModel.uiState.value.destinationAddress.contains("Address 2"))
+    }
+
+    @Test
+    fun `onRefresh, onShare and onSave do nothing before onStart loads a distance`() = runTest {
+        // As after process death: a new ViewModel whose onStart has not run yet
+        viewModel.onRefresh()
+        viewModel.onShare()
+        viewModel.onSave()
+
+        assertEquals(ShowInfoUiState(), viewModel.uiState.value)
+        verifyNoInteractions(getAddressNameByCoordinatesUseCase, shareInfoMessageMapper)
+    }
+
+    @Test
+    fun `onStart does not reload once a distance is loaded`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        setupSuccessfulStart(coordinatesList)
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(GeocodingResult.Found(listOf(createAddress("Address"))))
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        // One lookup for the origin and one for the destination, from the first onStart only
+        verify(getAddressNameByCoordinatesUseCase, times(2)).invoke(any())
     }
 
     private fun setupSuccessfulStart(coordinatesList: List<Coordinates>) {

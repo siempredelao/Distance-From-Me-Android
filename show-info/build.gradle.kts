@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.koin)
     implementation(libs.koin.android)
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.timber)
     implementation(project(":address"))
