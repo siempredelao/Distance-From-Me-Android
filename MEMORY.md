@@ -7,6 +7,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 ```markdown
 - [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: what's committed, the approved 6-step plan, and what's deferred
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
+- [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
 ```
 
 ## commit-only-what-is-asked.md
@@ -58,4 +59,24 @@ Deferred by the user:
 
 **Why:** in 2026-11 I mistook the Konsist failures for the to-do list and refactored `:app` before being asked. The user had me revert it, and later approved that work explicitly as plan step 6.
 **How to apply:** when resuming, follow the approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]].
+```
+
+## reproduction-steps-for-fixes.md
+
+```markdown
+---
+name: reproduction-steps-for-fixes
+description: "When reporting a change that fixes something, give steps to reproduce the problem before the fix and to verify it after"
+metadata:
+  node_type: memory
+  type: feedback
+  originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
+  modified: 2026-11-20T22:33:00.814Z
+---
+
+For every change I report, include steps to reproduce what it fixes: how to trigger the problem on the code before the change, what goes wrong, and what happens instead after it. Make them concrete enough to follow on a device or emulator (screens, taps, `adb` commands; the package is `gc.david.dfm`). When a change has no user-visible effect (a refactor, or lifecycle-aware collection), say so plainly instead of inventing a reproduction.
+
+**Why:** the user asked for this on 2026-11-20 while reviewing step 1 of the skill-audit plan (the Show info crash after process death), so they can confirm each fix themselves before committing it.
+
+**How to apply:** add a "How to reproduce" section to the summary of each plan step or fix, split per fix when a step has several. Related: [[konsist-cleanup-series]], [[commit-only-what-is-asked]].
 ```
