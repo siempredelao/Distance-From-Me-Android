@@ -19,3 +19,6 @@ app/src/*/res/values/other.xml
 
 # Keystore properties (local signing config)
 keystore.properties
+
+# Personal Claude Code settings
+.claude/settings.local.json
