@@ -28,9 +28,9 @@ import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
-import gc.david.dfm.core.distances.domain.PositionListResult
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.Position
+import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.data.model.DistanceMode

@@ -17,9 +17,9 @@
 package gc.david.dfm.showinfo.presentation
 
 import gc.david.dfm.ConnectionManager
-import gc.david.dfm.address.domain.GeocodingError
-import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.model.GeocodingError
+import gc.david.dfm.address.domain.model.GeocodingResult
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.presentation.ResourceProvider

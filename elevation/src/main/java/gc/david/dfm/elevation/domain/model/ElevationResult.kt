@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.elevation.domain
+package gc.david.dfm.elevation.domain.model
 
 /**
  * The answer the Elevation API gave. Failures to get an answer at all (network, parsing) are

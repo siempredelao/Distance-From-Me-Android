@@ -17,7 +17,7 @@
 package gc.david.dfm.address.presentation.mapper
 
 import gc.david.dfm.address.R
-import gc.david.dfm.address.domain.GeocodingError
+import gc.david.dfm.address.domain.model.GeocodingError
 import gc.david.dfm.common.presentation.ResourceProvider
 
 class GeocodingErrorMessageMapper(private val resourceProvider: ResourceProvider) {

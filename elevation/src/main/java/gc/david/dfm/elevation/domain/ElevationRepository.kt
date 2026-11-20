@@ -16,6 +16,8 @@
 
 package gc.david.dfm.elevation.domain
 
+import gc.david.dfm.elevation.domain.model.ElevationResult
+
 /**
  * Created by david on 05.01.17.
  */

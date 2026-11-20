@@ -17,9 +17,9 @@
 package gc.david.dfm.core.distances.data
 
 import gc.david.dfm.core.distances.domain.DistanceRepository
-import gc.david.dfm.core.distances.domain.PositionListResult
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
+import gc.david.dfm.core.distances.domain.model.PositionListResult
 import kotlinx.coroutines.flow.Flow
 
 class BaseDistanceRepository(

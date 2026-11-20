@@ -15,6 +15,8 @@
  */
 package gc.david.dfm.core.distances.domain
 
+import gc.david.dfm.core.distances.domain.model.PositionListResult
+
 /**
  * Created by david on 16.01.17.
  */

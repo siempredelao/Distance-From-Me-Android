@@ -16,6 +16,7 @@
 package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.domain.model.Position
+import gc.david.dfm.core.distances.domain.model.PositionListResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame

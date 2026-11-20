@@ -19,11 +19,11 @@ package gc.david.dfm.address.presentation
 import androidx.lifecycle.ViewModel
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.R
-import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.address.domain.model.GeocodingResult
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.address.presentation.model.AddressUiState
 import gc.david.dfm.common.launchCatching

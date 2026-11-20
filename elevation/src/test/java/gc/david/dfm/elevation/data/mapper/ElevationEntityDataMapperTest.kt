@@ -19,8 +19,8 @@ package gc.david.dfm.elevation.data.mapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
 import gc.david.dfm.elevation.data.model.Result
-import gc.david.dfm.elevation.domain.ElevationError
-import gc.david.dfm.elevation.domain.ElevationResult
+import gc.david.dfm.elevation.domain.model.ElevationError
+import gc.david.dfm.elevation.domain.model.ElevationResult
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

@@ -18,7 +18,7 @@ package gc.david.dfm.elevation.data
 
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.domain.ElevationRepository
-import gc.david.dfm.elevation.domain.ElevationResult
+import gc.david.dfm.elevation.domain.model.ElevationResult
 
 class BaseElevationRepository(
     private val remoteDataSource: ElevationRemoteDataSource,

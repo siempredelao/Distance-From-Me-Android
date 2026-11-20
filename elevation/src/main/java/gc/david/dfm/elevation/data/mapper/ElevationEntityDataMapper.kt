@@ -18,8 +18,8 @@ package gc.david.dfm.elevation.data.mapper
 
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import gc.david.dfm.elevation.data.model.ElevationStatus
-import gc.david.dfm.elevation.domain.ElevationError
-import gc.david.dfm.elevation.domain.ElevationResult
+import gc.david.dfm.elevation.domain.model.ElevationError
+import gc.david.dfm.elevation.domain.model.ElevationResult
 
 /**
  * Created by david on 13.01.17.

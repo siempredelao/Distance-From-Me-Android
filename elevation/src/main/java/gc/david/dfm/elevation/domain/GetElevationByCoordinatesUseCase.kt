@@ -17,6 +17,7 @@
 package gc.david.dfm.elevation.domain
 
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.elevation.domain.model.ElevationResult
 
 class GetElevationByCoordinatesUseCase(private val repository: ElevationRepository) {
 

@@ -17,6 +17,8 @@
 package gc.david.dfm.address.domain
 
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.address.domain.model.GeocodingResult
+import gc.david.dfm.address.domain.model.limitedTo
 
 class GetAddressNameByCoordinatesUseCase(private val repository: AddressRepository) {
 

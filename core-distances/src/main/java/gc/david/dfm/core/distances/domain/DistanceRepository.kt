@@ -18,6 +18,7 @@ package gc.david.dfm.core.distances.domain
 
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.NewDistance
+import gc.david.dfm.core.distances.domain.model.PositionListResult
 import kotlinx.coroutines.flow.Flow
 
 /**

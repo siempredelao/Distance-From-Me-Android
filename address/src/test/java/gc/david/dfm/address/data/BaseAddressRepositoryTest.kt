@@ -18,10 +18,10 @@ package gc.david.dfm.address.data
 
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.data.model.AddressCollectionEntity
-import gc.david.dfm.address.domain.GeocodingError
-import gc.david.dfm.address.domain.GeocodingResult
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.address.domain.model.GeocodingError
+import gc.david.dfm.address.domain.model.GeocodingResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame

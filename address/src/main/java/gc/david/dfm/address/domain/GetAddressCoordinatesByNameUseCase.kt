@@ -16,6 +16,9 @@
 
 package gc.david.dfm.address.domain
 
+import gc.david.dfm.address.domain.model.GeocodingResult
+import gc.david.dfm.address.domain.model.limitedTo
+
 class GetAddressCoordinatesByNameUseCase(private val repository: AddressRepository) {
 
     suspend operator fun invoke(locationName: String): GeocodingResult =

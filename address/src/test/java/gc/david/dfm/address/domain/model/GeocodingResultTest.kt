@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.address.domain
+package gc.david.dfm.address.domain.model
 
 import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.Coordinates

@@ -18,7 +18,7 @@ package gc.david.dfm.elevation.data
 
 import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.data.model.ElevationEntity
-import gc.david.dfm.elevation.domain.ElevationResult
+import gc.david.dfm.elevation.domain.model.ElevationResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
