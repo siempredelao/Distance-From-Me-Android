@@ -20,6 +20,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
+import gc.david.dfm.designsystem.plus
 import gc.david.dfm.faq.R
 import gc.david.dfm.faq.presentation.model.Faq
 import gc.david.dfm.faq.presentation.model.faqs
@@ -77,8 +79,8 @@ fun FaqScreen(
         },
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(innerPadding),
-            contentPadding = PaddingValues(Spacing.s),
+            modifier = Modifier.consumeWindowInsets(innerPadding),
+            contentPadding = innerPadding + PaddingValues(Spacing.s),
         ) {
             items(faqs) { faq ->
                 FaqCard(faq = faq)

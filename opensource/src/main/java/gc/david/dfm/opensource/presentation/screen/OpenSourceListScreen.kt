@@ -23,6 +23,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
+import gc.david.dfm.designsystem.plus
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
@@ -103,8 +105,8 @@ fun SharedTransitionScope.OpenSourceListScreen(
 
             is OpenSourceUiState.Content -> {
                 LazyColumn(
-                    modifier = Modifier.padding(innerPadding),
-                    contentPadding = PaddingValues(Spacing.m),
+                    modifier = Modifier.consumeWindowInsets(innerPadding),
+                    contentPadding = innerPadding + PaddingValues(Spacing.m),
                 ) {
                     itemsIndexed(uiState.libraries) { index, library ->
                         OpenSourceLibraryCard(

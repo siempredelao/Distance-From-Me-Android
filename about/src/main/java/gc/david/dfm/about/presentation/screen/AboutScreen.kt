@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import gc.david.dfm.about.R
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.designsystem.Spacing
+import gc.david.dfm.designsystem.plus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,8 +90,8 @@ fun AboutScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(Spacing.m),
+                .consumeWindowInsets(innerPadding),
+            contentPadding = innerPadding + PaddingValues(Spacing.m),
             verticalArrangement = Arrangement.spacedBy(Spacing.m),
         ) {
             item {

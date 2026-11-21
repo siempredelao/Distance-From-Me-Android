@@ -18,9 +18,12 @@ package gc.david.dfm.showinfo.presentation
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +42,11 @@ class ShowInfoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.tag(TAG).d("onCreate")
         super.onCreate(savedInstanceState)
+        // The top bar is always green and the content always light, whatever the system theme
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
 
         showInfoViewModel.onStart()
 

@@ -18,9 +18,12 @@ package gc.david.dfm.faq.presentation
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.faq.presentation.model.faqs
 import gc.david.dfm.faq.presentation.screen.FaqScreen
@@ -29,6 +32,11 @@ class FaqActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // The top bar is always green and the content always light, whatever the system theme
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
         setContent {
             DfmTheme {
                 FaqScreen(

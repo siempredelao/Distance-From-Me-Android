@@ -18,9 +18,12 @@ package gc.david.dfm.about.presentation
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.core.net.toUri
 import gc.david.dfm.about.R
 import gc.david.dfm.about.presentation.screen.AboutScreen
@@ -31,6 +34,11 @@ class AboutActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // The top bar is always green and the content always light, whatever the system theme
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
 
         val versionName = packageManager.getPackageInfo(packageName, 0).versionName
             ?: getString(R.string.version_unknown)
