@@ -89,6 +89,9 @@ class MainViewModel(
     // Determines whether a multi-point distance is being marked on the map
     private var isUserSelectingPoints: Boolean = false
 
+    // Ask for location at most once per screen, so a refusal can never turn into a prompt loop
+    private var hasPromptedForLocationPermission = false
+
     init {
         // Initialize with current distance mode and side navigation state
         val initialDistanceMode = distanceModeProvider.get()
@@ -131,9 +134,11 @@ class MainViewModel(
         }
 
         // Request location permission on startup if mode is FROM_CURRENT_POINT
-        if (distanceModeProvider.get() == DistanceMode.FROM_CURRENT_POINT &&
+        if (!hasPromptedForLocationPermission &&
+            distanceModeProvider.get() == DistanceMode.FROM_CURRENT_POINT &&
             !permissionChecker.isLocationPermissionGranted()
         ) {
+            hasPromptedForLocationPermission = true
             _uiState.update { it.copy(requestLocationPermission = true) }
         }
     }
@@ -333,7 +338,7 @@ class MainViewModel(
         }
     }
 
-    fun resetMap() {
+    private fun resetMap() {
         isUserSelectingPoints = false
         coordinatesRepository.clear()
         _uiState.update {
@@ -394,6 +399,18 @@ class MainViewModel(
 
     fun onLocationPermissionSnackbarShown() {
         _uiState.update { it.copy(showLocationPermissionSnackbar = false) }
+    }
+
+    /**
+     * Triggered when the user refuses location access. [permanently] is true when Android will no longer show its
+     * permission dialog, so only the app's system settings can grant it.
+     */
+    fun onLocationPermissionDenied(permanently: Boolean) {
+        // Without location, fall back to measuring between any two points, as the rationale dialog's Cancel does
+        onDistanceFromAnyPositionSet()
+        if (permanently) {
+            _uiState.update { it.copy(showLocationPermissionSnackbar = true) }
+        }
     }
 
     fun onLocationPermissionRequestHandled() {

@@ -238,6 +238,43 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `onStart asks for location permission in current position mode without permission`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(false)
+
+        viewModel.onStart()
+
+        assertTrue(viewModel.uiState.value.requestLocationPermission)
+    }
+
+    @Test
+    fun `onStart asks for location permission only once`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(false)
+        viewModel.onStart()
+        viewModel.onLocationPermissionRequestHandled()
+
+        viewModel.onStart()
+
+        assertFalse(viewModel.uiState.value.requestLocationPermission)
+    }
+
+    @Test
+    fun `onLocationPermissionDenied switches to any position mode`() {
+        viewModel.onLocationPermissionDenied(permanently = false)
+
+        verify(distanceModeProvider).set(DistanceMode.FROM_ANY_POINT)
+        assertEquals(DistanceMode.FROM_ANY_POINT, viewModel.uiState.value.distanceMode)
+        assertFalse(viewModel.uiState.value.showLocationPermissionSnackbar)
+    }
+
+    @Test
+    fun `onLocationPermissionDenied permanently points the user to settings`() {
+        viewModel.onLocationPermissionDenied(permanently = true)
+
+        verify(distanceModeProvider).set(DistanceMode.FROM_ANY_POINT)
+        assertTrue(viewModel.uiState.value.showLocationPermissionSnackbar)
+    }
+
+    @Test
     fun `onDistanceFromAnyPositionSet updates distance mode`() {
         viewModel.onDistanceFromAnyPositionSet()
 
@@ -332,8 +369,8 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `resetMap clears map state and hides chart`() {
-        viewModel.resetMap()
+    fun `onDistanceFromAnyPositionSet clears map state and hides chart`() {
+        viewModel.onDistanceFromAnyPositionSet()
 
         assertTrue(viewModel.uiState.value.mapState.clearMap)
         assertTrue(viewModel.uiState.value.mapState.markers.isEmpty())

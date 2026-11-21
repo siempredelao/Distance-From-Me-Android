@@ -83,7 +83,10 @@ class MainActivity : FragmentActivity() {
             locationManager.startAfterPermissionGranted()
         } else {
             Timber.tag(TAG).d("permissions DENIED/INTERRUPTED")
-            mainViewModel.resetMap()
+            // Right after a refusal, no rationale means Android won't show its permission dialog again
+            mainViewModel.onLocationPermissionDenied(
+                permanently = PERMISSIONS.none { shouldShowRequestPermissionRationale(it) },
+            )
         }
     }
 
