@@ -8,6 +8,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: what's committed, the approved 6-step plan, and what's deferred
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
 - [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
+- [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
 ```
 
 ## commit-only-what-is-asked.md
@@ -40,7 +41,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-20T21:47:39.869Z
+  modified: 2026-11-21T14:11:55.566Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -51,7 +52,11 @@ Done and committed by 2026-11-20:
 - Save and clear distances in Room transactions (2da98c9).
 - Result models moved into `domain/model` packages (9f8ea8a).
 
-Next, approved on 2026-11-20: the plan at `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, 6 steps covering bugs, Android platform, Compose cleanups and the location stack. Every finding is tagged with the skill whose rule it comes from. Step 6 replaces the location Service with a Flow and fixes the `:app` Konsist layer violation, so that violation is now in scope.
+Next, approved on 2026-11-20: the plan at `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, 6 steps covering bugs, Android platform, Compose cleanups and the location stack. Every finding is tagged with the skill whose rule it comes from.
+
+Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 is next. Edits for it that I started too early (see [[one-plan-step-at-a-time]]) are parked in the git stash "step 3 edge-to-edge (WIP, not reviewed)". They are unbuilt and unreviewed; ask the user whether to restore them or start over.
+
+Step 6 replaces the location Service with a Flow and fixes the `:app` Konsist layer violation, so that violation is now in scope.
 
 Deferred by the user:
 - The MainActivity ViewModel relays and the chart-visibility bug (the user is investigating).
@@ -59,6 +64,25 @@ Deferred by the user:
 
 **Why:** in 2026-11 I mistook the Konsist failures for the to-do list and refactored `:app` before being asked. The user had me revert it, and later approved that work explicitly as plan step 6.
 **How to apply:** when resuming, follow the approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]].
+```
+
+## one-plan-step-at-a-time.md
+
+```markdown
+---
+name: one-plan-step-at-a-time
+description: Work an approved plan strictly one step at a time; never start the next step while the current one is unverified or uncommitted
+metadata:
+  node_type: memory
+  type: feedback
+  originSessionId: c32d0a74-26a2-4a0c-beb1-bcf2897c09c0
+  modified: 2026-11-21T13:42:31.332Z
+---
+
+Finish the current plan step (verified, and committed or explicitly parked by the user) before touching the next one. Don't use waiting time (an emulator booting, a pending question) to start the next step.
+
+**Why:** on 2026-11-21 I began step 3 of [[konsist-cleanup-series]] while step 2 was still waiting on emulator verification and a commit decision. The user stopped me ("We haven't finished with the previous part", "Let's go one step at a time") and the step 3 edits had to be stashed.
+**How to apply:** while blocked on the current step, report the blocker and wait. Related: [[commit-only-what-is-asked]].
 ```
 
 ## reproduction-steps-for-fixes.md
