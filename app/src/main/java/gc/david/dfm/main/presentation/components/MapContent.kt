@@ -55,9 +55,9 @@ fun MapContent(
     onMarkerClick: (MarkerData) -> Unit,
     onCameraUpdateHandled: () -> Unit,
     onMapClearHandled: () -> Unit,
-    modifier: Modifier = Modifier,
     properties: MapProperties,
     uiSettings: MapUiSettings,
+    modifier: Modifier = Modifier,
 ) {
     val cameraPositionState = rememberCameraPositionState()
 
@@ -232,9 +232,8 @@ private fun MapContentPreview() {
         onMarkerClick = {},
         onCameraUpdateHandled = {},
         onMapClearHandled = {},
-        modifier = Modifier,
         properties = MapProperties(),
-        uiSettings = MapUiSettings(zoomControlsEnabled = false)
+        uiSettings = MapUiSettings(zoomControlsEnabled = false),
     )
 }
 
