@@ -18,7 +18,6 @@ package gc.david.dfm.main.presentation
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -42,6 +41,7 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
+import gc.david.dfm.collectOnStarted
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.designsystem.DfmTheme
@@ -49,7 +49,6 @@ import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
-import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
@@ -63,13 +62,11 @@ import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 class MainActivity : FragmentActivity() {
 
     private val appContext: Context by inject()
-    private val locationManager: GeofencingLocationManager by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
 
 
-    @SuppressLint("MissingPermission")
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -78,8 +75,8 @@ class MainActivity : FragmentActivity() {
         val granted = permissions.values.any { it }
         if (granted) {
             Timber.tag(TAG).d("permissions GRANTED")
+            // onLocationPermissionChanged above starts location tracking
             UiUtils.toastIt(R.string.toast_loading_position, appContext)
-            locationManager.startAfterPermissionGranted()
         } else {
             Timber.tag(TAG).d("permissions DENIED/INTERRUPTED")
             // Right after a refusal, no rationale means Android won't show its permission dialog again
@@ -98,8 +95,8 @@ class MainActivity : FragmentActivity() {
         )
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(locationManager)
-        locationManager.setOnLocationChangedListener(mainViewModel::onLocationChanged)
+        // Location updates follow the screen: they stop below STARTED and resume when it's visible again
+        collectOnStarted { mainViewModel.trackLocation() }
 
         setContent {
             DfmTheme {

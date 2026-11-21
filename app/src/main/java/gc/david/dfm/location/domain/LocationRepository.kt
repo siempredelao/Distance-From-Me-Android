@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package gc.david.dfm.location.domain
 
-package gc.david.dfm.distance.data.model
+import gc.david.dfm.common.Coordinates
+import kotlinx.coroutines.flow.Flow
 
-data class Point(val lat: Double, val lon: Double) {
-    override fun toString(): String = "P($lat, $lon)"
+interface LocationRepository {
+
+    /**
+     * Emits the device's location while collected, starting with the last known one. Collect it only with location
+     * permission granted: without it, the flow completes without emitting.
+     */
+    fun observeLocation(): Flow<Coordinates>
 }
-

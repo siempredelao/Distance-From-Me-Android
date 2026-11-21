@@ -16,7 +16,6 @@
 
 package gc.david.dfm.main.presentation
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import gc.david.dfm.ConnectionManager
@@ -33,10 +32,10 @@ import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.PositionListResult
-import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
+import gc.david.dfm.location.domain.LocationRepository
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
@@ -51,6 +50,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -66,7 +67,7 @@ class MainViewModel(
     private val resourceProvider: ResourceProvider,
     private val settingsRepository: SettingsRepository,
     private val distanceModeRepository: DistanceModeRepository,
-    private val currentLocationProvider: CurrentLocationProvider,
+    private val locationRepository: LocationRepository,
     private val permissionChecker: PermissionChecker,
     private val coordinatesRepository: CoordinatesRepository,
     private val distanceCalculator: DistanceCalculator,
@@ -85,6 +86,9 @@ class MainViewModel(
 
     // Moves to current position if app has just started
     private var appHasJustStarted = true
+
+    // The device's last known position, or null until the first location arrives
+    private var currentLocation: Coordinates? = null
 
     // Determines whether a multi-point distance is being marked on the map
     private var isUserSelectingPoints: Boolean = false
@@ -216,23 +220,33 @@ class MainViewModel(
     }
 
     fun onMyLocationButtonClick() {
-        val currentLocation = currentLocationProvider.get()
-        if (currentLocation != CurrentLocationProvider.UNDEFINED) {
-            val coordinates = Coordinates(currentLocation.lat, currentLocation.lon)
-            _uiState.update {
-                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates)))
-            }
+        val coordinates = currentLocation ?: return
+        _uiState.update {
+            it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates)))
         }
     }
 
-    // TODO this should be moved to a repooooo!!!
-    fun onLocationChanged(location: Location) {
-        currentLocationProvider.set(location)
+    /**
+     * Follows the device's location while location access is granted. The caller chooses how long: MainActivity runs
+     * it while the screen is started, so location updates stop in the background.
+     */
+    suspend fun trackLocation() {
+        uiState
+            .map { it.isLocationPermissionGranted }
+            .distinctUntilChanged()
+            .collectLatest { granted ->
+                if (granted) {
+                    locationRepository.observeLocation().collect(::onLocationChanged)
+                }
+            }
+    }
+
+    private fun onLocationChanged(coordinates: Coordinates) {
+        currentLocation = coordinates
 
         if (appHasJustStarted) {
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
-            val coordinates = Coordinates(location.latitude, location.longitude)
             _uiState.update {
                 it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.ZoomTo(coordinates)))
             }
@@ -245,13 +259,9 @@ class MainViewModel(
 
         val origin = when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT -> null
-            DistanceMode.FROM_CURRENT_POINT -> {
-                val currentLocation = currentLocationProvider.get()
-                if (currentLocation == CurrentLocationProvider.UNDEFINED) {
-                    isUserSelectingPoints = false
-                    return // Without current location, we cannot calculate any distance
-                }
-                Coordinates(currentLocation.lat, currentLocation.lon)
+            DistanceMode.FROM_CURRENT_POINT -> currentLocation ?: run {
+                isUserSelectingPoints = false
+                return // Without current location, we cannot calculate any distance
             }
         }
 
@@ -317,8 +327,7 @@ class MainViewModel(
             }
 
             DistanceMode.FROM_CURRENT_POINT -> {
-                val currentLocation = currentLocationProvider.get()
-                if (currentLocation == CurrentLocationProvider.UNDEFINED) {
+                val origin = currentLocation ?: run {
                     isUserSelectingPoints = false
                     return // Without current location, we cannot calculate any distance
                 }
@@ -326,8 +335,7 @@ class MainViewModel(
                 // To calculate the distance from the current position,
                 // we effectively need the current position ;)
                 if (this@MainViewModel.coordinates.isEmpty()) {
-                    coordinatesRepository
-                        .append(Coordinates(currentLocation.lat, currentLocation.lon))
+                    coordinatesRepository.append(origin)
                 }
             }
         }
@@ -342,8 +350,7 @@ class MainViewModel(
     fun onAddressSearch(query: String) {
         Timber.tag(TAG).d("onAddressSearch $query")
 
-        val currentLocation = currentLocationProvider.get()
-        if (currentLocation != CurrentLocationProvider.UNDEFINED) {
+        if (currentLocation != null) {
             _uiState.update { it.copy(searchAddress = query) }
         }
     }

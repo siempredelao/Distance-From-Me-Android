@@ -16,12 +16,12 @@
 
 package gc.david.dfm.di
 
+import com.google.android.gms.location.LocationServices
 import gc.david.dfm.DefaultBuildConfigProvider
 import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.distance.data.BaseCoordinatesRepository
 import gc.david.dfm.distance.data.BaseDistanceModeRepository
 import gc.david.dfm.distance.data.CoordinatesMemoryDataSource
-import gc.david.dfm.distance.data.CurrentLocationProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.initializers.DefaultUnitInitializer
@@ -29,11 +29,13 @@ import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.initializers.MapInitializer
-import gc.david.dfm.location.GeofencingLocationManager
+import gc.david.dfm.location.data.BaseLocationRepository
+import gc.david.dfm.location.domain.LocationRepository
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -42,10 +44,10 @@ val appModule = module {
     single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get()), MapInitializer()) }
     single { Initializers(get()) }
     single<DistanceModeRepository> { BaseDistanceModeRepository() }
-    single { CurrentLocationProvider() }
     single { CoordinatesMemoryDataSource() }
     single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }
-    factory { GeofencingLocationManager(get(), get()) }
+    single { LocationServices.getFusedLocationProviderClient(androidContext()) }
+    single<LocationRepository> { BaseLocationRepository(get()) }
     single<BuildConfigProvider> { DefaultBuildConfigProvider() }
     single { MapStateMapper(get()) }
     single { LoadDistancesMapper(get()) }

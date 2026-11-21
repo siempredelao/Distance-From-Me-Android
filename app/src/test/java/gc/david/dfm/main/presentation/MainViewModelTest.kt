@@ -16,7 +16,6 @@
 
 package gc.david.dfm.main.presentation
 
-import android.location.Location
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.PermissionChecker
 import gc.david.dfm.R
@@ -31,11 +30,10 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.core.distances.domain.model.PositionListResult
-import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.model.Point
 import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
+import gc.david.dfm.location.domain.LocationRepository
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.domain.StoredDistances
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
@@ -46,8 +44,13 @@ import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.settings.domain.model.CameraAnimation
 import gc.david.dfm.testsupport.CoroutineExtension
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -62,6 +65,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
     @JvmField
@@ -75,7 +79,8 @@ class MainViewModelTest {
     private val resourceProvider = mock<ResourceProvider>()
     private val settingsRepository = mock<SettingsRepository>()
     private val distanceModeRepository = mock<DistanceModeRepository>()
-    private val currentLocationProvider = mock<CurrentLocationProvider>()
+    private val locationRepository = mock<LocationRepository>()
+    private val locations = MutableSharedFlow<Coordinates>(extraBufferCapacity = 1)
     private val permissionChecker = mock<PermissionChecker>()
     private val coordinatesRepository = mock<CoordinatesRepository>()
     private val distanceCalculator = mock<DistanceCalculator>()
@@ -89,6 +94,7 @@ class MainViewModelTest {
     @BeforeEach
     fun setup() {
         whenever(getDistancesUseCase()).thenReturn(flowOf(emptyList()))
+        whenever(locationRepository.observeLocation()).thenReturn(locations)
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(emptyList()))
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
@@ -101,7 +107,7 @@ class MainViewModelTest {
             resourceProvider,
             settingsRepository,
             distanceModeRepository,
-            currentLocationProvider,
+            locationRepository,
             permissionChecker,
             coordinatesRepository,
             distanceCalculator,
@@ -326,8 +332,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onMyLocationButtonClick does nothing when current location is undefined`() {
-        whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
+    fun `onMyLocationButtonClick does nothing without a location`() {
 
         viewModel.onMyLocationButtonClick()
 
@@ -335,17 +340,30 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onLocationChanged on first update zooms to current location`() {
-        val location = mock<Location>()
-        whenever(location.latitude).thenReturn(51.5074)
-        whenever(location.longitude).thenReturn(-0.1278)
+    fun `trackLocation does not observe location without permission`() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.trackLocation() }
 
-        viewModel.onLocationChanged(location)
+        verify(locationRepository, never()).observeLocation()
+    }
 
-        assertEquals(
-            Coordinates(51.5074, -0.1278),
-            (viewModel.uiState.value.mapState.cameraUpdate as CameraUpdate.ZoomTo).position
-        )
+    @Test
+    fun `trackLocation zooms to the first location once location is granted`() = runTest {
+        givenLocationTracked()
+
+        locations.emit(LONDON)
+
+        assertEquals(CameraUpdate.ZoomTo(LONDON), viewModel.uiState.value.mapState.cameraUpdate)
+    }
+
+    @Test
+    fun `onMyLocationButtonClick moves to the current location`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
+        viewModel.onCameraUpdateHandled()
+
+        viewModel.onMyLocationButtonClick()
+
+        assertEquals(CameraUpdate.MoveTo(LONDON), viewModel.uiState.value.mapState.cameraUpdate)
     }
 
     @Test
@@ -359,10 +377,9 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onMapClick does nothing without current location when mode is current position`() {
+    fun `onMapClick does nothing without a location when mode is current position`() {
         val coordinates = Coordinates(40.7128, -74.0060)
         whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
-        whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
 
         viewModel.onMapClick(coordinates)
 
@@ -393,9 +410,8 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onMapLongClick with undefined current location in current-position mode does nothing`() {
+    fun `onMapLongClick without a location in current-position mode does nothing`() {
         whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
-        whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
 
         viewModel.onMapLongClick(Coordinates(40.0, -3.0))
 
@@ -403,8 +419,9 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onAddressSearch records query when current location is available`() {
-        whenever(currentLocationProvider.get()).thenReturn(Point(51.5074, -0.1278))
+    fun `onAddressSearch records query when current location is available`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
 
         viewModel.onAddressSearch("London")
 
@@ -496,5 +513,17 @@ class MainViewModelTest {
         viewModel.onLocationPermissionRequestHandled()
 
         assertFalse(viewModel.uiState.value.requestLocationPermission)
+    }
+
+    // Grants location and tracks it, as MainActivity does while started; emit to locations to deliver one
+    private fun TestScope.givenLocationTracked() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(true)
+        viewModel.onLocationPermissionChanged()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.trackLocation() }
+    }
+
+    private companion object {
+
+        val LONDON = Coordinates(51.5074, -0.1278)
     }
 }
