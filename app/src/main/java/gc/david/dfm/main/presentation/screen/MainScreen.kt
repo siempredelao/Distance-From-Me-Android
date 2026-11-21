@@ -143,7 +143,11 @@ fun MainScreen(
                     isMyLocationEnabled = isMyLocationEnabled,
                     mapType = MapType.HYBRID
                 ),
-                uiSettings = MapUiSettings(zoomControlsEnabled = false)
+                uiSettings = MapUiSettings(
+                    zoomControlsEnabled = false,
+                    myLocationButtonEnabled = false,
+                    mapToolbarEnabled = false
+                )
             )
 
             // Top UI elements stacked vertically (Search Bar + Elevation Chart)
@@ -209,8 +213,6 @@ fun MainScreen(
                     showDebugOptions = sideNavigationState.showDebugOptions
                 )
             }
-
-
 
             // Lottie Progress overlay
             LottieProgress(
