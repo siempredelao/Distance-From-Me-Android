@@ -57,8 +57,10 @@ import gc.david.dfm.faq.presentation.model.faqs
 fun FaqScreen(
     faqs: List<Faq>,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.faq_title)) },

@@ -79,6 +79,7 @@ internal fun ShowInfoScreen(
     onUserMessageShown: () -> Unit,
     onShareDialogShown: () -> Unit,
     onSaveUserMessageShown: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -110,6 +111,7 @@ internal fun ShowInfoScreen(
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets.statusBars,

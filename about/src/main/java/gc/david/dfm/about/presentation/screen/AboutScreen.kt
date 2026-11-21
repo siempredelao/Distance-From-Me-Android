@@ -66,8 +66,10 @@ fun AboutScreen(
     onOpenLink: (String) -> Unit,
     onOpenEmail: () -> Unit,
     onOpenSourceLicenses: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.about_title)) },
