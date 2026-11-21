@@ -41,7 +41,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-21T14:11:55.566Z
+  modified: 2026-11-21T14:53:23.407Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -54,7 +54,7 @@ Done and committed by 2026-11-20:
 
 Next, approved on 2026-11-20: the plan at `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, 6 steps covering bugs, Android platform, Compose cleanups and the location stack. Every finding is tagged with the skill whose rule it comes from.
 
-Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 is next. Edits for it that I started too early (see [[one-plan-step-at-a-time]]) are parked in the git stash "step 3 edge-to-edge (WIP, not reviewed)". They are unbuilt and unreviewed; ask the user whether to restore them or start over.
+Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 (edge-to-edge) is committed as b04d215. It deviates from the plan by using fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`), because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. It was verified before and after on API 36 and API 34 (gesture navigation only; 3-button not checked). The user had the temporary API 34 AVD deleted afterwards. Step 4 (Compose cleanups) is next.
 
 Step 6 replaces the location Service with a Flow and fixes the `:app` Konsist layer violation, so that violation is now in scope.
 
