@@ -41,7 +41,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-21T14:53:23.407Z
+  modified: 2026-11-21T15:18:12.862Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -54,7 +54,11 @@ Done and committed by 2026-11-20:
 
 Next, approved on 2026-11-20: the plan at `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, 6 steps covering bugs, Android platform, Compose cleanups and the location stack. Every finding is tagged with the skill whose rule it comes from.
 
-Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 (edge-to-edge) is committed as b04d215. It deviates from the plan by using fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`), because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. It was verified before and after on API 36 and API 34 (gesture navigation only; 3-button not checked). The user had the temporary API 34 AVD deleted afterwards. Step 4 (Compose cleanups) is next.
+Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 (edge-to-edge) is committed as b04d215. It deviates from the plan by using fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`), because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. It was verified before and after on API 36 and API 34 (gesture navigation only; 3-button not checked). The user had the temporary API 34 AVD deleted afterwards. Step 4 (Compose cleanups) is committed as three commits: 8b7f9cf (MapContent parameter order), a7d5a7f (cancel stale address searches), 092dd9d (modifier on About/FAQ/Show info screens). Step 5 (location permissions) is next.
+
+The plan's step 4 item "remove the dead `clearMap` flag" turned out to be wrong, and the user dropped it. Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point. The Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, when the finger lifted during the zoom animation, at the coordinate then under the finger. The user reproduced it on the emulator with the mouse. Logcat showed it on that build, and it did not happen in about 10 tries each on the build before step 4 and on step 4 with `clearMap` kept. Scripted `adb input` presses, including touch-down and touch-up events with small movements, never triggered it. The cause is unknown; my guess is that the extra state update `clearMap` makes after each long press changes the timing between the camera animation and the SDK's gesture handling.
+
+**How to apply:** keep `clearMap` until the cause is understood. Testing any change to the map state flow needs the user's manual long press while logcat is filtered for `MainViewModel` `onMapClick`/`onMapLongClick`; a scripted run proves nothing. It may relate to the deferred chart-visibility work, which goes through the same state updates.
 
 Step 6 replaces the location Service with a Flow and fixes the `:app` Konsist layer violation, so that violation is now in scope.
 
