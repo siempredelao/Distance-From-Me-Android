@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package gc.david.dfm.distance.domain
 
-package gc.david.dfm.distance.data.model
+import gc.david.dfm.distance.domain.model.DistanceMode
 
-enum class DistanceMode { FROM_CURRENT_POINT, FROM_ANY_POINT }
+interface DistanceModeRepository {
+
+    fun getDistanceMode(): DistanceMode
+
+    fun setDistanceMode(mode: DistanceMode)
+}

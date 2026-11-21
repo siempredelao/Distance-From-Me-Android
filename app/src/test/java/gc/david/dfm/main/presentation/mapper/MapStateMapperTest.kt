@@ -20,7 +20,7 @@ import android.content.Context
 import android.content.res.Resources
 import gc.david.dfm.R
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState

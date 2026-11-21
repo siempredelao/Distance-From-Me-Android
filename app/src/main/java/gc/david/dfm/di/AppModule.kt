@@ -19,10 +19,11 @@ package gc.david.dfm.di
 import gc.david.dfm.DefaultBuildConfigProvider
 import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.distance.data.BaseCoordinatesRepository
+import gc.david.dfm.distance.data.BaseDistanceModeRepository
 import gc.david.dfm.distance.data.CoordinatesMemoryDataSource
 import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceModeProvider
 import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
@@ -40,7 +41,7 @@ val appModule = module {
 
     single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get()), MapInitializer()) }
     single { Initializers(get()) }
-    single { DistanceModeProvider() }
+    single<DistanceModeRepository> { BaseDistanceModeRepository() }
     single { CurrentLocationProvider() }
     single { CoordinatesMemoryDataSource() }
     single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }

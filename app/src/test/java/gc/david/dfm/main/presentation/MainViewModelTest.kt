@@ -32,10 +32,10 @@ import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.data.model.DistanceMode
 import gc.david.dfm.distance.data.model.Point
 import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.distance.domain.DistanceModeRepository
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.domain.StoredDistances
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
@@ -74,7 +74,7 @@ class MainViewModelTest {
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
     private val settingsRepository = mock<SettingsRepository>()
-    private val distanceModeProvider = mock<DistanceModeProvider>()
+    private val distanceModeRepository = mock<DistanceModeRepository>()
     private val currentLocationProvider = mock<CurrentLocationProvider>()
     private val permissionChecker = mock<PermissionChecker>()
     private val coordinatesRepository = mock<CoordinatesRepository>()
@@ -91,7 +91,7 @@ class MainViewModelTest {
         whenever(getDistancesUseCase()).thenReturn(flowOf(emptyList()))
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(emptyList()))
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
 
         viewModel = MainViewModel(
             getDistancesUseCase,
@@ -100,7 +100,7 @@ class MainViewModelTest {
             connectionManager,
             resourceProvider,
             settingsRepository,
-            distanceModeProvider,
+            distanceModeRepository,
             currentLocationProvider,
             permissionChecker,
             coordinatesRepository,
@@ -239,7 +239,7 @@ class MainViewModelTest {
     fun `onDistanceFromCurrentPositionSet updates distance mode`() {
         viewModel.onDistanceFromCurrentPositionSet()
 
-        verify(distanceModeProvider).set(DistanceMode.FROM_CURRENT_POINT)
+        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_CURRENT_POINT)
         verify(coordinatesRepository).clear()
     }
 
@@ -285,7 +285,7 @@ class MainViewModelTest {
     fun `onLocationPermissionDenied switches to any position mode`() {
         viewModel.onLocationPermissionDenied(permanently = false)
 
-        verify(distanceModeProvider).set(DistanceMode.FROM_ANY_POINT)
+        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_ANY_POINT)
         assertEquals(DistanceMode.FROM_ANY_POINT, viewModel.uiState.value.distanceMode)
         assertFalse(viewModel.uiState.value.showLocationPermissionSnackbar)
     }
@@ -294,7 +294,7 @@ class MainViewModelTest {
     fun `onLocationPermissionDenied permanently points the user to settings`() {
         viewModel.onLocationPermissionDenied(permanently = true)
 
-        verify(distanceModeProvider).set(DistanceMode.FROM_ANY_POINT)
+        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_ANY_POINT)
         assertTrue(viewModel.uiState.value.showLocationPermissionSnackbar)
     }
 
@@ -321,7 +321,7 @@ class MainViewModelTest {
     fun `onDistanceFromAnyPositionSet updates distance mode`() {
         viewModel.onDistanceFromAnyPositionSet()
 
-        verify(distanceModeProvider).set(DistanceMode.FROM_ANY_POINT)
+        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_ANY_POINT)
         verify(coordinatesRepository).clear()
     }
 
@@ -351,7 +351,7 @@ class MainViewModelTest {
     @Test
     fun `onMapClick appends coordinates to repository in any position mode`() {
         val coordinates = Coordinates(40.7128, -74.0060)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_ANY_POINT)
 
         viewModel.onMapClick(coordinates)
 
@@ -361,7 +361,7 @@ class MainViewModelTest {
     @Test
     fun `onMapClick does nothing without current location when mode is current position`() {
         val coordinates = Coordinates(40.7128, -74.0060)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
         whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
 
         viewModel.onMapClick(coordinates)
@@ -372,7 +372,7 @@ class MainViewModelTest {
     @Test
     fun `onPositionByNameResolved appends first point and moves camera in any position mode`() {
         val coordinates = Coordinates(40.0, -3.0)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_ANY_POINT)
 
         viewModel.onPositionByNameResolved(coordinates)
 
@@ -382,7 +382,7 @@ class MainViewModelTest {
 
     @Test
     fun `onMapLongClick with empty coordinates in any position mode shows missing start point error`() {
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_ANY_POINT)
         val message = "Start point needed"
         whenever(resourceProvider.get(R.string.toast_first_point_needed)).thenReturn(message)
 
@@ -394,7 +394,7 @@ class MainViewModelTest {
 
     @Test
     fun `onMapLongClick with undefined current location in current-position mode does nothing`() {
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
         whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
 
         viewModel.onMapLongClick(Coordinates(40.0, -3.0))

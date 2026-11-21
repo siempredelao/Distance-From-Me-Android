@@ -18,7 +18,7 @@ package gc.david.dfm.main.presentation.mapper
 
 import android.content.Context
 import gc.david.dfm.R
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState

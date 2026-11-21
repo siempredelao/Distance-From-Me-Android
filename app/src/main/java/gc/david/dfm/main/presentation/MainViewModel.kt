@@ -34,9 +34,9 @@ import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.data.model.DistanceMode
 import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.distance.domain.DistanceModeRepository
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
@@ -65,7 +65,7 @@ class MainViewModel(
     private val connectionManager: ConnectionManager,
     private val resourceProvider: ResourceProvider,
     private val settingsRepository: SettingsRepository,
-    private val distanceModeProvider: DistanceModeProvider,
+    private val distanceModeRepository: DistanceModeRepository,
     private val currentLocationProvider: CurrentLocationProvider,
     private val permissionChecker: PermissionChecker,
     private val coordinatesRepository: CoordinatesRepository,
@@ -97,7 +97,7 @@ class MainViewModel(
 
     init {
         // Initialize with current distance mode and side navigation state
-        val initialDistanceMode = distanceModeProvider.get()
+        val initialDistanceMode = distanceModeRepository.getDistanceMode()
         _uiState.update {
             it.copy(
                 distanceMode = initialDistanceMode,
@@ -129,7 +129,7 @@ class MainViewModel(
 
         // Request location permission on startup if mode is FROM_CURRENT_POINT
         if (!hasPromptedForLocationPermission &&
-            distanceModeProvider.get() == DistanceMode.FROM_CURRENT_POINT &&
+            distanceModeRepository.getDistanceMode() == DistanceMode.FROM_CURRENT_POINT &&
             !permissionChecker.isLocationPermissionGranted()
         ) {
             hasPromptedForLocationPermission = true
@@ -187,7 +187,7 @@ class MainViewModel(
     }
 
     fun onDistanceFromCurrentPositionSet() {
-        distanceModeProvider.set(DistanceMode.FROM_CURRENT_POINT)
+        distanceModeRepository.setDistanceMode(DistanceMode.FROM_CURRENT_POINT)
         _uiState.update {
             it.copy(
                 distanceMode = DistanceMode.FROM_CURRENT_POINT,
@@ -203,7 +203,7 @@ class MainViewModel(
     }
 
     fun onDistanceFromAnyPositionSet() {
-        distanceModeProvider.set(DistanceMode.FROM_ANY_POINT)
+        distanceModeRepository.setDistanceMode(DistanceMode.FROM_ANY_POINT)
         _uiState.update {
             it.copy(
                 distanceMode = DistanceMode.FROM_ANY_POINT,
@@ -243,7 +243,7 @@ class MainViewModel(
     fun onMapClick(coordinates: Coordinates) {
         Timber.tag(TAG).d("onMapClick $coordinates")
 
-        val origin = when (distanceModeProvider.get()) {
+        val origin = when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT -> null
             DistanceMode.FROM_CURRENT_POINT -> {
                 val currentLocation = currentLocationProvider.get()
@@ -284,7 +284,7 @@ class MainViewModel(
     }
 
     fun onPositionByNameResolved(coordinates: Coordinates) {
-        when (distanceModeProvider.get()) {
+        when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT if this@MainViewModel.coordinates.isEmpty() -> {
                 coordinatesRepository.append(coordinates)
                 val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
@@ -308,7 +308,7 @@ class MainViewModel(
         Timber.tag(TAG).d("onMapLongClick $coordinates")
         isUserSelectingPoints = true
 
-        when (distanceModeProvider.get()) {
+        when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT -> {
                 if (this@MainViewModel.coordinates.isEmpty()) {
                     _uiState.update { it.copy(errorMessage = resourceProvider.get(R.string.toast_first_point_needed)) }
@@ -451,7 +451,7 @@ class MainViewModel(
             distanceName,
             distanceFormatter.formatDistance(distanceInMetres, unitSystem),
             source,
-            distanceModeProvider.get(),
+            distanceModeRepository.getDistanceMode(),
             settingsRepository.getCameraAnimation()
         )
         val newMapState = mapStateMapper.toMapUiState(model)

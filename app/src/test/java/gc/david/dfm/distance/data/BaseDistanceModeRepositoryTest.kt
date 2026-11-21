@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gc.david.dfm.distance.data
 
-import gc.david.dfm.distance.data.model.DistanceMode
-import javax.inject.Inject
-import javax.inject.Singleton
+import gc.david.dfm.distance.domain.model.DistanceMode
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
-// Temporal solution, this should be a repository instead
-@Singleton
-class DistanceModeProvider @Inject constructor() {
+class BaseDistanceModeRepositoryTest {
 
-    private var currentMode = DistanceMode.FROM_CURRENT_POINT
+    private val repository = BaseDistanceModeRepository()
 
-    fun get() : DistanceMode {
-        return currentMode
+    @Test
+    fun `starts in current position mode`() {
+        assertEquals(DistanceMode.FROM_CURRENT_POINT, repository.getDistanceMode())
     }
 
-    fun set(mode: DistanceMode) {
-        currentMode = mode
+    @Test
+    fun `returns the mode that was set`() {
+        repository.setDistanceMode(DistanceMode.FROM_ANY_POINT)
+
+        assertEquals(DistanceMode.FROM_ANY_POINT, repository.getDistanceMode())
     }
 }

@@ -45,7 +45,7 @@ import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel
 import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler

@@ -17,7 +17,7 @@
 package gc.david.dfm.main.presentation.model
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.distance.domain.model.DistanceMode
 
 data class MainUiState(
     val mapState: MapUiState = MapUiState(),
