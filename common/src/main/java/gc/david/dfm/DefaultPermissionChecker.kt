@@ -24,7 +24,8 @@ import androidx.core.content.ContextCompat
 
 class DefaultPermissionChecker(private val context: Context) : PermissionChecker {
 
+    // Since Android 12 the user can grant only an approximate (coarse) location, which is enough to measure distances
     override fun isLocationPermissionGranted(): Boolean =
         ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(context, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
 }

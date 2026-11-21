@@ -75,7 +75,8 @@ class MainActivity : FragmentActivity() {
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val granted = permissions.values.all { it }
+        // Either precise or approximate location is enough
+        val granted = permissions.values.any { it }
         if (granted) {
             Timber.tag(TAG).d("permissions GRANTED")
             UiUtils.toastIt(R.string.toast_loading_position, appContext)
