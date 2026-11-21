@@ -413,6 +413,14 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Triggered when location access may have changed: after the permission dialog, and on every resume, which
+     * covers a grant made in the system settings.
+     */
+    fun onLocationPermissionChanged() {
+        _uiState.update { it.copy(isLocationPermissionGranted = permissionChecker.isLocationPermissionGranted()) }
+    }
+
     fun onLocationPermissionRequestHandled() {
         _uiState.update { it.copy(requestLocationPermission = false) }
     }

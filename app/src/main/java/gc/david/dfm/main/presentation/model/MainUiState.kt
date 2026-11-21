@@ -30,6 +30,7 @@ data class MainUiState(
     val showChart: Boolean = false,
     val showLocationPermissionSnackbar: Boolean = false,
     val requestLocationPermission: Boolean = false,
+    val isLocationPermissionGranted: Boolean = false,
     val openShowInfo: Boolean = false,
     val triggerElevationUpdate: List<Coordinates>? = null,
 )

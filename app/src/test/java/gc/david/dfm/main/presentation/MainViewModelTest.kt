@@ -275,6 +275,25 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `onLocationPermissionChanged exposes a grant`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(true)
+
+        viewModel.onLocationPermissionChanged()
+
+        assertTrue(viewModel.uiState.value.isLocationPermissionGranted)
+    }
+
+    @Test
+    fun `onLocationPermissionChanged exposes a revocation`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(true, false)
+        viewModel.onLocationPermissionChanged()
+
+        viewModel.onLocationPermissionChanged()
+
+        assertFalse(viewModel.uiState.value.isLocationPermissionGranted)
+    }
+
+    @Test
     fun `onDistanceFromAnyPositionSet updates distance mode`() {
         viewModel.onDistanceFromAnyPositionSet()
 

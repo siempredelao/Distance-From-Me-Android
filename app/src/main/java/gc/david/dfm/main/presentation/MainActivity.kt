@@ -39,7 +39,6 @@ import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.PermissionChecker
 import gc.david.dfm.R
 import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
@@ -64,7 +63,6 @@ import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 class MainActivity : FragmentActivity() {
 
     private val appContext: Context by inject()
-    private val permissionChecker: PermissionChecker by inject()
     private val locationManager: GeofencingLocationManager by inject()
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
@@ -75,6 +73,7 @@ class MainActivity : FragmentActivity() {
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
+        mainViewModel.onLocationPermissionChanged()
         // Either precise or approximate location is enough
         val granted = permissions.values.any { it }
         if (granted) {
@@ -227,8 +226,8 @@ class MainActivity : FragmentActivity() {
                     showChartFab = elevationUiState.elevation != null && !showChart,
                     distancesToLoad = mainUiState.selectFromDistancesLoaded,
                     addressSuggestions = addressUiState.multipleAddressesFound,
-                    isMyLocationEnabled = mainUiState.distanceMode == DistanceMode.FROM_CURRENT_POINT 
-                            && permissionChecker.isLocationPermissionGranted(),
+                    isMyLocationEnabled = mainUiState.distanceMode == DistanceMode.FROM_CURRENT_POINT
+                            && mainUiState.isLocationPermissionGranted,
                     onSearchQuery = { query ->
                         mainViewModel.onAddressSearch(query)
                     },
@@ -306,6 +305,11 @@ class MainActivity : FragmentActivity() {
         }
 
         mainViewModel.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.onLocationPermissionChanged()
     }
 
     companion object {
