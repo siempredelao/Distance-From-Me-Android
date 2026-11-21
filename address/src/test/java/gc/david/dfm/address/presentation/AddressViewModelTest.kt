@@ -27,6 +27,7 @@ import gc.david.dfm.address.domain.model.GeocodingResult
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.testsupport.CoroutineExtension
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.io.IOException
@@ -215,6 +217,38 @@ class AddressViewModelTest {
         assertEquals(GENERIC_MESSAGE, viewModel.uiState.value.errorMessage)
     }
 
+    @Test
+    fun `shows the latest search by name when an earlier one finishes later`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val earlierResult = CompletableDeferred<GeocodingResult>()
+        whenever(getAddressCoordinatesByNameUseCase(LOCATION_NAME)).doSuspendableAnswer { earlierResult.await() }
+        whenever(getAddressCoordinatesByNameUseCase(LATER_LOCATION_NAME))
+            .thenReturn(GeocodingResult.Found(listOf(LATER_ADDRESS)))
+        viewModel.onAddressSearch(LOCATION_NAME)
+        viewModel.onAddressSearch(LATER_LOCATION_NAME)
+
+        earlierResult.complete(GeocodingResult.Found(listOf(ADDRESS)))
+
+        assertEquals(LATER_ADDRESS, viewModel.uiState.value.addressFound)
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `shows the latest search when an earlier search by coordinates finishes later`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val earlierResult = CompletableDeferred<GeocodingResult>()
+        whenever(getAddressNameByCoordinatesUseCase(COORDINATES)).doSuspendableAnswer { earlierResult.await() }
+        whenever(getAddressCoordinatesByNameUseCase(LATER_LOCATION_NAME))
+            .thenReturn(GeocodingResult.Found(listOf(LATER_ADDRESS)))
+        viewModel.onAddressSearch(COORDINATES)
+        viewModel.onAddressSearch(LATER_LOCATION_NAME)
+
+        earlierResult.complete(GeocodingResult.Found(listOf(ADDRESS)))
+
+        assertEquals(LATER_ADDRESS, viewModel.uiState.value.addressFound)
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
     private suspend fun givenCoordinatesByNameReturns(result: GeocodingResult) {
         whenever(getAddressCoordinatesByNameUseCase(any())).thenReturn(result)
     }
@@ -226,11 +260,13 @@ class AddressViewModelTest {
     companion object {
 
         private const val LOCATION_NAME = "fake location name"
+        private const val LATER_LOCATION_NAME = "later location name"
         private const val NO_RESULTS_MESSAGE = "no matches"
         private const val REJECTED_MESSAGE = "rejected"
         private const val GENERIC_MESSAGE = "generic"
 
         private val COORDINATES = Coordinates(0.0, 0.0)
         private val ADDRESS = Address(LOCATION_NAME, COORDINATES)
+        private val LATER_ADDRESS = Address(LATER_LOCATION_NAME, Coordinates(1.0, 1.0))
     }
 }

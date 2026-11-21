@@ -29,6 +29,7 @@ import gc.david.dfm.address.presentation.model.AddressUiState
 import gc.david.dfm.common.launchCatching
 import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.ResourceProvider
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,6 +46,8 @@ class AddressViewModel(
     private val _uiState = MutableStateFlow(AddressUiState())
     val uiState: StateFlow<AddressUiState> = _uiState.asStateFlow()
 
+    private var searchJob: Job? = null
+
     fun onAddressSearch(query: String) {
         if (!connectionManager.isOnline()) {
             _uiState.update { it.copy(showConnectionIssue = true) }
@@ -56,7 +59,9 @@ class AddressViewModel(
     private fun onSearchPositionByNameWithConnectionAvailable(locationName: String) {
         _uiState.update { it.copy(isLoading = true) }
 
-        launchCatching(onError = ::onUnexpectedFailure) {
+        // Only the latest search matters, so a slower earlier one must not overwrite its result
+        searchJob?.cancel()
+        searchJob = launchCatching(onError = ::onUnexpectedFailure) {
             val result = getAddressCoordinatesByNameUseCase(locationName)
             _uiState.update { current ->
                 when (result) {
@@ -100,7 +105,9 @@ class AddressViewModel(
     private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: Coordinates) {
         _uiState.update { it.copy(isLoading = true) }
 
-        launchCatching(onError = ::onUnexpectedFailure) {
+        // Only the latest search matters, so a slower earlier one must not overwrite its result
+        searchJob?.cancel()
+        searchJob = launchCatching(onError = ::onUnexpectedFailure) {
             val result = getAddressNameByCoordinatesUseCase(coordinates)
             _uiState.update { current ->
                 when (result) {
