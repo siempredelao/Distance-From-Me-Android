@@ -113,6 +113,30 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `does not read stored distances before onStart`() {
+        verify(getDistancesUseCase, never()).invoke()
+    }
+
+    @Test
+    fun `onStart shows the load menu item once distances are stored`() {
+        val storedDistances = MutableStateFlow(emptyList<Distance>())
+        whenever(getDistancesUseCase()).thenReturn(storedDistances)
+        viewModel.onStart()
+
+        storedDistances.value = listOf(Distance(1L, "Home", "3.2 km", java.util.Date(0)))
+
+        assertTrue(viewModel.uiState.value.sideNavigationState.showLoadMenuItem)
+    }
+
+    @Test
+    fun `onStart reads stored distances only once`() {
+        viewModel.onStart()
+        viewModel.onStart()
+
+        verify(getDistancesUseCase).invoke()
+    }
+
+    @Test
     fun `initial state has no connection issue`() {
         assertFalse(viewModel.uiState.value.showConnectionIssue)
     }

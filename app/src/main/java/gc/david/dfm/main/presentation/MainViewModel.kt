@@ -92,6 +92,9 @@ class MainViewModel(
     // Ask for location at most once per screen, so a refusal can never turn into a prompt loop
     private var hasPromptedForLocationPermission = false
 
+    // onStart runs on every Activity creation, but one collection lasts the ViewModel's lifetime
+    private var isObservingStoredDistances = false
+
     init {
         // Initialize with current distance mode and side navigation state
         val initialDistanceMode = distanceModeProvider.get()
@@ -106,22 +109,13 @@ class MainViewModel(
                 )
             )
         }
-
-        getDistancesUseCase()
-            .map { it.isNotEmpty() }
-            .onEach { hasDistances ->
-                _uiState.update {
-                    it.copy(
-                        sideNavigationState = it.sideNavigationState.copy(
-                            showLoadMenuItem = hasDistances
-                        )
-                    )
-                }
-            }
-            .launchIn(viewModelScope)
     }
 
     fun onStart() {
+        if (!isObservingStoredDistances) {
+            isObservingStoredDistances = true
+            observeStoredDistances()
+        }
         if (!connectionManager.isOnline()) {
             _uiState.update { it.copy(showConnectionIssue = true) }
         }
@@ -141,6 +135,22 @@ class MainViewModel(
             hasPromptedForLocationPermission = true
             _uiState.update { it.copy(requestLocationPermission = true) }
         }
+    }
+
+    // Shows the "Show distances" menu item only while there are distances to load
+    private fun observeStoredDistances() {
+        getDistancesUseCase()
+            .map { it.isNotEmpty() }
+            .onEach { hasDistances ->
+                _uiState.update {
+                    it.copy(
+                        sideNavigationState = it.sideNavigationState.copy(
+                            showLoadMenuItem = hasDistances
+                        )
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     /**
