@@ -9,6 +9,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
 - [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
 - [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
+- [Visual evidence for changes](visual-evidence-for-changes.md) — back each change with before/after screenshots or recordings, sent to the user
 ```
 
 ## commit-only-what-is-asked.md
@@ -41,7 +42,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-21T15:18:12.862Z
+  modified: 2026-11-21T20:47:42.702Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -54,7 +55,7 @@ Done and committed by 2026-11-20:
 
 Next, approved on 2026-11-20: the plan at `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, 6 steps covering bugs, Android platform, Compose cleanups and the location stack. Every finding is tagged with the skill whose rule it comes from.
 
-Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 (edge-to-edge) is committed as b04d215. It deviates from the plan by using fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`), because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. It was verified before and after on API 36 and API 34 (gesture navigation only; 3-button not checked). The user had the temporary API 34 AVD deleted afterwards. Step 4 (Compose cleanups) is committed as three commits: 8b7f9cf (MapContent parameter order), a7d5a7f (cancel stale address searches), 092dd9d (modifier on About/FAQ/Show info screens). Step 5 (location permissions) is next.
+Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 (edge-to-edge) is committed as b04d215. It deviates from the plan by using fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`), because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. It was verified before and after on API 36 and API 34 (gesture navigation only; 3-button not checked). The user had the temporary API 34 AVD deleted afterwards. Step 4 (Compose cleanups) is committed as three commits: 8b7f9cf (MapContent parameter order), a7d5a7f (cancel stale address searches), 092dd9d (modifier on About/FAQ/Show info screens). Step 5 (location permissions) is in progress, one commit per fix, with the once-per-launch rationale dialog left as it is (the user's choice): fix 1 (accept an approximate grant) is 8a4fde5, fix 2 (fall back to any position on refusal, settings snackbar once Android won't ask again) is 2fb7bae. Fixes 3 (permission state in the UI state, refreshed in onResume) and 4 (collect distances from onStart) remain; fix 4 touches the map state flow, so it needs the manual long-press check below.
 
 The plan's step 4 item "remove the dead `clearMap` flag" turned out to be wrong, and the user dropped it. Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point. The Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, when the finger lifted during the zoom animation, at the coordinate then under the finger. The user reproduced it on the emulator with the mouse. Logcat showed it on that build, and it did not happen in about 10 tries each on the build before step 4 and on step 4 with `clearMap` kept. Scripted `adb input` presses, including touch-down and touch-up events with small movements, never triggered it. The cause is unknown; my guess is that the extra state update `clearMap` makes after each long press changes the timing between the camera animation and the SDK's gesture handling.
 
@@ -107,4 +108,24 @@ For every change I report, include steps to reproduce what it fixes: how to trig
 **Why:** the user asked for this on 2026-11-20 while reviewing step 1 of the skill-audit plan (the Show info crash after process death), so they can confirm each fix themselves before committing it.
 
 **How to apply:** add a "How to reproduce" section to the summary of each plan step or fix, split per fix when a step has several. Related: [[konsist-cleanup-series]], [[commit-only-what-is-asked]].
+```
+
+## visual-evidence-for-changes.md
+
+```markdown
+---
+name: visual-evidence-for-changes
+description: "Back every change with before/after screenshots or screen recordings from the emulator, sent to the user, whenever the change is visible"
+metadata:
+  node_type: memory
+  type: feedback
+  originSessionId: c32d0a74-26a2-4a0c-beb1-bcf2897c09c0
+  modified: 2026-11-21T15:58:43.043Z
+---
+
+Back each change with images or videos whenever possible: screenshots (`adb exec-out screencap -p`) or screen recordings (`adb shell screenrecord`), taken on the build before the change and the build after it, following the same steps on both. Send them to the user with SendUserFile, labelled BEFORE/AFTER, together with the written reproduction steps. For a flow over time, such as a dialog sequence or an animation, prefer a recording; for a static difference, a side-by-side image. When a change has nothing visible, say so instead of producing filler images.
+
+**Why:** on 2026-11-21, while reviewing step 5 fix 2 of [[konsist-cleanup-series]], the user asked for this because they were away from their computer and review on another device, where they can't run the app themselves.
+
+**How to apply:** for each fix, build the "before" by stashing the change, capture, restore it, then capture the "after", and reinstall the "after" build at the end. Send the evidence before asking to commit. Extends [[reproduction-steps-for-fixes]].
 ```
