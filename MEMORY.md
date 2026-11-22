@@ -11,6 +11,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
 - [Visual evidence for changes](visual-evidence-for-changes.md) — back each change with before/after screenshots or recordings, sent to the user
 - [Explain the step before changing](explain-step-before-changing.md) — say what the next plan step changes and how it's checked before the first edit
+- [Lists over paragraphs in memory](memory-lists-over-paragraphs.md) — write memory, especially plan progress, as short unordered lists
 ```
 
 ## commit-only-what-is-asked.md
@@ -59,35 +60,91 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-21T22:59:02.685Z
+  modified: 2026-11-22T17:49:27.846Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
 
-Done and committed by 2026-11-20:
+## Before the plans (committed by 2026-11-20)
 - Konsist guards (7cbfa11).
 - Sealed results instead of kotlin.Result: geocoding (4ca82b1), elevation (847eba7), stored positions (7e25961, `PositionListResult`). `ClearDistancesUseCase`/`SaveDistanceUseCase` return Unit and let failures propagate; the user chose this over single-variant sealed types.
 - Save and clear distances in Room transactions (2da98c9).
 - Result models moved into `domain/model` packages (9f8ea8a).
 
-Next, approved on 2026-11-20: the plan at `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, 6 steps covering bugs, Android platform, Compose cleanups and the location stack. Every finding is tagged with the skill whose rule it comes from.
+## First plan: complete
+- File: `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, approved 2026-11-20, 6 steps.
+- Step 1, Show info after process death: b45f706.
+- Step 2, manifest (MainActivity not exported, adjustResize, Show info parent): f12baec.
+- Step 3, edge-to-edge: b04d215. Uses fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`) because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. Checked on API 36 and 34, gesture navigation only.
+- Step 4, Compose cleanups: 8b7f9cf, a7d5a7f, 092dd9d. The planned "remove `clearMap`" was dropped (see the stray-tap section).
+- Step 5, location permissions: 8a4fde5, 2fb7bae, d415c47, 729618d, f6f64f6. The once-per-launch rationale dialog stays (the user's choice).
+- Step 6: f20b5b6 (`DistanceModeRepository`), 2472bd5 (`MapContent` holds camera updates until `onMapLoaded`), 1d2e3a1 (`LocationRepository` callbackFlow).
+- Final verification and docs: 40fa3ca. Lint fails only on the pre-existing `UnusedMaterial3ScaffoldPaddingParameter` at `MainScreen.kt:129`. README ViewModel/Mapper/Formatter counts were already off and left as they are.
 
-Plan progress on 2026-11-21: step 1 (Show info after process death) is committed as b45f706, and step 2 (manifest: MainActivity not exported, adjustResize, Show info parent) as f12baec. Step 2 was checked on the Pixel_4a_API_36 emulator, before and after. Step 3 (edge-to-edge) is committed as b04d215. It deviates from the plan by using fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`), because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. It was verified before and after on API 36 and API 34 (gesture navigation only; 3-button not checked). The user had the temporary API 34 AVD deleted afterwards. Step 4 (Compose cleanups) is committed as three commits: 8b7f9cf (MapContent parameter order), a7d5a7f (cancel stale address searches), 092dd9d (modifier on About/FAQ/Show info screens). Step 5 (location permissions) is done, one commit per fix, with the once-per-launch rationale dialog left as it is (the user's choice): 8a4fde5 (accept an approximate grant), 2fb7bae (fall back to any position on refusal, settings snackbar once Android won't ask again), d415c47 (permission held in `MainUiState.isLocationPermissionGranted`, refreshed from the callback and `onResume`), 729618d (the user asked to hide the Maps SDK's own my-location button and marker toolbar, since the green FAB covers them), f6f64f6 (stored-distances collection launched from a once-guarded `onStart`, the user's pick over a `stateIn(WhileSubscribed)` flow; the long-press check passed). Step 6 is done: f20b5b6 (6a, `DistanceModeRepository`), 2472bd5 (`MapContent` holds camera updates until `onMapLoaded`; without it the faster Flow lost the first zoom), 1d2e3a1 (6b, `LocationRepository` callbackFlow replaces `GeofencingService`/`CurrentLocationProvider`; `MainViewModel.trackLocation` runs under `collectOnStarted` and reads the permission from `uiState`). Konsist is fully green from 1d2e3a1. Open issue: in the user's manual long-press checks on the 6b + `MapContent` build, 2 of 10 long presses were followed by an `onMapClick` 0.8–1.9 s later (the stray-tap pattern); the user committed anyway, and whether 6b or `isMapLoaded` causes it was not bisected. Final verification and docs are done (40fa3ca, 2026-11-22): 254 unit tests and 29 Konsist guards pass; lint fails only on the pre-existing `UnusedMaterial3ScaffoldPaddingParameter` at `MainScreen.kt:129`. The README's ViewModel, Mapper and Formatter counts were already off before the cleanup and were left as they are. The plan is complete.
+## Second plan: in progress
+- File: `~/.claude/plans/iridescent-bouncing-squirrel-of-c32d0a74-26a2-4a0c-beb1-bcf2897c09c0.md`, approved 2026-11-22. Group 1 user-visible bugs (steps 1-9), group 2 Compose performance and UI (10-15), plus additions below. Its deferred list is at the end of that file.
+- Committed:
+  - 1, unit setting reset: df2d8c3.
+  - 2, address search without a location fix: 85d1caf.
+  - 3, Google API query escaping and `Double.toPlainString()` in `common/.../DoubleExt.kt`: cc4e1e2.
+  - 3b (added by the user), one shared `OkHttpClient` under `GOOGLE_API_CLIENT` with `GoogleApiKeyInterceptor`, plus a Konsist guard: 16c01f2.
+  - 4, stale elevation profile cleared up front in `ElevationViewModel.onCoordinatesSelected`: faedf5b. `develop` was pushed after this one, with upstream tracking.
+  - 5, FAQ `rememberSaveable` + item keys, `configChanges` removed from faq/about/opensource, manifest guard in `ActivityKonsistTest`: 095d06a.
+  - 7, accessibility labels and `AccessibilityKonsistTest`: 3edcf5e. Not verified on the emulator (APIs rate-limited): the chart close label and the Show info spinner on the after build.
+  - 8, `Context.tryStartActivity` in `common/.../ContextExt.kt`, toasts instead of crashes, strings in new `common/src/main/res/values*/strings.xml`: 34c1efa.
+  - 9, share text and README badge link to the https Play Store page (no request to goo.gl was made): be12f92.
+  - 11, one `updateTransition` for scrim, rail and FAB offset; `isExpanded` removed; `internal val NavigationRailWidth`: 11f04f1.
+  - Memory commits by the user: 49d4be3, 55bb26f.
+- Waiting on the user's commit: step 12, `LottieProgress` switched to `LottieAnimation` with `IterateForever`, `libs.lottie` dropped from the app and the catalog (lottie-compose still brings it in). Verified: with about 19 s of loading, the hand freezes before and keeps moving after.
+- Stashed: step 6 (MainActivity `configChanges`) as `stash@{0}`. Stopped because offline the no-connection toast repeats on every rotation (`onStart()` is called from `onCreate`), and by code reading a closed chart reopens on rotation (`LaunchedEffect(elevationUiState.elevation)`). Chart cases never checked.
+- Skipped until the end: step 10 (map recomposition during the rail animation). It needs the user's long-press check and the user can't use the emulator for now. Do it before the final verification.
+- Added by the user:
+  - Step 7 includes the hard-coded "Close elevation chart" label (done in 3edcf5e).
+  - Step 14 includes the rail header in landscape: header image inset with a white strip on the left and a gray status bar area, likely `NavigationRail`'s default `windowInsets`.
+  - Step 15b: on large screens an always-visible collapsed 72 dp rail that expands on demand (brings back the collapsed variant, window size classes).
+  - Step 16: read-only investigation of package and module reorganisation, ending in a proposal.
+- Found while testing, not fixed (reported to the user):
+  - When reverse geocoding fails, Show info puts the error text ("Demasiadas solicitudes…") into the shared message as the address.
+  - On a tablet the app has no large-screen layout; the FAB slides 256 dp into the middle of the screen when the rail opens (covered by 15b).
 
-Second plan, approved on 2026-11-22: `~/.claude/plans/iridescent-bouncing-squirrel-of-c32d0a74-26a2-4a0c-beb1-bcf2897c09c0.md`, 15 steps (group 1 user-visible bugs, steps 1-9; group 2 Compose performance and UI, steps 10-15), from a re-audit with every applicable skill. Its deferred list (groups 3 and 4, tests, console checks) is at the end of that file. Progress on 2026-11-22: step 1 (unit setting reset) is committed as df2d8c3, verified before and after on the emulator (es-US locale). Step 2 (address search without a location fix) is implemented, unit-tested and verified on the emulator; the user's long-press check on it gave 6 map long presses with one onMapClick 0.63 s after the last one, at another coordinate (the stray-tap pattern, 1 of 6, the same rate as before; step 2 doesn't touch the long-press path). Step 2 is committed as 85d1caf. Step 3 (Google API URLs built with `HttpUrl.addQueryParameter`, coordinates via `toBigDecimal().toPlainString()`, `getGoogleApiJson` takes an `HttpUrl`) is implemented, unit-tested and verified on the emulator; at the user's request it also extracts `Double.toPlainString()` into `common/.../common/DoubleExt.kt`. Step 3 is committed as cc4e1e2. The user also had the hard-coded "Close elevation chart" label added to step 7, and an intermediate step 3b added to the plan: one shared `OkHttpClient` under the `GOOGLE_API_CLIENT` qualifier in `commonModule`, with a `GoogleApiKeyInterceptor` that adds `key` for HTTPS `maps.googleapis.com` only, plus a Konsist guard against remote data sources taking the key or building their own client. Step 3b is committed as 16c01f2. The user also had a last step 16 added: a read-only investigation of package and module reorganisation, ending in a proposal (no code changes). Step 4 (stale elevation) is implemented: `ElevationViewModel.onCoordinatesSelected` clears `elevation` up front (a superset of the plan's "clear on non-Found paths", it also covers the pending request), with 6 regression tests; verified on the emulator before/after (airplane mode via `adb shell cmd connectivity airplane-mode enable|disable`). Step 4 is committed as faedf5b, and `develop` was pushed to origin with upstream tracking set. Step 5 (FAQ `rememberSaveable` with `key = { it.question }`, `configChanges` removed from the faq/about/opensource manifests, plus a new Konsist guard in `ActivityKonsistTest` that parses every `src/*/AndroidManifest.xml` and exempts only MainActivity until step 6) is implemented and verified: dark mode (`cmd uimode night yes`) and a landscape scroll-off both collapsed the answer before and keep it after. In portrait, question 1 never scrolls off screen, so use landscape for that check. Step 5 is committed as 095d06a. Step 6 (MainActivity `configChanges` removed, Konsist exemption dropped) is implemented but stopped per the plan: camera, markers, rail and search text survive rotation, but offline the no-connection toast repeats on every rotation (`onStart()` is called from `onCreate`), and the chart cases couldn't be checked because the Elevation API returned OVER_QUERY_LIMIT on 2026-11-22. Code reading predicts a closed chart reopens on rotation (`LaunchedEffect(elevationUiState.elevation)` sets `showChart = true`). The user had step 6 stashed (`stash@{0}`, manifest + Konsist exemption) and moved on. Step 7 (accessibility labels: `showinfo_navigate_back`, `navigation_rail_close` "Close menu", `elevation_chart_close` "Close elevation profile" in 7 locales; spinner in a `minimumInteractiveComponentSize` Box; new `AccessibilityKonsistTest` against hard-coded content descriptions in Kotlin and layout XML) is committed as 3edcf5e (the user committed it with two emulator checks open). Emulator: side menu close and Show info back verified; chart label and the spinner on the after build not verified because the Geocoding and Elevation APIs were rate-limited ("Demasiadas solicitudes", OVER_QUERY_LIMIT) after many scripted runs. Throttling with `adb emu network delay` only affects mobile data, so disable Wi-Fi first (`svc wifi disable`). Keep scripted API runs few. The user's Pixel 10 may be plugged in over USB: target the emulator with `ANDROID_SERIAL=emulator-5554`. The repo's MEMORY.md is a copy of this directory made by a hook; don't edit it.
+## Emulator notes
+- Target the emulator with `ANDROID_SERIAL=emulator-5554`; the user's Pixel 10 may be plugged in over USB.
+- The Geocoding and Elevation APIs rate-limit after many scripted runs ("Demasiadas solicitudes", OVER_QUERY_LIMIT). Keep scripted API runs few; prefer flows that don't search.
+- In any-position mode the first point needs a tap, later points a long press.
+- After a force-stop, a relaunch shows the location rationale dialog (tap Cancelar); after a cold boot Android's own permission dialog appears first (tap "No permitir").
+- To slow the network, use `adb root` then `adb shell tc qdisc add dev wlan0 root netem delay 3000ms` (remove with `tc qdisc del dev wlan0 root`); it delays every packet, so a search loads for about 19 s. `adb emu network delay` only affects mobile data and added a single delay.
+- Tablet size: `adb shell wm size 1600x2560` and `wm density 320`, then `reset` both.
+- Airplane mode: `adb shell cmd connectivity airplane-mode enable|disable`. Dark mode: `cmd uimode night yes|no`.
+- The API 36 emulator crashed once (KVM register dump in its log); cold-boot with `-no-snapshot-load` and wrap adb calls in `timeout` to notice a hang.
+- The repo's MEMORY.md is a copy of this directory made by a hook; don't edit it.
 
-The plan's step 4 item "remove the dead `clearMap` flag" turned out to be wrong, and the user dropped it. Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point. The Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, when the finger lifted during the zoom animation, at the coordinate then under the finger. The user reproduced it on the emulator with the mouse. Logcat showed it on that build, and it did not happen in about 10 tries each on the build before step 4 and on step 4 with `clearMap` kept. Scripted `adb input` presses, including touch-down and touch-up events with small movements, never triggered it. The cause is unknown; my guess is that the extra state update `clearMap` makes after each long press changes the timing between the camera animation and the SDK's gesture handling.
+## Stray map tap after a long press (open)
+- Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point: the Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, at the coordinate under the finger when it lifted during the zoom animation. The user reproduced it with the mouse; scripted `adb input` presses never triggered it.
+- Later builds still show it at a low rate: 2 of 10 on the first plan's step 6 build, 1 of 6 on the second plan's step 2 build. Not bisected.
+- **How to apply:** keep `clearMap` until the cause is understood. Any change to the map state flow needs the user's manual long press while logcat is filtered for `MainViewModel` `onMapClick`/`onMapLongClick`; a scripted run proves nothing. It may relate to the deferred chart-visibility work.
 
-**How to apply:** keep `clearMap` until the cause is understood. Testing any change to the map state flow needs the user's manual long press while logcat is filtered for `MainViewModel` `onMapClick`/`onMapLongClick`; a scripted run proves nothing. It may relate to the deferred chart-visibility work, which goes through the same state updates.
-
-Step 6 replaces the location Service with a Flow and fixes the `:app` Konsist layer violation, so that violation is now in scope.
-
-Deferred by the user:
+## Deferred by the user
 - The MainActivity ViewModel relays and the chart-visibility bug (the user is investigating).
 - The build/test group: R8 rules, Compose UI tests, Room transaction test.
 
 **Why:** in 2026-11 I mistook the Konsist failures for the to-do list and refactored `:app` before being asked. The user had me revert it, and later approved that work explicitly as plan step 6.
-**How to apply:** when resuming, check `ls -t ~/.claude/plans/` for a plan newer than the one named here, then follow the latest approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]].
+**How to apply:** when resuming, check `ls -t ~/.claude/plans/` for a plan newer than the one named here, then follow the latest approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]], [[one-plan-step-at-a-time]], [[explain-step-before-changing]].
+```
+
+## memory-lists-over-paragraphs.md
+
+```markdown
+---
+name: memory-lists-over-paragraphs
+description: Write memory files, especially plan progress, as short unordered lists, not long paragraphs
+metadata:
+  type: feedback
+---
+
+Keep memory files scannable: group progress under headings and use unordered lists, one item per step or fact, instead of appending sentences to one paragraph.
+
+**Why:** on 2026-11-22 the user said the memory file was "hard to follow on the plans paragraphs" and asked for unordered lists. The plan progress had grown into one paragraph of several hundred words.
+**How to apply:** when recording a step, update or add its list item (step, short description, commit) instead of appending a sentence. Related: [[konsist-cleanup-series]].
 ```
 
 ## one-plan-step-at-a-time.md
