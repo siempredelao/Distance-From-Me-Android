@@ -16,7 +16,6 @@
 
 package gc.david.dfm.elevation.data
 
-import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.common.data.HttpException
 import gc.david.dfm.elevation.data.model.ElevationStatus
 import kotlinx.coroutines.Dispatchers
@@ -29,15 +28,9 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import java.io.IOException
 
 class ElevationRemoteDataSourceTest {
-
-    private val geocodeApiKeyProvider = mock<GeocodeApiKeyProvider> {
-        on { getApiKey() } doReturn API_KEY
-    }
 
     // Answers every request in place of the network
     private var respond: (Request) -> Response = { throw IOException("No response configured") }
@@ -49,10 +42,10 @@ class ElevationRemoteDataSourceTest {
         }
         .build()
 
-    private val dataSource = ElevationRemoteDataSource(geocodeApiKeyProvider, Dispatchers.Unconfined, client)
+    private val dataSource = ElevationRemoteDataSource(Dispatchers.Unconfined, client)
 
     @Test
-    fun `requests the path and samples with the API key`() = runTest {
+    fun `requests the path and samples without adding the API key`() = runTest {
         respondWith(code = 200, body = OK_BODY)
 
         dataSource.getElevation("1.0,2.0|3.0,4.0", 100)
@@ -60,8 +53,7 @@ class ElevationRemoteDataSourceTest {
         val url = requests.single().url
         assertEquals("1.0,2.0|3.0,4.0", url.queryParameter("path"))
         assertEquals("100", url.queryParameter("samples"))
-        assertEquals(API_KEY, url.queryParameter("key"))
-        assertEquals(setOf("path", "samples", "key"), url.queryParameterNames)
+        assertEquals(setOf("path", "samples"), url.queryParameterNames)
     }
 
     @Test
@@ -97,7 +89,6 @@ class ElevationRemoteDataSourceTest {
 
     private companion object {
 
-        const val API_KEY = "test-api-key"
         val OK_BODY = """
             {
               "results": [

@@ -22,13 +22,22 @@ import gc.david.dfm.DefaultGeocodeApiKeyProvider
 import gc.david.dfm.DefaultPermissionChecker
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.PermissionChecker
+import gc.david.dfm.common.data.GoogleApiKeyInterceptor
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import okhttp3.OkHttpClient
+import org.koin.core.qualifier.Qualifier
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+
+/**
+ * The [OkHttpClient] for the Google Maps web services. Its [GoogleApiKeyInterceptor] adds the API key to each request.
+ */
+val GOOGLE_API_CLIENT: Qualifier = named("GoogleApiClient")
 
 val commonModule = module {
 
@@ -37,6 +46,11 @@ val commonModule = module {
     single<GeocodeApiKeyProvider> { DefaultGeocodeApiKeyProvider(get()) }
     single<PermissionChecker> { DefaultPermissionChecker(get()) }
     single<CoroutineDispatcher> { Dispatchers.IO }
+    single(GOOGLE_API_CLIENT) {
+        OkHttpClient.Builder()
+            .addInterceptor(GoogleApiKeyInterceptor(get()))
+            .build()
+    }
     
     // Distance calculation and unit conversion
     single { DistanceCalculator() }

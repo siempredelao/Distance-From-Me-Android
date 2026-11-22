@@ -16,7 +16,6 @@
 
 package gc.david.dfm.elevation.data
 
-import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.common.data.getGoogleApiJson
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import kotlinx.coroutines.CoroutineDispatcher
@@ -25,22 +24,22 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import timber.log.Timber
 
+/**
+ * Calls the Google Elevation API. [client] must be the shared [gc.david.dfm.common.GOOGLE_API_CLIENT], which adds the
+ * API key.
+ */
 class ElevationRemoteDataSource(
-    geocodeApiKeyProvider: GeocodeApiKeyProvider,
     private val ioDispatcher: CoroutineDispatcher,
-    private val client: OkHttpClient = OkHttpClient(),
+    private val client: OkHttpClient,
 ) {
 
-    private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
-
     suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
-        val urlNoKey = ELEVATION_URL.newBuilder()
+        val url = ELEVATION_URL.newBuilder()
             .addQueryParameter("path", coordinatesPath)
             .addQueryParameter("samples", maxSamples.toString())
             .build()
-        Timber.tag(TAG).d(urlNoKey.toString())
+        Timber.tag(TAG).d(url.toString())
 
-        val url = urlNoKey.newBuilder().addQueryParameter("key", geocodeApiKey).build()
         return client.getGoogleApiJson(url, ioDispatcher)
     }
 

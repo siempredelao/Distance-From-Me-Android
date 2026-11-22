@@ -16,7 +16,6 @@
 
 package gc.david.dfm.address.data
 
-import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.common.toPlainString
@@ -27,13 +26,14 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import timber.log.Timber
 
+/**
+ * Calls the Google Geocoding API. [client] must be the shared [gc.david.dfm.common.GOOGLE_API_CLIENT], which adds the
+ * API key.
+ */
 class AddressRemoteDataSource(
-    geocodeApiKeyProvider: GeocodeApiKeyProvider,
     private val ioDispatcher: CoroutineDispatcher,
-    private val client: OkHttpClient = OkHttpClient(),
+    private val client: OkHttpClient,
 ) {
-
-    private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity {
         val latLng = "${coordinates.latitude.toPlainString()},${coordinates.longitude.toPlainString()}"
@@ -45,10 +45,9 @@ class AddressRemoteDataSource(
     }
 
     private suspend fun executeRequest(name: String, value: String): AddressCollectionEntity {
-        val urlNoKey = GEOCODE_URL.newBuilder().addQueryParameter(name, value).build()
-        Timber.tag(TAG).d(urlNoKey.toString())
+        val url = GEOCODE_URL.newBuilder().addQueryParameter(name, value).build()
+        Timber.tag(TAG).d(url.toString())
 
-        val url = urlNoKey.newBuilder().addQueryParameter("key", geocodeApiKey).build()
         return client.getGoogleApiJson(url, ioDispatcher)
     }
 

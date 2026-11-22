@@ -16,7 +16,6 @@
 
 package gc.david.dfm.address.data
 
-import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.GeocodingStatus
 import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.common.data.HttpException
@@ -32,15 +31,9 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import java.io.IOException
 
 class AddressRemoteDataSourceTest {
-
-    private val geocodeApiKeyProvider = mock<GeocodeApiKeyProvider> {
-        on { getApiKey() } doReturn API_KEY
-    }
 
     // Answers every request in place of the network
     private var respond: (Request) -> Response = { throw IOException("No response configured") }
@@ -52,7 +45,7 @@ class AddressRemoteDataSourceTest {
         }
         .build()
 
-    private val dataSource = AddressRemoteDataSource(geocodeApiKeyProvider, Dispatchers.Unconfined, client)
+    private val dataSource = AddressRemoteDataSource(Dispatchers.Unconfined, client)
 
     @Test
     fun `parses a successful response`() = runTest {
@@ -65,14 +58,14 @@ class AddressRemoteDataSourceTest {
     }
 
     @Test
-    fun `requests the name by coordinates with the API key`() = runTest {
+    fun `requests the name by coordinates without adding the API key`() = runTest {
         respondWith(code = 200, body = OK_BODY)
 
         dataSource.getNameByCoordinates(Coordinates(1.0, 2.0))
 
         val url = requests.single().url
         assertEquals("1.0,2.0", url.queryParameter("latlng"))
-        assertEquals(API_KEY, url.queryParameter("key"))
+        assertEquals(setOf("latlng"), url.queryParameterNames)
     }
 
     @Test
@@ -92,8 +85,7 @@ class AddressRemoteDataSourceTest {
 
         val url = requests.single().url
         assertEquals("Barnes & Noble, Flat #3", url.queryParameter("address"))
-        assertEquals(API_KEY, url.queryParameter("key"))
-        assertEquals(setOf("address", "key"), url.queryParameterNames)
+        assertEquals(setOf("address"), url.queryParameterNames)
     }
 
     @Test
@@ -138,7 +130,6 @@ class AddressRemoteDataSourceTest {
 
     private companion object {
 
-        const val API_KEY = "test-api-key"
         const val LOCATION_NAME = "Berlin"
         val OK_BODY = """
             {

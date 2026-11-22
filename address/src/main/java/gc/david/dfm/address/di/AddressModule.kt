@@ -24,6 +24,7 @@ import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
+import gc.david.dfm.common.GOOGLE_API_CLIENT
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -34,5 +35,5 @@ val addressModule = module {
     factory { AddressCollectionEntityDataMapper() }
     factory { GeocodingErrorMessageMapper(get()) }
     single<AddressRepository> { BaseAddressRepository(get(), get()) }
-    single { AddressRemoteDataSource(get(), get()) }
+    single { AddressRemoteDataSource(get(), get(GOOGLE_API_CLIENT)) }
 }

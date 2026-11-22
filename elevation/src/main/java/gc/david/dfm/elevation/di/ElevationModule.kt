@@ -22,6 +22,7 @@ import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.domain.ElevationRepository
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.ElevationViewModel
+import gc.david.dfm.common.GOOGLE_API_CLIENT
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -30,5 +31,5 @@ val elevationModule = module {
     factory { GetElevationByCoordinatesUseCase(get()) }
     factory { ElevationEntityDataMapper() }
     single<ElevationRepository> { BaseElevationRepository(get(), get()) }
-    single { ElevationRemoteDataSource(get(), get()) }
+    single { ElevationRemoteDataSource(get(), get(GOOGLE_API_CLIENT)) }
 }

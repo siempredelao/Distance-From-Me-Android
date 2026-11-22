@@ -54,9 +54,26 @@ class DataLayerKonsistTest {
     }
 
     @Test
+    fun `remote data sources get the shared Google API client instead of the key or their own client`() {
+        productionScope.classes()
+            .withNameEndingWith("RemoteDataSource")
+            .assertTrue { dataSource ->
+                val takesApiKey = dataSource.primaryConstructor?.parameters.orEmpty()
+                    .any { it.type.name == "GeocodeApiKeyProvider" }
+                !takesApiKey && !dataSource.text.contains(OWN_CLIENT)
+            }
+    }
+
+    @Test
     fun `entity mappers reside in a data mapper package`() {
         productionScope.classes()
             .withNameEndingWith("EntityMapper", "EntityDataMapper")
             .assertTrue { it.resideInPackage("..data.mapper..") }
+    }
+
+    private companion object {
+
+        // Building a client (OkHttpClient() or OkHttpClient.Builder()) rather than receiving the shared one
+        val OWN_CLIENT = Regex("""OkHttpClient\s*(\(|\.Builder)""")
     }
 }
