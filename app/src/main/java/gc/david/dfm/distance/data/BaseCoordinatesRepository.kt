@@ -17,7 +17,7 @@
 package gc.david.dfm.distance.data
 
 import gc.david.dfm.common.Coordinates
-import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.common.domain.CoordinatesRepository
 import kotlinx.coroutines.flow.StateFlow
 
 class BaseCoordinatesRepository(

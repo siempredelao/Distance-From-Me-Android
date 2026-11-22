@@ -16,12 +16,13 @@
 
 package gc.david.dfm.main.presentation
 
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.PermissionChecker
 import gc.david.dfm.R
 import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.domain.ConnectionManager
+import gc.david.dfm.common.domain.CoordinatesRepository
 import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.domain.PermissionChecker
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
@@ -30,7 +31,6 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.core.distances.domain.model.PositionListResult
-import gc.david.dfm.distance.domain.CoordinatesRepository
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository

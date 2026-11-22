@@ -16,14 +16,14 @@
 
 package gc.david.dfm.common
 
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.DefaultConnectionManager
 import gc.david.dfm.DefaultGeocodeApiKeyProvider
-import gc.david.dfm.DefaultPermissionChecker
 import gc.david.dfm.GeocodeApiKeyProvider
-import gc.david.dfm.PermissionChecker
+import gc.david.dfm.common.data.DefaultConnectionManager
+import gc.david.dfm.common.data.DefaultPermissionChecker
 import gc.david.dfm.common.data.GoogleApiKeyInterceptor
+import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.domain.PermissionChecker
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider

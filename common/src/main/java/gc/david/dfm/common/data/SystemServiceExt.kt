@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.domain
+package gc.david.dfm.common.data
 
-import gc.david.dfm.common.Coordinates
-import kotlinx.coroutines.flow.StateFlow
+import android.content.Context
 
-// TODO figure out a better placement than on the common module
-interface CoordinatesRepository {
-
-    fun observeDistance(): StateFlow<List<Coordinates>>
-
-    fun append(coordinates: Coordinates)
-
-    fun clear()
+internal inline fun <reified T> Context.systemService(name: String): T {
+    return getSystemService(name) as T
 }

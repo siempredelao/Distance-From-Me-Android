@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.common.domain
 
-import android.content.Context
+interface ConnectionManager {
 
-inline fun <reified T> Context.systemService(name: String): T {
-    return getSystemService(name) as T
+    fun isOnline(): Boolean
 }

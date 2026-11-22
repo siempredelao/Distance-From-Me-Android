@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.common.domain
 
-interface ConnectionManager {
+import gc.david.dfm.common.Coordinates
+import kotlinx.coroutines.flow.StateFlow
 
-    fun isOnline(): Boolean
+interface CoordinatesRepository {
+
+    fun observeDistance(): StateFlow<List<Coordinates>>
+
+    fun append(coordinates: Coordinates)
+
+    fun clear()
 }

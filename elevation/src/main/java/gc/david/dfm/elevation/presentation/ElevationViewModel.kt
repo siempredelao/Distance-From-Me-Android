@@ -17,8 +17,8 @@
 package gc.david.dfm.elevation.presentation
 
 import androidx.lifecycle.ViewModel
-import gc.david.dfm.ConnectionManager
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.launchCatching
 import gc.david.dfm.common.logUnexpectedFailure

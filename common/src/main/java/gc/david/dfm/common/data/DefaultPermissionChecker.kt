@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.common.data
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.core.content.ContextCompat
+import gc.david.dfm.common.domain.PermissionChecker
 
 class DefaultPermissionChecker(private val context: Context) : PermissionChecker {
 
