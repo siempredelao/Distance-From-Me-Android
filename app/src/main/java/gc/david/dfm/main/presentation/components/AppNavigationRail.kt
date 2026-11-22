@@ -21,10 +21,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -78,13 +83,17 @@ fun AppNavigationRail(
     NavigationRail(
         modifier = modifier.width(NavigationRailWidth),
         containerColor = MaterialTheme.colorScheme.surface,
+        // The header image draws behind the status bar and the cutout; its content and the items are padded instead
+        windowInsets = WindowInsets(0),
         header = {
             NavigationRailHeader(onClose = onClose)
         }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Bottom))
+                .verticalScroll(rememberScrollState())
         ) {
             val currentPositionLabel =
                 stringResource(R.string.navigation_drawer_starting_point_current_position_item)
@@ -190,6 +199,7 @@ private fun NavigationRailHeader(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Start))
                     .padding(vertical = 24.dp)
             ) {
                 Image(
@@ -211,7 +221,10 @@ private fun NavigationRailHeader(
             }
         }
 
-        IconButton(onClick = onClose) {
+        IconButton(
+            onClick = onClose,
+            modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.MenuOpen,
                 contentDescription = stringResource(R.string.navigation_rail_close)
