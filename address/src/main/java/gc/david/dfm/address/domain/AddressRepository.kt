@@ -16,8 +16,8 @@
 
 package gc.david.dfm.address.domain
 
-import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.model.GeocodingResult
+import gc.david.dfm.common.Coordinates
 
 interface AddressRepository {
 

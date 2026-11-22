@@ -18,8 +18,8 @@ package gc.david.dfm.address.data
 
 import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
 import gc.david.dfm.address.domain.AddressRepository
-import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.model.GeocodingResult
+import gc.david.dfm.common.Coordinates
 
 class BaseAddressRepository(
     private val remoteDataSource: AddressRemoteDataSource,

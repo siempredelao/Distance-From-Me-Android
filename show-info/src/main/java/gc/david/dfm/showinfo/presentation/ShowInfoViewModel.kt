@@ -22,7 +22,6 @@ import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.GeocodingResult
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
-import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.suspendRunCatching
@@ -104,10 +103,10 @@ class ShowInfoViewModel(
             val destinationPosition = positionsList.last()
             // Each lookup catches its own failure, so one failing doesn't cancel the other
             val originAddressDeferred = async {
-                suspendRunCatching { getAddressNameByCoordinatesUseCase(originPosition.toAddressCoordinate()) }
+                suspendRunCatching { getAddressNameByCoordinatesUseCase(originPosition) }
             }
             val destinationAddressDeferred = async {
-                suspendRunCatching { getAddressNameByCoordinatesUseCase(destinationPosition.toAddressCoordinate()) }
+                suspendRunCatching { getAddressNameByCoordinatesUseCase(destinationPosition) }
             }
             val (originAddressResult, destinationAddressResult) =
                 originAddressDeferred.await() to destinationAddressDeferred.await()
@@ -189,5 +188,3 @@ class ShowInfoViewModel(
 
     data class InputParams(val positionsList: List<Coordinates>, val distance: String)
 }
-
-private fun Coordinates.toAddressCoordinate() = AddressCoordinate(latitude, longitude)

@@ -57,7 +57,6 @@ import gc.david.dfm.showinfo.presentation.ShowInfoActivity
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 
 class MainActivity : FragmentActivity() {
 
@@ -136,7 +135,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(addressUiState.addressFound) {
                     addressUiState.addressFound?.let { address ->
-                        mainViewModel.onPositionByNameResolved(address.coordinates.toCommonCoordinates())
+                        mainViewModel.onPositionByNameResolved(address.coordinates)
                         addressViewModel.onAddressHandled()
                     }
                 }
@@ -317,4 +316,3 @@ class MainActivity : FragmentActivity() {
 }
 
 private fun LatLng.toCoordinates() = Coordinates(latitude, longitude)
-private fun AddressCoordinate.toCommonCoordinates() = Coordinates(latitude, longitude)

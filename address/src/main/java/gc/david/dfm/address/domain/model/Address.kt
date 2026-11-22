@@ -16,6 +16,8 @@
 
 package gc.david.dfm.address.domain.model
 
+import gc.david.dfm.common.Coordinates
+
 /**
  * Created by david on 13.01.17.
  */

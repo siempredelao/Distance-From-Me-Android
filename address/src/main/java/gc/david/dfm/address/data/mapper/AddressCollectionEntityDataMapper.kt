@@ -19,9 +19,9 @@ package gc.david.dfm.address.data.mapper
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.data.model.GeocodingStatus
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.model.GeocodingError
 import gc.david.dfm.address.domain.model.GeocodingResult
+import gc.david.dfm.common.Coordinates
 
 /**
  * Created by david on 13.01.17.

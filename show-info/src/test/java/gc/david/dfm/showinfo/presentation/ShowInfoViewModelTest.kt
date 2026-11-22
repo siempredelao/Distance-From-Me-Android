@@ -18,6 +18,7 @@ package gc.david.dfm.showinfo.presentation
 
 import gc.david.dfm.ConnectionManager
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.address.domain.model.GeocodingError
 import gc.david.dfm.address.domain.model.GeocodingResult
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
@@ -340,10 +341,7 @@ internal class ShowInfoViewModelTest {
     }
 
     private fun createAddress(formattedAddress: String) =
-        gc.david.dfm.address.domain.model.Address(
-            formattedAddress,
-            gc.david.dfm.address.domain.model.Coordinates(1.0, 1.0)
-        )
+        Address(formattedAddress, Coordinates(1.0, 1.0))
 
     private companion object {
 

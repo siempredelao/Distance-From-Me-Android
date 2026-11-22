@@ -21,10 +21,10 @@ import gc.david.dfm.address.R
 import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.Coordinates
 import gc.david.dfm.address.domain.model.GeocodingError
 import gc.david.dfm.address.domain.model.GeocodingResult
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
+import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
