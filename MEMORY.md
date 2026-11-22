@@ -12,6 +12,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Visual evidence for changes](visual-evidence-for-changes.md) — back each change with before/after screenshots or recordings, sent to the user
 - [Explain the step before changing](explain-step-before-changing.md) — say what the next plan step changes and how it's checked before the first edit
 - [Lists over paragraphs in memory](memory-lists-over-paragraphs.md) — write memory, especially plan progress, as short unordered lists
+- [Show diff after each change](show-diff-after-each-change.md) — end every change report with its diff in the reply
 ```
 
 ## commit-only-what-is-asked.md
@@ -101,7 +102,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - 15 part A, `Card(onClick)` on FAQ/About/OpenSource cards, 48 dp About link rows, OpenSource card keeps its elevation when pressed: fc29147.
   - 15 part B, small Compose API details: dede81f. Memory commit 2445476.
   - 15b, permanent collapsed rail from medium widths (material3-adaptive 1.2.0; expanded rail covers the map; phone landscape included): c86ccf4. Memory commit 51bf0aa. Open observations: an intermittent 1 px line through the map at tablet landscape (probably a Maps tile seam), and a tiny logo in the collapsed header.
-- Step 16 (read-only) proposal given to the user on 2026-11-22, waiting for approval. Recommended "do", in order:
+- Step 16 (read-only) proposal: memory commit 07e1602. The user approved moves 1-4, the Google API module (named `:geocoding`) and dropping Material Components from `:common`; planned in `~/.claude/plans/organisation-moves.md` (6 moves, one commit each). Move 1 (dead code, CLAUDE.md geofencing line): 9f1efc0. Next: move 2. The proposal, for reference:
   1. Dead code: unused `AnimatorUtil`, `:app`'s duplicate `collectOnStarted`, `UiUtils.dumpBundleToString`; CLAUDE.md still mentions a geofencing service that no longer exists.
   2. One `Coordinates` type: drop `address.domain.model.Coordinates` (about 19 files; removes aliased imports).
   3. `:common` packages: root `gc.david.dfm` types and `distance.domain.CoordinatesRepository` into `common.domain`/`common.data`; rename `GeocodeApiKeyProvider` to `GoogleApiKeyProvider` and make it internal (the Konsist guard names it).
@@ -201,6 +202,30 @@ For every change I report, include steps to reproduce what it fixes: how to trig
 **Why:** the user asked for this on 2026-11-20 while reviewing step 1 of the skill-audit plan (the Show info crash after process death), so they can confirm each fix themselves before committing it.
 
 **How to apply:** add a "How to reproduce" section to the summary of each plan step or fix, split per fix when a step has several. Related: [[konsist-cleanup-series]], [[commit-only-what-is-asked]].
+```
+
+## show-diff-after-each-change.md
+
+```markdown
+---
+name: show-diff-after-each-change
+description: "End the report of every change (plan step, move, fix) with its diff, written into the reply"
+metadata:
+  node_type: memory
+  type: feedback
+  originSessionId: 854b1eab-3ca9-4ecc-a9f0-2ed76cc44064
+  modified: 2026-11-22T21:59:18.308Z
+---
+
+At the end of each change, show its diff in the reply itself, not only in a tool call.
+- Use `git diff HEAD` so staged deletions and new files are included.
+- Put the code diff in a ```diff block.
+- For a deleted file, give its path and a one-line summary rather than every removed line.
+- List the repo's `MEMORY.md` separately: it's the memory copy, not code.
+
+**Why:** on 2026-11-22, after move 1 of the organisation moves plan, the user asked "Can you show the diff at the end of each change?". Bash output doesn't reliably reach them, and they review from another device.
+
+**How to apply:** the diff goes after the summary and the reproduction steps, before asking whether to commit. Related: [[reproduction-steps-for-fixes]], [[visual-evidence-for-changes]], [[konsist-cleanup-series]].
 ```
 
 ## visual-evidence-for-changes.md
