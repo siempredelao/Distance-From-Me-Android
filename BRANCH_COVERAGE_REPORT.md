@@ -8,8 +8,8 @@
 │  TEST COVERAGE DASHBOARD                                    │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  📦 FILE COVERAGE:        100% ✅ (35/35 classes)          │
-│  🌿 BRANCH COVERAGE:       88% ✅ (121/137 branches)       │
+│  📦 FILE COVERAGE:        100% ✅ (37/37 classes)          │
+│  🌿 BRANCH COVERAGE:       89% ✅ (127/143 branches)       │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │ Per Component Type:                                 │   │
@@ -29,14 +29,14 @@ See [README.md](README.md) for quick testing commands.
 | Component | Files | Files w/Tests | Branches | Branches Covered | File Coverage | Branch Coverage |
 |-----------|-------|---------------|----------|------------------|---------------|-----------------|
 | **UseCases** | 8 | 8 ✅ | ~18 | ~18 | **100%** ✅ | **100%** ✅ |
-| **Repositories** | 6 | 6 ✅ | ~10 | ~10 | **100%** ✅ | **100%** ✅ |
+| **Repositories** | 8 | 8 ✅ | ~16 | ~16 | **100%** ✅ | **100%** ✅ |
 | **Formatters** | 3 | 3 ✅ | ~2 | ~2 | **100%** ✅ | **100%** ✅ |
 | **Mappers** | 11 | 11 ✅ | ~26 | ~25 | **100%** ✅ | **98%** ✅ |
 | **ViewModels** | 7 | 7 ✅ | ~82 | ~68 | **100%** ✅ | **83%** ✅ |
-| **TOTAL** | **35** | **35** ✅ | **~137** | **~121** | **100%** 🎉 | **~88%** ✅ |
+| **TOTAL** | **37** | **37** ✅ | **~143** | **~127** | **100%** 🎉 | **~89%** ✅ |
 **Key Notes**: 
 - ✅ **File Coverage 100%** = All critical classes have at least ONE test file
-- ✅ **Branch Coverage 88%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
+- ✅ **Branch Coverage 89%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
 ---
 ## 📊 Detailed Branch Coverage by Component
 ### 1️⃣ UseCases (100% Branch Coverage) ✅
@@ -63,11 +63,18 @@ See [README.md](README.md) for quick testing commands.
 | BaseCoordinatesRepository | 3 | 0 | **100%** | ✅ |
 | BaseDistanceRepository | 4 | 2 | **100%** | ✅ |
 | BaseOpenSourceRepository | 1 | 0 | **100%** | ✅ |
+| BaseDistanceModeRepository | 2 | 0 | **100%** | ✅ |
+| BaseLocationRepository | 1 | 6 | **100%** | ✅ |
 | **AVERAGE** | - | - | **100%** | ✅ |
 **BaseSettingsRepository** has the most branches (6) - all tested:
 - ✅ Unit system IMPERIAL/METRIC/unknown
 - ✅ Set unit system IMPERIAL/METRIC
 - ✅ Camera animation DESTINATION/CENTRE/None
+
+**BaseLocationRepository** wraps the fused location client in a `callbackFlow` - all 6 branches tested:
+- ✅ Last known location present/missing
+- ✅ Location update with/without a location
+- ✅ Location permission granted/missing (`SecurityException` completes the flow)
 ---
 ### 3️⃣ Formatters (100% Branch Coverage) ✅
 | Formatter | Methods | Branches | Coverage | Status |
@@ -106,8 +113,10 @@ See [README.md](README.md) for quick testing commands.
 | **AddressViewModel** | 8 | ~15 | ~6 | ~5 | **~85%** | ✅ High |
 | **OpenSourceViewModel** | 1 | 5 | ~5 | ~5 | **100%** | ✅ High |
 | **SettingsViewModel** | 5 | ~5 | ~3 | ~3 | **~80%** | ✅ High |
-| **MainViewModel** | 25+ | ~20 | ~50 | ~28 | **~56%** | 🟡 Improved |
+| **MainViewModel** | 25+ | 44 | ~50 | ~28 | **~56%** | 🟡 Improved |
 | **AVERAGE** | - | - | - | - | **~83%** | ✅ |
+
+`MainViewModel`'s branch estimate predates the location-permission and location-tracking tests (`onLocationPermissionDenied`, the once-per-screen prompt, `trackLocation`, the stored-distances collection), so its real coverage is likely higher.
 ---
 **All Tests Status**: ✅ PASSING  
 **Quality Assessment**: ✅ Production-Ready
