@@ -20,7 +20,10 @@ import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withParentNamed
 import com.lemonappdev.konsist.api.ext.list.withoutName
 import com.lemonappdev.konsist.api.verify.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
 
 class ActivityKonsistTest {
 
@@ -47,5 +50,47 @@ class ActivityKonsistTest {
                 activity.objects(includeNested = false)
                     .any { it.hasCompanionModifier && it.hasFunctionWithName("open") }
             }
+    }
+
+    @Test
+    fun `activities let the system recreate them on configuration changes`() {
+        val activitiesHandlingChanges = manifestActivities()
+            .filter { it.handlesConfigChanges }
+            .map { it.name }
+            // MainActivity still handles them itself; removing that is a separate, riskier step.
+            .filterNot { it.endsWith(".MainActivity") }
+
+        // Handling changes in the Activity hides lost state: dark mode, locale, font scale
+        // and process death still recreate it, so state has to survive recreation anyway.
+        assertEquals(emptyList<String>(), activitiesHandlingChanges)
+    }
+
+    private fun manifestActivities(): List<ManifestActivity> {
+        val manifests = File(Konsist.projectRootPath).walkTopDown()
+            .onEnter { it.name != "build" && !it.name.startsWith(".") }
+            .filter { it.name == "AndroidManifest.xml" && it.parentFile.parentFile.name == "src" }
+            .toList()
+        check(manifests.isNotEmpty()) { "No manifests found under ${Konsist.projectRootPath}" }
+        return manifests.flatMap { manifest ->
+            val activities = DocumentBuilderFactory.newInstance()
+                .apply { isNamespaceAware = true }
+                .newDocumentBuilder()
+                .parse(manifest)
+                .getElementsByTagName("activity")
+            (0 until activities.length).map { index ->
+                val activity = activities.item(index) as org.w3c.dom.Element
+                ManifestActivity(
+                    name = activity.getAttributeNS(ANDROID_NAMESPACE, "name"),
+                    handlesConfigChanges = activity.hasAttributeNS(ANDROID_NAMESPACE, "configChanges"),
+                )
+            }
+        }
+    }
+
+    private data class ManifestActivity(val name: String, val handlesConfigChanges: Boolean)
+
+    private companion object {
+
+        const val ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android"
     }
 }

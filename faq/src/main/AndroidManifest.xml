@@ -19,7 +19,6 @@
 
     <application>
         <activity
-            android:name=".presentation.FaqActivity"
-            android:configChanges="orientation|screenSize" />
+            android:name=".presentation.FaqActivity" />
     </application>
 </manifest>

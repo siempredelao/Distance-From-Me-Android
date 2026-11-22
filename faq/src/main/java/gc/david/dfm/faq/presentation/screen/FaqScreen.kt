@@ -40,7 +40,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -84,7 +84,7 @@ fun FaqScreen(
             modifier = Modifier.consumeWindowInsets(innerPadding),
             contentPadding = innerPadding + PaddingValues(Spacing.s),
         ) {
-            items(faqs) { faq ->
+            items(faqs, key = { it.question }) { faq ->
                 FaqCard(faq = faq)
             }
         }
@@ -93,7 +93,7 @@ fun FaqScreen(
 
 @Composable
 private fun FaqCard(faq: Faq) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
     Card(
         modifier = Modifier

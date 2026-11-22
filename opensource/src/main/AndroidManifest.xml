@@ -19,7 +19,6 @@
 
     <application>
         <activity
-            android:name=".presentation.OpenSourceLicensesActivity"
-            android:configChanges="orientation|screenSize" />
+            android:name=".presentation.OpenSourceLicensesActivity" />
     </application>
 </manifest>
