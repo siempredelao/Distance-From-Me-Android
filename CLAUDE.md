@@ -28,7 +28,7 @@ SDK levels, app `versionCode`/`versionName`, and all dependency versions are in 
 ## Architecture
 
 ### Module graph
-- `:app` depends on every feature module. It owns `MainActivity` (a Compose screen with the map), `OnboardActivity`, the geofencing location service, and the in-memory `CoordinatesRepository` implementation.
+- `:app` depends on every feature module. It owns `MainActivity` (a Compose screen with the map), `OnboardActivity`, and the in-memory `CoordinatesRepository` implementation.
 - Feature modules (`:address`, `:elevation`, `:faq`, `:opensource`, `:settings`, `:show-info`, `:about`, `:feedback`, `:connectivity`) depend on `:common` and sometimes `:core-distances` or `:design-system`. They don't depend on `:app`.
 - `:common` holds cross-cutting abstractions: `ConnectionManager`, `PermissionChecker`, `GeocodeApiKeyProvider`, `BuildConfigProvider`, `ResourceProvider`, `DistanceCalculator`/`UnitConverter`/`DistanceFormatter`, and the `CoordinatesRepository` interface. Feature modules share state through these interfaces, and `:app` supplies the implementations. For example, `ShowInfoViewModel` reads the points the user drew through `CoordinatesRepository`, which is backed by `CoordinatesMemoryDataSource` in `:app`.
 - `:core-distances` is the Room database (`DFMDatabase`) plus the distance and position use cases. Room schemas are exported to `core-distances/schemas/`. Commit the new schema JSON when you change entities.

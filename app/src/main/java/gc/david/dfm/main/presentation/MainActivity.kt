@@ -41,9 +41,9 @@ import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.collectOnStarted
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
+import gc.david.dfm.common.collectOnStarted
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel
@@ -87,7 +87,7 @@ class MainActivity : FragmentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", savedInstanceState)
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),

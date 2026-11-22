@@ -17,8 +17,6 @@
 package gc.david.dfm.common
 
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.StringRes
 import timber.log.Timber
@@ -37,9 +35,5 @@ object UiUtils {
         Timber.tag(TAG).d("toastIt message=%s", context.getString(stringRes))
 
         Toast.makeText(context, stringRes, Toast.LENGTH_LONG).show()
-    }
-
-    fun dumpBundleToString(bundle: Bundle?): String {
-        return bundle?.toString() ?: "bundle is null"
     }
 }
