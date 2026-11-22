@@ -429,6 +429,24 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `onAddressSearch records query without a current location`() {
+        viewModel.onAddressSearch("Madrid")
+
+        assertEquals("Madrid", viewModel.uiState.value.searchAddress)
+    }
+
+    @Test
+    fun `onPositionByNameResolved without a location in current-position mode moves camera only`() {
+        val coordinates = Coordinates(40.4168, -3.7038)
+        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
+
+        viewModel.onPositionByNameResolved(coordinates)
+
+        assertEquals(CameraUpdate.MoveTo(coordinates), viewModel.uiState.value.mapState.cameraUpdate)
+        verify(coordinatesRepository, never()).append(any())
+    }
+
+    @Test
     fun `onDistanceFromAnyPositionSet clears map state and hides chart`() {
         viewModel.onDistanceFromAnyPositionSet()
 

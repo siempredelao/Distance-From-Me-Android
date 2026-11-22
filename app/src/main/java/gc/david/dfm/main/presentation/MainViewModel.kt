@@ -308,6 +308,11 @@ class MainViewModel(
                 }
             }
 
+            // Without a current location there is no distance to draw yet, so just show the place
+            DistanceMode.FROM_CURRENT_POINT if currentLocation == null -> _uiState.update {
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates)))
+            }
+
             DistanceMode.FROM_ANY_POINT, DistanceMode.FROM_CURRENT_POINT -> onMapLongClick(
                 coordinates
             )
@@ -350,9 +355,7 @@ class MainViewModel(
     fun onAddressSearch(query: String) {
         Timber.tag(TAG).d("onAddressSearch $query")
 
-        if (currentLocation != null) {
-            _uiState.update { it.copy(searchAddress = query) }
-        }
+        _uiState.update { it.copy(searchAddress = query) }
     }
 
     private fun resetMap() {
