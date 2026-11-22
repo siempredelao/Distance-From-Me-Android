@@ -17,4 +17,5 @@
 
 <resources>
     <string name="elevation_chart_title">Elevation profile (%s)</string>
+    <string name="elevation_chart_close">Close elevation profile</string>
 </resources>

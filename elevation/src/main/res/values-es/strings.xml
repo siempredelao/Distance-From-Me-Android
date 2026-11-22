@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="elevation_chart_title">Perfil de elevación (%s)</string>
+    <string name="elevation_chart_close">Cerrar perfil de elevación</string>
 </resources>

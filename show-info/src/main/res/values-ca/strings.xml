@@ -18,4 +18,5 @@
     <string name="alias_dialog_with_name_toast">Distància \"%s\" emmagatzemada correctament</string>
     <string name="alias_dialog_no_name_toast">Distància emmagatzemada correctament</string>
     <string name="save_distance_error">No s\'ha pogut desar la distància. Torneu-ho a provar més tard.</string>
+    <string name="showinfo_navigate_back">Tornar enrere</string>
 </resources>

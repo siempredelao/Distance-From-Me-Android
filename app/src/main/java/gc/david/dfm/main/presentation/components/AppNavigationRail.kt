@@ -222,7 +222,7 @@ private fun NavigationRailHeader(
         IconButton(onClick = onClose) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.MenuOpen,
-                contentDescription = "Close Navigation"
+                contentDescription = stringResource(R.string.navigation_rail_close)
             )
         }
     }

@@ -18,4 +18,5 @@
     <string name="alias_dialog_with_name_toast">Distanza \"%s\" salvata correttamente</string>
     <string name="alias_dialog_no_name_toast">Distanza salvata correttamente</string>
     <string name="save_distance_error">Impossibile salvare la distanza. Riprova più tardi.</string>
+    <string name="showinfo_navigate_back">Indietro</string>
 </resources>

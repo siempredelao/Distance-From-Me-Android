@@ -35,7 +35,7 @@
         android:layout_height="@dimen/elevation_chart_hide_button_size"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:contentDescription="Close elevation chart"
+        android:contentDescription="@string/elevation_chart_close"
         android:src="@drawable/ic_crop_white_24dp" />
 
 </merge>

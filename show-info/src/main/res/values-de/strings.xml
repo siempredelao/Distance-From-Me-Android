@@ -18,4 +18,5 @@
     <string name="alias_dialog_with_name_toast">Entfernung \"%s\" Daten gespeichert</string>
     <string name="alias_dialog_no_name_toast">Entfernung gespeichert</string>
     <string name="save_distance_error">Entfernung konnte nicht gespeichert werden. Versuchen Sie es später erneut.</string>
+    <string name="showinfo_navigate_back">Zurück</string>
 </resources>
