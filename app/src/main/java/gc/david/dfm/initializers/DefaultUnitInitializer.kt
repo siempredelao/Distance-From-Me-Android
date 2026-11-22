@@ -29,6 +29,10 @@ class DefaultUnitInitializer(
         get() = Locale.getDefault() == Locale.US
 
     override fun init(application: Application) {
+        if (settingsRepository.hasUnitSystemPreference()) {
+            return
+        }
+
         settingsRepository.setUnitSystemPreference(
             if (isImperialLocale) UnitSystem.IMPERIAL else UnitSystem.METRIC
         )

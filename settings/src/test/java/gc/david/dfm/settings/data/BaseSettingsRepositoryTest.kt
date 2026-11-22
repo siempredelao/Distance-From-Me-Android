@@ -80,6 +80,20 @@ class BaseSettingsRepositoryTest {
     }
 
     @Test
+    fun `hasUnitSystemPreference returns true when a unit is stored`() {
+        whenever(localDataSource.hasMeasureUnitPreference()).thenReturn(true)
+
+        assertTrue(repository.hasUnitSystemPreference())
+    }
+
+    @Test
+    fun `hasUnitSystemPreference returns false when no unit is stored`() {
+        whenever(localDataSource.hasMeasureUnitPreference()).thenReturn(false)
+
+        assertFalse(repository.hasUnitSystemPreference())
+    }
+
+    @Test
     fun `setUnitSystemPreference sets American value for IMPERIAL`() {
         repository.setUnitSystemPreference(UnitSystem.IMPERIAL)
 

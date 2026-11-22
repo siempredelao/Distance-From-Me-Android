@@ -17,8 +17,8 @@
 package gc.david.dfm.settings.data
 
 import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.settings.domain.model.CameraAnimation
 import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.settings.domain.model.CameraAnimation
 
 class BaseSettingsRepository(
     private val localDataSource: SettingsDiskDataSource
@@ -32,6 +32,9 @@ class BaseSettingsRepository(
         return if (value == SettingsDiskDataSource.MEASURE_AMERICAN_UNIT_VALUE)
             UnitSystem.IMPERIAL else UnitSystem.METRIC
     }
+
+    override fun hasUnitSystemPreference(): Boolean =
+        localDataSource.hasMeasureUnitPreference()
 
     override fun setUnitSystemPreference(unitSystem: UnitSystem) {
         val value = when (unitSystem) {

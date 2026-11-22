@@ -28,6 +28,10 @@ class SettingsDiskDataSource(private val context: Context) {
             ?: MEASURE_EUROPEAN_UNIT_VALUE
     }
 
+    fun hasMeasureUnitPreference(): Boolean {
+        return getPreferences().contains(MEASURE_UNIT_KEY)
+    }
+
     fun setMeasureUnitPreference(unit: String) {
         getPreferences().edit { putString(MEASURE_UNIT_KEY, unit) }
     }

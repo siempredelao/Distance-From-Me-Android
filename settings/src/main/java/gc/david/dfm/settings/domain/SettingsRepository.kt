@@ -25,6 +25,8 @@ interface SettingsRepository {
 
     fun getUnitSystemPreference(): UnitSystem
 
+    fun hasUnitSystemPreference(): Boolean
+
     fun setUnitSystemPreference(unitSystem: UnitSystem)
 
     fun getCameraAnimation(): CameraAnimation
