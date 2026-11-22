@@ -90,14 +90,16 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - 3b (added by the user), one shared `OkHttpClient` under `GOOGLE_API_CLIENT` with `GoogleApiKeyInterceptor`, plus a Konsist guard: 16c01f2.
   - 4, stale elevation profile cleared up front in `ElevationViewModel.onCoordinatesSelected`: faedf5b. `develop` was pushed after this one, with upstream tracking.
   - 5, FAQ `rememberSaveable` + item keys, `configChanges` removed from faq/about/opensource, manifest guard in `ActivityKonsistTest`: 095d06a.
-  - 7, accessibility labels and `AccessibilityKonsistTest`: 3edcf5e. Not verified on the emulator (APIs rate-limited): the chart close label and the Show info spinner on the after build.
+  - 7, accessibility labels and `AccessibilityKonsistTest`: 3edcf5e. The chart close label was later confirmed on the emulator (step 13 run); the Show info spinner on the after build is still unverified.
   - 8, `Context.tryStartActivity` in `common/.../ContextExt.kt`, toasts instead of crashes, strings in new `common/src/main/res/values*/strings.xml`: 34c1efa.
   - 9, share text and README badge link to the https Play Store page (no request to goo.gl was made): be12f92.
   - 11, one `updateTransition` for scrim, rail and FAB offset; `isExpanded` removed; `internal val NavigationRailWidth`: 11f04f1.
+  - 12, `LottieAnimation` with `IterateForever`, `libs.lottie` dropped: 4bd0b30. Memory commit ee155f1.
+  - 13, chart half: `rememberUpdatedState(onClose)` in `ElevationChart`: ea6bdaf.
+  - 14, insets (Show info top bar, map FABs `safeDrawing`, rail header edge to edge): e378c9b.
   - Memory commits by the user: 49d4be3, 55bb26f.
-- Waiting on the user's commit: step 12, `LottieProgress` switched to `LottieAnimation` with `IterateForever`, `libs.lottie` dropped from the app and the catalog (lottie-compose still brings it in). Verified: with about 19 s of loading, the hand freezes before and keeps moving after.
 - Stashed: step 6 (MainActivity `configChanges`) as `stash@{0}`. Stopped because offline the no-connection toast repeats on every rotation (`onStart()` is called from `onCreate`), and by code reading a closed chart reopens on rotation (`LaunchedEffect(elevationUiState.elevation)`). Chart cases never checked.
-- Skipped until the end: step 10 (map recomposition during the rail animation). It needs the user's long-press check and the user can't use the emulator for now. Do it before the final verification.
+- Skipped until the end: step 13's `MapContent` half (info-window effect key, long-press check), and step 10 (map recomposition during the rail animation). Both need the user's long-press check and the user can't use the emulator for now. Do them before the final verification.
 - Added by the user:
   - Step 7 includes the hard-coded "Close elevation chart" label (done in 3edcf5e).
   - Step 14 includes the rail header in landscape: header image inset with a white strip on the left and a gray status bar area, likely `NavigationRail`'s default `windowInsets`.
@@ -113,6 +115,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - In any-position mode the first point needs a tap, later points a long press.
 - After a force-stop, a relaunch shows the location rationale dialog (tap Cancelar); after a cold boot Android's own permission dialog appears first (tap "No permitir").
 - To slow the network, use `adb root` then `adb shell tc qdisc add dev wlan0 root netem delay 3000ms` (remove with `tc qdisc del dev wlan0 root`); it delays every packet, so a search loads for about 19 s. `adb emu network delay` only affects mobile data and added a single delay.
+- 3-button navigation: `adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton` (back with `...navbar.gestural`). The emulator's cutout is top-left in portrait: on the left in rotation 1, on the right in rotation 3.
 - Tablet size: `adb shell wm size 1600x2560` and `wm density 320`, then `reset` both.
 - Airplane mode: `adb shell cmd connectivity airplane-mode enable|disable`. Dark mode: `cmd uimode night yes|no`.
 - The API 36 emulator crashed once (KVM register dump in its log); cold-boot with `-no-snapshot-load` and wrap adb calls in `timeout` to notice a hang.
