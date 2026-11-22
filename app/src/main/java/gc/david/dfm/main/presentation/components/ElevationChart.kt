@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,9 @@ fun ElevationChart(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // The view is created once, so its listener reads the latest onClose instead of keeping the first one
+    val currentOnClose by rememberUpdatedState(onClose)
+
     AnimatedVisibility(
         visible = isVisible,
         enter = expandVertically(expandFrom = Alignment.Top),
@@ -50,7 +55,7 @@ fun ElevationChart(
         AndroidView(
             factory = { context ->
                 ElevationChartView(context).apply {
-                    setOnCloseListener { onClose() }
+                    setOnCloseListener { currentOnClose() }
                 }
             },
             update = { view ->
