@@ -18,6 +18,7 @@ package gc.david.dfm.main.presentation.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
@@ -48,6 +49,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.window.core.layout.WindowSizeClass
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -68,6 +71,7 @@ import gc.david.dfm.address.domain.model.Address
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
 import gc.david.dfm.main.presentation.components.AppNavigationRail
+import gc.david.dfm.main.presentation.components.CollapsedNavigationRailWidth
 import gc.david.dfm.main.presentation.components.DistanceSelectionDialog
 import gc.david.dfm.main.presentation.components.ElevationChart
 import gc.david.dfm.main.presentation.components.LottieProgress
@@ -113,15 +117,28 @@ fun MainScreen(
     onMapClearHandled: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var isRailVisible by rememberSaveable { mutableStateOf(false) }
+    // From medium widths on, a collapsed rail stays beside the map and expands over it;
+    // narrower windows show the rail only while it is expanded, over the map
+    val hasPermanentRail = currentWindowAdaptiveInfo().windowSizeClass
+        .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+    var isRailExpanded by rememberSaveable { mutableStateOf(false) }
     // The scrim, the rail and the FAB offset all follow this one transition, so they move together
-    val railTransition = updateTransition(targetState = isRailVisible, label = "Rail")
-    val fabOffsetX by railTransition.animateDp(label = "FAB offset") { visible ->
-        if (visible) NavigationRailWidth else 0.dp
+    val railTransition = updateTransition(targetState = isRailExpanded, label = "Rail")
+    val fabOffsetX by railTransition.animateDp(label = "FAB offset") { expanded ->
+        // A permanent rail expands over the map's left edge, clear of the buttons on the right
+        if (expanded && !hasPermanentRail) NavigationRailWidth else 0.dp
+    }
+    // Keeps the map and the search bar clear of the collapsed rail and of the cutout beside it
+    val besideRailModifier = if (hasPermanentRail) {
+        Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
+            .padding(start = CollapsedNavigationRailWidth)
+    } else {
+        Modifier
     }
 
-    BackHandler(enabled = isRailVisible) {
-        isRailVisible = false
+    BackHandler(enabled = isRailExpanded) {
+        isRailExpanded = false
     }
 
     Scaffold(
@@ -145,7 +162,9 @@ fun MainScreen(
                 onMarkerClick = onMarkerClick,
                 onCameraUpdateHandled = onCameraUpdateHandled,
                 onMapClearHandled = onMapClearHandled,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(besideRailModifier),
                 properties = MapProperties(
                     isMyLocationEnabled = isMyLocationEnabled,
                     mapType = MapType.HYBRID
@@ -162,9 +181,11 @@ fun MainScreen(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
+                    .then(besideRailModifier)
             ) {
                 TransparentSearchBar(
-                    onMenuClick = { isRailVisible = !isRailVisible },
+                    // A permanent rail has its own toggle
+                    onMenuClick = if (hasPermanentRail) null else ({ isRailExpanded = !isRailExpanded }),
                     onSearchQuery = onSearchQuery
                 )
 
@@ -193,31 +214,46 @@ fun MainScreen(
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,
-                            onClick = { isRailVisible = false }
+                            onClick = { isRailExpanded = false }
                         )
                 )
             }
 
-            // Navigation Rail (slides in from left) - Rendered on top with higher z-index
-            railTransition.AnimatedVisibility(
-                visible = { it },
-                enter = slideInHorizontally { -it },
-                exit = slideOutHorizontally { -it },
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .zIndex(2f)
-            ) {
-                AppNavigationRail(
-                    selectedItemId = sideNavigationState.selectedItemId,
-                    onItemClick = { itemId ->
-                        onNavigationItemClick(itemId)
-                        // Close rail after item click
-                        isRailVisible = false
-                    },
-                    onClose = { isRailVisible = false },
-                    showLoadMenuItem = sideNavigationState.showLoadMenuItem,
-                    showDebugOptions = sideNavigationState.showDebugOptions
+            // Navigation rail, on top of the scrim
+            val onRailItemClick = { itemId: SideNavigationItemId ->
+                onNavigationItemClick(itemId)
+                isRailExpanded = false
+            }
+            val onRailToggle = { isRailExpanded = !isRailExpanded }
+            if (hasPermanentRail) {
+                MainNavigationRail(
+                    railTransition = railTransition,
+                    collapses = true,
+                    sideNavigationState = sideNavigationState,
+                    onItemClick = onRailItemClick,
+                    onToggle = onRailToggle,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .zIndex(2f)
                 )
+            } else {
+                // Slides in from the left while expanded
+                railTransition.AnimatedVisibility(
+                    visible = { it },
+                    enter = slideInHorizontally { -it },
+                    exit = slideOutHorizontally { -it },
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .zIndex(2f)
+                ) {
+                    MainNavigationRail(
+                        railTransition = railTransition,
+                        collapses = false,
+                        sideNavigationState = sideNavigationState,
+                        onItemClick = onRailItemClick,
+                        onToggle = onRailToggle
+                    )
+                }
             }
 
             // Lottie Progress overlay
@@ -280,3 +316,33 @@ fun MainScreen(
     }
 }
 
+/**
+ * The navigation rail, following [railTransition]. A rail that [collapses] animates between its collapsed and
+ * expanded widths; otherwise it is always expanded. Its width is read here so each animation frame only
+ * recomposes the rail.
+ */
+@Composable
+private fun MainNavigationRail(
+    railTransition: Transition<Boolean>,
+    collapses: Boolean,
+    sideNavigationState: SideNavigationUiState,
+    onItemClick: (SideNavigationItemId) -> Unit,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val width by railTransition.animateDp(label = "Rail width") { expanded ->
+        if (expanded || !collapses) NavigationRailWidth else CollapsedNavigationRailWidth
+    }
+    // Labels appear once the rail is nearly expanded, so they don't wrap, and go as soon as it starts collapsing
+    val showsLabels = !collapses || (railTransition.targetState && width >= NavigationRailWidth * 0.9f)
+    AppNavigationRail(
+        selectedItemId = sideNavigationState.selectedItemId,
+        onItemClick = onItemClick,
+        isExpanded = showsLabels,
+        onToggle = onToggle,
+        width = width,
+        showLoadMenuItem = sideNavigationState.showLoadMenuItem,
+        showDebugOptions = sideNavigationState.showDebugOptions,
+        modifier = modifier
+    )
+}

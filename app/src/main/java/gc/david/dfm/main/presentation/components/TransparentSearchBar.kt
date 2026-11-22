@@ -59,11 +59,12 @@ import gc.david.dfm.R
 /**
  * Transparent search bar with gradient background for readability.
  * Default: menu and search icons. Active: back to collapse and an outlined search field.
+ * Without [onMenuClick] there is no menu icon, for layouts where the navigation rail is always on screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransparentSearchBar(
-    onMenuClick: () -> Unit,
+    onMenuClick: (() -> Unit)?,
     onSearchQuery: (String) -> Unit,
     modifier: Modifier = Modifier,
     initiallySearchActive: Boolean = false,
@@ -141,7 +142,7 @@ fun TransparentSearchBar(
                             tint = Color.White
                         )
                     }
-                } else {
+                } else if (onMenuClick != null) {
                     IconButton(onClick = onMenuClick) {
                         Icon(
                             imageVector = Icons.Default.Menu,

@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -38,6 +40,7 @@ import androidx.compose.material.icons.automirrored.filled.MenuOpen
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
@@ -54,39 +57,50 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import gc.david.dfm.R
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 
-/** Width of the navigation rail, which the main screen also uses to move its buttons out of the way. */
+/** Width of the expanded navigation rail, which the main screen also uses to move its buttons out of the way. */
 internal val NavigationRailWidth = 256.dp
 
+/** Width of the collapsed navigation rail, which only shows the icons. */
+internal val CollapsedNavigationRailWidth = 72.dp
+
 /**
- * Navigation rail with all main navigation options, each with its icon and label.
+ * Navigation rail with all main navigation options. Expanded, it shows the header and each option's label;
+ * collapsed, only the icons. [width] excludes the display cutout or navigation bar at the start edge, which the
+ * rail adds so its content keeps the full width.
  */
 @Composable
 fun AppNavigationRail(
     selectedItemId: SideNavigationItemId?,
     onItemClick: (SideNavigationItemId) -> Unit,
-    onClose: () -> Unit,
+    isExpanded: Boolean,
+    onToggle: () -> Unit,
+    width: Dp,
     showLoadMenuItem: Boolean,
     showDebugOptions: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val startInset = WindowInsets.safeDrawing.only(WindowInsetsSides.Start).asPaddingValues()
+        .calculateStartPadding(LocalLayoutDirection.current)
     NavigationRail(
-        modifier = modifier.width(NavigationRailWidth),
+        modifier = modifier.width(width + startInset),
         containerColor = MaterialTheme.colorScheme.surface,
         // The header image draws behind the status bar and the cutout; its content and the items are padded instead
         windowInsets = WindowInsets(0),
         header = {
-            NavigationRailHeader(onClose = onClose)
+            NavigationRailHeader(isExpanded = isExpanded, onToggle = onToggle)
         }
     ) {
         Column(
@@ -99,7 +113,7 @@ fun AppNavigationRail(
                 stringResource(R.string.navigation_drawer_starting_point_current_position_item)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.MyLocation, contentDescription = currentPositionLabel) },
-                label = { Text(currentPositionLabel) },
+                label = railLabel(currentPositionLabel, isExpanded),
                 selected = selectedItemId == SideNavigationItemId.CURRENT_POSITION,
                 onClick = { onItemClick(SideNavigationItemId.CURRENT_POSITION) }
             )
@@ -108,7 +122,7 @@ fun AppNavigationRail(
                 stringResource(R.string.navigation_drawer_starting_point_any_position_item)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Place, contentDescription = anyPositionLabel) },
-                label = { Text(anyPositionLabel) },
+                label = railLabel(anyPositionLabel, isExpanded),
                 selected = selectedItemId == SideNavigationItemId.ANY_POSITION,
                 onClick = { onItemClick(SideNavigationItemId.ANY_POSITION) }
             )
@@ -119,7 +133,7 @@ fun AppNavigationRail(
                 val loadDistancesLabel = stringResource(R.string.menu_load_title)
                 NavigationRailItem(
                     icon = { Icon(Icons.Default.FolderOpen, contentDescription = loadDistancesLabel) },
-                    label = { Text(loadDistancesLabel) },
+                    label = railLabel(loadDistancesLabel, isExpanded),
                     selected = false,
                     onClick = { onItemClick(SideNavigationItemId.LOAD) }
                 )
@@ -130,7 +144,7 @@ fun AppNavigationRail(
             val rateAppLabel = stringResource(R.string.menu_rate_app_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Star, contentDescription = rateAppLabel) },
-                label = { Text(rateAppLabel) },
+                label = railLabel(rateAppLabel, isExpanded),
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.RATE_APP) }
             )
@@ -138,7 +152,7 @@ fun AppNavigationRail(
             val settingsLabel = stringResource(R.string.menu_settings_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Settings, contentDescription = settingsLabel) },
-                label = { Text(settingsLabel) },
+                label = railLabel(settingsLabel, isExpanded),
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.SETTINGS) }
             )
@@ -146,7 +160,7 @@ fun AppNavigationRail(
             val faqLabel = stringResource(R.string.menu_help_feedback_title)
             NavigationRailItem(
                 icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = faqLabel) },
-                label = { Text(faqLabel) },
+                label = railLabel(faqLabel, isExpanded),
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) }
             )
@@ -154,19 +168,21 @@ fun AppNavigationRail(
             val aboutLabel = stringResource(R.string.menu_about_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Info, contentDescription = aboutLabel) },
-                label = { Text(aboutLabel) },
+                label = railLabel(aboutLabel, isExpanded),
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.ABOUT) }
             )
 
             if (showDebugOptions) {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.m))
-                Text(text = "Debug section", textAlign = TextAlign.Center, color = Color.Red)
-                Spacer(modifier = Modifier.height(Spacing.m))
+                if (isExpanded) {
+                    Text(text = "Debug section", textAlign = TextAlign.Center, color = Color.Red)
+                    Spacer(modifier = Modifier.height(Spacing.m))
+                }
                 val crashLabel = "Crash"
                 NavigationRailItem(
                     icon = { Icon(Icons.Default.Bolt, tint = Color.Red, contentDescription = crashLabel) },
-                    label = { Text(crashLabel, color = Color.Red) },
+                    label = railLabel(crashLabel, isExpanded, color = Color.Red),
                     selected = false,
                     onClick = { onItemClick(SideNavigationItemId.CRASH) }
                 )
@@ -175,9 +191,22 @@ fun AppNavigationRail(
     }
 }
 
+/** A rail item's label, left out when the rail is collapsed so the icon stays centred. */
+private fun railLabel(
+    text: String,
+    isExpanded: Boolean,
+    color: Color = Color.Unspecified,
+): (@Composable () -> Unit)? =
+    if (isExpanded) {
+        { Text(text, color = color) }
+    } else {
+        null
+    }
+
 @Composable
 private fun NavigationRailHeader(
-    onClose: () -> Unit,
+    isExpanded: Boolean,
+    onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -211,24 +240,33 @@ private fun NavigationRailHeader(
                     contentScale = ContentScale.Fit
                 )
 
-                Spacer(modifier = Modifier.height(Spacing.xs))
-                Text(
-                    text = stringResource(R.string.app_name),
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                if (isExpanded) {
+                    Spacer(modifier = Modifier.height(Spacing.xs))
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
 
         IconButton(
-            onClick = onClose,
+            onClick = onToggle,
             modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.MenuOpen,
-                contentDescription = stringResource(R.string.navigation_rail_close)
-            )
+            if (isExpanded) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.MenuOpen,
+                    contentDescription = stringResource(R.string.navigation_rail_close)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.search_bar_open_menu)
+                )
+            }
         }
     }
 }
@@ -239,9 +277,24 @@ private fun AppNavigationRailPreview() {
     AppNavigationRail(
         selectedItemId = SideNavigationItemId.ANY_POSITION,
         onItemClick = {},
-        onClose = {},
+        isExpanded = true,
+        onToggle = {},
+        width = NavigationRailWidth,
         showLoadMenuItem = true,
         showDebugOptions = true
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun AppNavigationRailCollapsedPreview() {
+    AppNavigationRail(
+        selectedItemId = SideNavigationItemId.ANY_POSITION,
+        onItemClick = {},
+        isExpanded = false,
+        onToggle = {},
+        width = CollapsedNavigationRailWidth,
+        showLoadMenuItem = true,
+        showDebugOptions = true
+    )
+}
