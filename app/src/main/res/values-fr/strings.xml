@@ -30,7 +30,6 @@
     <string name="menu_rate_app_title">Noter application</string>
     <string name="rate_app_prompt">Vous aimez utiliser cette application ?</string>
     <string name="rate_app_cta">Notez\'la maintenant</string>
-    <string name="toast_send_feedback_error">Pas de client de messagerie installé</string>
     <string name="menu_settings_title">Paramètres</string>
     <string name="toast_first_point_needed">Indiquez un point de départ, s\'il vous plaît</string>
     <string name="navigation_drawer_starting_point_current_position_item">Position actuelle</string>

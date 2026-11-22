@@ -32,6 +32,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import gc.david.dfm.common.R as CommonR
+import gc.david.dfm.common.UiUtils
+import gc.david.dfm.common.tryStartActivity
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.opensource.presentation.screen.OpenSourceDetailScreen
@@ -81,7 +84,18 @@ class OpenSourceLicensesActivity : ComponentActivity() {
                                 animatedVisibilityScope = this@composable,
                                 onBack = { navController.popBackStack() },
                                 onOpenInBrowser = { url ->
-                                    startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+                                    if (!tryStartActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                url.toUri()
+                                            )
+                                        )
+                                    ) {
+                                        UiUtils.toastIt(
+                                            CommonR.string.toast_no_browser_app,
+                                            this@OpenSourceLicensesActivity
+                                        )
+                                    }
                                 },
                             )
                         }
@@ -95,7 +109,8 @@ class OpenSourceLicensesActivity : ComponentActivity() {
     companion object {
 
         fun open(activity: Activity) {
-            val openOpenSourceLicensesActivityIntent = Intent(activity, OpenSourceLicensesActivity::class.java)
+            val openOpenSourceLicensesActivityIntent =
+                Intent(activity, OpenSourceLicensesActivity::class.java)
             activity.startActivity(openOpenSourceLicensesActivityIntent)
         }
     }

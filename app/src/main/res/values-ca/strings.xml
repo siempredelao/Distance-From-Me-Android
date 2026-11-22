@@ -30,7 +30,6 @@
     <string name="menu_rate_app_title">Puntua aplicació</string>
     <string name="rate_app_prompt">T\'agrada fer servir aquesta aplicació?</string>
     <string name="rate_app_cta">Puntua-la</string>
-    <string name="toast_send_feedback_error">No hi ha clients d\'email disponibles</string>
     <string name="menu_settings_title">Preferències</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsevol posició</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posició actual</string>

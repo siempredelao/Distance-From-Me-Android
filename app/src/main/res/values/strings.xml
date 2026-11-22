@@ -55,7 +55,6 @@
     <string name="permission_rationale_cancel">Cancel</string>
 
     <!-- ACTIVITY FEEDBACK -->
-    <string name="toast_send_feedback_error">There are no email clients installed</string>
 
     <string name="toast_no_internet_connection">No internet connection</string>
     <string name="play_services_not_supported">This device is not supported by Google Play Services.</string>

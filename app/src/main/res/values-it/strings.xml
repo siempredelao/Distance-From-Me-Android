@@ -30,7 +30,6 @@
     <string name="menu_rate_app_title">Valuta app</string>
     <string name="rate_app_prompt">Ti piace usare questa app?</string>
     <string name="rate_app_cta">Votala adesso</string>
-    <string name="toast_send_feedback_error">Non c\'e client di posta elettronica disponibile</string>
     <string name="menu_settings_title">Preferenze</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsiasi posizione</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posizione attuale</string>

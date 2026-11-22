@@ -24,9 +24,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import gc.david.dfm.about.R
 import gc.david.dfm.about.presentation.screen.AboutScreen
+import gc.david.dfm.common.R as CommonR
+import gc.david.dfm.common.UiUtils
+import gc.david.dfm.common.tryStartActivity
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.opensource.presentation.OpenSourceLicensesActivity
 
@@ -48,13 +52,21 @@ class AboutActivity : ComponentActivity() {
                 AboutScreen(
                     versionName = versionName,
                     onBack = { onBackPressedDispatcher.onBackPressed() },
-                    onOpenLink = { url -> startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) },
+                    onOpenLink = { url ->
+                        openOrToast(
+                            Intent(Intent.ACTION_VIEW, url.toUri()),
+                            CommonR.string.toast_no_browser_app
+                        )
+                    },
                     onOpenEmail = {
                         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                             data = "mailto:davidaguiargonzalez@gmail.com".toUri()
-                            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.translations_email_subject))
+                            putExtra(
+                                Intent.EXTRA_SUBJECT,
+                                getString(R.string.translations_email_subject)
+                            )
                         }
-                        startActivity(emailIntent)
+                        openOrToast(emailIntent, CommonR.string.toast_no_email_app)
                     },
                     onOpenSourceLicenses = {
                         OpenSourceLicensesActivity.open(this@AboutActivity)
@@ -62,6 +74,10 @@ class AboutActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    private fun openOrToast(intent: Intent, @StringRes noAppMessage: Int) {
+        if (!tryStartActivity(intent)) UiUtils.toastIt(noAppMessage, this)
     }
 
     companion object {
