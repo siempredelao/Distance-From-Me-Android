@@ -181,6 +181,76 @@ class ElevationViewModelTest {
         assertFalse(viewModel.uiState.value.showChart)
     }
 
+    @Test
+    fun `clears the previous profile when the next path is selected offline`() = runTest {
+        givenPreviousProfileShown()
+        whenever(connectionManager.isOnline()).thenReturn(false)
+
+        viewModel.onCoordinatesSelected(LATER_PATH)
+
+        assertNull(viewModel.uiState.value.elevation)
+    }
+
+    @Test
+    fun `clears the previous profile when the chart is turned off`() = runTest {
+        givenPreviousProfileShown()
+        whenever(settingsRepository.shouldShowElevationChart()).thenReturn(false)
+
+        viewModel.onCoordinatesSelected(LATER_PATH)
+
+        assertNull(viewModel.uiState.value.elevation)
+    }
+
+    @Test
+    fun `clears the previous profile when the next path has no elevation data`() = runTest {
+        givenPreviousProfileShown()
+        whenever(getElevationByCoordinatesUseCase(LATER_PATH)).thenReturn(ElevationResult.NoData)
+
+        viewModel.onCoordinatesSelected(LATER_PATH)
+
+        assertNull(viewModel.uiState.value.elevation)
+    }
+
+    @Test
+    fun `clears the previous profile when the next request is rejected`() = runTest {
+        givenPreviousProfileShown()
+        whenever(getElevationByCoordinatesUseCase(LATER_PATH))
+            .thenReturn(ElevationResult.Rejected(ElevationError.OVER_QUERY_LIMIT))
+
+        viewModel.onCoordinatesSelected(LATER_PATH)
+
+        assertNull(viewModel.uiState.value.elevation)
+    }
+
+    @Test
+    fun `clears the previous profile when the next request throws`() = runTest {
+        givenPreviousProfileShown()
+        whenever(getElevationByCoordinatesUseCase(LATER_PATH)).thenAnswer { throw IOException("Network error") }
+
+        viewModel.onCoordinatesSelected(LATER_PATH)
+
+        assertNull(viewModel.uiState.value.elevation)
+    }
+
+    @Test
+    fun `clears the previous profile while the next request is pending`() = runTest {
+        givenPreviousProfileShown()
+        val pendingResult = CompletableDeferred<ElevationResult>()
+        whenever(getElevationByCoordinatesUseCase(LATER_PATH)).doSuspendableAnswer { pendingResult.await() }
+
+        viewModel.onCoordinatesSelected(LATER_PATH)
+
+        assertNull(viewModel.uiState.value.elevation)
+    }
+
+    private suspend fun givenPreviousProfileShown() {
+        givenChartEnabled()
+        whenever(getElevationByCoordinatesUseCase(PATH)).thenReturn(ElevationResult.Found(listOf(1.0)))
+        viewModel.onCoordinatesSelected(PATH)
+        viewModel.onShowChartHandled()
+        assertEquals(ElevationUiModel(listOf(1.0), "m"), viewModel.uiState.value.elevation)
+    }
+
     private fun givenChartEnabled(unitSystem: UnitSystem = UnitSystem.METRIC, altitudeUnit: String = "m") {
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)

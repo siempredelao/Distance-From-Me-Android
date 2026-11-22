@@ -53,6 +53,8 @@ class ElevationViewModel(
     fun onCoordinatesSelected(coordinates: List<Coordinates>) {
         // Only the latest coordinates matter, so a slower earlier request must not overwrite them
         elevationJob?.cancel()
+        // The current profile belongs to the previous path, so drop it until this path's profile arrives
+        _uiState.update { it.copy(elevation = null) }
 
         if (coordinates.isEmpty() || !settingsRepository.shouldShowElevationChart() || !connectionManager.isOnline()) {
             _uiState.update { it.copy(showChart = false) }
