@@ -140,7 +140,6 @@ dependencies {
 	debugImplementation(libs.leakcanary)
 	implementation(libs.lifecycle.runtime)
 	implementation(libs.lifecycle.viewmodel)
-	implementation(libs.lottie)
 	implementation(libs.lottie.compose)
 	implementation(libs.maps.compose)
 	implementation(libs.material.components)

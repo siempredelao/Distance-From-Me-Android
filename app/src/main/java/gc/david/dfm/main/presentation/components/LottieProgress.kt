@@ -21,16 +21,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import gc.david.dfm.R
 
 /**
  * Lottie progress animation overlay.
- * Shows a hand animation while loading.
+ * Shows a hand animation for as long as it's loading.
  */
 @Composable
 fun LottieProgress(
@@ -46,14 +49,10 @@ fun LottieProgress(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            AndroidView(
-                factory = { context ->
-                    LottieAnimationView(context).apply {
-                        setAnimation(R.raw.hand_animation)
-                        repeatCount = 10
-                        playAnimation()
-                    }
-                },
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.hand_animation))
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
                 modifier = Modifier.size(300.dp)
             )
         }
