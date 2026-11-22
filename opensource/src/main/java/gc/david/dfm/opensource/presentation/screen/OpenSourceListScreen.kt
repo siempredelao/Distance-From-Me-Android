@@ -66,10 +66,12 @@ fun SharedTransitionScope.OpenSourceListScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onLibraryClick: (Int) -> Unit,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.opensource_title)) },

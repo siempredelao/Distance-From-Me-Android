@@ -222,14 +222,12 @@ private fun LinksCard(
 
         LinkAction(
             label = stringResource(R.string.link_github),
-            url = "https://github.com/siempredelao",
-            onOpenLink = onOpenLink,
+            onClick = { onOpenLink("https://github.com/siempredelao") },
         )
 
         LinkAction(
             label = stringResource(R.string.link_google_play),
-            url = "https://play.google.com/store/apps/details?id=gc.david.dfm",
-            onOpenLink = onOpenLink,
+            onClick = { onOpenLink("https://play.google.com/store/apps/details?id=gc.david.dfm") },
         )
 
         LinkAction(
@@ -242,20 +240,12 @@ private fun LinksCard(
 @Composable
 private fun LinkAction(
     label: String,
-    url: String? = null,
-    onClick: (() -> Unit)? = null,
-    onOpenLink: ((String) -> Unit)? = null,
+    onClick: () -> Unit,
 ) {
-    val action = if (url != null && onOpenLink != null) {
-        { onOpenLink(url) }
-    } else {
-        onClick
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = action != null) { action?.invoke() }
+            .clickable(onClick = onClick)
             .minimumInteractiveComponentSize()
             .padding(vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,

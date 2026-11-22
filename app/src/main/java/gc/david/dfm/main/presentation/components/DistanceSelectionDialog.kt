@@ -62,7 +62,17 @@ fun DistanceSelectionDialog(
         title = { Text(stringResource(R.string.dialog_load_distances_title)) },
         text = {
             LazyColumn {
-                items(list) { item ->
+                items(
+                    items = list,
+                    key = { item ->
+                        when (item) {
+                            is DistanceSelectionUiModel.Distance -> "distance-${item.id}"
+                            // The list holds at most one rate prompt
+                            is DistanceSelectionUiModel.RateApp -> "rate-app"
+                        }
+                    },
+                    contentType = { item -> item::class }
+                ) { item ->
                     when (item) {
                         is DistanceSelectionUiModel.Distance ->
                             Distance(item, onDistanceSelected, onDismiss)

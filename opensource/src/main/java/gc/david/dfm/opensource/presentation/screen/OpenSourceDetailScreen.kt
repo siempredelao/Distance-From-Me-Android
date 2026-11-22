@@ -52,8 +52,10 @@ fun SharedTransitionScope.OpenSourceDetailScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBack: () -> Unit,
     onOpenInBrowser: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text(library.name) },
