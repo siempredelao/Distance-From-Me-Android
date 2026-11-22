@@ -60,7 +60,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-22T17:49:27.846Z
+  modified: 2026-11-22T18:56:30.272Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -98,7 +98,9 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - 13, chart half: `rememberUpdatedState(onClose)` in `ElevationChart`: ea6bdaf.
   - 14, insets (Show info top bar, map FABs `safeDrawing`, rail header edge to edge): e378c9b.
   - Memory commits by the user: 49d4be3, 55bb26f.
-- Stashed: step 6 (MainActivity `configChanges`) as `stash@{0}`. Stopped because offline the no-connection toast repeats on every rotation (`onStart()` is called from `onCreate`), and by code reading a closed chart reopens on rotation (`LaunchedEffect(elevationUiState.elevation)`). Chart cases never checked.
+  - 15 part A, `Card(onClick)` on FAQ/About/OpenSource cards, 48 dp About link rows, OpenSource card keeps its elevation when pressed: fc29147.
+- Waiting on the user's commit: step 15 part B (`LinkAction(label, onClick)`, `OutlinedTextFieldDefaults.colors` in `TransparentSearchBar`, `modifier` on the OpenSource list and detail screens, `DistanceSelectionDialog` `key`/`contentType`, `items` instead of `itemsIndexed` in `AddressSuggestionsDialog`). No visible change on the emulator; the address suggestions dialog never appeared for "Barnes & Noble New York" on either build, so that change is unchecked on device.
+- Stashed: step 6 (MainActivity `configChanges`) as `stash@{0}`. Older unrelated stashes sit below it, so never `git stash pop` without checking `git stash list`; for a "before" build save a patch (`git diff -- files > patch`, `git checkout HEAD -- files`, build, `git apply patch`). Stopped because offline the no-connection toast repeats on every rotation (`onStart()` is called from `onCreate`), and by code reading a closed chart reopens on rotation (`LaunchedEffect(elevationUiState.elevation)`). Chart cases never checked.
 - Skipped until the end: step 13's `MapContent` half (info-window effect key, long-press check), and step 10 (map recomposition during the rail animation). Both need the user's long-press check and the user can't use the emulator for now. Do them before the final verification.
 - Added by the user:
   - Step 7 includes the hard-coded "Close elevation chart" label (done in 3edcf5e).
@@ -114,12 +116,13 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - The Geocoding and Elevation APIs rate-limit after many scripted runs ("Demasiadas solicitudes", OVER_QUERY_LIMIT). Keep scripted API runs few; prefer flows that don't search.
 - In any-position mode the first point needs a tap, later points a long press.
 - After a force-stop, a relaunch shows the location rationale dialog (tap Cancelar); after a cold boot Android's own permission dialog appears first (tap "No permitir").
+- Kill the emulator by process name (`ps -eo pid,comm | awk '$2 ~ /^qemu-system/'`); `pkill -f` with the AVD name also matches, and kills, the shell running it.
 - To slow the network, use `adb root` then `adb shell tc qdisc add dev wlan0 root netem delay 3000ms` (remove with `tc qdisc del dev wlan0 root`); it delays every packet, so a search loads for about 19 s. `adb emu network delay` only affects mobile data and added a single delay.
 - 3-button navigation: `adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton` (back with `...navbar.gestural`). The emulator's cutout is top-left in portrait: on the left in rotation 1, on the right in rotation 3.
 - Tablet size: `adb shell wm size 1600x2560` and `wm density 320`, then `reset` both.
 - Airplane mode: `adb shell cmd connectivity airplane-mode enable|disable`. Dark mode: `cmd uimode night yes|no`.
-- The API 36 emulator crashed once (KVM register dump in its log); cold-boot with `-no-snapshot-load` and wrap adb calls in `timeout` to notice a hang.
-- The repo's MEMORY.md is a copy of this directory made by a hook; don't edit it.
+- The API 36 emulator crashes with a KVM register dump in its log (three times so far, twice right after Chrome opened); test link taps with Chrome disabled (`pm disable-user --user 0 com.android.chrome`, the app shows its no-app toast), and re-enable it afterwards; cold-boot with `-no-snapshot-load` and wrap adb calls in `timeout` to notice a hang.
+- The repo's MEMORY.md is a copy of this directory made by `.claude/hooks/dump-memory.sh`; don't edit it. The hook runs on Write/Edit and at the end of a turn, not after Bash edits, so before committing memory changed through Bash, run `CLAUDE_PROJECT_DIR=$PWD .claude/hooks/dump-memory.sh </dev/null`.
 
 ## Stray map tap after a long press (open)
 - Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point: the Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, at the coordinate under the finger when it lifted during the zoom animation. The user reproduced it with the mouse; scripted `adb input` presses never triggered it.
