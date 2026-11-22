@@ -22,6 +22,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -173,23 +175,21 @@ private fun CommonCard(
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .let {
-                if (onClick != null) it.clickable(enabled = true, onClick = onClick) else it
-            },
-        shape = RoundedCornerShape(Spacing.m),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
-    ) {
+    val shape = RoundedCornerShape(Spacing.m)
+    val colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    val cardContent: @Composable ColumnScope.() -> Unit = {
         Column(
             modifier = Modifier.padding(Spacing.m),
             verticalArrangement = Arrangement.spacedBy(Spacing.s),
         ) {
             content()
         }
+    }
+    // The clickable Card overload clips the ripple to the shape and gives the card a button role
+    if (onClick != null) {
+        Card(onClick = onClick, modifier = Modifier.fillMaxWidth(), shape = shape, colors = colors, content = cardContent)
+    } else {
+        Card(modifier = Modifier.fillMaxWidth(), shape = shape, colors = colors, content = cardContent)
     }
 }
 
@@ -256,6 +256,7 @@ private fun LinkAction(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(enabled = action != null) { action?.invoke() }
+            .minimumInteractiveComponentSize()
             .padding(vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
     ) {

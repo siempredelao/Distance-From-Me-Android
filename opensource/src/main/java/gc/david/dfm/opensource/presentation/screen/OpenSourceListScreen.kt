@@ -19,7 +19,6 @@ package gc.david.dfm.opensource.presentation.screen
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -137,12 +136,18 @@ private fun SharedTransitionScope.OpenSourceLibraryCard(
     onClick: () -> Unit,
 ) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = Spacing.s)
-            .clickable(onClick = onClick),
+            .padding(vertical = Spacing.s),
         shape = RoundedCornerShape(Spacing.xs),
-        elevation = CardDefaults.cardElevation(defaultElevation = Spacing.xs),
+        // The clickable Card drops to 0dp when pressed by default; keep the shadow while it ripples
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = Spacing.xs,
+            pressedElevation = Spacing.xs,
+            focusedElevation = Spacing.xs,
+            hoveredElevation = Spacing.xs,
+        ),
     ) {
         Column(
             modifier = Modifier.padding(

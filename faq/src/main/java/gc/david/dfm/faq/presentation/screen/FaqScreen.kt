@@ -17,7 +17,6 @@
 package gc.david.dfm.faq.presentation.screen
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -96,10 +95,10 @@ private fun FaqCard(faq: Faq) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Card(
+        onClick = { expanded = !expanded },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = Spacing.xs)
-            .clickable { expanded = !expanded },
+            .padding(vertical = Spacing.xs),
         shape = RoundedCornerShape(Spacing.xs),
     ) {
         Column(
