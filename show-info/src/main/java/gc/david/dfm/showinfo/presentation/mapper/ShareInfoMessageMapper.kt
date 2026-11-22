@@ -45,6 +45,6 @@ $distance"""
 
     private companion object {
 
-        const val APP_HEADER = "Distance From Me (http://goo.gl/0IBHFN)"
+        const val APP_HEADER = "Distance From Me (https://play.google.com/store/apps/details?id=gc.david.dfm)"
     }
 }

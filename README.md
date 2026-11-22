@@ -103,7 +103,7 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 
 
 ## Download
-[![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://goo.gl/0IBHFN)
+[![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=gc.david.dfm)
 
 ## License
 ```

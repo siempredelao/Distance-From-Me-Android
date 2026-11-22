@@ -32,7 +32,7 @@ class ShareInfoMessageMapperTest {
     fun `getSubject returns app header`() {
         val result = mapper.getSubject()
 
-        assertEquals("Distance From Me (http://goo.gl/0IBHFN)", result)
+        assertEquals("Distance From Me (https://play.google.com/store/apps/details?id=gc.david.dfm)", result)
     }
 
     @Test
@@ -50,7 +50,7 @@ class ShareInfoMessageMapperTest {
 
         val result = mapper.mapMessage(originAddress, destinationAddress, distance)
 
-        val expected = """Distance From Me (http://goo.gl/0IBHFN)
+        val expected = """Distance From Me (https://play.google.com/store/apps/details?id=gc.david.dfm)
 From:
 123 Main St
 
@@ -74,7 +74,7 @@ Distance:
 
         val result = mapper.mapMessage("", "", "")
 
-        val expected = """Distance From Me (http://goo.gl/0IBHFN)
+        val expected = """Distance From Me (https://play.google.com/store/apps/details?id=gc.david.dfm)
 From:
 
 
