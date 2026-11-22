@@ -18,7 +18,8 @@ package gc.david.dfm.main.presentation.screen
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -67,6 +68,7 @@ import gc.david.dfm.main.presentation.components.DistanceSelectionDialog
 import gc.david.dfm.main.presentation.components.ElevationChart
 import gc.david.dfm.main.presentation.components.LottieProgress
 import gc.david.dfm.main.presentation.components.MapContent
+import gc.david.dfm.main.presentation.components.NavigationRailWidth
 import gc.david.dfm.main.presentation.components.TransparentSearchBar
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
@@ -108,10 +110,11 @@ fun MainScreen(
     modifier: Modifier = Modifier,
 ) {
     var isRailVisible by rememberSaveable { mutableStateOf(false) }
-    val fabOffsetX by animateDpAsState(
-        targetValue = if (isRailVisible) 256.dp else 0.dp,
-        label = "FAB offset animation"
-    )
+    // The scrim, the rail and the FAB offset all follow this one transition, so they move together
+    val railTransition = updateTransition(targetState = isRailVisible, label = "Rail")
+    val fabOffsetX by railTransition.animateDp(label = "FAB offset") { visible ->
+        if (visible) NavigationRailWidth else 0.dp
+    }
 
     BackHandler(enabled = isRailVisible) {
         isRailVisible = false
@@ -171,8 +174,8 @@ fun MainScreen(
             // This is just a scrim overlay that appears when the navigation rail is visible.
             // It swallows pointer events and captures clicks to close the rail.
             // Therefore, the map becomes unclickable.
-            AnimatedVisibility(
-                visible = isRailVisible,
+            railTransition.AnimatedVisibility(
+                visible = { it },
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier
@@ -192,8 +195,8 @@ fun MainScreen(
             }
 
             // Navigation Rail (slides in from left) - Rendered on top with higher z-index
-            AnimatedVisibility(
-                visible = isRailVisible,
+            railTransition.AnimatedVisibility(
+                visible = { it },
                 enter = slideInHorizontally { -it },
                 exit = slideOutHorizontally { -it },
                 modifier = Modifier
@@ -201,7 +204,6 @@ fun MainScreen(
                     .zIndex(2f)
             ) {
                 AppNavigationRail(
-                    isExpanded = true,
                     selectedItemId = sideNavigationState.selectedItemId,
                     onItemClick = { itemId ->
                         onNavigationItemClick(itemId)

@@ -16,7 +16,6 @@
 
 package gc.david.dfm.main.presentation.components
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,13 +60,14 @@ import gc.david.dfm.R
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 
+/** Width of the navigation rail, which the main screen also uses to move its buttons out of the way. */
+internal val NavigationRailWidth = 256.dp
+
 /**
- * Expandable navigation rail with all main navigation options.
- * Shows icons always, labels only when expanded.
+ * Navigation rail with all main navigation options, each with its icon and label.
  */
 @Composable
 fun AppNavigationRail(
-    isExpanded: Boolean,
     selectedItemId: SideNavigationItemId?,
     onItemClick: (SideNavigationItemId) -> Unit,
     onClose: () -> Unit,
@@ -76,15 +76,10 @@ fun AppNavigationRail(
     modifier: Modifier = Modifier,
 ) {
     NavigationRail(
-        modifier = modifier
-            .animateContentSize()
-            .width(if (isExpanded) 256.dp else 72.dp),
+        modifier = modifier.width(NavigationRailWidth),
         containerColor = MaterialTheme.colorScheme.surface,
         header = {
-            NavigationRailHeader(
-                isExpanded = isExpanded,
-                onClose = onClose
-            )
+            NavigationRailHeader(onClose = onClose)
         }
     ) {
         Column(
@@ -95,7 +90,7 @@ fun AppNavigationRail(
                 stringResource(R.string.navigation_drawer_starting_point_current_position_item)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.MyLocation, contentDescription = currentPositionLabel) },
-                label = { if (isExpanded) Text(currentPositionLabel) },
+                label = { Text(currentPositionLabel) },
                 selected = selectedItemId == SideNavigationItemId.CURRENT_POSITION,
                 onClick = { onItemClick(SideNavigationItemId.CURRENT_POSITION) }
             )
@@ -104,7 +99,7 @@ fun AppNavigationRail(
                 stringResource(R.string.navigation_drawer_starting_point_any_position_item)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Place, contentDescription = anyPositionLabel) },
-                label = { if (isExpanded) Text(anyPositionLabel) },
+                label = { Text(anyPositionLabel) },
                 selected = selectedItemId == SideNavigationItemId.ANY_POSITION,
                 onClick = { onItemClick(SideNavigationItemId.ANY_POSITION) }
             )
@@ -115,7 +110,7 @@ fun AppNavigationRail(
                 val loadDistancesLabel = stringResource(R.string.menu_load_title)
                 NavigationRailItem(
                     icon = { Icon(Icons.Default.FolderOpen, contentDescription = loadDistancesLabel) },
-                    label = { if (isExpanded) Text(loadDistancesLabel) },
+                    label = { Text(loadDistancesLabel) },
                     selected = false,
                     onClick = { onItemClick(SideNavigationItemId.LOAD) }
                 )
@@ -126,7 +121,7 @@ fun AppNavigationRail(
             val rateAppLabel = stringResource(R.string.menu_rate_app_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Star, contentDescription = rateAppLabel) },
-                label = { if (isExpanded) Text(rateAppLabel) },
+                label = { Text(rateAppLabel) },
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.RATE_APP) }
             )
@@ -134,7 +129,7 @@ fun AppNavigationRail(
             val settingsLabel = stringResource(R.string.menu_settings_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Settings, contentDescription = settingsLabel) },
-                label = { if (isExpanded) Text(settingsLabel) },
+                label = { Text(settingsLabel) },
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.SETTINGS) }
             )
@@ -142,7 +137,7 @@ fun AppNavigationRail(
             val faqLabel = stringResource(R.string.menu_help_feedback_title)
             NavigationRailItem(
                 icon = { Icon(Icons.AutoMirrored.Filled.Help, contentDescription = faqLabel) },
-                label = { if (isExpanded) Text(faqLabel) },
+                label = { Text(faqLabel) },
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.HELP_FEEDBACK) }
             )
@@ -150,7 +145,7 @@ fun AppNavigationRail(
             val aboutLabel = stringResource(R.string.menu_about_title)
             NavigationRailItem(
                 icon = { Icon(Icons.Default.Info, contentDescription = aboutLabel) },
-                label = { if (isExpanded) Text(aboutLabel) },
+                label = { Text(aboutLabel) },
                 selected = false,
                 onClick = { onItemClick(SideNavigationItemId.ABOUT) }
             )
@@ -162,7 +157,7 @@ fun AppNavigationRail(
                 val crashLabel = "Crash"
                 NavigationRailItem(
                     icon = { Icon(Icons.Default.Bolt, tint = Color.Red, contentDescription = crashLabel) },
-                    label = { if (isExpanded) Text(crashLabel, color = Color.Red) },
+                    label = { Text(crashLabel, color = Color.Red) },
                     selected = false,
                     onClick = { onItemClick(SideNavigationItemId.CRASH) }
                 )
@@ -173,7 +168,6 @@ fun AppNavigationRail(
 
 @Composable
 private fun NavigationRailHeader(
-    isExpanded: Boolean,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -207,15 +201,13 @@ private fun NavigationRailHeader(
                     contentScale = ContentScale.Fit
                 )
 
-                if (isExpanded) {
-                    Spacer(modifier = Modifier.height(Spacing.xs))
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Spacer(modifier = Modifier.height(Spacing.xs))
+                Text(
+                    text = stringResource(R.string.app_name),
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
 
@@ -230,22 +222,8 @@ private fun NavigationRailHeader(
 
 @Preview(showBackground = true)
 @Composable
-private fun AppNavigationRailCollapsedPreview() {
+private fun AppNavigationRailPreview() {
     AppNavigationRail(
-        isExpanded = false,
-        selectedItemId = SideNavigationItemId.CURRENT_POSITION,
-        onItemClick = {},
-        onClose = {},
-        showLoadMenuItem = true,
-        showDebugOptions = true
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun AppNavigationRailExpandedPreview() {
-    AppNavigationRail(
-        isExpanded = true,
         selectedItemId = SideNavigationItemId.ANY_POSITION,
         onItemClick = {},
         onClose = {},
