@@ -76,6 +76,27 @@ class AddressRemoteDataSourceTest {
     }
 
     @Test
+    fun `requests coordinates near zero in plain decimal notation`() = runTest {
+        respondWith(code = 200, body = OK_BODY)
+
+        dataSource.getNameByCoordinates(Coordinates(0.0005, -0.0001))
+
+        assertEquals("0.00050,-0.00010", requests.single().url.queryParameter("latlng"))
+    }
+
+    @Test
+    fun `requests the name with reserved URL characters kept inside the address parameter`() = runTest {
+        respondWith(code = 200, body = OK_BODY)
+
+        dataSource.getCoordinatesByName("Barnes & Noble, Flat #3")
+
+        val url = requests.single().url
+        assertEquals("Barnes & Noble, Flat #3", url.queryParameter("address"))
+        assertEquals(API_KEY, url.queryParameter("key"))
+        assertEquals(setOf("address", "key"), url.queryParameterNames)
+    }
+
+    @Test
     fun `throws HttpException with the status code for an unsuccessful response`() = runTest {
         respondWith(code = 403, body = """{ "error": { "code": 403, "message": "Forbidden" } }""")
 

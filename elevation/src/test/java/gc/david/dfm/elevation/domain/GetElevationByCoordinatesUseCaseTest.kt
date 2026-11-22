@@ -74,6 +74,15 @@ class GetElevationByCoordinatesUseCaseTest {
     }
 
     @Test
+    fun `builds coordinates path near zero in plain decimal notation`() = runTest {
+        whenever(repository.getElevation(any(), any())).thenReturn(ElevationResult.NoData)
+
+        useCase(listOf(Coordinates(51.4778, -0.0005), Coordinates(51.4779, 0.0001)))
+
+        verify(repository).getElevation(eq("51.4778,-0.00050|51.4779,0.00010"), eq(100))
+    }
+
+    @Test
     fun `propagates repository failures`() = runTest {
         val exception = IOException("Network error")
         whenever(repository.getElevation(any(), any())).thenAnswer { throw exception }

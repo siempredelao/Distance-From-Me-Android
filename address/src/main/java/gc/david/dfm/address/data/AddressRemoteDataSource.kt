@@ -19,8 +19,11 @@ package gc.david.dfm.address.data
 import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.common.toPlainString
 import gc.david.dfm.common.data.getGoogleApiJson
 import kotlinx.coroutines.CoroutineDispatcher
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import timber.log.Timber
 
@@ -33,35 +36,25 @@ class AddressRemoteDataSource(
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getNameByCoordinates(coordinates: Coordinates): AddressCollectionEntity {
-        return executeRequest(getNameByCoordinatesUrl(coordinates))
+        val latLng = "${coordinates.latitude.toPlainString()},${coordinates.longitude.toPlainString()}"
+        return executeRequest(name = "latlng", value = latLng)
     }
 
     suspend fun getCoordinatesByName(name: String): AddressCollectionEntity {
-        return executeRequest(getCoordinatesByNameUrl(name))
+        return executeRequest(name = "address", value = name)
     }
 
-    private suspend fun executeRequest(url: String): AddressCollectionEntity =
-        client.getGoogleApiJson(url, ioDispatcher)
+    private suspend fun executeRequest(name: String, value: String): AddressCollectionEntity {
+        val urlNoKey = GEOCODE_URL.newBuilder().addQueryParameter(name, value).build()
+        Timber.tag(TAG).d(urlNoKey.toString())
 
-    private fun getNameByCoordinatesUrl(coordinates: Coordinates): String {
-        val parameter = "latlng=${coordinates.latitude},${coordinates.longitude}"
-        Timber.tag(TAG).d(parameter)
-        return getUrl(parameter)
-    }
-
-    private fun getCoordinatesByNameUrl(name: String): String {
-        val parameterValue = name.replace(" ", "+")
-        val parameter = "address=$parameterValue"
-        Timber.tag(TAG).d(parameter)
-        return getUrl(parameter)
-    }
-
-    private fun getUrl(parameter: String): String {
-        return "https://maps.googleapis.com/maps/api/geocode/json?$parameter&key=$geocodeApiKey"
+        val url = urlNoKey.newBuilder().addQueryParameter("key", geocodeApiKey).build()
+        return client.getGoogleApiJson(url, ioDispatcher)
     }
 
     companion object {
 
         private const val TAG = "AddressRemoteDataSource"
+        private val GEOCODE_URL: HttpUrl = "https://maps.googleapis.com/maps/api/geocode/json".toHttpUrl()
     }
 }

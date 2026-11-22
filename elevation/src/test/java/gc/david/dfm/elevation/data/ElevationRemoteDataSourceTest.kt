@@ -61,6 +61,7 @@ class ElevationRemoteDataSourceTest {
         assertEquals("1.0,2.0|3.0,4.0", url.queryParameter("path"))
         assertEquals("100", url.queryParameter("samples"))
         assertEquals(API_KEY, url.queryParameter("key"))
+        assertEquals(setOf("path", "samples", "key"), url.queryParameterNames)
     }
 
     @Test

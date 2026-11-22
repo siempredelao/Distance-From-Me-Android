@@ -18,6 +18,7 @@ package gc.david.dfm.common.data
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
@@ -31,7 +32,7 @@ import okhttp3.coroutines.executeAsync
  * @throws java.io.IOException when the request does not reach the server
  * @throws kotlinx.serialization.SerializationException when the body is not the expected JSON
  */
-suspend inline fun <reified T> OkHttpClient.getGoogleApiJson(url: String, ioDispatcher: CoroutineDispatcher): T {
+suspend inline fun <reified T> OkHttpClient.getGoogleApiJson(url: HttpUrl, ioDispatcher: CoroutineDispatcher): T {
     val request = Request.Builder().url(url).header("content-type", "application/json").build()
     return newCall(request).executeAsync().use { response ->
         if (!response.isSuccessful) throw HttpException(response.code)

@@ -20,6 +20,8 @@ import gc.david.dfm.GeocodeApiKeyProvider
 import gc.david.dfm.common.data.getGoogleApiJson
 import gc.david.dfm.elevation.data.model.ElevationEntity
 import kotlinx.coroutines.CoroutineDispatcher
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import timber.log.Timber
 
@@ -32,14 +34,19 @@ class ElevationRemoteDataSource(
     private val geocodeApiKey = geocodeApiKeyProvider.getApiKey()
 
     suspend fun getElevation(coordinatesPath: String, maxSamples: Int): ElevationEntity {
-        val urlNoKey = "https://maps.googleapis.com/maps/api/elevation/json?path=$coordinatesPath&samples=$maxSamples"
-        Timber.tag(TAG).d(urlNoKey)
+        val urlNoKey = ELEVATION_URL.newBuilder()
+            .addQueryParameter("path", coordinatesPath)
+            .addQueryParameter("samples", maxSamples.toString())
+            .build()
+        Timber.tag(TAG).d(urlNoKey.toString())
 
-        return client.getGoogleApiJson("$urlNoKey&key=$geocodeApiKey", ioDispatcher)
+        val url = urlNoKey.newBuilder().addQueryParameter("key", geocodeApiKey).build()
+        return client.getGoogleApiJson(url, ioDispatcher)
     }
 
     companion object {
 
         private const val TAG = "ElevationRemoteDataSrc"
+        private val ELEVATION_URL: HttpUrl = "https://maps.googleapis.com/maps/api/elevation/json".toHttpUrl()
     }
 }

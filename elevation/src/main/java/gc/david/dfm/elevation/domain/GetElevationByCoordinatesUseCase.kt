@@ -17,6 +17,7 @@
 package gc.david.dfm.elevation.domain
 
 import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.toPlainString
 import gc.david.dfm.elevation.domain.model.ElevationResult
 
 class GetElevationByCoordinatesUseCase(private val repository: ElevationRepository) {
@@ -27,7 +28,7 @@ class GetElevationByCoordinatesUseCase(private val repository: ElevationReposito
     }
 
     private fun getCoordinatesPath(coordinatesList: List<Coordinates>): String {
-        return coordinatesList.joinToString("|") { "${it.latitude},${it.longitude}" }
+        return coordinatesList.joinToString("|") { "${it.latitude.toPlainString()},${it.longitude.toPlainString()}" }
     }
 
     companion object {
