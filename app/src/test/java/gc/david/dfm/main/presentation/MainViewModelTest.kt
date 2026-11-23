@@ -16,9 +16,12 @@
 
 package gc.david.dfm.main.presentation
 
+import android.content.Context
+import android.content.res.Resources
 import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.R
-import gc.david.dfm.core.coordinates.domain.CoordinatesRepository
+import gc.david.dfm.core.coordinates.data.BaseCoordinatesRepository
+import gc.david.dfm.core.coordinates.data.CoordinatesMemoryDataSource
 import gc.david.dfm.core.coordinates.domain.DistanceCalculator
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
@@ -28,9 +31,10 @@ import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.units.domain.UnitConverter
 import gc.david.dfm.core.units.domain.model.UnitSystem
 import gc.david.dfm.core.units.presentation.UnitFormatter
-import gc.david.dfm.distance.domain.DistanceModeRepository
+import gc.david.dfm.distance.data.BaseDistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository
 import gc.david.dfm.location.domain.PermissionChecker
@@ -40,7 +44,8 @@ import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
-import gc.david.dfm.main.presentation.model.MapUiState
+import gc.david.dfm.main.presentation.model.MarkerData
+import gc.david.dfm.main.presentation.model.PolylineData
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
@@ -52,6 +57,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -59,12 +65,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -79,26 +85,38 @@ class MainViewModelTest {
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
     private val settingsRepository = mock<SettingsRepository>()
-    private val distanceModeRepository = mock<DistanceModeRepository>()
+    private val distanceModeRepository = BaseDistanceModeRepository()
     private val locationRepository = mock<LocationRepository>()
     private val locations = MutableSharedFlow<Coordinates>(extraBufferCapacity = 1)
     private val permissionChecker = mock<PermissionChecker>()
-    private val coordinatesRepository = mock<CoordinatesRepository>()
-    private val distanceCalculator = mock<DistanceCalculator>()
-    private val unitFormatter = mock<UnitFormatter>()
+    private val coordinatesRepository = BaseCoordinatesRepository(CoordinatesMemoryDataSource())
     private val buildConfigProvider = mock<BuildConfigProvider>()
-    private val mapStateMapper = mock<MapStateMapper>()
+    private val context = mock<Context>()
+    private val resources = mock<Resources>()
     private val loadDistancesMapper = mock<LoadDistancesMapper>()
+    private val defaultLocale = Locale.getDefault()
+
+    // The points of the path, which the repository keeps between calls
+    private val storedPath get() = coordinatesRepository.observeDistance().value
+
+    // The path as the map draws it
+    private val drawnPath
+        get() = viewModel.uiState.value.mapState.polylines.let { lines ->
+            lines.take(1).map(PolylineData::start) + lines.map(PolylineData::end)
+        }
+    private val markers get() = viewModel.uiState.value.mapState.markers
 
     private lateinit var viewModel: MainViewModel
 
     @BeforeEach
     fun setup() {
+        // The label's separators follow the locale
+        Locale.setDefault(Locale.US)
         whenever(getDistancesUseCase()).thenReturn(flowOf(emptyList()))
         whenever(locationRepository.observeLocation()).thenReturn(locations)
-        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(emptyList()))
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
+        whenever(settingsRepository.getCameraAnimation()).thenReturn(CameraAnimation.None)
+        whenever(context.resources).thenReturn(resources)
 
         viewModel = MainViewModel(
             getDistancesUseCase,
@@ -111,12 +129,17 @@ class MainViewModelTest {
             locationRepository,
             permissionChecker,
             coordinatesRepository,
-            distanceCalculator,
-            unitFormatter,
+            DistanceCalculator(),
+            UnitFormatter(UnitConverter()),
             buildConfigProvider,
-            mapStateMapper,
+            MapStateMapper(context),
             loadDistancesMapper
         )
+    }
+
+    @AfterEach
+    fun tearDown() {
+        Locale.setDefault(defaultLocale)
     }
 
     @Test
@@ -203,51 +226,51 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onDistanceToShowSelected plots the stored positions`() = runTest {
-        val positions = listOf(Position(40.0, -3.0), Position(41.0, -4.0))
-        val coordinates = listOf(Coordinates(40.0, -3.0), Coordinates(41.0, -4.0))
-        val mapState = MapUiState(clearMap = true)
+    fun `onDistanceToShowSelected replaces the drawn distance with the stored one`() = runTest {
+        givenDistanceDrawn()
+        val positions = listOf(Position(0.0, 1.0), Position(0.0, 2.0))
         whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
-        whenever(unitFormatter.formatDistance(any(), any())).thenReturn("157 km")
-        whenever(settingsRepository.getCameraAnimation()).thenReturn(CameraAnimation.None)
-        whenever(mapStateMapper.toMapUiState(any())).thenReturn(mapState)
 
         viewModel.onDistanceToShowSelected(1L, "Home")
 
-        verify(coordinatesRepository).clear()
-        coordinates.forEach { verify(coordinatesRepository).append(it) }
-        assertEquals(mapState, viewModel.uiState.value.mapState)
-        assertEquals(coordinates, viewModel.uiState.value.triggerElevationUpdate)
+        assertEquals(listOf(POINT_B, POINT_C), storedPath)
+        assertEquals(listOf(POINT_B, POINT_C), drawnPath)
+        assertEquals(MarkerData.InfoWindow.Visible("Home\n111.19 km"), markers.last().infoWindow)
+        assertEquals(listOf(POINT_B, POINT_C), viewModel.uiState.value.triggerElevationUpdate)
     }
 
     @Test
     fun `onDistanceToShowSelected keeps the map when the distance has no positions`() = runTest {
+        givenDistanceDrawn()
         whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.NotFound)
         val mapState = viewModel.uiState.value.mapState
 
         viewModel.onDistanceToShowSelected(1L, "Home")
 
-        verify(coordinatesRepository, never()).clear()
+        assertEquals(listOf(POINT_A, POINT_B), storedPath)
         assertEquals(mapState, viewModel.uiState.value.mapState)
     }
 
     @Test
     fun `onDistanceToShowSelected keeps the map when loading the positions fails`() = runTest {
+        givenDistanceDrawn()
         whenever(getPositionListUseCase(1L)).thenAnswer { throw IllegalStateException("Database error") }
         val mapState = viewModel.uiState.value.mapState
 
         viewModel.onDistanceToShowSelected(1L, "Home")
 
-        verify(coordinatesRepository, never()).clear()
+        assertEquals(listOf(POINT_A, POINT_B), storedPath)
         assertEquals(mapState, viewModel.uiState.value.mapState)
     }
 
     @Test
     fun `onDistanceFromCurrentPositionSet updates distance mode`() {
+        givenDistanceDrawn()
+
         viewModel.onDistanceFromCurrentPositionSet()
 
-        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_CURRENT_POINT)
-        verify(coordinatesRepository).clear()
+        assertEquals(DistanceMode.FROM_CURRENT_POINT, distanceModeRepository.getDistanceMode())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
@@ -292,7 +315,7 @@ class MainViewModelTest {
     fun `onLocationPermissionDenied switches to any position mode`() {
         viewModel.onLocationPermissionDenied(permanently = false)
 
-        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_ANY_POINT)
+        assertEquals(DistanceMode.FROM_ANY_POINT, distanceModeRepository.getDistanceMode())
         assertEquals(DistanceMode.FROM_ANY_POINT, viewModel.uiState.value.distanceMode)
         assertFalse(viewModel.uiState.value.showLocationPermissionSnackbar)
     }
@@ -301,7 +324,7 @@ class MainViewModelTest {
     fun `onLocationPermissionDenied permanently points the user to settings`() {
         viewModel.onLocationPermissionDenied(permanently = true)
 
-        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_ANY_POINT)
+        assertEquals(DistanceMode.FROM_ANY_POINT, distanceModeRepository.getDistanceMode())
         assertTrue(viewModel.uiState.value.showLocationPermissionSnackbar)
     }
 
@@ -326,10 +349,12 @@ class MainViewModelTest {
 
     @Test
     fun `onDistanceFromAnyPositionSet updates distance mode`() {
+        givenDistanceDrawn()
+
         viewModel.onDistanceFromAnyPositionSet()
 
-        verify(distanceModeRepository).setDistanceMode(DistanceMode.FROM_ANY_POINT)
-        verify(coordinatesRepository).clear()
+        assertEquals(DistanceMode.FROM_ANY_POINT, distanceModeRepository.getDistanceMode())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
@@ -370,53 +395,50 @@ class MainViewModelTest {
     @Test
     fun `onMapClick appends coordinates to repository in any position mode`() {
         val coordinates = Coordinates(40.7128, -74.0060)
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        viewModel.onDistanceFromAnyPositionSet()
 
         viewModel.onMapClick(coordinates)
 
-        verify(coordinatesRepository).append(coordinates)
+        assertEquals(listOf(coordinates), storedPath)
     }
 
     @Test
     fun `onMapClick does nothing without a location when mode is current position`() {
         val coordinates = Coordinates(40.7128, -74.0060)
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
 
         viewModel.onMapClick(coordinates)
 
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
     fun `onPositionByNameResolved appends first point and moves camera in any position mode`() {
         val coordinates = Coordinates(40.0, -3.0)
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        viewModel.onDistanceFromAnyPositionSet()
 
         viewModel.onPositionByNameResolved(coordinates)
 
-        verify(coordinatesRepository).append(coordinates)
+        assertEquals(listOf(coordinates), storedPath)
         assertEquals(CameraUpdate.MoveTo(coordinates), viewModel.uiState.value.mapState.cameraUpdate)
     }
 
     @Test
     fun `onMapLongClick with empty coordinates in any position mode shows missing start point error`() {
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        viewModel.onDistanceFromAnyPositionSet()
         val message = "Start point needed"
         whenever(resourceProvider.get(R.string.toast_first_point_needed)).thenReturn(message)
 
         viewModel.onMapLongClick(Coordinates(40.0, -3.0))
 
         assertEquals(message, viewModel.uiState.value.errorMessage)
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
     fun `onMapLongClick without a location in current-position mode does nothing`() {
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
-
         viewModel.onMapLongClick(Coordinates(40.0, -3.0))
 
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
@@ -439,16 +461,68 @@ class MainViewModelTest {
     @Test
     fun `onPositionByNameResolved without a location in current-position mode moves camera only`() {
         val coordinates = Coordinates(40.4168, -3.7038)
-        whenever(distanceModeRepository.getDistanceMode()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
 
         viewModel.onPositionByNameResolved(coordinates)
 
         assertEquals(CameraUpdate.MoveTo(coordinates), viewModel.uiState.value.mapState.cameraUpdate)
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
+    }
+
+    @Test
+    fun `a long press draws the distance from the tapped point in any position mode`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+
+        viewModel.onMapLongClick(POINT_B)
+
+        assertEquals(listOf(POINT_A, POINT_B), drawnPath)
+        assertEquals(
+            listOf(
+                MarkerData(POINT_A),
+                MarkerData(POINT_B, MarkerData.InfoWindow.Visible("111.19 km")),
+            ),
+            markers
+        )
+    }
+
+    @Test
+    fun `a long press draws the distance from the current location in current position mode`() = runTest {
+        givenLocationTracked()
+        locations.emit(POINT_A)
+
+        viewModel.onMapLongClick(POINT_B)
+
+        assertEquals(listOf(POINT_A, POINT_B), drawnPath)
+        assertEquals(listOf(MarkerData(POINT_B, MarkerData.InfoWindow.Visible("111.19 km"))), markers)
+    }
+
+    @Test
+    fun `taps add points that a long press joins into one path`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+        viewModel.onMapClick(POINT_B)
+
+        viewModel.onMapLongClick(POINT_C)
+
+        assertEquals(listOf(POINT_A, POINT_B, POINT_C), drawnPath)
+        assertEquals(MarkerData.InfoWindow.Visible("222.39 km"), markers.last().infoWindow)
+    }
+
+    @Test
+    fun `a tap after a drawn distance starts a new path`() {
+        givenDistanceDrawn()
+
+        viewModel.onMapClick(POINT_C)
+
+        assertEquals(listOf(POINT_C), storedPath)
+        assertEquals(emptyList<Coordinates>(), drawnPath)
+        assertEquals(listOf(MarkerData(POINT_C)), markers)
     }
 
     @Test
     fun `onDistanceFromAnyPositionSet clears map state and hides chart`() {
+        givenDistanceDrawn()
+
         viewModel.onDistanceFromAnyPositionSet()
 
         assertTrue(viewModel.uiState.value.mapState.clearMap)
@@ -541,8 +615,19 @@ class MainViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.trackLocation() }
     }
 
+    // Draws POINT_A to POINT_B in any position mode
+    private fun givenDistanceDrawn() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+        viewModel.onMapLongClick(POINT_B)
+    }
+
     private companion object {
 
+        // One degree apart on the equator, so 111.19 km from one to the next
+        val POINT_A = Coordinates(0.0, 0.0)
+        val POINT_B = Coordinates(0.0, 1.0)
+        val POINT_C = Coordinates(0.0, 2.0)
         val LONDON = Coordinates(51.5074, -0.1278)
     }
 }
