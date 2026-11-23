@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.common.data
+package gc.david.dfm.geocoding.data
 
-import gc.david.dfm.GeocodeApiKeyProvider
+import gc.david.dfm.geocoding.domain.GeocodeApiKeyProvider
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -26,7 +26,7 @@ import okhttp3.Response
  * Requests to any other host, or over plain HTTP, pass through untouched so the key never reaches another server.
  * A request that already carries a `key` keeps it.
  */
-class GoogleApiKeyInterceptor(private val apiKeyProvider: GeocodeApiKeyProvider) : Interceptor {
+internal class GoogleApiKeyInterceptor(private val apiKeyProvider: GeocodeApiKeyProvider) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

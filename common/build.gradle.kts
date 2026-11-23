@@ -74,11 +74,8 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.koin)
     implementation(libs.koin.android)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.material.components)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.coroutines)
     implementation(libs.timber)
 
     testImplementation(libs.junit.jupiter.api)
@@ -86,6 +83,7 @@ dependencies {
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.kotlinx.serialization.json)
     testImplementation(project(":test-support"))
 }
 

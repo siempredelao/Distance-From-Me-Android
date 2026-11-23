@@ -15,7 +15,7 @@
  */
 package gc.david.dfm.elevation.data.model
 
-import gc.david.dfm.common.data.googleApiJson
+import gc.david.dfm.geocoding.data.googleApiJson
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

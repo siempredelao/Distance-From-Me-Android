@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.common.data
+package gc.david.dfm.geocoding.data
 
-import gc.david.dfm.GeocodeApiKeyProvider
+import gc.david.dfm.geocoding.domain.GeocodeApiKeyProvider
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

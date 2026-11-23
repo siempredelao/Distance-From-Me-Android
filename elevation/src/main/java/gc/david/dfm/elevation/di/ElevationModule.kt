@@ -22,7 +22,7 @@ import gc.david.dfm.elevation.data.mapper.ElevationEntityDataMapper
 import gc.david.dfm.elevation.domain.ElevationRepository
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.presentation.ElevationViewModel
-import gc.david.dfm.common.GOOGLE_API_CLIENT
+import gc.david.dfm.geocoding.di.GOOGLE_API_CLIENT
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

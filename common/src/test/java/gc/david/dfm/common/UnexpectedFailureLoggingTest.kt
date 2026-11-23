@@ -17,7 +17,6 @@
 package gc.david.dfm.common
 
 import android.util.Log
-import gc.david.dfm.common.data.HttpException
 import kotlinx.serialization.SerializationException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -60,8 +59,8 @@ class UnexpectedFailureLoggingTest {
     }
 
     @Test
-    fun `logs an HTTP error as an error with the exception`() {
-        val error = HttpException(403)
+    fun `logs a bug as an error with the exception`() {
+        val error = IllegalStateException("Unexpected state")
 
         logUnexpectedFailure(TAG, error)
 

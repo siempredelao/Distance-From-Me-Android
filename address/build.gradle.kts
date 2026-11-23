@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.okhttp.coroutines)
     implementation(libs.timber)
     implementation(project(":common"))
+    implementation(project(":geocoding"))
 
     testImplementation(libs.coroutines.test)
     testImplementation(libs.junit.jupiter.api)

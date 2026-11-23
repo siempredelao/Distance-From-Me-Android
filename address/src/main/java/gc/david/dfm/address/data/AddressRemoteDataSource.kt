@@ -19,7 +19,7 @@ package gc.david.dfm.address.data
 import gc.david.dfm.address.data.model.AddressCollectionEntity
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.toPlainString
-import gc.david.dfm.common.data.getGoogleApiJson
+import gc.david.dfm.geocoding.data.getGoogleApiJson
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -27,8 +27,8 @@ import okhttp3.OkHttpClient
 import timber.log.Timber
 
 /**
- * Calls the Google Geocoding API. [client] must be the shared [gc.david.dfm.common.GOOGLE_API_CLIENT], which adds the
- * API key.
+ * Calls the Google Geocoding API. [client] must be the shared [gc.david.dfm.geocoding.di.GOOGLE_API_CLIENT], which adds
+ * the API key.
  */
 class AddressRemoteDataSource(
     private val ioDispatcher: CoroutineDispatcher,

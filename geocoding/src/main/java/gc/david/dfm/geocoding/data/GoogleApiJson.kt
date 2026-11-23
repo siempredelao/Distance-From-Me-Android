@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.data
+package gc.david.dfm.geocoding.data
 
 import kotlinx.serialization.json.Json
 

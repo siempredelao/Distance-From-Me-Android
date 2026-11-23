@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.geocoding.data
 
-import android.content.Context
-import gc.david.dfm.common.R
-
-class DefaultGeocodeApiKeyProvider(context: Context) : GeocodeApiKeyProvider {
-
-    private val apiKey = context.getString(R.string.maps_geocode_api_key)
-
-    override fun getApiKey(): String = apiKey
-}
+/**
+ * Thrown when a server answers with a non-2xx status. It is not an [java.io.IOException]: the
+ * request reached a server, so the cause is the server or the request, not connectivity.
+ */
+class HttpException(val code: Int) : RuntimeException("HTTP $code")

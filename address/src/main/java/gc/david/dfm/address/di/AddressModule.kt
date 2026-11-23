@@ -24,7 +24,7 @@ import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
-import gc.david.dfm.common.GOOGLE_API_CLIENT
+import gc.david.dfm.geocoding.di.GOOGLE_API_CLIENT
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

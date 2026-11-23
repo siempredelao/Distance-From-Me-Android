@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.timber)
     implementation(project(":common"))
     implementation(project(":core-settings"))
+    implementation(project(":geocoding"))
 
     testImplementation(libs.coroutines.test)
     testImplementation(libs.junit.jupiter.api)

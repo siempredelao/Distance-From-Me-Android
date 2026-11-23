@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm
+package gc.david.dfm.geocoding.domain
 
-interface GeocodeApiKeyProvider {
+internal interface GeocodeApiKeyProvider {
 
     fun getApiKey(): String
 }

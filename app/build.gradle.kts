@@ -164,6 +164,7 @@ dependencies {
     implementation(project(":elevation"))
     implementation(project(":faq"))
     implementation(project(":feedback"))
+    implementation(project(":geocoding"))
     implementation(project(":opensource"))
     implementation(project(":settings"))
     implementation(project(":show-info"))

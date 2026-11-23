@@ -16,8 +16,8 @@
 
 package gc.david.dfm.elevation.data
 
-import gc.david.dfm.common.data.HttpException
 import gc.david.dfm.elevation.data.model.ElevationStatus
+import gc.david.dfm.geocoding.data.HttpException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType

@@ -16,8 +16,8 @@
 
 package gc.david.dfm.elevation.data
 
-import gc.david.dfm.common.data.getGoogleApiJson
 import gc.david.dfm.elevation.data.model.ElevationEntity
+import gc.david.dfm.geocoding.data.getGoogleApiJson
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -25,8 +25,8 @@ import okhttp3.OkHttpClient
 import timber.log.Timber
 
 /**
- * Calls the Google Elevation API. [client] must be the shared [gc.david.dfm.common.GOOGLE_API_CLIENT], which adds the
- * API key.
+ * Calls the Google Elevation API. [client] must be the shared [gc.david.dfm.geocoding.di.GOOGLE_API_CLIENT], which adds
+ * the API key.
  */
 class ElevationRemoteDataSource(
     private val ioDispatcher: CoroutineDispatcher,
