@@ -14,44 +14,19 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.unit.test)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
 
 android {
-
     namespace = "gc.david.dfm.core.distances"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-    }
-
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
-    }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
-    }
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
@@ -63,13 +38,4 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     implementation(libs.timber)
-
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-    testImplementation(libs.mockito)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(project(":test-support"))
-
-    testRuntimeOnly(libs.junit.jupiter.engine)
 }

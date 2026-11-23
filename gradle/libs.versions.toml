@@ -100,6 +100,10 @@ konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 
+# Gradle plugins used by build-logic
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
@@ -111,3 +115,10 @@ kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room"}
+
+# Convention plugins from build-logic
+dfm-android-application = { id = "dfm.android.application" }
+dfm-android-compose = { id = "dfm.android.compose" }
+dfm-android-library = { id = "dfm.android.library" }
+dfm-jvm-library = { id = "dfm.jvm.library" }
+dfm-unit-test = { id = "dfm.unit-test" }
