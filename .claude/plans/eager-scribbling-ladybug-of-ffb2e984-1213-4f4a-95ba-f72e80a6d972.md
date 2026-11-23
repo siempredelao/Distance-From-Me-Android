@@ -5,6 +5,7 @@ The user listed six items: the LeakCanary leaks, feature modules that depend on 
 - The convention plugins come first so that new modules are cheap to create.
 - The directory moves come before the splits so that new modules go straight into `core/`, `support/` or `features/`.
 - The leak fix comes last, at the user's request, on top of the final module layout.
+- Added during step 5 (2026-11-23): the release build fails in R8. Fixing it is the last step of this plan, at the user's request.
 
 Decisions made with the user:
 - `:address` splits into `:core:address` and a small `:features:address` that keeps `AddressViewModel`.
@@ -122,10 +123,12 @@ Working rules (from memory):
   - Search still works.
 
 ## Step 5: Split `:core:common`
+5a is done (1c10654).
+
 One commit per sub-step. Each new module uses the step 1 plugins, gets its own Koin module registered in `DFMApplication`, and takes its tests with it.
 - **5a**: move single-consumer code to its consumer.
   - `BuildConfigProvider` and `PermissionChecker` (+ `DefaultPermissionChecker` and its test) go to `:app`.
-  - The launcher mipmaps (main + release) go to `:app`.
+  - The launcher mipmaps (main + release) go to `:app`. Done differently: they went to `:core:design-system`, because the About screen draws the icon too.
   - `toPlainString` (+ `DoubleExtTest`) goes to `:core:geocoding`.
   - The unused `dimens.xml` is deleted.
 - **5b `:support:coroutines`**: `launchCatching`, `suspendRunCatching`, `logUnexpectedFailure`, the IO `CoroutineDispatcher` binding, and their tests.
@@ -140,6 +143,16 @@ One commit per sub-step. Each new module uses the step 1 plugins, gets its own K
   - After 5f, an emulator smoke run covering distance, units switch, elevation chart, Show info share, About links and the no-connection toast.
 
 ## Step 6: Fix the MainActivity leak
+**Outcome (2026-11-23):** not fixable inside this plan; documented instead, at the user's choice.
+- **Cause:** maps-compose 6.2.0's `GoogleMap` (`launchSubcomposition`, `GoogleMap.kt:216`) waits for the map with maps-ktx 5.1.1's `MapView.awaitMap()`, a non-cancellable `suspendCoroutine` around `getMapAsync`. If `MainActivity` is destroyed before the map is ready, the callback never comes, that effect coroutine never ends, the window recomposer can't shut down, and the destroyed Activity stays reachable through `SnapshotKt.applyObservers`.
+- **Reproduction:**
+  - Recreate `MainActivity` within about a second of launch, with a size, density or dark-mode change (`wm size 1600x2560` + `wm density 320`, or `cmd uimode night yes` right after the map screen appears).
+  - The same changes five seconds after launch don't leak, and neither does Back with or without the chart.
+- **Fix path:** maps-compose 9.x uses `android-maps-utils-core` 6.0.0's cancellable `awaitMap` (`suspendCancellableCoroutine`). maps-compose 6.12.2 and 8.6.0 still use the old one, and maps-ktx never changed. A trial build with maps-compose 9.0.1 fails `checkDebugAarMetadata`: 9.0.1 and the Compose 1.12 and material3-adaptive 1.3 libraries it pulls in need compileSdk 37 and AGP 9.1.0.
+- **Done here:** a comment at the `GoogleMap` call in `MapContent.kt`, a known-issues note in `CLAUDE.md` (docs step).
+- **Follow-up:** a separate plan, after this one, for the toolchain upgrade (AGP 9.1, Gradle 9, compileSdk 37, Kotlin 2.4, KSP, Compose BOM, maps-compose 9.0.1), using the `agp-9-upgrade` skill. Then check this leak is gone with the same reproduction.
+
+Original approach, kept for reference:
 1. Find the trigger. Reproduce one action at a time with logcat filtered on `LeakCanary`:
    - rotation
    - Back out of the map
@@ -159,11 +172,26 @@ One commit per sub-step. Each new module uses the step 1 plugins, gets its own K
 
 ## Final step: docs and memory
 - `CLAUDE.md`:
+  - A known-issues note: the maps-compose 6 leak (step 6 outcome) and the release build until the last step.
   - The module graph, rewritten around the four groups and their allowed dependencies, naming the Konsist guards that enforce them.
   - The commands, the `:common` references and the test-support instructions.
   - The convention plugins, replacing the "new test module needs…" list.
 - README module and Testing sections, and `BRANCH_COVERAGE_REPORT.md` paths.
 - Memory: plan progress.
+
+## Last step: make `assembleRelease` pass
+- **Problem:** `./gradlew :app:assembleRelease` fails in `minifyReleaseWithR8` with "Missing class `androidx.window.extensions.WindowExtensions`…". A clean checkout of 5df975d fails the same way, so it predates step 5.
+  - **Cause:** material3-adaptive 1.2.0 (c86ccf4, 2026-11-22, the collapsed rail) brings in `androidx.window`. It references `androidx.window.extensions.*` and `androidx.window.sidecar.*` classes that the device supplies at runtime.
+  - `app/proguard/proguard-androidx-window.pro` (2026-09-03) only suppresses four of them. R8's `missing_rules.txt` lists 12 more.
+- **Fix:** in `proguard-androidx-window.pro`, replace the per-class lines with `-dontwarn androidx.window.extensions.**` and `-dontwarn androidx.window.sidecar.**`. Rebuild and check that R8 reports no other missing classes.
+- **Build check:**
+  - `./gradlew :app:assembleRelease :app:assembleBeta -x uploadCrashlyticsMappingFileRelease -x uploadCrashlyticsMappingFileBeta`. The upload tasks are excluded because they would send the mapping files to Firebase, and these are test builds, not releases.
+  - Also run the Crashlytics plugin's other release tasks (`injectCrashlyticsMappingFileId…`). They only write into the build.
+- **Runtime check:** install the release APK on `emulator-5554`.
+  - Release and debug are signed with different keys and share `gc.david.dfm`, so the debug app has to be uninstalled first. That deletes its data, including LeakCanary's `leaks.db`. The hprofs in `/sdcard/Download/leakcanary-gc.david.dfm/` stay for step 6.
+  - Flows: the map and rail, including the collapsed rail at tablet width (the `androidx.window` code path); search and Show info (kotlinx.serialization parsing after R8); saving and loading a distance (Room); the elevation chart; About and its links; Settings.
+  - Reinstall the debug build afterwards.
+- **Keep it passing:** after this step, the release build command above is part of every change's verification.
 
 ## Verification (every step)
 - Unit tests: `./gradlew testDebugUnitTest`.
