@@ -18,7 +18,7 @@ package gc.david.dfm.initializers
 
 import android.app.Application
 import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.core.settings.domain.SettingsRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any

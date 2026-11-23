@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.settings.domain
+package gc.david.dfm.core.settings.domain
 
 import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
 
 interface SettingsRepository {
 

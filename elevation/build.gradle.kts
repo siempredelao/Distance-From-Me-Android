@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.okhttp.coroutines)
     implementation(libs.timber)
     implementation(project(":common"))
-    implementation(project(":settings"))
+    implementation(project(":core-settings"))
 
     testImplementation(libs.coroutines.test)
     testImplementation(libs.junit.jupiter.api)

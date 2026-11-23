@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.settings.data
+package gc.david.dfm.core.settings.data
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -50,6 +50,7 @@ class SettingsDiskDataSource(private val context: Context) {
 
     companion object {
 
+        // The keys and values match the preferences in :settings' res/xml/settings.xml, which writes them
         private const val MEASURE_UNIT_KEY = "unit"
         const val MEASURE_EUROPEAN_UNIT_VALUE = "EU"
         const val MEASURE_AMERICAN_UNIT_VALUE = "US"

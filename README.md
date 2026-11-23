@@ -24,12 +24,13 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | `:common` | Shared resources and utilities |
 | `:connectivity` | Connection issues UI |
 | `:core-distances` | Room database and distance domain |
+| `:core-settings` | Settings repository (unit system, camera animation and elevation chart preferences) |
 | `:design-system` | Compose theme and shared UI components |
 | `:elevation` | Elevation profile feature |
 | `:faq` | FAQ / Help & Feedback feature |
 | `:feedback` | In-app review dialog |
 | `:opensource` | Open source licenses screen |
-| `:settings` | Settings screen (unit system and camera animation preferences) |
+| `:settings` | Settings screen that edits those preferences |
 | `:show-info` | Distance detail and sharing screen |
 | `:support:konsist` | Konsist guards that enforce architecture and code conventions |
 | `:test-support` | Shared test utilities |
@@ -62,13 +63,14 @@ For detailed branch coverage analysis, see [BRANCH_COVERAGE_REPORT.md](BRANCH_CO
 
 ```bash
 # Run all module tests with visual progress feedback
-cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core-distances common show-info address opensource elevation settings app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
+cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core-distances core-settings common show-info address opensource elevation settings app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
 
 # Or run tests for all modules at once (debug variant)
 ./gradlew testDebugUnitTest
 
 # Run tests for specific module
 ./gradlew :core-distances:testDebugUnitTest
+./gradlew :core-settings:testDebugUnitTest
 ./gradlew :common:testDebugUnitTest
 ./gradlew :show-info:testDebugUnitTest
 ./gradlew :address:testDebugUnitTest

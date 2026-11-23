@@ -159,6 +159,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":connectivity"))
     implementation(project(":core-distances"))
+    implementation(project(":core-settings"))
     implementation(project(":design-system"))
     implementation(project(":elevation"))
     implementation(project(":faq"))

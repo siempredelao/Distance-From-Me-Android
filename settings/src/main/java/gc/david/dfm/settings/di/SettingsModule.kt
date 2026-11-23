@@ -16,17 +16,11 @@
 
 package gc.david.dfm.settings.di
 
-import gc.david.dfm.settings.data.SettingsDiskDataSource
-import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.data.BaseSettingsRepository
 import gc.david.dfm.settings.presentation.SettingsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val settingsModule = module {
 
-    single { SettingsDiskDataSource(get()) }
-    single { BaseSettingsRepository(get()) }
-    single<SettingsRepository> { get<BaseSettingsRepository>() }
     viewModel { SettingsViewModel(get(), get()) }
 }

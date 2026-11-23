@@ -18,13 +18,13 @@ package gc.david.dfm.main.presentation.mapper
 
 import android.content.Context
 import gc.david.dfm.R
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
-import gc.david.dfm.settings.domain.model.CameraAnimation
 
 /**
  * Maps DrawDistanceModel (presentation model) to MapUiState (rendering model).

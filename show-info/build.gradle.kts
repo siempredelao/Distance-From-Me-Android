@@ -71,8 +71,8 @@ dependencies {
     implementation(project(":address"))
     implementation(project(":common"))
     implementation(project(":core-distances"))
+    implementation(project(":core-settings"))
     implementation(project(":design-system"))
-    implementation(project(":settings"))
     debugImplementation(libs.compose.ui.tooling)
 
     testImplementation(libs.coroutines.test)

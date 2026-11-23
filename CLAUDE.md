@@ -29,9 +29,10 @@ SDK levels, app `versionCode`/`versionName`, and all dependency versions are in 
 
 ### Module graph
 - `:app` depends on every feature module. It owns `MainActivity` (a Compose screen with the map), `OnboardActivity`, and the in-memory `CoordinatesRepository` implementation.
-- Feature modules (`:address`, `:elevation`, `:faq`, `:opensource`, `:settings`, `:show-info`, `:about`, `:feedback`, `:connectivity`) depend on `:common` and sometimes `:core-distances` or `:design-system`. They don't depend on `:app`.
+- Feature modules (`:address`, `:elevation`, `:faq`, `:opensource`, `:settings`, `:show-info`, `:about`, `:feedback`, `:connectivity`) depend on `:common` and sometimes `:core-distances`, `:core-settings` or `:design-system`. They don't depend on `:app`.
 - `:common` holds cross-cutting abstractions: `ConnectionManager`, `PermissionChecker`, `GeocodeApiKeyProvider`, `BuildConfigProvider`, `ResourceProvider`, `DistanceCalculator`/`UnitConverter`/`DistanceFormatter`, and the `CoordinatesRepository` interface. Feature modules share state through these interfaces, and `:app` supplies the implementations. For example, `ShowInfoViewModel` reads the points the user drew through `CoordinatesRepository`, which is backed by `CoordinatesMemoryDataSource` in `:app`.
 - `:core-distances` is the Room database (`DFMDatabase`) plus the distance and position use cases. Room schemas are exported to `core-distances/schemas/`. Commit the new schema JSON when you change entities.
+- `:core-settings` is the settings repository (`SettingsRepository`, backed by the default `SharedPreferences`) that the map, elevation and Show info screens read. `:settings` is only the screen that edits those preferences, through `res/xml/settings.xml`, so keys changed on one side must change on the other.
 - `:test-support` provides `CoroutineExtension`, the JUnit 5 extension that swaps `Dispatchers.Main`.
 - `:support:konsist` is a plain Kotlin JVM module whose tests use Konsist to parse every module's sources and enforce the conventions in this file: layer dependencies, use case and ViewModel shape, repository naming, Koin registration, Activity `open` functions, license headers, and test presence. When you add a convention, add a guard there too.
 

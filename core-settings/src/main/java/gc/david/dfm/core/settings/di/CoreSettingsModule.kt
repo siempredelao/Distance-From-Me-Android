@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.settings.domain.model
+package gc.david.dfm.core.settings.di
 
-sealed interface CameraAnimation {
+import gc.david.dfm.core.settings.data.BaseSettingsRepository
+import gc.david.dfm.core.settings.data.SettingsDiskDataSource
+import gc.david.dfm.core.settings.domain.SettingsRepository
+import org.koin.dsl.module
 
-    sealed class Animate : CameraAnimation {
+val coreSettingsModule = module {
 
-        data object Centre : Animate()
-
-        data object Destination : Animate()
-    }
-
-    data object None : CameraAnimation
+    single { SettingsDiskDataSource(get()) }
+    single { BaseSettingsRepository(get()) }
+    single<SettingsRepository> { get<BaseSettingsRepository>() }
 }

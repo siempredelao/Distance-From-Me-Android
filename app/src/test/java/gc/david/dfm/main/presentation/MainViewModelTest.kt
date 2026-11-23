@@ -31,6 +31,8 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
 import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.core.distances.domain.model.PositionListResult
+import gc.david.dfm.core.settings.domain.SettingsRepository
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository
@@ -41,8 +43,6 @@ import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
-import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.settings.domain.model.CameraAnimation
 import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow

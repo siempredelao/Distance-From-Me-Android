@@ -20,11 +20,11 @@ import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
+import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.domain.model.ElevationError
 import gc.david.dfm.elevation.domain.model.ElevationResult
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
-import gc.david.dfm.settings.domain.SettingsRepository
 import gc.david.dfm.testsupport.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest

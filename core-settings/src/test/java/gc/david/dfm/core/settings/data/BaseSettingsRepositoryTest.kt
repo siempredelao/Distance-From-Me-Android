@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.settings.data
+package gc.david.dfm.core.settings.data
 
 import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
