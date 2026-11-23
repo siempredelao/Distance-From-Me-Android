@@ -22,8 +22,6 @@ import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.CoordinatesRepository
 import gc.david.dfm.common.domain.DistanceCalculator
-import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
@@ -32,6 +30,8 @@ import gc.david.dfm.core.distances.domain.model.Position
 import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.units.domain.model.UnitSystem
+import gc.david.dfm.core.units.presentation.DistanceFormatter
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository

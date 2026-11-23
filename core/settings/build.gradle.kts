@@ -29,5 +29,5 @@ dependencies {
     implementation(libs.androidx.preference)
     implementation(libs.koin)
     implementation(libs.koin.android)
-    implementation(project(":core:common"))
+    implementation(project(":core:units"))
 }

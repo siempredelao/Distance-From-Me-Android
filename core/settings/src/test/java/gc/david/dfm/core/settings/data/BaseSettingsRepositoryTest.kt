@@ -16,8 +16,8 @@
 
 package gc.david.dfm.core.settings.data
 
-import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.units.domain.model.UnitSystem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue

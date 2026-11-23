@@ -42,5 +42,6 @@ dependencies {
     implementation(project(":core:design-system"))
     implementation(project(":core:distances"))
     implementation(project(":core:settings"))
+    implementation(project(":core:units"))
     implementation(project(":support:coroutines"))
 }

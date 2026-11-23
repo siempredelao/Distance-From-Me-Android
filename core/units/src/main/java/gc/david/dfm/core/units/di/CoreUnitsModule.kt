@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.domain.model
+package gc.david.dfm.core.units.di
 
-/**
- * Represents the unit system for measurements.
- */
-enum class UnitSystem {
-    /**
-     * Metric system (meters, kilometers).
-     */
-    METRIC,
-    /**
-     * Imperial system (feet, yards, miles).
-     */
-    IMPERIAL
+import gc.david.dfm.core.units.domain.UnitConverter
+import gc.david.dfm.core.units.presentation.DistanceFormatter
+import org.koin.dsl.module
+
+val coreUnitsModule = module {
+    single { UnitConverter() }
+    single { DistanceFormatter(get()) }
 }

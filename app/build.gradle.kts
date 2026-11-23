@@ -134,6 +134,7 @@ dependencies {
     implementation(project(":core:distances"))
     implementation(project(":core:geocoding"))
     implementation(project(":core:settings"))
+    implementation(project(":core:units"))
     implementation(project(":features:about"))
     implementation(project(":features:address"))
     implementation(project(":features:connectivity"))

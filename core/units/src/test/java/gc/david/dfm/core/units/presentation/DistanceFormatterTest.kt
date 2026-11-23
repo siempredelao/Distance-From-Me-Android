@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.presentation
+package gc.david.dfm.core.units.presentation
 
-import gc.david.dfm.common.domain.UnitConverter
-import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.core.units.domain.UnitConverter
+import gc.david.dfm.core.units.domain.model.UnitSystem
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

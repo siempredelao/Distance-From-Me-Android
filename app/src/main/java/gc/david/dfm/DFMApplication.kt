@@ -22,6 +22,7 @@ import gc.david.dfm.common.commonModule
 import gc.david.dfm.core.address.di.coreAddressModule
 import gc.david.dfm.core.distances.di.coreDistancesModule
 import gc.david.dfm.core.settings.di.coreSettingsModule
+import gc.david.dfm.core.units.di.coreUnitsModule
 import gc.david.dfm.di.appModule
 import gc.david.dfm.elevation.di.elevationModule
 import gc.david.dfm.geocoding.di.geocodingModule
@@ -51,6 +52,7 @@ class DFMApplication : Application() {
                 appModule,
                 coreDistancesModule,
                 coreSettingsModule,
+                coreUnitsModule,
                 commonModule,
                 coreAddressModule,
                 coroutinesModule,

@@ -16,19 +16,19 @@
 
 package gc.david.dfm.showinfo.presentation
 
+import gc.david.dfm.common.Coordinates
+import gc.david.dfm.common.domain.ConnectionManager
+import gc.david.dfm.common.domain.CoordinatesRepository
+import gc.david.dfm.common.domain.DistanceCalculator
+import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingError
 import gc.david.dfm.core.address.domain.model.GeocodingResult
 import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.domain.ConnectionManager
-import gc.david.dfm.common.domain.CoordinatesRepository
-import gc.david.dfm.common.presentation.ResourceProvider
-import gc.david.dfm.common.domain.DistanceCalculator
-import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.core.settings.domain.SettingsRepository
+import gc.david.dfm.core.units.domain.model.UnitSystem
+import gc.david.dfm.core.units.presentation.DistanceFormatter
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper

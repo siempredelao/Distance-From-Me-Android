@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.domain
+package gc.david.dfm.core.units.domain
 
-import gc.david.dfm.common.domain.model.UnitSystem
+import gc.david.dfm.core.units.domain.model.UnitSystem
 
 /**
  * Pure domain logic for unit conversions between metric and imperial systems.

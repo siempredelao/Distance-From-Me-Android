@@ -44,5 +44,6 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:geocoding"))
     implementation(project(":core:settings"))
+    implementation(project(":core:units"))
     implementation(project(":support:coroutines"))
 }
