@@ -31,4 +31,5 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(project(":core:address"))
     implementation(project(":core:common"))
+    implementation(project(":support:coroutines"))
 }

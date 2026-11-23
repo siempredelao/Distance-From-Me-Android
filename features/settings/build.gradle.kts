@@ -39,8 +39,9 @@ dependencies {
     implementation(libs.material.components)
     implementation(libs.timber)
     implementation(project(":core:common"))
-    implementation(project(":core:distances"))
     implementation(project(":core:design-system"))
+    implementation(project(":core:distances"))
+    implementation(project(":support:coroutines"))
 
     testImplementation(libs.androidx.arch.core.testing)
 }

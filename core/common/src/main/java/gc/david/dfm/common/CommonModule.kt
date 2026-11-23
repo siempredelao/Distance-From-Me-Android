@@ -22,15 +22,12 @@ import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
 
 val commonModule = module {
 
     single { ResourceProvider(get()) }
     single<ConnectionManager> { DefaultConnectionManager(get()) }
-    single<CoroutineDispatcher> { Dispatchers.IO }
     
     // Distance calculation and unit conversion
     single { DistanceCalculator() }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm.support.coroutines
 
 import android.util.Log
 import kotlinx.serialization.SerializationException

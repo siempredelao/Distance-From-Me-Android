@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm.support.coroutines
 
 import timber.log.Timber
 import java.io.IOException

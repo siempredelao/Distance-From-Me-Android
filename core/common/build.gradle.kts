@@ -35,6 +35,4 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.timber)
-
-    testImplementation(libs.kotlinx.serialization.json)
 }

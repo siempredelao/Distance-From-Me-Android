@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.timber)
     implementation(project(":core:common"))
     implementation(project(":core:design-system"))
+    implementation(project(":support:coroutines"))
 
     testImplementation(libs.androidx.arch.core.testing)
 }

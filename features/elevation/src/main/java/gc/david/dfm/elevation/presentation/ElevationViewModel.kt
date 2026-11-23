@@ -20,14 +20,14 @@ import androidx.lifecycle.ViewModel
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.common.launchCatching
-import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.domain.model.ElevationResult
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.elevation.presentation.model.ElevationUiState
+import gc.david.dfm.support.coroutines.launchCatching
+import gc.david.dfm.support.coroutines.logUnexpectedFailure
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

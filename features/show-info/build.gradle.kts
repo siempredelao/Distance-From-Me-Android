@@ -39,7 +39,8 @@ dependencies {
     implementation(libs.timber)
     implementation(project(":core:address"))
     implementation(project(":core:common"))
+    implementation(project(":core:design-system"))
     implementation(project(":core:distances"))
     implementation(project(":core:settings"))
-    implementation(project(":core:design-system"))
+    implementation(project(":support:coroutines"))
 }

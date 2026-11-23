@@ -25,8 +25,6 @@ import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.CoordinatesRepository
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.common.launchCatching
-import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
@@ -45,6 +43,8 @@ import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
+import gc.david.dfm.support.coroutines.launchCatching
+import gc.david.dfm.support.coroutines.logUnexpectedFailure
 import gc.david.dfm.toCoordinates
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

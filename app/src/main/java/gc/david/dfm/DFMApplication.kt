@@ -25,10 +25,11 @@ import gc.david.dfm.core.settings.di.coreSettingsModule
 import gc.david.dfm.di.appModule
 import gc.david.dfm.elevation.di.elevationModule
 import gc.david.dfm.geocoding.di.geocodingModule
+import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.opensource.di.openSourceModule
 import gc.david.dfm.settings.di.settingsModule
 import gc.david.dfm.showinfo.di.showInfoModule
-import gc.david.dfm.initializers.Initializers
+import gc.david.dfm.support.coroutines.coroutinesModule
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -52,6 +53,7 @@ class DFMApplication : Application() {
                 coreSettingsModule,
                 commonModule,
                 coreAddressModule,
+                coroutinesModule,
                 elevationModule,
                 geocodingModule,
                 openSourceModule,

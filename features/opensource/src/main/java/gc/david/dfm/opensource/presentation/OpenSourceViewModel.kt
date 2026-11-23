@@ -17,13 +17,13 @@
 package gc.david.dfm.opensource.presentation
 
 import androidx.lifecycle.ViewModel
-import gc.david.dfm.common.launchCatching
-import gc.david.dfm.common.logUnexpectedFailure
 import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
+import gc.david.dfm.support.coroutines.launchCatching
+import gc.david.dfm.support.coroutines.logUnexpectedFailure
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -18,18 +18,16 @@ package gc.david.dfm.showinfo.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
-import gc.david.dfm.core.address.domain.model.GeocodingResult
-import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.CoordinatesRepository
-import gc.david.dfm.common.logUnexpectedFailure
-import gc.david.dfm.common.suspendRunCatching
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.presentation.DistanceFormatter
+import gc.david.dfm.common.presentation.ResourceProvider
+import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.core.address.domain.model.GeocodingResult
+import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
@@ -37,6 +35,8 @@ import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import gc.david.dfm.showinfo.presentation.model.SaveDialogData
 import gc.david.dfm.showinfo.presentation.model.ShareIntentData
 import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
+import gc.david.dfm.support.coroutines.logUnexpectedFailure
+import gc.david.dfm.support.coroutines.suspendRunCatching
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
