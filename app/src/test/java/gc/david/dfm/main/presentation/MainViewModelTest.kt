@@ -35,7 +35,7 @@ import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository
 import gc.david.dfm.location.domain.PermissionChecker
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
-import gc.david.dfm.main.domain.StoredDistances
+import gc.david.dfm.main.domain.model.StoredDistances
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
@@ -64,6 +64,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -182,7 +183,7 @@ class MainViewModelTest {
     @Test
     fun `onLoadDistancesClick updates selectFromDistancesLoaded with mapped distance list`() = runTest {
         val storedDistances = StoredDistances(
-            distances = listOf(Distance(1L, "Home", "3.2 km", java.util.Date(0))),
+            distances = listOf(Distance(1L, "Home", "3.2 km", Date(0))),
             rateRequest = StoredDistances.RateRequest.NotAvailable
         )
         val expected = listOf(

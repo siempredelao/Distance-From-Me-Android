@@ -17,7 +17,7 @@
 package gc.david.dfm.main.presentation.mapper
 
 import gc.david.dfm.R
-import gc.david.dfm.main.domain.StoredDistances
+import gc.david.dfm.main.domain.model.StoredDistances
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import java.text.DateFormat
