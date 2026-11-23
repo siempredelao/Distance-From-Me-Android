@@ -21,10 +21,7 @@ import com.google.android.gms.location.LocationServices
 import gc.david.dfm.AppNavigator
 import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.DefaultBuildConfigProvider
-import gc.david.dfm.common.domain.CoordinatesRepository
-import gc.david.dfm.distance.data.BaseCoordinatesRepository
 import gc.david.dfm.distance.data.BaseDistanceModeRepository
-import gc.david.dfm.distance.data.CoordinatesMemoryDataSource
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
@@ -49,8 +46,6 @@ val appModule = module {
     single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get()), MapInitializer()) }
     single { Initializers(get()) }
     single<DistanceModeRepository> { BaseDistanceModeRepository() }
-    single { CoordinatesMemoryDataSource() }
-    single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
     single<LocationRepository> { BaseLocationRepository(get()) }
     single<PermissionChecker> { DefaultPermissionChecker(get()) }

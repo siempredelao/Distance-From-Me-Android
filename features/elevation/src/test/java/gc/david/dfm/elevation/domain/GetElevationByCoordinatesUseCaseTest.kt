@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.elevation.domain.model.ElevationResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

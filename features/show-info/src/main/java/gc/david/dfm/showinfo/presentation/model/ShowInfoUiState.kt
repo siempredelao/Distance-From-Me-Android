@@ -16,7 +16,7 @@
 
 package gc.david.dfm.showinfo.presentation.model
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 
 data class ShowInfoUiState(
     val originAddress: String = "",

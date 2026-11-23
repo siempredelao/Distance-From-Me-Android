@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.domain
+package gc.david.dfm.core.coordinates.domain.model
 
-import gc.david.dfm.common.Coordinates
-import kotlinx.coroutines.flow.StateFlow
-
-interface CoordinatesRepository {
-
-    fun observeDistance(): StateFlow<List<Coordinates>>
-
-    fun append(coordinates: Coordinates)
-
-    fun clear()
-}
+data class Coordinates(val latitude: Double, val longitude: Double)

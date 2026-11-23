@@ -39,7 +39,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData

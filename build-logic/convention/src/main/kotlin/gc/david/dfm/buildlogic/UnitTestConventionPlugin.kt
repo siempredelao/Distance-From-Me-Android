@@ -22,13 +22,22 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
 /**
- * JUnit 5 unit tests for an Android module, with Mockito, coroutines-test and the shared
- * `CoroutineExtension`. Apply it after dfm.android.application or dfm.android.library.
+ * JUnit 5 unit tests with Mockito and coroutines-test. Apply it after the module's dfm plugin.
+ *
+ * Android modules also get `:support:test` and its `CoroutineExtension`. Plain JVM modules
+ * (dfm.jvm.library) don't, because `:support:test` is an Android library; they have no Main
+ * dispatcher to swap anyway, and dfm.jvm.library already runs their tests on JUnit Platform.
  */
 class UnitTestConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
-        android.testOptions.unitTests.all { it.useJUnitPlatform() }
+        val isAndroid = extensions.findByName("android") != null
+        check(isAndroid || pluginManager.hasPlugin("org.jetbrains.kotlin.jvm")) {
+            "$path: apply an Android or JVM dfm plugin before dfm.unit-test"
+        }
+        if (isAndroid) {
+            android.testOptions.unitTests.all { it.useJUnitPlatform() }
+        }
 
         dependencies {
             "testImplementation"(libs.library("coroutines-test"))
@@ -36,7 +45,9 @@ class UnitTestConventionPlugin : Plugin<Project> {
             "testImplementation"(libs.library("junit-jupiter-params"))
             "testImplementation"(libs.library("mockito"))
             "testImplementation"(libs.library("mockito-kotlin"))
-            "testImplementation"(project(TEST_SUPPORT_PATH))
+            if (isAndroid) {
+                "testImplementation"(project(TEST_SUPPORT_PATH))
+            }
 
             "testRuntimeOnly"(libs.library("junit-jupiter-engine"))
         }

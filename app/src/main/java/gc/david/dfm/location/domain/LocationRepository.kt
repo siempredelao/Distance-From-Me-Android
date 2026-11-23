@@ -15,7 +15,7 @@
  */
 package gc.david.dfm.location.domain
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlinx.coroutines.flow.Flow
 
 interface LocationRepository {

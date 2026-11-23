@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.domain
+package gc.david.dfm.core.coordinates.domain
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlin.math.*
 
 /**

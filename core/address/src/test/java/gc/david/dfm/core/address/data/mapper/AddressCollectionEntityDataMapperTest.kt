@@ -17,14 +17,14 @@
 package gc.david.dfm.core.address.data.mapper
 
 import gc.david.dfm.core.address.data.model.AddressCollectionEntity
-import gc.david.dfm.core.address.data.model.Geometry
 import gc.david.dfm.core.address.data.model.GeocodingStatus
+import gc.david.dfm.core.address.data.model.Geometry
 import gc.david.dfm.core.address.data.model.Location
 import gc.david.dfm.core.address.data.model.Result
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingError
 import gc.david.dfm.core.address.domain.model.GeocodingResult
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest

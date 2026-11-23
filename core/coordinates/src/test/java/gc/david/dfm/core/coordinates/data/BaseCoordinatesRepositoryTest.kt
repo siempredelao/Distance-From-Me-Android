@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.data
+package gc.david.dfm.core.coordinates.data
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

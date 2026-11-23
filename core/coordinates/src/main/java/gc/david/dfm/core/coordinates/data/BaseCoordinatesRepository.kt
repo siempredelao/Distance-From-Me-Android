@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.distance.data
+package gc.david.dfm.core.coordinates.data
 
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.domain.CoordinatesRepository
+import gc.david.dfm.core.coordinates.domain.CoordinatesRepository
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlinx.coroutines.flow.StateFlow
 
 class BaseCoordinatesRepository(

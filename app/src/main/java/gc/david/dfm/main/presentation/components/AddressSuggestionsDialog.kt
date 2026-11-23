@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.R
 import gc.david.dfm.core.address.domain.model.Address
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.designsystem.Spacing
 
 /**

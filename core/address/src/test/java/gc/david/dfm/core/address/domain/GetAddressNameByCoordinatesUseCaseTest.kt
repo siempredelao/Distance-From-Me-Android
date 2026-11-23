@@ -18,7 +18,7 @@ package gc.david.dfm.core.address.domain
 
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingResult
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame

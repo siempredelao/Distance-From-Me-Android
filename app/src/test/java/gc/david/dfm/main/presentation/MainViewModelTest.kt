@@ -18,11 +18,11 @@ package gc.david.dfm.main.presentation
 
 import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.R
-import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
-import gc.david.dfm.common.domain.CoordinatesRepository
-import gc.david.dfm.common.domain.DistanceCalculator
 import gc.david.dfm.common.presentation.ResourceProvider
+import gc.david.dfm.core.coordinates.domain.CoordinatesRepository
+import gc.david.dfm.core.coordinates.domain.DistanceCalculator
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance

@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+plugins {
+    alias(libs.plugins.dfm.jvm.library)
+    alias(libs.plugins.dfm.unit.test)
+}
 
-data class Coordinates(val latitude: Double, val longitude: Double)
+dependencies {
+
+    implementation(libs.coroutines.core)
+    implementation(libs.koin)
+}

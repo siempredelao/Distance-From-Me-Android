@@ -15,7 +15,7 @@
  */
 package gc.david.dfm
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.distances.domain.model.Position
 
 /**

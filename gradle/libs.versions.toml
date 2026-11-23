@@ -67,6 +67,8 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+# For plain Kotlin JVM modules, which can't use the Android artifact
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx", version.ref = "crashlytics" }
 graphview = { module = "com.jjoe64:graphview", version.ref = "graphview" }
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }

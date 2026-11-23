@@ -16,7 +16,7 @@
 
 package gc.david.dfm.elevation.domain
 
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.elevation.domain.model.ElevationResult
 import gc.david.dfm.geocoding.toPlainString
 

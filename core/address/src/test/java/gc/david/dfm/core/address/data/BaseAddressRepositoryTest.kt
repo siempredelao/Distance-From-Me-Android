@@ -21,7 +21,7 @@ import gc.david.dfm.core.address.data.model.AddressCollectionEntity
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingError
 import gc.david.dfm.core.address.domain.model.GeocodingResult
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame

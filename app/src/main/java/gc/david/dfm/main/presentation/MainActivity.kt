@@ -40,9 +40,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.common.collectOnStarted
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel

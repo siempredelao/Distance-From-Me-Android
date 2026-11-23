@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.okhttp.coroutines)
     implementation(libs.timber)
     implementation(project(":core:common"))
+    implementation(project(":core:coordinates"))
     implementation(project(":core:geocoding"))
     implementation(project(":core:settings"))
     implementation(project(":core:units"))

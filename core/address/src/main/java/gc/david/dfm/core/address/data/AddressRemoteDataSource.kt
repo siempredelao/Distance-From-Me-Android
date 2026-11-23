@@ -16,8 +16,8 @@
 
 package gc.david.dfm.core.address.data
 
-import gc.david.dfm.common.Coordinates
 import gc.david.dfm.core.address.data.model.AddressCollectionEntity
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.geocoding.data.getGoogleApiJson
 import gc.david.dfm.geocoding.toPlainString
 import kotlinx.coroutines.CoroutineDispatcher

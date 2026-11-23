@@ -20,6 +20,7 @@ import android.app.Application
 import gc.david.dfm.address.di.addressModule
 import gc.david.dfm.common.commonModule
 import gc.david.dfm.core.address.di.coreAddressModule
+import gc.david.dfm.core.coordinates.di.coreCoordinatesModule
 import gc.david.dfm.core.distances.di.coreDistancesModule
 import gc.david.dfm.core.settings.di.coreSettingsModule
 import gc.david.dfm.core.units.di.coreUnitsModule
@@ -55,6 +56,7 @@ class DFMApplication : Application() {
                 coreUnitsModule,
                 commonModule,
                 coreAddressModule,
+                coreCoordinatesModule,
                 coroutinesModule,
                 elevationModule,
                 geocodingModule,

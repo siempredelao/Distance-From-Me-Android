@@ -17,7 +17,7 @@
 package gc.david.dfm.core.address.data
 
 import gc.david.dfm.core.address.data.model.GeocodingStatus
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.geocoding.data.HttpException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest

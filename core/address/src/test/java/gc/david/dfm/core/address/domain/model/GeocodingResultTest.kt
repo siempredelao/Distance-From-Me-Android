@@ -17,7 +17,7 @@
 package gc.david.dfm.core.address.domain.model
 
 import gc.david.dfm.core.address.domain.model.Address
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

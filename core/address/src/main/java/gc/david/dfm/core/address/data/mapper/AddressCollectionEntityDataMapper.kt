@@ -21,7 +21,7 @@ import gc.david.dfm.core.address.data.model.GeocodingStatus
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingError
 import gc.david.dfm.core.address.domain.model.GeocodingResult
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 
 /**
  * Created by david on 13.01.17.

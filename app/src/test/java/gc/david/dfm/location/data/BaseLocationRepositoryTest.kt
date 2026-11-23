@@ -21,7 +21,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import gc.david.dfm.common.Coordinates
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
