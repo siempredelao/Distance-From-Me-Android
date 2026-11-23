@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
-
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-
-inline fun LifecycleOwner.collectOnStarted(
-    crossinline block: suspend CoroutineScope.() -> Unit
-) {
-    lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.STARTED) {
-            block()
-        }
-    }
+plugins {
+    alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.unit.test)
 }
 
+android {
+    namespace = "gc.david.dfm.support.android"
+}
+
+dependencies {
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.coroutines)
+    implementation(libs.koin)
+    implementation(libs.koin.android)
+    implementation(libs.lifecycle.runtime)
+    implementation(libs.timber)
+}

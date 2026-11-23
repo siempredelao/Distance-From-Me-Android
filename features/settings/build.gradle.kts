@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:design-system"))
     implementation(project(":core:distances"))
+    implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
 
     testImplementation(libs.androidx.arch.core.testing)

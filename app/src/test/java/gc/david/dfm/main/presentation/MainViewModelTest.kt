@@ -18,8 +18,6 @@ package gc.david.dfm.main.presentation
 
 import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.R
-import gc.david.dfm.common.domain.ConnectionManager
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.coordinates.domain.CoordinatesRepository
 import gc.david.dfm.core.coordinates.domain.DistanceCalculator
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
@@ -43,6 +41,8 @@ import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
+import gc.david.dfm.support.android.domain.ConnectionManager
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow

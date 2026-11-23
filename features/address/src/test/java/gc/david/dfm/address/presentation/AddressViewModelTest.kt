@@ -17,8 +17,6 @@
 package gc.david.dfm.address.presentation
 
 import gc.david.dfm.address.R
-import gc.david.dfm.common.domain.ConnectionManager
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.core.address.domain.model.Address
@@ -26,6 +24,8 @@ import gc.david.dfm.core.address.domain.model.GeocodingError
 import gc.david.dfm.core.address.domain.model.GeocodingResult
 import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.support.android.domain.ConnectionManager
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest

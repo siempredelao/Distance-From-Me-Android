@@ -16,11 +16,11 @@
 
 package gc.david.dfm.showinfo.presentation.savedistance
 
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.distances.domain.SaveDistanceUseCase
 import gc.david.dfm.core.distances.domain.model.NewDistance
 import gc.david.dfm.showinfo.R
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

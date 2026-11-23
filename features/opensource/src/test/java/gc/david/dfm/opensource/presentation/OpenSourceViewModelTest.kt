@@ -16,7 +16,6 @@
 
 package gc.david.dfm.opensource.presentation
 
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.GetOpenSourceLibrariesUseCase
 import gc.david.dfm.opensource.domain.model.License
@@ -24,6 +23,7 @@ import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest

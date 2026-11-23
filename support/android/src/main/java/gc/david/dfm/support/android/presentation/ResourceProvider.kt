@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.domain
+package gc.david.dfm.support.android.presentation
 
-interface ConnectionManager {
+import android.content.Context
+import androidx.annotation.StringRes
 
-    fun isOnline(): Boolean
+class ResourceProvider(private val context: Context) {
+
+    fun get(@StringRes stringId: Int): String = context.getString(stringId)
+
+    // In order to spread the vararg, we need to use the asterisk operator;
+    // otherwise, Kotlin considers it as one single parameter
+    fun get(@StringRes stringId: Int, vararg params: Any) = context.getString(stringId, *params)
 }

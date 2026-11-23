@@ -28,10 +28,10 @@ import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import gc.david.dfm.about.R
 import gc.david.dfm.about.presentation.screen.AboutScreen
-import gc.david.dfm.common.R as CommonR
-import gc.david.dfm.common.UiUtils
-import gc.david.dfm.common.tryStartActivity
+import gc.david.dfm.support.android.R as SupportAndroidR
 import gc.david.dfm.designsystem.DfmTheme
+import gc.david.dfm.support.android.UiUtils
+import gc.david.dfm.support.android.tryStartActivity
 import gc.david.dfm.support.navigation.Navigator
 import gc.david.dfm.support.navigation.Route
 import org.koin.android.ext.android.inject
@@ -60,7 +60,7 @@ class AboutActivity : ComponentActivity() {
                     onOpenLink = { url ->
                         openOrToast(
                             Intent(Intent.ACTION_VIEW, url.toUri()),
-                            CommonR.string.toast_no_browser_app
+                            SupportAndroidR.string.toast_no_browser_app
                         )
                     },
                     onOpenEmail = {
@@ -71,7 +71,7 @@ class AboutActivity : ComponentActivity() {
                                 getString(R.string.translations_email_subject)
                             )
                         }
-                        openOrToast(emailIntent, CommonR.string.toast_no_email_app)
+                        openOrToast(emailIntent, SupportAndroidR.string.toast_no_email_app)
                     },
                     onOpenSourceLicenses = {
                         navigator.navigate(Route.OpenSourceLicenses)

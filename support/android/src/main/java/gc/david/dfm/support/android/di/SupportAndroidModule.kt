@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.data
+package gc.david.dfm.support.android.di
 
-import android.content.Context
+import gc.david.dfm.support.android.data.DefaultConnectionManager
+import gc.david.dfm.support.android.domain.ConnectionManager
+import gc.david.dfm.support.android.presentation.ResourceProvider
+import org.koin.dsl.module
 
-internal inline fun <reified T> Context.systemService(name: String): T {
-    return getSystemService(name) as T
+val supportAndroidModule = module {
+    single { ResourceProvider(get()) }
+    single<ConnectionManager> { DefaultConnectionManager(get()) }
 }

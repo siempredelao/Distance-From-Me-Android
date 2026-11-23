@@ -32,5 +32,6 @@ dependencies {
     implementation(project(":core:address"))
     implementation(project(":core:common"))
     implementation(project(":core:coordinates"))
+    implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
 }

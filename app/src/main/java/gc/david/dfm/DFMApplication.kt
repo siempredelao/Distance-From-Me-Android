@@ -31,6 +31,7 @@ import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.opensource.di.openSourceModule
 import gc.david.dfm.settings.di.settingsModule
 import gc.david.dfm.showinfo.di.showInfoModule
+import gc.david.dfm.support.android.di.supportAndroidModule
 import gc.david.dfm.support.coroutines.coroutinesModule
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -62,7 +63,8 @@ class DFMApplication : Application() {
                 geocodingModule,
                 openSourceModule,
                 settingsModule,
-                showInfoModule
+                showInfoModule,
+                supportAndroidModule
             )
         }
 

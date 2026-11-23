@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.data
+package gc.david.dfm.support.android.data
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import gc.david.dfm.common.domain.ConnectionManager
+import gc.david.dfm.support.android.domain.ConnectionManager
 
 class DefaultConnectionManager(private val context: Context) : ConnectionManager {
 

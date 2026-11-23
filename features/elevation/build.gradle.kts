@@ -46,5 +46,6 @@ dependencies {
     implementation(project(":core:geocoding"))
     implementation(project(":core:settings"))
     implementation(project(":core:units"))
+    implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
 }

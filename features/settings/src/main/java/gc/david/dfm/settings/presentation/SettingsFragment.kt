@@ -20,8 +20,8 @@ import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
-import gc.david.dfm.common.collectOnStarted
 import gc.david.dfm.settings.R
+import gc.david.dfm.support.android.collectOnStarted
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : PreferenceFragmentCompat() {

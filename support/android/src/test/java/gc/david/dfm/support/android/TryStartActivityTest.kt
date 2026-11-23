@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package gc.david.dfm.common
+package gc.david.dfm.support.android
 
 import android.content.ActivityNotFoundException
 import android.content.Context

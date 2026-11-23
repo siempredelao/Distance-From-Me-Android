@@ -16,9 +16,9 @@
 
 package gc.david.dfm.opensource.presentation.mapper
 
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.domain.model.License
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock

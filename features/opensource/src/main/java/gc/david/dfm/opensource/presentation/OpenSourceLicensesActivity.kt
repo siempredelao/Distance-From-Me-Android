@@ -32,13 +32,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import gc.david.dfm.common.R as CommonR
-import gc.david.dfm.common.UiUtils
-import gc.david.dfm.common.tryStartActivity
+import gc.david.dfm.support.android.R as SupportAndroidR
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.opensource.presentation.screen.OpenSourceDetailScreen
 import gc.david.dfm.opensource.presentation.screen.OpenSourceListScreen
+import gc.david.dfm.support.android.UiUtils
+import gc.david.dfm.support.android.tryStartActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class OpenSourceLicensesActivity : ComponentActivity() {
@@ -92,7 +92,7 @@ class OpenSourceLicensesActivity : ComponentActivity() {
                                         )
                                     ) {
                                         UiUtils.toastIt(
-                                            CommonR.string.toast_no_browser_app,
+                                            SupportAndroidR.string.toast_no_browser_app,
                                             this@OpenSourceLicensesActivity
                                         )
                                     }

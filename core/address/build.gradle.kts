@@ -34,4 +34,5 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:coordinates"))
     implementation(project(":core:geocoding"))
+    implementation(project(":support:android"))
 }

@@ -16,14 +16,8 @@
 
 package gc.david.dfm.common
 
-import gc.david.dfm.common.data.DefaultConnectionManager
-import gc.david.dfm.common.domain.ConnectionManager
-import gc.david.dfm.common.presentation.ResourceProvider
 import org.koin.dsl.module
 
 val commonModule = module {
-
-    single { ResourceProvider(get()) }
-    single<ConnectionManager> { DefaultConnectionManager(get()) }
 }
 

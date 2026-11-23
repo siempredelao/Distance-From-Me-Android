@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.presentation
+package gc.david.dfm.support.android.data
 
 import android.content.Context
-import androidx.annotation.StringRes
 
-class ResourceProvider(private val context: Context) {
-
-    fun get(@StringRes stringId: Int): String = context.getString(stringId)
-
-    // In order to spread the vararg, we need to use the asterisk operator;
-    // otherwise, Kotlin considers it as one single parameter
-    fun get(@StringRes stringId: Int, vararg params: Any) = context.getString(stringId, *params)
+internal inline fun <reified T> Context.systemService(name: String): T {
+    return getSystemService(name) as T
 }

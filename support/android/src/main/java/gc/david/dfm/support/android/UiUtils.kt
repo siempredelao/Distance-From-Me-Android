@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm.support.android
 
 import android.content.Context
 import android.widget.Toast

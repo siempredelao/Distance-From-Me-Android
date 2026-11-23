@@ -145,6 +145,7 @@ dependencies {
     implementation(project(":features:opensource"))
     implementation(project(":features:settings"))
     implementation(project(":features:show-info"))
+    implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
     implementation(project(":support:navigation"))
 

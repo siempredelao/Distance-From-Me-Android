@@ -16,9 +16,9 @@
 
 package gc.david.dfm.settings.presentation
 
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.ClearDistancesUseCase
 import gc.david.dfm.settings.presentation.model.SettingsUiState
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest

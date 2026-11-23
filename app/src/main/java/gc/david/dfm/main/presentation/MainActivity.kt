@@ -40,8 +40,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.common.UiUtils
-import gc.david.dfm.common.collectOnStarted
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.distance.domain.model.DistanceMode
@@ -50,6 +48,8 @@ import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
+import gc.david.dfm.support.android.UiUtils
+import gc.david.dfm.support.android.collectOnStarted
 import gc.david.dfm.support.navigation.Navigator
 import gc.david.dfm.support.navigation.Route
 import org.koin.android.ext.android.inject

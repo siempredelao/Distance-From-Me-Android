@@ -23,8 +23,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import gc.david.dfm.R
-import gc.david.dfm.common.UiUtils
 import gc.david.dfm.main.presentation.MainActivity
+import gc.david.dfm.support.android.UiUtils
 import timber.log.Timber
 
 /**
