@@ -180,6 +180,9 @@ Original approach, kept for reference:
 - Memory: plan progress.
 
 ## Last step: make `assembleRelease` pass
+**Outcome (2026-11-23):** `assembleRelease` passes with `-dontwarn androidx.window.extensions.**` and `-dontwarn androidx.window.sidecar.**`. Runtime check done with a release APK whose manifest had Crashlytics collection switched off (built in a temporary checkout, nothing committed), at the user's choice; the log showed Sessions with no subscribers and no Crashlytics upload (network traffic itself wasn't inspected). `assembleBeta` fails for an older, separate reason (no `matchingFallbacks`); the user first left it, then had the beta build type removed (0d0f85a).
+
+Original step, kept for reference:
 - **Problem:** `./gradlew :app:assembleRelease` fails in `minifyReleaseWithR8` with "Missing class `androidx.window.extensions.WindowExtensions`…". A clean checkout of 5df975d fails the same way, so it predates step 5.
   - **Cause:** material3-adaptive 1.2.0 (c86ccf4, 2026-11-22, the collapsed rail) brings in `androidx.window`. It references `androidx.window.extensions.*` and `androidx.window.sidecar.*` classes that the device supplies at runtime.
   - `app/proguard/proguard-androidx-window.pro` (2026-09-03) only suppresses four of them. R8's `missing_rules.txt` lists 12 more.
