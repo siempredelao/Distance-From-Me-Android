@@ -33,8 +33,8 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | `:opensource` | Open source licenses screen |
 | `:settings` | Settings screen that edits those preferences |
 | `:show-info` | Distance detail and sharing screen |
-| `:support:konsist` | Konsist guards that enforce architecture and code conventions |
-| `:test-support` | Shared test utilities |
+| `:support:test` | Shared test utilities |
+| `:tools:konsist` | Konsist guards that enforce architecture and code conventions |
 
 ## Main libraries used
 * [Jetpack Compose](https://developer.android.com/jetpack/compose)
@@ -82,7 +82,7 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 ./gradlew :app:testDebugUnitTest
 
 # Run the Konsist architecture and convention guards
-./gradlew :support:konsist:test
+./gradlew :tools:konsist:test
 ```
 
 ### Test Coverage Summary

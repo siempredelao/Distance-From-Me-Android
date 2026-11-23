@@ -19,7 +19,7 @@ plugins {
 }
 
 android {
-    namespace = "gc.david.dfm.testsupport"
+    namespace = "gc.david.dfm.support.test"
 }
 
 dependencies {

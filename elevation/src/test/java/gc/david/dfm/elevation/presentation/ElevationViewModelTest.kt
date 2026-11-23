@@ -25,7 +25,7 @@ import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.domain.model.ElevationError
 import gc.david.dfm.elevation.domain.model.ElevationResult
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

@@ -17,7 +17,7 @@
 package gc.david.dfm.common
 
 import androidx.lifecycle.ViewModel
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch

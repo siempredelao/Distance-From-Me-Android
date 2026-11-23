@@ -26,7 +26,7 @@ import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.presentation.ResourceProvider
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

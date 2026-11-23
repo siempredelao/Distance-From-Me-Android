@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew :address:testDebugUnitTest         # one module
 ./gradlew :app:testDebugUnitTest --tests "gc.david.dfm.main.presentation.MainViewModelTest"          # one class
 ./gradlew :app:testDebugUnitTest --tests "gc.david.dfm.main.presentation.MainViewModelTest.someTest*" # one method (pattern)
-./gradlew :support:konsist:test              # Konsist architecture and convention guards (JVM module, not part of testDebugUnitTest)
+./gradlew :tools:konsist:test                # Konsist architecture and convention guards (JVM module, not part of testDebugUnitTest)
 ./gradlew lint                               # Android lint (app/lint.xml is empty, so defaults apply)
 ```
 
@@ -34,8 +34,8 @@ SDK levels, app `versionCode`/`versionName`, and all dependency versions are in 
 - `:core-distances` is the Room database (`DFMDatabase`) plus the distance and position use cases. Room schemas are exported to `core-distances/schemas/`. Commit the new schema JSON when you change entities.
 - `:geocoding` is the client for the Google Maps web services (Geocoding and Elevation): the `GOOGLE_API_CLIENT` `OkHttpClient`, whose interceptor adds the API key, plus `getGoogleApiJson`, `googleApiJson` and `HttpException`. Its key provider, `GeocodeApiKeyProvider`, is internal. `:address` and `:elevation` use it.
 - `:core-settings` is the settings repository (`SettingsRepository`, backed by the default `SharedPreferences`) that the map, elevation and Show info screens read. `:settings` is only the screen that edits those preferences, through `res/xml/settings.xml`, so keys changed on one side must change on the other.
-- `:test-support` provides `CoroutineExtension`, the JUnit 5 extension that swaps `Dispatchers.Main`.
-- `:support:konsist` is a plain Kotlin JVM module whose tests use Konsist to parse every module's sources and enforce the conventions in this file: layer dependencies, use case and ViewModel shape, repository naming, Koin registration, Activity `open` functions, license headers, and test presence. When you add a convention, add a guard there too.
+- `:support:test` provides `CoroutineExtension`, the JUnit 5 extension that swaps `Dispatchers.Main`.
+- `:tools:konsist` is a plain Kotlin JVM module whose tests use Konsist to parse every module's sources and enforce the conventions in this file: layer dependencies, use case and ViewModel shape, repository naming, Koin registration, Activity `open` functions, license headers, and test presence. When you add a convention, add a guard there too.
 
 ### Navigation
 Each screen is its own Activity, launched through a `companion object { fun open(activity) }` (for example `SettingsActivity.open(this)`, called from `MainActivity`). There is no Navigation component.
@@ -52,7 +52,7 @@ App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initia
 ## Testing conventions
 - JUnit 5 (Jupiter) on every module via `useJUnitPlatform()`, with Mockito + mockito-kotlin (`mock<>()`, `whenever`) and `kotlinx-coroutines-test` (`runTest`).
 - ViewModel tests register `@JvmField @RegisterExtension val coroutineExtension = CoroutineExtension()`.
-- A new test module needs `testImplementation(project(":test-support"))`, the Jupiter api/params deps, `testRuntimeOnly(libs.junit.jupiter.engine)`, and the `unitTests.all { it.useJUnitPlatform() }` block.
+- A module with unit tests applies the `dfm.unit-test` convention plugin, which adds JUnit 5, Mockito, `kotlinx-coroutines-test` and `:support:test`.
 - The project aims for a test for every UseCase, Repository, Mapper, Formatter, and ViewModel. `BRANCH_COVERAGE_REPORT.md` and the Testing section of `README.md` track coverage by hand, so update them when coverage changes significantly.
 
 ## Conventions

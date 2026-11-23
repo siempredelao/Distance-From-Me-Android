@@ -59,7 +59,7 @@ class BuildConventionsKonsistTest {
             "libs.plugins.kotlin.compose.compiler",
             "libs.compose.bom",
             "libs.junit.jupiter.params",
-            "project(\":test-support\")",
+            "project(\":support:test\")",
         )
     }
 }

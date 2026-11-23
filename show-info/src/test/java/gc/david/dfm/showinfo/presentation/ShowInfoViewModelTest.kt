@@ -33,7 +33,7 @@ import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
 import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest

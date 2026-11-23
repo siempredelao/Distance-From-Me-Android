@@ -43,6 +43,6 @@ class UnitTestConventionPlugin : Plugin<Project> {
     }
 
     private companion object {
-        const val TEST_SUPPORT_PATH = ":test-support"
+        const val TEST_SUPPORT_PATH = ":support:test"
     }
 }

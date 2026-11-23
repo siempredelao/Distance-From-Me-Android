@@ -43,7 +43,7 @@ import gc.david.dfm.main.presentation.mapper.MapStateMapper
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

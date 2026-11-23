@@ -24,7 +24,7 @@ import gc.david.dfm.opensource.domain.model.OpenSourceLibrary
 import gc.david.dfm.opensource.presentation.mapper.OpenSourceLibraryUiMapper
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.support.test.CoroutineExtension
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
