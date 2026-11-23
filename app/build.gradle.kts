@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-	alias(libs.plugins.android.application)
-	alias(libs.plugins.jetbrains.kotlin.android)
+	alias(libs.plugins.dfm.android.application)
+	alias(libs.plugins.dfm.android.compose)
+	alias(libs.plugins.dfm.unit.test)
 	id("kotlin-parcelize")
 	alias(libs.plugins.google.services)
 	alias(libs.plugins.crashlytics)
-	alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
 
 	namespace = "gc.david.dfm"
-	compileSdk = libs.versions.compileSdk.get().toInt()
 
 	// Load signing properties from keystore.properties (keep this file out of VCS)
 	val keystoreProperties = Properties()
@@ -50,8 +48,6 @@ android {
 
 	defaultConfig {
 		applicationId = "gc.david.dfm"
-		minSdk = libs.versions.minSdk.get().toInt()
-		targetSdk = libs.versions.targetSdk.get().toInt()
 		versionName = libs.versions.appVersionName.get()
 		versionCode = libs.versions.appVersionCode.get().toInt()
 		androidResources.localeFilters.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
@@ -99,26 +95,7 @@ android {
 	}
 
 	buildFeatures {
-		compose = true
 		buildConfig = true
-	}
-
-	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_11
-		targetCompatibility = JavaVersion.VERSION_11
-	}
-
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
-    }
-
-}
-
-kotlin {
-	compilerOptions {
-		jvmTarget.set(JvmTarget.JVM_11)
 	}
 }
 
@@ -136,7 +113,6 @@ dependencies {
 	implementation(libs.crashlytics)
 	implementation(libs.koin)
 	implementation(libs.koin.android)
-	debugImplementation(libs.compose.ui.tooling)
 	debugImplementation(libs.leakcanary)
 	implementation(libs.lifecycle.runtime)
 	implementation(libs.lifecycle.viewmodel)
@@ -148,12 +124,10 @@ dependencies {
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	implementation(libs.timber)
-	implementation(platform(libs.compose.bom))
 	implementation(libs.compose.material.icons)
 	implementation(libs.compose.material3)
 	implementation(libs.compose.material3.adaptive)
 	implementation(libs.compose.ui)
-	implementation(libs.compose.ui.tooling.preview)
     implementation(project(":about"))
     implementation(project(":address"))
     implementation(project(":common"))
@@ -170,12 +144,4 @@ dependencies {
     implementation(project(":show-info"))
 
 	testImplementation(libs.androidx.arch.core.testing)
-	testImplementation(libs.coroutines.test)
-	testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-	testImplementation(libs.mockito)
-	testImplementation(libs.mockito.kotlin)
-	testImplementation(project(":test-support"))
-    
-    testRuntimeOnly(libs.junit.jupiter.engine)
 }

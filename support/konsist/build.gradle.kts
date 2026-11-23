@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.jetbrains.kotlin.jvm)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
-    }
+    alias(libs.plugins.dfm.jvm.library)
 }
 
 tasks.test {
-    useJUnitPlatform()
     // Konsist reads the other modules' sources from disk, which Gradle doesn't track as inputs,
     // so the guards must never be skipped as up to date.
     outputs.upToDateWhen { false }

@@ -14,39 +14,14 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.unit.test)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-
     namespace = "gc.david.dfm.address"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
-    }
 }
 
 dependencies {
@@ -62,13 +37,4 @@ dependencies {
     implementation(libs.timber)
     implementation(project(":common"))
     implementation(project(":geocoding"))
-
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-    testImplementation(libs.mockito)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(project(":test-support"))
-    
-    testRuntimeOnly(libs.junit.jupiter.engine)
 }

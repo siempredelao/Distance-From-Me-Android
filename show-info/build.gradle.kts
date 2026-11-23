@@ -14,54 +14,23 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.android.compose)
+    alias(libs.plugins.dfm.unit.test)
 }
 
 android {
-
     namespace = "gc.david.dfm.showinfo"
-    compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-    }
-
-    buildFeatures {
-        compose = true
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
-    }
 }
 
 dependencies {
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core.ktx)
-    implementation(platform(libs.compose.bom))
     implementation(libs.compose.material.icons)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling.preview)
     implementation(libs.coroutines)
     implementation(libs.koin)
     implementation(libs.koin.android)
@@ -73,14 +42,4 @@ dependencies {
     implementation(project(":core-distances"))
     implementation(project(":core-settings"))
     implementation(project(":design-system"))
-    debugImplementation(libs.compose.ui.tooling)
-
-    testImplementation(libs.coroutines.test)
-    testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-    testImplementation(libs.mockito)
-    testImplementation(libs.mockito.kotlin)
-    testImplementation(project(":test-support"))
-    
-    testRuntimeOnly(libs.junit.jupiter.engine)
 }
