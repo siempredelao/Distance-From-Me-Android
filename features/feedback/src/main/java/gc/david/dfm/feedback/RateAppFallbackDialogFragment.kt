@@ -16,16 +16,12 @@
 
 package gc.david.dfm.feedback
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import gc.david.dfm.designsystem.DfmTheme
-import timber.log.Timber
 
 class RateAppFallbackDialogFragment : DialogFragment() {
 
@@ -37,25 +33,10 @@ class RateAppFallbackDialogFragment : DialogFragment() {
                         onDismiss = { dismiss() },
                         onCtaClick = {
                             dismiss()
-                            openPlayStoreAppPage()
+                            requireActivity().openPlayStorePage()
                         },
                     )
                 }
             }
         }
-
-    private fun openPlayStoreAppPage() {
-        Timber.tag(TAG).d("openPlayStoreAppPage")
-
-        try {
-            startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=gc.david.dfm".toUri()))
-        } catch (e: ActivityNotFoundException) {
-            Timber.tag(TAG).e(e, "Unable to open Play Store, rooted device?")
-        }
-    }
-
-    companion object {
-
-        private const val TAG = "RateAppFallbackDialog"
-    }
 }

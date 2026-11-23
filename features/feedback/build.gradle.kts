@@ -32,4 +32,5 @@ dependencies {
     implementation(libs.play.review)
     implementation(libs.timber)
     implementation(project(":core:design-system"))
+    implementation(project(":support:android"))
 }

@@ -16,9 +16,6 @@
 
 package gc.david.dfm.feedback
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
@@ -50,14 +47,12 @@ object InAppReviewHandler {
                 flow.addOnCompleteListener { Timber.tag(TAG).i("Review process finished") }
             } else {
                 Timber.tag(TAG).d("showRateApp failure")
+                if (activity.supportFragmentManager.isStateSaved) {
+                    // The user left while the request was pending, and showing a dialog now would crash
+                    return@addOnCompleteListener
+                }
                 if (skipFallbackDialog) {
-                    Timber.tag(TAG).d("openPlayStoreAppPage")
-
-                    try {
-                        activity.startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=gc.david.dfm".toUri()))
-                    } catch (e: ActivityNotFoundException) {
-                        Timber.tag(TAG).e(e, "Unable to open Play Store, rooted device?")
-                    }
+                    activity.openPlayStorePage()
                 } else {
                     RateAppFallbackDialogFragment().show(activity.supportFragmentManager, null)
                 }
