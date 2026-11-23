@@ -57,20 +57,6 @@ android {
 		debug {
 			versionNameSuffix = "-dev"
 
-			// Uncomment this to test ProGuard before release
-//			isMinifyEnabled = true
-//			isShrinkResources = true
-//			proguardFiles getDefaultProguardFile('proguard-android.txt')
-//			val proguards = fileTree("proguard") {
-//				include("*.pro")
-//			}
-//			proguardFiles(*proguards.toList().toTypedArray())
-
-//			if (isCi()) {
-//				buildConfigField("String", "maps_api_key", "guess_it")
-//				buildConfigField("String", "maps_geocode_api_key", "guess_it")
-//			}
-
 			configure<CrashlyticsExtension> {
 				mappingFileUploadEnabled = false
 			}
@@ -85,12 +71,6 @@ android {
 				include("*.pro")
 			}
 			proguardFiles(*proguards.toList().toTypedArray())
-		}
-
-		create("beta") {
-			initWith(getByName("release"))
-
-			versionNameSuffix = "-beta"
 		}
 	}
 

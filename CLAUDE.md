@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew lint                               # Android lint (app/lint.xml is empty, so defaults apply)
 ```
 
-Build types are `debug`, `release`, and `beta` (`beta` is initialised from `release` and adds the "-beta" suffix). `release` and `beta` need `keystore.properties` at the repo root. It is gitignored and holds `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`. The `release` signing config reads it unconditionally.
+Build types are `debug` and `release`. `release` needs `keystore.properties` at the repo root. It is gitignored and holds `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`. The `release` signing config reads it unconditionally.
 
 API keys live in gitignored `other.xml` string resources: `maps_api_key` in `app/src/main/res/values/other.xml`, and `maps_geocode_api_key` in `core/geocoding/src/{main,debug,release}/res/values/other.xml`. A fresh clone won't build until these exist.
 
@@ -88,8 +88,7 @@ App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initia
 
 ## Known issues
 - `MainActivity` leaks when it's destroyed before its map loads, for example a size, density or dark-mode change within about a second of launch. maps-compose 6.x waits for the map with a non-cancellable `awaitMap()`, so the window recomposer never shuts down (comment at the `GoogleMap` call in `MapContent.kt`). maps-compose 9 fixes it, but needs compileSdk 37 and AGP 9.1; that upgrade is planned separately.
-- `./gradlew :app:assembleBeta` doesn't resolve any library module: they only have `debug` and `release` build types, and `beta` doesn't fall back to `release`. The fix is `matchingFallbacks += listOf("release")` in the `beta` build type.
-- A release or beta build uploads its mapping file to Firebase. Exclude `uploadCrashlyticsMappingFileRelease` (or `…Beta`) for local builds that aren't a release, and remember that running such a build reports to the production Crashlytics project.
+- A release build uploads its mapping file to Firebase. Exclude `uploadCrashlyticsMappingFileRelease` for local builds that aren't a release, and remember that running such a build reports to the production Crashlytics project.
 
 ## Conventions
 - Every source file starts with the Apache 2.0 license header, "Copyright (c) 2026 David Aguiar Gonzalez".
