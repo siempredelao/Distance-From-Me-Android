@@ -75,7 +75,6 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.material.components)
     implementation(libs.timber)
 
     testImplementation(libs.junit.jupiter.api)
