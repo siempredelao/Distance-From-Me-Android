@@ -5,7 +5,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 ## MEMORY.md (index)
 
 ```markdown
-- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress
+- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) approved 2026-11-23
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
 - [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
 - [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
@@ -61,7 +61,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-22T18:56:30.272Z
+  modified: 2026-11-23T09:56:58.257Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -73,7 +73,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - Result models moved into `domain/model` packages (9f8ea8a).
 
 ## First plan: complete
-- File: `~/.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, approved 2026-11-20, 6 steps.
+- File: `.claude/plans/let-s-elaborate-a-plan-keen-stearns.md`, approved 2026-11-20, 6 steps.
 - Step 1, Show info after process death: b45f706.
 - Step 2, manifest (MainActivity not exported, adjustResize, Show info parent): f12baec.
 - Step 3, edge-to-edge: b04d215. Uses fixed bar styles (status `SystemBarStyle.dark`, navigation `SystemBarStyle.light`) because plain `enableEdgeToEdge()` gave dark status icons on the green top bar. Checked on API 36 and 34, gesture navigation only.
@@ -83,7 +83,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - Final verification and docs: 40fa3ca. Lint fails only on the pre-existing `UnusedMaterial3ScaffoldPaddingParameter` at `MainScreen.kt:129`. README ViewModel/Mapper/Formatter counts were already off and left as they are.
 
 ## Second plan: in progress
-- File: `~/.claude/plans/iridescent-bouncing-squirrel-of-c32d0a74-26a2-4a0c-beb1-bcf2897c09c0.md`, approved 2026-11-22. Group 1 user-visible bugs (steps 1-9), group 2 Compose performance and UI (10-15), plus additions below. Its deferred list is at the end of that file.
+- File: `.claude/plans/iridescent-bouncing-squirrel-of-c32d0a74-26a2-4a0c-beb1-bcf2897c09c0.md`, approved 2026-11-22. Group 1 user-visible bugs (steps 1-9), group 2 Compose performance and UI (10-15), plus additions below. Its deferred list is at the end of that file.
 - Committed:
   - 1, unit setting reset: df2d8c3.
   - 2, address search without a location fix: 85d1caf.
@@ -102,7 +102,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - 15 part A, `Card(onClick)` on FAQ/About/OpenSource cards, 48 dp About link rows, OpenSource card keeps its elevation when pressed: fc29147.
   - 15 part B, small Compose API details: dede81f. Memory commit 2445476.
   - 15b, permanent collapsed rail from medium widths (material3-adaptive 1.2.0; expanded rail covers the map; phone landscape included): c86ccf4. Memory commit 51bf0aa. Open observations: an intermittent 1 px line through the map at tablet landscape (probably a Maps tile seam), and a tiny logo in the collapsed header.
-- Step 16 (read-only) proposal: memory commit 07e1602. Its approved part became `~/.claude/plans/organisation-moves.md`, complete on 2026-11-23:
+- Step 16 (read-only) proposal: memory commit 07e1602. Its approved part became `.claude/plans/organisation-moves.md`, complete on 2026-11-23:
   - Move 1, dead code and the CLAUDE.md geofencing line: 9f1efc0.
   - Move 2, one `Coordinates` type: 6bb90de. Committed with its emulator check pending (rate limit); search and Show info reverse geocoding both checked later on 2026-11-23.
   - Move 3, `:common` packages (`common.domain`/`common.data`): c66abc1.
@@ -124,6 +124,22 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - 2026-11-23: Back with the elevation chart open closed the map screen and showed the onboarding pages (SKIP/NEXT), instead of closing the chart. Not checked against the pre-move build.
   - When reverse geocoding fails, Show info puts the error text ("Demasiadas solicitudes…") into the shared message as the address.
   - On a tablet the app has no large-screen layout; the FAB slides 256 dp into the middle of the screen when the rail opens (covered by 15b).
+
+## Third plan: module reorganisation (approved 2026-11-23)
+- File: `.claude/plans/eager-scribbling-ladybug-of-ffb2e984-1213-4f4a-95ba-f72e80a6d972.md`.
+- Steps, in order:
+  1. `build-logic/` convention plugins
+  2. rename `:support:konsist` to `:tools:konsist` and `:test-support` to `:support:test`
+  3. move modules into `core/` and `features/`
+  4. remove feature→feature edges (`:core:address`, `:support:navigation`)
+  5. split `:common`
+  6. LeakCanary leak (the user moved it last)
+  7. docs
+- User decisions:
+  - `:support` is for technical modules with no app domain (test, navigation, coroutines, android); `:core` is for shared domain and data. The user changed my `:core:navigation`, `:core:coroutines` and `:core:android` to `:support:…`.
+  - `AddressViewModel` stays in a small `:features:address`.
+  - `Navigator` interface rather than merging `:opensource` into `:about`.
+- Progress: not started.
 
 ## Emulator notes
 - Target the emulator with `ANDROID_SERIAL=emulator-5554`; the user's Pixel 10 may be plugged in over USB.
@@ -151,7 +167,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - The build/test group: R8 rules, Compose UI tests, Room transaction test.
 
 **Why:** in 2026-11 I mistook the Konsist failures for the to-do list and refactored `:app` before being asked. The user had me revert it, and later approved that work explicitly as plan step 6.
-**How to apply:** when resuming, check `ls -t ~/.claude/plans/` for a plan newer than the one named here, then follow the latest approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]], [[one-plan-step-at-a-time]], [[explain-step-before-changing]].
+**How to apply:** when resuming, check `ls -t .claude/plans/` (in the repo) for a plan newer than the one named here, then follow the latest approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]], [[one-plan-step-at-a-time]], [[explain-step-before-changing]].
 ```
 
 ## memory-lists-over-paragraphs.md
