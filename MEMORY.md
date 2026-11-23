@@ -5,7 +5,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 ## MEMORY.md (index)
 
 ```markdown
-- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) approved 2026-11-23
+- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) completed 2026-11-23; toolchain upgrade for the maps-compose leak still to plan
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
 - [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
 - [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
@@ -149,7 +149,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - When reverse geocoding fails, Show info puts the error text ("Demasiadas solicitudes…") into the shared message as the address.
   - On a tablet the app has no large-screen layout; the FAB slides 256 dp into the middle of the screen when the rail opens (covered by 15b).
 
-## Third plan: module reorganisation (approved 2026-11-23)
+## Third plan: module reorganisation (approved and completed 2026-11-23; follow-up: separate toolchain-upgrade plan for maps-compose 9)
 - File: `.claude/plans/eager-scribbling-ladybug-of-ffb2e984-1213-4f4a-95ba-f72e80a6d972.md`.
 - Steps, in order:
   1. `build-logic/` convention plugins
@@ -182,7 +182,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
     - DI guard: the navigator is never bound with `single`
   - The plan expected Show info to show error text when offline; offline it shows the network toast instead (no Geocoding call). That is by design.
   - Step 5 so far: 1c10654 (5a), 15484fc (5b `:support:coroutines`), bc6c96b (5c `:core:units`), 9a1c34c (5d `:core:coordinates`, a JVM module, + its repository from `:app` + `dfm.unit-test` for JVM modules), 16ec90e (`:core:units` made a JVM module).
-  - e8aed0c (5e `:support:android`). 5f (delete `:core:common`) bd4c20a; step 5 done; step 6 (leak) closed without a fix at the user's choice: maps-compose 6.2.0 awaitMap can't be cancelled; fix is maps-compose 9 (needs compileSdk 37 + AGP 9.1); comment added at GoogleMap in MapContent.kt (uncommitted); toolchain upgrade becomes a separate plan after this one; bafb8b7 commits that comment; docs step done in the working tree, not committed (CLAUDE.md, README, + `dfm.jvm.library` registers `testDebugUnitTest` → `test`, because `./gradlew testDebugUnitTest` skipped the JVM modules' tests); smoke run passed (elevation chart, Show info share, About no-browser toast with Chrome disabled then re-enabled, offline search toast). The only LeakCanary signature is still the old one.
+  - e8aed0c (5e `:support:android`). 5f (delete `:core:common`) bd4c20a; step 5 done; step 6 (leak) closed without a fix at the user's choice: maps-compose 6.2.0 awaitMap can't be cancelled; fix is maps-compose 9 (needs compileSdk 37 + AGP 9.1); comment added at GoogleMap in MapContent.kt (uncommitted); toolchain upgrade becomes a separate plan after this one; bafb8b7 commits that comment; docs step: 57e47d4 (`dfm.jvm.library` `testDebugUnitTest` → `test`), c70ad96 (CLAUDE.md, README); release step: e1aa970 (R8 rules), runtime check passed with a Crashlytics-off release APK; `assembleBeta` never resolved, so the user then had the beta build type removed, with the commented-out code in app/build.gradle.kts (0d0f85a); smoke run passed (elevation chart, Show info share, About no-browser toast with Chrome disabled then re-enabled, offline search toast). The only LeakCanary signature is still the old one.
   - Release-build step added to the plan by the user, then moved by them to the very end, after the docs step. Exclude the Crashlytics mapping upload tasks when building release.
   - Step 5a committed as 1c10654 (2026-11-23):
     - The launcher icon went to `:core:design-system` (not `:app` as planned), because About uses it too.
