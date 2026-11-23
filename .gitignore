@@ -12,10 +12,7 @@ local.properties
 *.iml
 
 # API keys specific to build variants
-*/src/debug/res/values/other.xml
-*/src/release/res/values/other.xml
-app/src/*/res/values/other.xml
-/geocoding/src/main/res/values/other.xml
+**/src/*/res/values/other.xml
 
 # Keystore properties (local signing config)
 keystore.properties
