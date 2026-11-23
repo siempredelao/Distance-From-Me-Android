@@ -1,5 +1,4 @@
-# Rules to suppress warnings about missing androidx.window.extensions classes
--dontwarn androidx.window.extensions.area.ExtensionWindowAreaPresentation
--dontwarn androidx.window.extensions.core.util.function.Consumer
--dontwarn androidx.window.extensions.core.util.function.Function
--dontwarn androidx.window.extensions.core.util.function.Predicate
+# androidx.window (pulled in by material3-adaptive) references the window extensions and the older
+# sidecar API. The device supplies those classes at runtime, so R8 doesn't find them at build time.
+-dontwarn androidx.window.extensions.**
+-dontwarn androidx.window.sidecar.**

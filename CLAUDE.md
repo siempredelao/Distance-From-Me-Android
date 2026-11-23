@@ -88,7 +88,8 @@ App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initia
 
 ## Known issues
 - `MainActivity` leaks when it's destroyed before its map loads, for example a size, density or dark-mode change within about a second of launch. maps-compose 6.x waits for the map with a non-cancellable `awaitMap()`, so the window recomposer never shuts down (comment at the `GoogleMap` call in `MapContent.kt`). maps-compose 9 fixes it, but needs compileSdk 37 and AGP 9.1; that upgrade is planned separately.
-- `./gradlew :app:assembleRelease` fails in R8 with missing `androidx.window.extensions`/`sidecar` classes, brought in by material3-adaptive. `app/proguard/proguard-androidx-window.pro` needs `-dontwarn androidx.window.extensions.**` and `-dontwarn androidx.window.sidecar.**`; it's the last step of the current plan. When building release locally, exclude `uploadCrashlyticsMappingFileRelease` so no mapping file is sent to Firebase.
+- `./gradlew :app:assembleBeta` doesn't resolve any library module: they only have `debug` and `release` build types, and `beta` doesn't fall back to `release`. The fix is `matchingFallbacks += listOf("release")` in the `beta` build type.
+- A release or beta build uploads its mapping file to Firebase. Exclude `uploadCrashlyticsMappingFileRelease` (or `…Beta`) for local builds that aren't a release, and remember that running such a build reports to the production Crashlytics project.
 
 ## Conventions
 - Every source file starts with the Apache 2.0 license header, "Copyright (c) 2026 David Aguiar Gonzalez".
