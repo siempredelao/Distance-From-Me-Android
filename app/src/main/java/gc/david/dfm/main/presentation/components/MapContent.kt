@@ -97,6 +97,11 @@ fun MapContent(
         }
     }
 
+    // Known leak in maps-compose 6.x: GoogleMap waits for its map with maps-ktx's awaitMap(), which
+    // can't be cancelled. If MainActivity is destroyed before the map loads (a size, density or
+    // dark-mode change within about a second of launch), that wait never ends, so the window
+    // recomposer and the destroyed Activity stay in memory until the process dies. maps-compose 9
+    // waits with a cancellable awaitMap; upgrading needs compileSdk 37 and AGP 9.1 first.
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
