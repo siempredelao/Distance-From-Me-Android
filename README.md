@@ -16,24 +16,38 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 * Languages: English, Spanish, French, German, Italian, Portuguese and Catalan.
 
 ## Modules
+Modules are grouped by role, and each group only depends inwards: features on core and support, core on core and support, support on support. Features never depend on each other. Konsist guards enforce this.
+
 | Module | Description |
 |---|---|
-| `:app` | Main application module |
+| `:app` | Main application module: the map screen, onboarding and the navigator that opens every screen |
+| **Features** | |
 | `:features:about` | About screen and app information |
-| `:features:address` | Address / geocoding feature |
+| `:features:address` | Address search ViewModel |
 | `:features:connectivity` | Connection issues UI |
-| `:core:distances` | Room database and distance domain |
-| `:core:settings` | Settings repository (unit system, camera animation and elevation chart preferences) |
-| `:core:design-system` | Compose theme and shared UI components |
 | `:features:elevation` | Elevation profile feature |
 | `:features:faq` | FAQ / Help & Feedback feature |
 | `:features:feedback` | In-app review dialog |
-| `:core:geocoding` | Google Maps web services client (Geocoding and Elevation APIs) and its API key |
 | `:features:opensource` | Open source licenses screen |
-| `:features:settings` | Settings screen that edits those preferences |
+| `:features:settings` | Settings screen that edits the preferences |
 | `:features:show-info` | Distance detail and sharing screen |
+| **Core** | |
+| `:core:address` | Geocoding and reverse geocoding, with their error messages |
+| `:core:coordinates` | Coordinates, distance calculation and the points the map and Show info share (plain Kotlin) |
+| `:core:design-system` | Compose theme, shared UI components and the launcher icon |
+| `:core:distances` | Room database and distance domain |
+| `:core:geocoding` | Google Maps web services client (Geocoding and Elevation APIs) and its API key |
+| `:core:settings` | Settings repository (unit system, camera animation and elevation chart preferences) |
+| `:core:units` | Unit systems, unit conversion and distance formatting (plain Kotlin) |
+| **Support** | |
+| `:support:android` | Thin wrappers over the Android framework (resources, connectivity, toasts) |
+| `:support:coroutines` | Coroutine error handling and the IO dispatcher |
+| `:support:navigation` | Routes and the navigator interface for opening screens in other modules |
 | `:support:test` | Shared test utilities |
+| **Tools** | |
 | `:tools:konsist` | Konsist guards that enforce architecture and code conventions |
+
+Shared Gradle setup lives in the `build-logic/` convention plugins.
 
 ## Main libraries used
 * [Jetpack Compose](https://developer.android.com/jetpack/compose)
@@ -63,20 +77,25 @@ For detailed branch coverage analysis, see [BRANCH_COVERAGE_REPORT.md](BRANCH_CO
 
 ```bash
 # Run all module tests with visual progress feedback
-cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core:distances core:settings core:common core:geocoding features:show-info features:address features:opensource features:elevation features:settings app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
+cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core:address core:coordinates core:distances core:geocoding core:settings core:units features:address features:elevation features:opensource features:settings features:show-info support:android support:coroutines app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
 
-# Or run tests for all modules at once (debug variant)
+# Or run tests for all modules at once (debug variant; plain Kotlin modules run their `test` task)
 ./gradlew testDebugUnitTest
 
 # Run tests for specific module
+./gradlew :core:address:testDebugUnitTest
+./gradlew :core:coordinates:test
 ./gradlew :core:distances:testDebugUnitTest
-./gradlew :core:settings:testDebugUnitTest
 ./gradlew :core:geocoding:testDebugUnitTest
-./gradlew :features:show-info:testDebugUnitTest
+./gradlew :core:settings:testDebugUnitTest
+./gradlew :core:units:test
 ./gradlew :features:address:testDebugUnitTest
-./gradlew :features:opensource:testDebugUnitTest
 ./gradlew :features:elevation:testDebugUnitTest
+./gradlew :features:opensource:testDebugUnitTest
 ./gradlew :features:settings:testDebugUnitTest
+./gradlew :features:show-info:testDebugUnitTest
+./gradlew :support:android:testDebugUnitTest
+./gradlew :support:coroutines:testDebugUnitTest
 ./gradlew :app:testDebugUnitTest
 
 # Run the Konsist architecture and convention guards
