@@ -26,16 +26,16 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Locale
 
-class DistanceFormatterTest {
+class UnitFormatterTest {
 
     private val defaultLocale = Locale.getDefault()
     private val converter = mock<UnitConverter>()
-    private lateinit var formatter: DistanceFormatter
+    private lateinit var formatter: UnitFormatter
 
     @BeforeEach
     fun setup() {
         Locale.setDefault(Locale.US)
-        formatter = DistanceFormatter(converter)
+        formatter = UnitFormatter(converter)
     }
 
     @AfterEach

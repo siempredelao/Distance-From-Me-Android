@@ -79,12 +79,12 @@ See [README.md](README.md) for quick testing commands.
 ### 3️⃣ Formatters (100% Branch Coverage) ✅
 | Formatter | Methods | Branches | Coverage | Status |
 |-----------|---------|----------|----------|---------|
-| DistanceFormatter | 3 | 0 | **100%** | ✅ |
+| UnitFormatter | 3 | 0 | **100%** | ✅ |
 | AddressFormatter | 1 | 0 | **100%** | ✅ |
 | ShareInfoMessageMapper | 2 | 0 | **100%** | ✅ |
 | **AVERAGE** | - | - | **100%** | ✅ |
 **Details**:
-- **DistanceFormatter**: Delegates to UnitConverter (tested via mocks) - 9 tests cover all scenarios
+- **UnitFormatter**: Delegates to UnitConverter (tested via mocks) - 9 tests cover all scenarios
 - **AddressFormatter**: Simple concatenation - 4 tests cover all input variations
 - **ShareInfoMessageMapper**: String templates - 3 tests cover all cases
 ---

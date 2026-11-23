@@ -17,10 +17,10 @@
 package gc.david.dfm.core.units.di
 
 import gc.david.dfm.core.units.domain.UnitConverter
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import org.koin.dsl.module
 
 val coreUnitsModule = module {
     single { UnitConverter() }
-    single { DistanceFormatter(get()) }
+    single { UnitFormatter(get()) }
 }

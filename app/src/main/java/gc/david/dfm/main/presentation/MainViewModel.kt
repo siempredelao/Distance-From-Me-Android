@@ -28,7 +28,7 @@ import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.units.domain.model.UnitSystem
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository
@@ -71,7 +71,7 @@ class MainViewModel(
     private val permissionChecker: PermissionChecker,
     private val coordinatesRepository: CoordinatesRepository,
     private val distanceCalculator: DistanceCalculator,
-    private val distanceFormatter: DistanceFormatter,
+    private val unitFormatter: UnitFormatter,
     private val buildConfigProvider: BuildConfigProvider,
     private val mapStateMapper: MapStateMapper,
     private val loadDistancesMapper: LoadDistancesMapper
@@ -459,7 +459,7 @@ class MainViewModel(
         val model = DrawDistanceUiModel(
             coordinates,
             distanceName,
-            distanceFormatter.formatDistance(distanceInMetres, unitSystem),
+            unitFormatter.formatDistance(distanceInMetres, unitSystem),
             source,
             distanceModeRepository.getDistanceMode(),
             settingsRepository.getCameraAnimation()

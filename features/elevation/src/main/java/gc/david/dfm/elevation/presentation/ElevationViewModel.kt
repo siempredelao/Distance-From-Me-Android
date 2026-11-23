@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModel
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.units.domain.model.UnitSystem
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.domain.model.ElevationResult
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
@@ -39,7 +39,7 @@ class ElevationViewModel(
     private val getElevationByCoordinatesUseCase: GetElevationByCoordinatesUseCase,
     private val connectionManager: ConnectionManager,
     private val settingsRepository: SettingsRepository,
-    private val distanceFormatter: DistanceFormatter
+    private val unitFormatter: UnitFormatter
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ElevationUiState())
@@ -72,9 +72,9 @@ class ElevationViewModel(
 
     private fun showChart(samples: List<Double>) {
         val normalizedElevationList = samples.map { elevation ->
-            distanceFormatter.formatAltitude(elevation, unitSystem)
+            unitFormatter.formatAltitude(elevation, unitSystem)
         }
-        val altitudeUnit = distanceFormatter.getAltitudeUnitLabel(unitSystem)
+        val altitudeUnit = unitFormatter.getAltitudeUnitLabel(unitSystem)
         _uiState.update { current ->
             current.copy(
                 elevation = ElevationUiModel(normalizedElevationList, altitudeUnit),

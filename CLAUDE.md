@@ -52,7 +52,7 @@ Modules are grouped by role, and each group may only depend inwards. `ModuleGrou
 - `:core:distances`: the Room database (`DFMDatabase`) plus the distance and position use cases. Room schemas are exported to `core/distances/schemas/`. Commit the new schema JSON when you change entities.
 - `:core:geocoding`: the client for the Google Maps web services (Geocoding and Elevation): the `GOOGLE_API_CLIENT` `OkHttpClient`, whose interceptor adds the API key, plus `getGoogleApiJson`, `googleApiJson`, `HttpException` and `toPlainString` for query values. Its key provider, `GeocodeApiKeyProvider`, is internal.
 - `:core:settings`: the settings repository (`SettingsRepository`, backed by the default `SharedPreferences`) that the map, elevation and Show info screens read. `:features:settings` is only the screen that edits those preferences, through `res/xml/settings.xml`, so keys changed on one side must change on the other.
-- `:core:units` (JVM): `UnitSystem`, `UnitConverter` and `DistanceFormatter`.
+- `:core:units` (JVM): `UnitSystem`, `UnitConverter` and `UnitFormatter`.
 - `:support:android`: thin wrappers over the Android framework: `ResourceProvider`, `ConnectionManager`, `tryStartActivity`, `collectOnStarted`, `UiUtils` and their toast strings.
 - `:support:coroutines`: `launchCatching`, `suspendRunCatching`, `logUnexpectedFailure` and the IO `CoroutineDispatcher` binding.
 - `:support:navigation`: `Navigator` and `Route` (see Navigation).

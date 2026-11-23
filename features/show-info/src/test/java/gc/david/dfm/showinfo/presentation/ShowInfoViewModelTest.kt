@@ -26,7 +26,7 @@ import gc.david.dfm.core.coordinates.domain.DistanceCalculator
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.units.domain.model.UnitSystem
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
@@ -64,7 +64,7 @@ internal class ShowInfoViewModelTest {
     private val geocodingErrorMessageMapper = mock<GeocodingErrorMessageMapper>()
     private val shareInfoMessageMapper = mock<ShareInfoMessageMapper>()
     private val settingsRepository = mock<SettingsRepository>()
-    private val distanceFormatter = mock<DistanceFormatter>()
+    private val unitFormatter = mock<UnitFormatter>()
     private val distanceCalculator = mock<DistanceCalculator>()
 
     private val viewModel =
@@ -77,7 +77,7 @@ internal class ShowInfoViewModelTest {
             geocodingErrorMessageMapper,
             shareInfoMessageMapper,
             settingsRepository,
-            distanceFormatter,
+            unitFormatter,
             distanceCalculator
         )
 
@@ -98,7 +98,7 @@ internal class ShowInfoViewModelTest {
         whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
 
         viewModel.onStart()
 
@@ -112,7 +112,7 @@ internal class ShowInfoViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(false)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
         viewModel.onStart()
 
@@ -201,7 +201,7 @@ internal class ShowInfoViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(false)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
         viewModel.onStart()
 
@@ -219,7 +219,7 @@ internal class ShowInfoViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(getAddressNameByCoordinatesUseCase(any()))
             .thenReturn(GeocodingResult.Found(listOf(address1)))
@@ -240,7 +240,7 @@ internal class ShowInfoViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(resourceProvider.get(R.string.error_no_address_found_message)).thenReturn("No address found")
         whenever(getAddressNameByCoordinatesUseCase(any()))
@@ -260,7 +260,7 @@ internal class ShowInfoViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn("Geocoding failed")
         whenever(getAddressNameByCoordinatesUseCase(any())).thenAnswer { throw IOException("Network error") }
@@ -336,7 +336,7 @@ internal class ShowInfoViewModelTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
     }
 

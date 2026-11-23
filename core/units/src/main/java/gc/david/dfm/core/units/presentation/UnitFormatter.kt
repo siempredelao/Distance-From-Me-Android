@@ -25,7 +25,7 @@ import kotlin.math.roundToLong
  * Formats distance and altitude values for UI display.
  * Uses domain converters but adds presentation logic (formatting).
  */
-class DistanceFormatter(private val converter: UnitConverter) {
+class UnitFormatter(private val converter: UnitConverter) {
 
     private val decimalFormat = DecimalFormat("##,##0.00")
 

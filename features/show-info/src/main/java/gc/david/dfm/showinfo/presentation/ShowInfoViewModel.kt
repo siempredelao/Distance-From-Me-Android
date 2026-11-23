@@ -26,7 +26,7 @@ import gc.david.dfm.core.coordinates.domain.DistanceCalculator
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.units.domain.model.UnitSystem
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import gc.david.dfm.showinfo.R
 import gc.david.dfm.showinfo.presentation.mapper.AddressFormatter
 import gc.david.dfm.showinfo.presentation.mapper.ShareInfoMessageMapper
@@ -54,7 +54,7 @@ class ShowInfoViewModel(
     private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper,
     private val shareInfoMessageMapper: ShareInfoMessageMapper,
     private val settingsRepository: SettingsRepository,
-    private val distanceFormatter: DistanceFormatter,
+    private val unitFormatter: UnitFormatter,
     private val distanceCalculator: DistanceCalculator
 ) : ViewModel() {
 
@@ -76,7 +76,7 @@ class ShowInfoViewModel(
         }
 
         val distanceInMetres = distanceCalculator.calculateTotalDistance(positionsList)
-        val distance = distanceFormatter.formatDistance(distanceInMetres, unitSystem)
+        val distance = unitFormatter.formatDistance(distanceInMetres, unitSystem)
         this.inputParams = InputParams(positionsList, distance)
 
         load(distance, positionsList)

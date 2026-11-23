@@ -19,7 +19,7 @@ package gc.david.dfm.elevation.presentation
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.units.domain.model.UnitSystem
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import gc.david.dfm.elevation.domain.GetElevationByCoordinatesUseCase
 import gc.david.dfm.elevation.domain.model.ElevationError
 import gc.david.dfm.elevation.domain.model.ElevationResult
@@ -53,14 +53,14 @@ class ElevationViewModelTest {
     private val getElevationByCoordinatesUseCase = mock<GetElevationByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val settingsRepository = mock<SettingsRepository>()
-    private val distanceFormatter = mock<DistanceFormatter>()
+    private val unitFormatter = mock<UnitFormatter>()
 
     private val viewModel =
         ElevationViewModel(
             getElevationByCoordinatesUseCase,
             connectionManager,
             settingsRepository,
-            distanceFormatter
+            unitFormatter
         )
 
     @Test
@@ -97,8 +97,8 @@ class ElevationViewModelTest {
     @Test
     fun `shows chart with formatted samples when elevation is found`() = runTest {
         givenChartEnabled(UnitSystem.IMPERIAL, altitudeUnit = "ft")
-        whenever(distanceFormatter.formatAltitude(100.5, UnitSystem.IMPERIAL)).thenReturn(329.72)
-        whenever(distanceFormatter.formatAltitude(200.7, UnitSystem.IMPERIAL)).thenReturn(658.46)
+        whenever(unitFormatter.formatAltitude(100.5, UnitSystem.IMPERIAL)).thenReturn(329.72)
+        whenever(unitFormatter.formatAltitude(200.7, UnitSystem.IMPERIAL)).thenReturn(658.46)
         whenever(getElevationByCoordinatesUseCase(PATH)).thenReturn(ElevationResult.Found(listOf(100.5, 200.7)))
 
         viewModel.onCoordinatesSelected(PATH)
@@ -255,8 +255,8 @@ class ElevationViewModelTest {
         whenever(settingsRepository.shouldShowElevationChart()).thenReturn(true)
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(unitSystem)
-        whenever(distanceFormatter.getAltitudeUnitLabel(unitSystem)).thenReturn(altitudeUnit)
-        whenever(distanceFormatter.formatAltitude(any(), any())).thenAnswer { it.arguments[0] as Double }
+        whenever(unitFormatter.getAltitudeUnitLabel(unitSystem)).thenReturn(altitudeUnit)
+        whenever(unitFormatter.formatAltitude(any(), any())).thenAnswer { it.arguments[0] as Double }
     }
 
     private companion object {

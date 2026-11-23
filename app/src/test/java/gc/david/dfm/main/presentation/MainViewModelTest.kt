@@ -29,7 +29,7 @@ import gc.david.dfm.core.distances.domain.model.PositionListResult
 import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.settings.domain.model.CameraAnimation
 import gc.david.dfm.core.units.domain.model.UnitSystem
-import gc.david.dfm.core.units.presentation.DistanceFormatter
+import gc.david.dfm.core.units.presentation.UnitFormatter
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository
@@ -85,7 +85,7 @@ class MainViewModelTest {
     private val permissionChecker = mock<PermissionChecker>()
     private val coordinatesRepository = mock<CoordinatesRepository>()
     private val distanceCalculator = mock<DistanceCalculator>()
-    private val distanceFormatter = mock<DistanceFormatter>()
+    private val unitFormatter = mock<UnitFormatter>()
     private val buildConfigProvider = mock<BuildConfigProvider>()
     private val mapStateMapper = mock<MapStateMapper>()
     private val loadDistancesMapper = mock<LoadDistancesMapper>()
@@ -112,7 +112,7 @@ class MainViewModelTest {
             permissionChecker,
             coordinatesRepository,
             distanceCalculator,
-            distanceFormatter,
+            unitFormatter,
             buildConfigProvider,
             mapStateMapper,
             loadDistancesMapper
@@ -208,7 +208,7 @@ class MainViewModelTest {
         val coordinates = listOf(Coordinates(40.0, -3.0), Coordinates(41.0, -4.0))
         val mapState = MapUiState(clearMap = true)
         whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
-        whenever(distanceFormatter.formatDistance(any(), any())).thenReturn("157 km")
+        whenever(unitFormatter.formatDistance(any(), any())).thenReturn("157 km")
         whenever(settingsRepository.getCameraAnimation()).thenReturn(CameraAnimation.None)
         whenever(mapStateMapper.toMapUiState(any())).thenReturn(mapState)
 
