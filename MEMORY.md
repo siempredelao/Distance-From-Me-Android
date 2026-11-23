@@ -13,6 +13,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Explain the step before changing](explain-step-before-changing.md) — say what the next plan step changes and how it's checked before the first edit
 - [Lists over paragraphs in memory](memory-lists-over-paragraphs.md) — write memory, especially plan progress, as short unordered lists
 - [Show diff after each change](show-diff-after-each-change.md) — end every change report with its diff in the reply
+- [JVM or Android module](jvm-or-android-module.md) — check a new module's imports first; plain Kotlin goes in a dfm.jvm.library module, not an Android library
 ```
 
 ## commit-only-what-is-asked.md
@@ -51,6 +52,29 @@ When moving to the next plan step, first explain it to the user in a few lines: 
 **How to apply:** the explanation goes in the message that starts the step, before the first Edit. This doesn't mean waiting for approval unless the step is risky or ambiguous. Related: [[one-plan-step-at-a-time]], [[konsist-cleanup-series]].
 ```
 
+## jvm-or-android-module.md
+
+```markdown
+---
+name: jvm-or-android-module
+description: "Before creating a module, check whether its code needs Android at all; plain Kotlin code goes in a JVM module (dfm.jvm.library), not an Android library"
+metadata:
+  node_type: memory
+  type: feedback
+  originSessionId: ffb2e984-1213-4f4a-95ba-f72e80a6d972
+  modified: 2026-11-23T13:29:08.377Z
+---
+
+Before creating any new module, check what its code imports, and pick the module type from that:
+- Only Kotlin, the JDK, coroutines or Koin core → a plain JVM module: `dfm.jvm.library` (+ `dfm.unit-test`), with `libs.coroutines.core` instead of `libs.coroutines` (the Android artifact) and no `AndroidManifest.xml`.
+- Android framework classes, resources (`R`), Context, ViewModel or Compose → an Android library: `dfm.android.library`.
+- Say which type it is and why in the step explanation, before the first edit.
+
+**Why:** on 2026-11-23, in step 5 of [[konsist-cleanup-series]], I created `:core:units` (5c, committed) and `:core:coordinates` (5d) as Android libraries out of habit, although both are plain Kotlin. The user asked "Why can't it be a plain java module?" and had me convert both. They asked me to remember this mistake and to double-check the module type next time.
+
+**How to apply:** when a plan step creates a module, grep its future files' imports first. A JVM module also can't depend on an Android library (`:support:test` is one), so its tests use only what `dfm.unit-test` adds for JVM modules. Related: [[explain-step-before-changing]].
+```
+
 ## konsist-cleanup-series.md
 
 ```markdown
@@ -61,7 +85,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-23T09:56:58.257Z
+  modified: 2026-11-23T12:30:37.855Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -139,7 +163,32 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - `:support` is for technical modules with no app domain (test, navigation, coroutines, android); `:core` is for shared domain and data. The user changed my `:core:navigation`, `:core:coroutines` and `:core:android` to `:support:…`.
   - `AddressViewModel` stays in a small `:features:address`.
   - `Navigator` interface rather than merging `:opensource` into `:about`.
-- Progress: not started.
+- Progress:
+  - Step 1 done: b119cfb (plugins + `:faq`/`:core-distances` pilots), 68c7e03 (every other module + `BuildConventionsKonsistTest`).
+  - Classpath check: `scratchpad/dump-deps.sh` + `norm.sh` compare sorted resolved-dependency sets (tree order changes).
+  - A baseline worktree needs `local.properties`, `keystore.properties` and the ignored `other.xml` files copied in.
+  - Lint per module is unchanged; the known error is now at `MainScreen.kt:153`.
+  - Pre-existing Gradle warning "automatic loading of test framework implementation dependencies" (needs `junit-platform-launcher`); offered to the user, not done.
+  - Step 2 done: 8dbe692 (`:tools:konsist`, `:support:test`, package `gc.david.dfm.support.test`).
+  - Step 3 done: 9a858d8 (`core/`, `features/`, `.gitignore` `**/src/*/res/values/other.xml`, `ModuleGroupsKonsistTest`).
+  - Other checkouts must move their geocoding `other.xml` files to `core/geocoding/` by hand.
+  - Pitfall: bulk `sed` over `git grep -l` also hits `.claude/plans/` copies; exclude `.claude`.
+  - Step 4 done: fa8b98d (4a `:core:address`, built and tested on its own in a temporary worktree), 5df975d (4b routes in `:support:navigation`).
+  - 4a: `AddressViewModelTest` mocks `GeocodingErrorMessageMapper` instead of importing core strings (the user's idea).
+  - 4b, as the user redesigned it:
+    - sealed `Route` (`About`, `Faq`, `OpenSourceLicenses`, `Settings`, `ShowInfo`) with a comment to reconsider the setup if routes grow
+    - `Navigator.navigate(route)`; `AppNavigator(activity)` bound as `factory { (activity: Activity) -> … }`, injected with `by inject { parametersOf(this) }`
+    - every cross-module launch, including `MainActivity`'s, goes through it
+    - DI guard: the navigator is never bound with `single`
+  - The plan expected Show info to show error text when offline; offline it shows the network toast instead (no Geocoding call). That is by design.
+  - Step 5 so far: 1c10654 (5a), 15484fc (5b `:support:coroutines`), bc6c96b (5c `:core:units`), 9a1c34c (5d `:core:coordinates`, a JVM module, + its repository from `:app` + `dfm.unit-test` for JVM modules), 16ec90e (`:core:units` made a JVM module).
+  - e8aed0c (5e `:support:android`). 5f (delete `:core:common`) bd4c20a; step 5 done; step 6 (leak) closed without a fix at the user's choice: maps-compose 6.2.0 awaitMap can't be cancelled; fix is maps-compose 9 (needs compileSdk 37 + AGP 9.1); comment added at GoogleMap in MapContent.kt (uncommitted); toolchain upgrade becomes a separate plan after this one; bafb8b7 commits that comment; docs step done in the working tree, not committed (CLAUDE.md, README, + `dfm.jvm.library` registers `testDebugUnitTest` → `test`, because `./gradlew testDebugUnitTest` skipped the JVM modules' tests); smoke run passed (elevation chart, Show info share, About no-browser toast with Chrome disabled then re-enabled, offline search toast). The only LeakCanary signature is still the old one.
+  - Release-build step added to the plan by the user, then moved by them to the very end, after the docs step. Exclude the Crashlytics mapping upload tasks when building release.
+  - Step 5a committed as 1c10654 (2026-11-23):
+    - The launcher icon went to `:core:design-system` (not `:app` as planned), because About uses it too.
+    - `toPlainString` went to the `gc.david.dfm.geocoding` root package, because elevation's domain layer uses it.
+  - Found 2026-11-23, not fixed: `:app:assembleRelease` fails in R8 at HEAD 5df975d (missing `androidx.window.extensions.*`, probably since material3-adaptive in 15b). Release icons were checked via merged resources instead.
+  - 4a's `gc.david.dfm.core.address` rename left some import blocks out of ASCII order; offered a sort pass.
 
 ## Emulator notes
 - Target the emulator with `ANDROID_SERIAL=emulator-5554`; the user's Pixel 10 may be plugged in over USB.
@@ -147,6 +196,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - In any-position mode the first point needs a tap, later points a long press.
 - After a force-stop, a relaunch shows the location rationale dialog (tap Cancelar); after a cold boot Android's own permission dialog appears first (tap "No permitir").
 - Kill the emulator by process name (`ps -eo pid,comm | awk '$2 ~ /^qemu-system/'`); `pkill -f` with the AVD name also matches, and kills, the shell running it.
+- A Gradle build that stalls for over 10 minutes with idle execution workers (seen 2026-11-23 on a daemon reused for about 2 hours): `./gradlew --stop` and rerun; it finished in 2 minutes. Run long builds in the background, with output in a log file.
 - To slow the network, use `adb root` then `adb shell tc qdisc add dev wlan0 root netem delay 3000ms` (remove with `tc qdisc del dev wlan0 root`); it delays every packet, so a search loads for about 19 s. `adb emu network delay` only affects mobile data and added a single delay.
 - 3-button navigation: `adb shell cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton` (back with `...navbar.gestural`). The emulator's cutout is top-left in portrait: on the left in rotation 1, on the right in rotation 3.
 - Tablet size: `adb shell wm size 1600x2560` and `wm density 320`, then `reset` both.
