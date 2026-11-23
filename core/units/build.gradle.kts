@@ -15,12 +15,8 @@
  */
 
 plugins {
-    alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.jvm.library)
     alias(libs.plugins.dfm.unit.test)
-}
-
-android {
-    namespace = "gc.david.dfm.core.units"
 }
 
 dependencies {
