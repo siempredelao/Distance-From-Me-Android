@@ -18,6 +18,7 @@ package gc.david.dfm.konsist
 
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.ext.list.withName
+import com.lemonappdev.konsist.api.verify.assertFalse
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -47,7 +48,15 @@ class DependencyInjectionKonsistTest {
         koinModules.assertTrue { Regex("""\b${it.name}\b""").containsMatchIn(startKoin) }
     }
 
+    @Test
+    fun `navigators are created per Activity, never as singles`() {
+        // A navigator holds the Activity it launches from, so a single would leak the first one
+        koinModules.assertFalse { NAVIGATOR_SINGLE.containsMatchIn(it.text) }
+    }
+
     private companion object {
+
+        val NAVIGATOR_SINGLE = Regex("""\bsingle\s*(<\s*\w*Navigator\s*>|\{[^}\n]*Navigator\b)""")
 
         val KOIN_MODULE_DECLARATION = Regex("""^module\s*\{.*""", RegexOption.DOT_MATCHES_ALL)
     }

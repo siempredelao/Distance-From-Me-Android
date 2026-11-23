@@ -17,14 +17,16 @@
 package gc.david.dfm.konsist
 
 import com.lemonappdev.konsist.api.Konsist
+import com.lemonappdev.konsist.api.declaration.KoFileDeclaration
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File
 
 /**
  * Modules live in groups that may only depend inwards: `features` on `core` and `support`,
- * `core` on `core` and `support`, and `support` on `support` alone. `:app` sits outside the
- * groups and may use all of them.
+ * `core` on `core` and `support`, and `support` on `support` alone. Features don't depend on
+ * each other either; they reach other screens through `:support:navigation`. `:app` sits outside
+ * the groups and may use all of them.
  */
 class ModuleGroupsKonsistTest {
 
@@ -41,6 +43,23 @@ class ModuleGroupsKonsistTest {
     }
 
     @Test
+    fun `feature code does not import another feature's code`() {
+        val violations = modulesOf(FEATURES).flatMap { module ->
+            val otherFeatures = productionFiles
+                .filter { it.moduleName.startsWith("$FEATURES/") && it.moduleName != module }
+                .mapNotNull { it.packagee?.name }
+                .toSet()
+            importViolations(productionFiles.filter { it.moduleName == module }, otherFeatures)
+        }
+        assertEquals(emptyList<String>(), violations)
+    }
+
+    @Test
+    fun `feature build files do not depend on other feature modules`() {
+        assertEquals(emptyList<String>(), buildFileViolations(from = FEATURES, forbidden = listOf(FEATURES)))
+    }
+
+    @Test
     fun `core build files do not depend on feature modules`() {
         assertEquals(emptyList<String>(), buildFileViolations(from = CORE, forbidden = listOf(FEATURES)))
     }
@@ -50,16 +69,21 @@ class ModuleGroupsKonsistTest {
         assertEquals(emptyList<String>(), buildFileViolations(from = SUPPORT, forbidden = listOf(CORE, FEATURES)))
     }
 
-    private fun importViolations(from: String, forbidden: List<String>): List<String> {
-        val forbiddenPackages = forbidden.flatMap { group -> packagesOf(group) }.toSet()
-        return productionFiles
-            .filter { it.moduleName.startsWith("$from/") }
-            .flatMap { file ->
-                file.imports
-                    .filter { import -> enclosingNames(import.name).any { it in forbiddenPackages } }
-                    .map { "${file.moduleName}/${file.name}: ${it.name}" }
-            }
-    }
+    private fun importViolations(from: String, forbidden: List<String>): List<String> =
+        importViolations(
+            files = productionFiles.filter { it.moduleName.startsWith("$from/") },
+            forbiddenPackages = forbidden.flatMap { group -> packagesOf(group) }.toSet(),
+        )
+
+    private fun importViolations(files: List<KoFileDeclaration>, forbiddenPackages: Set<String>): List<String> =
+        files.flatMap { file ->
+            file.imports
+                .filter { import -> enclosingNames(import.name).any { it in forbiddenPackages } }
+                .map { "${file.moduleName}/${file.name}: ${it.name}" }
+        }
+
+    private fun modulesOf(group: String): Set<String> =
+        productionFiles.map { it.moduleName }.filter { it.startsWith("$group/") }.toSet()
 
     private fun packagesOf(group: String): Set<String> {
         val packages = productionFiles

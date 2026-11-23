@@ -32,9 +32,14 @@ import gc.david.dfm.common.R as CommonR
 import gc.david.dfm.common.UiUtils
 import gc.david.dfm.common.tryStartActivity
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.opensource.presentation.OpenSourceLicensesActivity
+import gc.david.dfm.support.navigation.Navigator
+import gc.david.dfm.support.navigation.Route
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 class AboutActivity : ComponentActivity() {
+
+    private val navigator: Navigator by inject { parametersOf(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +74,7 @@ class AboutActivity : ComponentActivity() {
                         openOrToast(emailIntent, CommonR.string.toast_no_email_app)
                     },
                     onOpenSourceLicenses = {
-                        OpenSourceLicensesActivity.open(this@AboutActivity)
+                        navigator.navigate(Route.OpenSourceLicenses)
                     },
                 )
             }

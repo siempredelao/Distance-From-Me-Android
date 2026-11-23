@@ -35,5 +35,5 @@ dependencies {
     implementation(libs.koin.android)
     implementation(project(":core:common"))
     implementation(project(":core:design-system"))
-    implementation(project(":features:opensource"))
+    implementation(project(":support:navigation"))
 }

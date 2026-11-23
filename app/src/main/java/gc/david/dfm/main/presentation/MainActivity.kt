@@ -39,7 +39,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
-import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.UiUtils
@@ -47,20 +46,21 @@ import gc.david.dfm.common.collectOnStarted
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel
-import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
-import gc.david.dfm.settings.presentation.SettingsActivity
-import gc.david.dfm.showinfo.presentation.ShowInfoActivity
+import gc.david.dfm.support.navigation.Navigator
+import gc.david.dfm.support.navigation.Route
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class MainActivity : FragmentActivity() {
 
     private val appContext: Context by inject()
+    private val navigator: Navigator by inject { parametersOf(this) }
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
@@ -178,7 +178,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(mainUiState.openShowInfo) {
                     if (mainUiState.openShowInfo) {
-                        ShowInfoActivity.open(this@MainActivity)
+                        navigator.navigate(Route.ShowInfo)
                         mainViewModel.onOpenShowInfoHandled()
                     }
                 }
@@ -248,13 +248,13 @@ class MainActivity : FragmentActivity() {
                                 InAppReviewHandler.rateApp(this@MainActivity)
                             }
                             SideNavigationItemId.SETTINGS -> {
-                                SettingsActivity.open(this@MainActivity)
+                                navigator.navigate(Route.Settings)
                             }
                             SideNavigationItemId.HELP_FEEDBACK -> {
-                                FaqActivity.open(this@MainActivity)
+                                navigator.navigate(Route.Faq)
                             }
                             SideNavigationItemId.ABOUT -> {
-                                AboutActivity.open(this@MainActivity)
+                                navigator.navigate(Route.About)
                             }
                             SideNavigationItemId.LOAD -> {
                                 mainViewModel.onLoadDistancesClick()

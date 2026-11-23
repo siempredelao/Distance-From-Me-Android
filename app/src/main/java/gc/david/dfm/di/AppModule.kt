@@ -16,7 +16,9 @@
 
 package gc.david.dfm.di
 
+import android.app.Activity
 import com.google.android.gms.location.LocationServices
+import gc.david.dfm.AppNavigator
 import gc.david.dfm.DefaultBuildConfigProvider
 import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.domain.CoordinatesRepository
@@ -35,6 +37,7 @@ import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.support.navigation.Navigator
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -49,6 +52,8 @@ val appModule = module {
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
     single<LocationRepository> { BaseLocationRepository(get()) }
     single<BuildConfigProvider> { DefaultBuildConfigProvider() }
+    // One per Activity: the navigator holds the Activity it launches from
+    factory<Navigator> { (activity: Activity) -> AppNavigator(activity) }
     single { MapStateMapper(get()) }
     single { LoadDistancesMapper(get()) }
     single { GetStoredDistancesUseCase(get()) }
