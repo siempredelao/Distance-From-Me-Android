@@ -129,7 +129,6 @@ dependencies {
 	implementation(libs.compose.material3.adaptive)
 	implementation(libs.compose.ui)
     implementation(project(":core:address"))
-    implementation(project(":core:common"))
     implementation(project(":core:coordinates"))
     implementation(project(":core:design-system"))
     implementation(project(":core:distances"))

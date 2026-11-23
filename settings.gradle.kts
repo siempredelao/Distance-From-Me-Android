@@ -32,7 +32,6 @@ dependencyResolutionManagement {
 
 include(":app")
 include(":core:address")
-include(":core:common")
 include(":core:coordinates")
 include(":core:design-system")
 include(":core:distances")

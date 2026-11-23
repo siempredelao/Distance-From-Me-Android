@@ -21,7 +21,6 @@ Code is organised by features in a multi-module Gradle project, following MVVM +
 | `:app` | Main application module |
 | `:features:about` | About screen and app information |
 | `:features:address` | Address / geocoding feature |
-| `:core:common` | Shared resources and utilities |
 | `:features:connectivity` | Connection issues UI |
 | `:core:distances` | Room database and distance domain |
 | `:core:settings` | Settings repository (unit system, camera animation and elevation chart preferences) |
@@ -72,7 +71,6 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 # Run tests for specific module
 ./gradlew :core:distances:testDebugUnitTest
 ./gradlew :core:settings:testDebugUnitTest
-./gradlew :core:common:testDebugUnitTest
 ./gradlew :core:geocoding:testDebugUnitTest
 ./gradlew :features:show-info:testDebugUnitTest
 ./gradlew :features:address:testDebugUnitTest

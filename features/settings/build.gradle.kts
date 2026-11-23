@@ -38,7 +38,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.material.components)
     implementation(libs.timber)
-    implementation(project(":core:common"))
     implementation(project(":core:design-system"))
     implementation(project(":core:distances"))
     implementation(project(":support:android"))

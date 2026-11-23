@@ -30,7 +30,6 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.lifecycle.viewmodel)
     implementation(project(":core:address"))
-    implementation(project(":core:common"))
     implementation(project(":core:coordinates"))
     implementation(project(":support:android"))
     implementation(project(":support:coroutines"))

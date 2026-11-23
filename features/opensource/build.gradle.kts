@@ -37,7 +37,6 @@ dependencies {
     implementation(libs.koin)
     implementation(libs.koin.android)
     implementation(libs.timber)
-    implementation(project(":core:common"))
     implementation(project(":core:design-system"))
     implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
