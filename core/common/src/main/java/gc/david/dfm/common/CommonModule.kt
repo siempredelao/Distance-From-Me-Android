@@ -17,10 +17,8 @@
 package gc.david.dfm.common
 
 import gc.david.dfm.common.data.DefaultConnectionManager
-import gc.david.dfm.common.data.DefaultPermissionChecker
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.DistanceCalculator
-import gc.david.dfm.common.domain.PermissionChecker
 import gc.david.dfm.common.domain.UnitConverter
 import gc.david.dfm.common.presentation.DistanceFormatter
 import gc.david.dfm.common.presentation.ResourceProvider
@@ -32,7 +30,6 @@ val commonModule = module {
 
     single { ResourceProvider(get()) }
     single<ConnectionManager> { DefaultConnectionManager(get()) }
-    single<PermissionChecker> { DefaultPermissionChecker(get()) }
     single<CoroutineDispatcher> { Dispatchers.IO }
     
     // Distance calculation and unit conversion

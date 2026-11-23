@@ -18,13 +18,12 @@ package gc.david.dfm.main.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.R
-import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.domain.CoordinatesRepository
 import gc.david.dfm.common.domain.DistanceCalculator
-import gc.david.dfm.common.domain.PermissionChecker
 import gc.david.dfm.common.domain.model.UnitSystem
 import gc.david.dfm.common.launchCatching
 import gc.david.dfm.common.logUnexpectedFailure
@@ -37,6 +36,7 @@ import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.location.domain.LocationRepository
+import gc.david.dfm.location.domain.PermissionChecker
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper

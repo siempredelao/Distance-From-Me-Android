@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common.data
+package gc.david.dfm.location.data
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION

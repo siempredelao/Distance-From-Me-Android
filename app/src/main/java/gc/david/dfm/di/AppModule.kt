@@ -19,8 +19,8 @@ package gc.david.dfm.di
 import android.app.Activity
 import com.google.android.gms.location.LocationServices
 import gc.david.dfm.AppNavigator
+import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.DefaultBuildConfigProvider
-import gc.david.dfm.common.BuildConfigProvider
 import gc.david.dfm.common.domain.CoordinatesRepository
 import gc.david.dfm.distance.data.BaseCoordinatesRepository
 import gc.david.dfm.distance.data.BaseDistanceModeRepository
@@ -32,7 +32,9 @@ import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.initializers.MapInitializer
 import gc.david.dfm.location.data.BaseLocationRepository
+import gc.david.dfm.location.data.DefaultPermissionChecker
 import gc.david.dfm.location.domain.LocationRepository
+import gc.david.dfm.location.domain.PermissionChecker
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
@@ -51,6 +53,7 @@ val appModule = module {
     single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
     single<LocationRepository> { BaseLocationRepository(get()) }
+    single<PermissionChecker> { DefaultPermissionChecker(get()) }
     single<BuildConfigProvider> { DefaultBuildConfigProvider() }
     // One per Activity: the navigator holds the Activity it launches from
     factory<Navigator> { (activity: Activity) -> AppNavigator(activity) }

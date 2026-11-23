@@ -232,7 +232,7 @@ private fun NavigationRailHeader(
                     .padding(vertical = 24.dp)
             ) {
                 Image(
-                    painter = painterResource(id = gc.david.dfm.common.R.mipmap.ic_launcher_foreground),
+                    painter = painterResource(id = gc.david.dfm.designsystem.R.mipmap.ic_launcher_foreground),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth(0.35f)

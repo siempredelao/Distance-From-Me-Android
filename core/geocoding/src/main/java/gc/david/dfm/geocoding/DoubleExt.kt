@@ -14,24 +14,11 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.common
+package gc.david.dfm.geocoding
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-
-class DoubleExtTest {
-
-    @ParameterizedTest
-    @CsvSource(
-        "0.0005, 0.00050",
-        "-0.0001, -0.00010",
-        "0.0, 0.0",
-        "51.4778, 51.4778",
-        "-180.0, -180.0",
-        "1.0E7, 10000000",
-    )
-    fun `toPlainString never uses scientific notation`(value: Double, expected: String) {
-        assertEquals(expected, value.toPlainString())
-    }
-}
+/**
+ * Formats this number without an exponent, as web APIs expect in query parameters.
+ *
+ * `Double.toString()` switches to scientific notation below 1e-3, so `0.0005` would become `5.0E-4`.
+ */
+fun Double.toPlainString(): String = toBigDecimal().toPlainString()

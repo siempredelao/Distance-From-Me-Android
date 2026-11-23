@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package gc.david.dfm
 
-package gc.david.dfm.common.domain
+/**
+ * Provides build configuration information.
+ * Abstracts build variants for better testability.
+ */
+interface BuildConfigProvider {
 
-interface PermissionChecker {
-
-    fun isLocationPermissionGranted(): Boolean
+    /**
+     * Checks if the current build is a release build.
+     * 
+     * @return true if release build, false otherwise.
+     */
+    fun isReleaseBuild(): Boolean
 }
