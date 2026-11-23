@@ -24,7 +24,12 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-/** A plain Kotlin JVM module with the shared JVM targets and JUnit 5. */
+/**
+ * A plain Kotlin JVM module with the shared JVM targets and JUnit 5.
+ *
+ * It also gets a `testDebugUnitTest` task that runs `test`, so `./gradlew testDebugUnitTest`
+ * still runs every module's unit tests, Android and JVM alike.
+ */
 class JvmLibraryConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project) = with(target) {
@@ -38,5 +43,11 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             compilerOptions.jvmTarget.set(JVM_TARGET)
         }
         tasks.withType<Test>().configureEach { useJUnitPlatform() }
+        tasks.register("testDebugUnitTest") {
+            group = "verification"
+            description = "Runs the unit tests, like testDebugUnitTest in the Android modules."
+            dependsOn("test")
+        }
+        Unit
     }
 }
