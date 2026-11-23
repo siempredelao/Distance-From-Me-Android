@@ -24,7 +24,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.getValue
 import androidx.core.net.toUri
@@ -32,7 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import gc.david.dfm.support.android.R as SupportAndroidR
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.opensource.presentation.screen.OpenSourceDetailScreen
@@ -40,12 +38,12 @@ import gc.david.dfm.opensource.presentation.screen.OpenSourceListScreen
 import gc.david.dfm.support.android.UiUtils
 import gc.david.dfm.support.android.tryStartActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import gc.david.dfm.support.android.R as SupportAndroidR
 
 class OpenSourceLicensesActivity : ComponentActivity() {
 
     private val viewModel: OpenSourceViewModel by viewModel()
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // The top bar is always green and the content always light, whatever the system theme
