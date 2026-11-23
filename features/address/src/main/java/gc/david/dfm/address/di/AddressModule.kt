@@ -16,24 +16,10 @@
 
 package gc.david.dfm.address.di
 
-import gc.david.dfm.address.data.AddressRemoteDataSource
-import gc.david.dfm.address.data.BaseAddressRepository
-import gc.david.dfm.address.data.mapper.AddressCollectionEntityDataMapper
-import gc.david.dfm.address.domain.AddressRepository
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
-import gc.david.dfm.geocoding.di.GOOGLE_API_CLIENT
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val addressModule = module {
     viewModel { AddressViewModel(get(), get(), get(), get(), get()) }
-    factory { GetAddressNameByCoordinatesUseCase(get()) }
-    factory { GetAddressCoordinatesByNameUseCase(get()) }
-    factory { AddressCollectionEntityDataMapper() }
-    factory { GeocodingErrorMessageMapper(get()) }
-    single<AddressRepository> { BaseAddressRepository(get(), get()) }
-    single { AddressRemoteDataSource(get(), get(GOOGLE_API_CLIENT)) }
 }

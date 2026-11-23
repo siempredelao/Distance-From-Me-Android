@@ -130,6 +130,7 @@ dependencies {
 	implementation(libs.compose.ui)
     implementation(project(":features:about"))
     implementation(project(":features:address"))
+    implementation(project(":core:address"))
     implementation(project(":core:common"))
     implementation(project(":features:connectivity"))
     implementation(project(":core:distances"))

@@ -37,7 +37,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.timber)
-    implementation(project(":features:address"))
+    implementation(project(":core:address"))
     implementation(project(":core:common"))
     implementation(project(":core:distances"))
     implementation(project(":core:settings"))

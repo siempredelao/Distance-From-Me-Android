@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="geocoding_error_invalid_request">Recherche invalide. Réessayez.</string>
+    <string name="geocoding_error_quota">Quota du service dépassé. Réessayez plus tard.</string>
+    <string name="geocoding_error_rate_limited">Trop de requêtes. Réessayez dans quelques minutes.</string>
+    <string name="geocoding_error_request_denied">Requête refusée. Vérifiez la configuration.</string>
+    <string name="geocoding_error_unknown">Erreur du serveur. Réessayez.</string>
+    <string name="geocoding_error_generic">Impossible d’obtenir la position. Réessayez.</string>
+</resources>

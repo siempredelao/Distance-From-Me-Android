@@ -17,12 +17,12 @@
 package gc.david.dfm.address.presentation
 
 import gc.david.dfm.address.R
-import gc.david.dfm.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.address.domain.GetAddressNameByCoordinatesUseCase
-import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.GeocodingError
-import gc.david.dfm.address.domain.model.GeocodingResult
-import gc.david.dfm.address.presentation.mapper.GeocodingErrorMessageMapper
+import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
+import gc.david.dfm.core.address.domain.model.Address
+import gc.david.dfm.core.address.domain.model.GeocodingError
+import gc.david.dfm.core.address.domain.model.GeocodingResult
+import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
 import gc.david.dfm.common.Coordinates
 import gc.david.dfm.common.domain.ConnectionManager
 import gc.david.dfm.common.presentation.ResourceProvider
@@ -54,7 +54,7 @@ class AddressViewModelTest {
     private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
-    private val geocodingErrorMessageMapper = GeocodingErrorMessageMapper(resourceProvider)
+    private val geocodingErrorMessageMapper = mock<GeocodingErrorMessageMapper>()
 
     private val viewModel =
         AddressViewModel(
@@ -124,7 +124,7 @@ class AddressViewModelTest {
     fun `shows rejection message when position by name request is rejected`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         givenCoordinatesByNameReturns(GeocodingResult.Rejected(GeocodingError.OVER_QUERY_LIMIT))
-        whenever(resourceProvider.get(R.string.geocoding_error_rate_limited)).thenReturn(REJECTED_MESSAGE)
+        whenever(geocodingErrorMessageMapper.map(GeocodingError.OVER_QUERY_LIMIT)).thenReturn(REJECTED_MESSAGE)
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
@@ -136,7 +136,7 @@ class AddressViewModelTest {
     fun `shows generic error when position by name use case throws`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(getAddressCoordinatesByNameUseCase(any())).thenAnswer { throw IOException("Network error") }
-        whenever(resourceProvider.get(R.string.geocoding_error_generic)).thenReturn(GENERIC_MESSAGE)
+        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn(GENERIC_MESSAGE)
 
         viewModel.onAddressSearch(LOCATION_NAME)
 
@@ -197,7 +197,7 @@ class AddressViewModelTest {
     fun `shows rejection message when position by coordinates request is rejected`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         givenNameByCoordinatesReturns(GeocodingResult.Rejected(GeocodingError.REQUEST_DENIED))
-        whenever(resourceProvider.get(R.string.geocoding_error_request_denied)).thenReturn(REJECTED_MESSAGE)
+        whenever(geocodingErrorMessageMapper.map(GeocodingError.REQUEST_DENIED)).thenReturn(REJECTED_MESSAGE)
 
         viewModel.onAddressSearch(COORDINATES)
 
@@ -209,7 +209,7 @@ class AddressViewModelTest {
     fun `shows generic error when position by coordinates use case throws`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         whenever(getAddressNameByCoordinatesUseCase(any())).thenAnswer { throw IOException("Network error") }
-        whenever(resourceProvider.get(R.string.geocoding_error_generic)).thenReturn(GENERIC_MESSAGE)
+        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn(GENERIC_MESSAGE)
 
         viewModel.onAddressSearch(COORDINATES)
 

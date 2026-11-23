@@ -17,7 +17,6 @@
 plugins {
     alias(libs.plugins.dfm.android.library)
     alias(libs.plugins.dfm.unit.test)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -27,14 +26,9 @@ android {
 dependencies {
 
     implementation(libs.coroutines)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin)
     implementation(libs.koin.android)
-    implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.coroutines)
-    implementation(libs.timber)
+    implementation(project(":core:address"))
     implementation(project(":core:common"))
-    implementation(project(":core:geocoding"))
 }

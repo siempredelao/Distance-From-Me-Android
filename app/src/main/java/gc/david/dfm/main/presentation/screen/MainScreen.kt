@@ -67,7 +67,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import gc.david.dfm.R
-import gc.david.dfm.address.domain.model.Address
+import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
 import gc.david.dfm.main.presentation.components.AppNavigationRail

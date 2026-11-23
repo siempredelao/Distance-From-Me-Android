@@ -16,7 +16,7 @@
 
 package gc.david.dfm.address.presentation.model
 
-import gc.david.dfm.address.domain.model.Address
+import gc.david.dfm.core.address.domain.model.Address
 
 data class AddressUiState(
     val isLoading: Boolean = false,
