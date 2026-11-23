@@ -34,9 +34,13 @@ class SettingsActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.settings_activity_container_framelayout, SettingsFragment())
-                .commit()
+        // After a recreation the fragment is restored. Replacing it would leave an open preference dialog without its
+        // target, and the next recreation would crash.
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                    .replace(R.id.settings_activity_container_framelayout, SettingsFragment())
+                    .commit()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
