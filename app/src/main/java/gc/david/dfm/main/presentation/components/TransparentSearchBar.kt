@@ -116,7 +116,7 @@ fun TransparentSearchBar(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(
                             onSearch = {
-                                if (searchText.isNotEmpty()) {
+                                if (searchText.isNotBlank()) {
                                     onSearchQuery(searchText)
                                     isSearchActive = false
                                     searchText = ""
