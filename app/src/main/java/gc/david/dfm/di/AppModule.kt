@@ -36,6 +36,7 @@ import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.onboarding.domain.MapHintProcessor
 import gc.david.dfm.support.navigation.Navigator
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -54,6 +55,7 @@ val appModule = module {
     factory<Navigator> { (activity: Activity) -> AppNavigator(activity) }
     single { MapStateMapper(get()) }
     single { LoadDistancesMapper(get()) }
+    single { MapHintProcessor() }
     single { GetStoredDistancesUseCase(get()) }
-    viewModel { MainViewModel(get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }

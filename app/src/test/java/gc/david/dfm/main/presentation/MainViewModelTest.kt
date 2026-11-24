@@ -47,6 +47,8 @@ import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import gc.david.dfm.onboarding.domain.MapHintProcessor
+import gc.david.dfm.onboarding.domain.model.MapHint
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
@@ -641,6 +643,35 @@ class MainViewModelTest {
         assertFalse(viewModel.uiState.value.requestLocationPermission)
     }
 
+    @Test
+    fun `hints follow the path in any position mode`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+
+        viewModel.onMapClick(POINT_A)
+        assertEquals(MapHint.ADD_OR_FINISH, viewModel.hint.value)
+
+        viewModel.onMapLongClick(POINT_B)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+
+        viewModel.onDistanceFromAnyPositionSet()
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+    }
+
+    @Test
+    fun `hints follow the location in current position mode`() = runTest {
+        assertNull(viewModel.hint.value)
+
+        givenLocationTracked()
+        assertEquals(MapHint.WAITING_FOR_LOCATION, viewModel.hint.value)
+
+        locations.emit(LONDON)
+        assertEquals(MapHint.MEASURE_FROM_LOCATION, viewModel.hint.value)
+
+        viewModel.onMapLongClick(POINT_A)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+    }
+
     private fun createViewModel() =
         MainViewModel(
             getDistancesUseCase,
@@ -657,7 +688,8 @@ class MainViewModelTest {
             UnitFormatter(UnitConverter()),
             buildConfigProvider,
             MapStateMapper(context),
-            loadDistancesMapper
+            loadDistancesMapper,
+            MapHintProcessor()
         )
 
     // Grants location and tracks it, as MainActivity does while started; emit to locations to deliver one

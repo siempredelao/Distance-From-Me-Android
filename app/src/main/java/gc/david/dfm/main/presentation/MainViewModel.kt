@@ -42,6 +42,9 @@ import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MainUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
+import gc.david.dfm.onboarding.domain.MapHintProcessor
+import gc.david.dfm.onboarding.domain.model.MapHint
+import gc.david.dfm.onboarding.domain.model.MapSituation
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.coroutines.launchCatching
@@ -50,14 +53,17 @@ import gc.david.dfm.toCoordinates
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import timber.log.Timber
@@ -77,7 +83,8 @@ class MainViewModel(
     private val unitFormatter: UnitFormatter,
     private val buildConfigProvider: BuildConfigProvider,
     private val mapStateMapper: MapStateMapper,
-    private val loadDistancesMapper: LoadDistancesMapper
+    private val loadDistancesMapper: LoadDistancesMapper,
+    mapHintProcessor: MapHintProcessor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -91,7 +98,13 @@ class MainViewModel(
     private var appHasJustStarted = true
 
     // The device's last known position, or null until the first location arrives
-    private var currentLocation: Coordinates? = null
+    private val currentLocation = MutableStateFlow<Coordinates?>(null)
+
+    /** What the map can tell the user about its next step, or null when there is nothing to say. */
+    val hint: StateFlow<MapHint?> =
+        mapHintProcessor
+            .observeHint(combine(_uiState, currentLocation) { state, location -> state.toMapSituation(location) })
+            .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
     // Determines whether a multi-point distance is being marked on the map
     private var isUserSelectingPoints: Boolean = false
@@ -227,7 +240,7 @@ class MainViewModel(
     }
 
     fun onMyLocationButtonClick() {
-        val coordinates = currentLocation ?: return
+        val coordinates = currentLocation.value ?: return
         _uiState.update {
             it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates.toUiModel())))
         }
@@ -249,7 +262,7 @@ class MainViewModel(
     }
 
     private fun onLocationChanged(coordinates: Coordinates) {
-        currentLocation = coordinates
+        currentLocation.value = coordinates
 
         if (appHasJustStarted) {
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
@@ -266,7 +279,7 @@ class MainViewModel(
 
         val origin = when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT -> null
-            DistanceMode.FROM_CURRENT_POINT -> currentLocation ?: run {
+            DistanceMode.FROM_CURRENT_POINT -> currentLocation.value ?: run {
                 isUserSelectingPoints = false
                 return // Without current location, we cannot calculate any distance
             }
@@ -317,7 +330,7 @@ class MainViewModel(
             }
 
             // Without a current location there is no distance to draw yet, so just show the place
-            DistanceMode.FROM_CURRENT_POINT if currentLocation == null -> _uiState.update {
+            DistanceMode.FROM_CURRENT_POINT if currentLocation.value == null -> _uiState.update {
                 it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates.toUiModel())))
             }
 
@@ -340,7 +353,7 @@ class MainViewModel(
             }
 
             DistanceMode.FROM_CURRENT_POINT -> {
-                val origin = currentLocation ?: run {
+                val origin = currentLocation.value ?: run {
                     isUserSelectingPoints = false
                     return // Without current location, we cannot calculate any distance
                 }
@@ -452,6 +465,15 @@ class MainViewModel(
     fun onLocationPermissionRequestHandled() {
         _uiState.update { it.copy(requestLocationPermission = false) }
     }
+
+    private fun MainUiState.toMapSituation(location: Coordinates?) =
+        MapSituation(
+            distanceMode = distanceMode,
+            isLocationPermissionGranted = isLocationPermissionGranted,
+            hasLocation = location != null,
+            hasPoints = mapState.markers.isNotEmpty(),
+            isDistanceDrawn = mapState.polylines.isNotEmpty()
+        )
 
     // Simple markers, with no distance info yet
     private fun List<Coordinates>.toMarkers() =
