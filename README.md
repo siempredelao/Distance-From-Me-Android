@@ -20,7 +20,7 @@ Modules are grouped by role, and each group only depends inwards: features on co
 
 | Module | Description |
 |---|---|
-| `:app` | Main application module: the map screen, onboarding and the navigator that opens every screen |
+| `:app` | Main application module: the map screen and its hints, the launcher and the navigator that opens every screen |
 | **Features** | |
 | `:features:about` | About screen and app information |
 | `:features:address` | Address search ViewModel |

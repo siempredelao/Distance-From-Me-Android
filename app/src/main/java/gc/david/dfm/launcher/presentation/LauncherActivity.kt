@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.onboarding.presentation
+package gc.david.dfm.launcher.presentation
 
 import android.app.Dialog
 import android.content.Intent
@@ -31,7 +31,7 @@ import timber.log.Timber
 /**
  * Created by david on 07.11.16.
  */
-class OnboardActivity : AppCompatActivity() {
+class LauncherActivity : AppCompatActivity() {
 
     private var playServicesDialog: Dialog? = null
 
@@ -78,6 +78,6 @@ class OnboardActivity : AppCompatActivity() {
 
     companion object {
 
-        private const val TAG = "OnboardActivity"
+        private const val TAG = "LauncherActivity"
     }
 }

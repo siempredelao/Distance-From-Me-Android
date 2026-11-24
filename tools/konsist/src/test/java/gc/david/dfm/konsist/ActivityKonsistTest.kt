@@ -22,6 +22,8 @@ import com.lemonappdev.konsist.api.ext.list.withoutName
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.w3c.dom.Element
+import org.w3c.dom.NodeList
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -45,7 +47,7 @@ class ActivityKonsistTest {
     fun `activities are launched through a companion open function`() {
         activities
             // The launcher activity and the map it hands over to aren't opened from another screen.
-            .withoutName("OnboardActivity", "MainActivity")
+            .withoutName("LauncherActivity", "MainActivity")
             .assertTrue { activity ->
                 activity.objects(includeNested = false)
                     .any { it.hasCompanionModifier && it.hasFunctionWithName("open") }
@@ -65,27 +67,44 @@ class ActivityKonsistTest {
         assertEquals(emptyList<String>(), activitiesHandlingChanges)
     }
 
-    private fun manifestActivities(): List<ManifestActivity> {
+    @Test
+    fun `the app is launched under its released component name`() {
+        val launchers = manifestElements("activity", "activity-alias")
+            .filter { it.hasLauncherCategory }
+            .map { it.getAttributeNS(ANDROID_NAMESPACE, "name") }
+
+        // Home screen icons and shortcuts store this name, so a launcher may lose them if it changes
+        assertEquals(listOf(".onboarding.presentation.OnboardActivity"), launchers)
+    }
+
+    private fun manifestActivities(): List<ManifestActivity> =
+        manifestElements("activity").map {
+            ManifestActivity(
+                name = it.getAttributeNS(ANDROID_NAMESPACE, "name"),
+                handlesConfigChanges = it.hasAttributeNS(ANDROID_NAMESPACE, "configChanges"),
+            )
+        }
+
+    private val Element.hasLauncherCategory: Boolean
+        get() = getElementsByTagName("category").elements()
+            .any { it.getAttributeNS(ANDROID_NAMESPACE, "name") == "android.intent.category.LAUNCHER" }
+
+    private fun manifestElements(vararg tags: String): List<Element> {
         val manifests = File(Konsist.projectRootPath).walkTopDown()
             .onEnter { it.name != "build" && !it.name.startsWith(".") }
             .filter { it.name == "AndroidManifest.xml" && it.parentFile.parentFile.name == "src" }
             .toList()
         check(manifests.isNotEmpty()) { "No manifests found under ${Konsist.projectRootPath}" }
         return manifests.flatMap { manifest ->
-            val activities = DocumentBuilderFactory.newInstance()
+            val document = DocumentBuilderFactory.newInstance()
                 .apply { isNamespaceAware = true }
                 .newDocumentBuilder()
                 .parse(manifest)
-                .getElementsByTagName("activity")
-            (0 until activities.length).map { index ->
-                val activity = activities.item(index) as org.w3c.dom.Element
-                ManifestActivity(
-                    name = activity.getAttributeNS(ANDROID_NAMESPACE, "name"),
-                    handlesConfigChanges = activity.hasAttributeNS(ANDROID_NAMESPACE, "configChanges"),
-                )
-            }
+            tags.flatMap { document.getElementsByTagName(it).elements() }
         }
     }
+
+    private fun NodeList.elements(): List<Element> = (0 until length).map { item(it) as Element }
 
     private data class ManifestActivity(val name: String, val handlesConfigChanges: Boolean)
 

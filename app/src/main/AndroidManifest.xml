@@ -44,15 +44,21 @@
             android:required="false" />
 
         <activity
+            android:name=".launcher.presentation.LauncherActivity"
+            android:exported="false"
+            android:theme="@style/SplashScreenTheme" />
+
+        <!-- The name LauncherActivity had up to version 4.0.3. Icons and shortcuts store it, so it must not change -->
+        <activity-alias
             android:name=".onboarding.presentation.OnboardActivity"
             android:exported="true"
-            android:theme="@style/SplashScreenTheme">
+            android:targetActivity=".launcher.presentation.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
 
         <activity
             android:name=".main.presentation.MainActivity"
