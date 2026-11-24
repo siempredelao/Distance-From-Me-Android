@@ -84,6 +84,7 @@ import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.model.SideNavigationUiState
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * Main screen composable containing the map, navigation rail, search bar, and FABs.
@@ -98,8 +99,8 @@ fun MainScreen(
     elevationData: ElevationUiModel?,
     showChart: Boolean,
     showChartFab: Boolean,
-    distancesToLoad: List<DistanceSelectionUiModel>?,
-    addressSuggestions: List<AddressUiModel>?,
+    distancesToLoad: ImmutableList<DistanceSelectionUiModel>?,
+    addressSuggestions: ImmutableList<AddressUiModel>?,
     isMyLocationEnabled: Boolean,
     onSearchQuery: (String) -> Unit,
     onMapClick: (LatLng) -> Unit,

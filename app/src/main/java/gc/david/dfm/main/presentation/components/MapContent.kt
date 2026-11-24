@@ -44,6 +44,8 @@ import gc.david.dfm.main.presentation.model.CoordinatesUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -135,7 +137,7 @@ fun MapContent(
 }
 
 @Composable
-private fun Polylines(list: List<PolylineData>) {
+private fun Polylines(list: ImmutableList<PolylineData>) {
     list.forEach { polylineData ->
         Polyline(
             points = listOf(
@@ -150,7 +152,7 @@ private fun Polylines(list: List<PolylineData>) {
 
 @Composable
 private fun Markers(
-    markers: List<MarkerData>,
+    markers: ImmutableList<MarkerData>,
     markerToShowInfoWindow: MarkerData?,
     onMarkerClick: (MarkerData) -> Unit
 ) {
@@ -240,13 +242,13 @@ private fun MapContentPreview() {
 
     MapContent(
         mapState = MapUiState(
-            markers = listOf(
+            markers = persistentListOf(
                 MarkerData(
                     position = position,
                     infoWindow = MarkerData.InfoWindow.Visible(title = "New York City")
                 )
             ),
-            polylines = emptyList(),
+            polylines = persistentListOf(),
             clearMap = false,
             cameraUpdate = CameraUpdate.ZoomTo(position = position)
         ),

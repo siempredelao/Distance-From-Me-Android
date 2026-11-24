@@ -26,6 +26,9 @@ import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Maps DrawDistanceModel (presentation model) to MapUiState (rendering model).
@@ -49,9 +52,9 @@ class MapStateMapper(private val context: Context) {
         )
     }
 
-    private fun createMarkers(model: DrawDistanceUiModel): List<MarkerData> {
+    private fun createMarkers(model: DrawDistanceUiModel): ImmutableList<MarkerData> {
         val coordinates = model.positionList
-        if (coordinates.isEmpty()) return emptyList()
+        if (coordinates.isEmpty()) return persistentListOf()
 
         return buildList {
             coordinates.forEachIndexed { index, coordinate ->
@@ -71,7 +74,7 @@ class MapStateMapper(private val context: Context) {
                     )
                 }
             }
-        }
+        }.toImmutableList()
     }
 
     private fun createInfoWindow(isLastMarker: Boolean, model: DrawDistanceUiModel) =
@@ -81,9 +84,9 @@ class MapStateMapper(private val context: Context) {
             else -> MarkerData.InfoWindow.Visible(title = model.distanceName, snippet = model.formattedDistance)
         }
 
-    private fun createPolylines(model: DrawDistanceUiModel): List<PolylineData> {
+    private fun createPolylines(model: DrawDistanceUiModel): ImmutableList<PolylineData> {
         val coordinates = model.positionList
-        if (coordinates.size < 2) return emptyList()
+        if (coordinates.size < 2) return persistentListOf()
 
         val lineWidth = context.resources.getDimension(R.dimen.map_line_width)
         val color = createLineColor(model.source)
@@ -99,7 +102,7 @@ class MapStateMapper(private val context: Context) {
                     )
                 )
             }
-        }
+        }.toImmutableList()
     }
 
     private fun createLineColor(source: DrawDistanceUiModel.Source) =
@@ -116,7 +119,7 @@ class MapStateMapper(private val context: Context) {
 
             CameraAnimation.Animate.Centre -> {
                 CameraUpdate.FitBounds(
-                    coordinates = model.positionList.map(Coordinates::toUiModel),
+                    coordinates = model.positionList.map(Coordinates::toUiModel).toImmutableList(),
                     padding = 200
                 )
             }

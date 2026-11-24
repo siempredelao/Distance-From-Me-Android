@@ -50,6 +50,7 @@ import gc.david.dfm.main.presentation.model.PolylineData
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -219,7 +220,7 @@ class MainViewModelTest {
             distances = listOf(Distance(1L, "Home", "3.2 km", Date(0))),
             rateRequest = StoredDistances.RateRequest.NotAvailable
         )
-        val expected = listOf(
+        val expected = persistentListOf<DistanceSelectionUiModel>(
             DistanceSelectionUiModel.Distance(
                 id = 1L,
                 name = "Home",

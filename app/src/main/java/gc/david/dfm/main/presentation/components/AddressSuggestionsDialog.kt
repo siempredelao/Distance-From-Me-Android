@@ -30,13 +30,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.R
 import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.designsystem.Spacing
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Dialog showing address suggestions to select from.
  */
 @Composable
 fun AddressSuggestionsDialog(
-    addresses: List<AddressUiModel>,
+    addresses: ImmutableList<AddressUiModel>,
     onAddressSelected: (AddressUiModel) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,7 +71,7 @@ fun AddressSuggestionsDialog(
 @Composable
 private fun AddressSuggestionsDialogPreview() {
     AddressSuggestionsDialog(
-        addresses = listOf(
+        addresses = persistentListOf(
             AddressUiModel(
                 formattedAddress = "123 Main Street, New York, NY 10001",
                 latitude = 40.7128,

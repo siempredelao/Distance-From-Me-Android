@@ -28,6 +28,8 @@ import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -56,8 +58,8 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expected = MapUiState(
-            markers = emptyList(),
-            polylines = emptyList(),
+            markers = persistentListOf(),
+            polylines = persistentListOf(),
             cameraUpdate = null,
             clearMap = true
         )
@@ -82,7 +84,7 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expected = MapUiState(
-            markers = listOf(
+            markers = persistentListOf(
                 MarkerData(
                     position = CoordinatesUiModel(0.0, 0.0),
                     infoWindow = MarkerData.InfoWindow.None
@@ -92,7 +94,7 @@ internal class MapStateMapperTest {
                     infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
-            polylines = listOf(
+            polylines = persistentListOf(
                 PolylineData(
                     start = CoordinatesUiModel(0.0, 0.0),
                     end = CoordinatesUiModel(1.0, 1.0),
@@ -129,7 +131,7 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expected = MapUiState(
-            markers = listOf(
+            markers = persistentListOf(
                 MarkerData(
                     position = CoordinatesUiModel(0.0, 0.0),
                     infoWindow = MarkerData.InfoWindow.None
@@ -139,7 +141,7 @@ internal class MapStateMapperTest {
                     infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
-            polylines = listOf(
+            polylines = persistentListOf(
                 PolylineData(
                     start = CoordinatesUiModel(0.0, 0.0),
                     end = CoordinatesUiModel(1.0, 1.0),
@@ -173,7 +175,7 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expectedCameraUpdate = CameraUpdate.FitBounds(
-            coordinates = coords.map { it.toUiModel() },
+            coordinates = coords.map { it.toUiModel() }.toImmutableList(),
             padding = 200
         )
         assertEquals(expectedCameraUpdate, actual.cameraUpdate)

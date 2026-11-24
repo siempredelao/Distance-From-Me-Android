@@ -47,6 +47,8 @@ import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.coroutines.launchCatching
 import gc.david.dfm.support.coroutines.logUnexpectedFailure
 import gc.david.dfm.toCoordinates
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -276,8 +278,8 @@ class MainViewModel(
                 it.copy(
                     mapState = it.mapState.copy(
                         clearMap = true,
-                        markers = emptyList(),
-                        polylines = emptyList()
+                        markers = persistentListOf(),
+                        polylines = persistentListOf()
                     )
                 )
             }
@@ -291,8 +293,7 @@ class MainViewModel(
         }
         coordinatesRepository.append(coordinates)
 
-        // Update map with simple markers (no distance info yet)
-        val markers = this@MainViewModel.coordinates.map { MarkerData(position = it.toUiModel()) }
+        val markers = this@MainViewModel.coordinates.toMarkers()
         _uiState.update {
             it.copy(mapState = it.mapState.copy(markers = markers))
         }
@@ -304,7 +305,7 @@ class MainViewModel(
                 // The place starts a path, so the next tap adds to it instead of clearing it
                 isUserSelectingPoints = true
                 coordinatesRepository.append(coordinates)
-                val markers = this@MainViewModel.coordinates.map { MarkerData(position = it.toUiModel()) }
+                val markers = this@MainViewModel.coordinates.toMarkers()
                 _uiState.update {
                     it.copy(
                         mapState = it.mapState.copy(
@@ -372,8 +373,8 @@ class MainViewModel(
             it.copy(
                 mapState = it.mapState.copy(
                     clearMap = true,
-                    markers = emptyList(),
-                    polylines = emptyList()
+                    markers = persistentListOf(),
+                    polylines = persistentListOf()
                 ),
                 showChart = false
             )
@@ -451,6 +452,10 @@ class MainViewModel(
     fun onLocationPermissionRequestHandled() {
         _uiState.update { it.copy(requestLocationPermission = false) }
     }
+
+    // Simple markers, with no distance info yet
+    private fun List<Coordinates>.toMarkers() =
+        map { MarkerData(position = it.toUiModel()) }.toImmutableList()
 
     private fun CoordinatesRepository.setList(list: List<Coordinates>) {
         clear()

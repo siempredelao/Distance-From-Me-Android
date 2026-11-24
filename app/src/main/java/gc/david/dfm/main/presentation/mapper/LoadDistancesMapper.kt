@@ -20,12 +20,14 @@ import gc.david.dfm.R
 import gc.david.dfm.main.domain.model.StoredDistances
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.support.android.presentation.ResourceProvider
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import java.text.DateFormat
 import java.util.Locale
 
 class LoadDistancesMapper(private val resourceProvider: ResourceProvider) {
 
-    fun map(storedDistances: StoredDistances): List<DistanceSelectionUiModel> {
+    fun map(storedDistances: StoredDistances): ImmutableList<DistanceSelectionUiModel> {
         val mappedDistances = storedDistances.distances
             .map { distance ->
                 DistanceSelectionUiModel.Distance(
@@ -48,7 +50,7 @@ class LoadDistancesMapper(private val resourceProvider: ResourceProvider) {
             )
         }
 
-        return mappedDistances
+        return mappedDistances.toImmutableList()
     }
 }
 

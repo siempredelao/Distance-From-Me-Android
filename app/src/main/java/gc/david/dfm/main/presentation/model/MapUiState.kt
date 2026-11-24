@@ -16,14 +16,17 @@
 
 package gc.david.dfm.main.presentation.model
 
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+
 /**
  * UI state for map rendering.
  * Contains all information needed to render markers, polylines, and camera position.
  * This is a pure data model without any rendering logic.
  */
 data class MapUiState(
-    val markers: List<MarkerData> = emptyList(),
-    val polylines: List<PolylineData> = emptyList(),
+    val markers: ImmutableList<MarkerData> = persistentListOf(),
+    val polylines: ImmutableList<PolylineData> = persistentListOf(),
     val cameraUpdate: CameraUpdate? = null,
     val clearMap: Boolean = false
 )
@@ -76,5 +79,5 @@ sealed interface CameraUpdate {
 
     data class MoveTo(val position: CoordinatesUiModel) : CameraUpdate
 
-    data class FitBounds(val coordinates: List<CoordinatesUiModel>, val padding: Int) : CameraUpdate
+    data class FitBounds(val coordinates: ImmutableList<CoordinatesUiModel>, val padding: Int) : CameraUpdate
 }
