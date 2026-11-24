@@ -27,7 +27,10 @@ import kotlin.math.roundToLong
  */
 class UnitFormatter(private val converter: UnitConverter) {
 
-    private val decimalFormat = DecimalFormat("##,##0.00")
+    // Created on each use: a DecimalFormat keeps the separators of the locale it was created with, and the user can
+    // change the language while the app is in memory
+    private val decimalFormat: DecimalFormat
+        get() = DecimalFormat("##,##0.00")
 
     /**
      * Formats distance with unit for display.

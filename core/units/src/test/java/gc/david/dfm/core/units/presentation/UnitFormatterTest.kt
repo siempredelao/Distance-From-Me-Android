@@ -44,6 +44,16 @@ class UnitFormatterTest {
     }
 
     @Test
+    fun `formatDistance follows a locale that changes after the formatter is created`() {
+        whenever(converter.convertDistance(1234560.0, UnitSystem.METRIC))
+            .thenReturn(1234.56 to "km")
+
+        Locale.setDefault(Locale.GERMANY)
+
+        assertEquals("1.234,56 km", formatter.formatDistance(1234560.0, UnitSystem.METRIC))
+    }
+
+    @Test
     fun `formatDistance formats metric kilometers correctly`() {
         whenever(converter.convertDistance(5000.0, UnitSystem.METRIC))
             .thenReturn(5.0 to "km")
