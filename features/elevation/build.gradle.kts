@@ -16,6 +16,7 @@
 
 plugins {
     alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.android.compose)
     alias(libs.plugins.dfm.unit.test)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -31,6 +32,8 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.compose.animation)
+    implementation(libs.compose.ui)
     implementation(libs.coroutines)
     implementation(libs.graphview)
     implementation(libs.kotlinx.serialization.json)

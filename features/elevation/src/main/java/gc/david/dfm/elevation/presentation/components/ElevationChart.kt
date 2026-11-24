@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gc.david.dfm.main.presentation.components
+package gc.david.dfm.elevation.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -71,5 +71,3 @@ fun ElevationChart(
         )
     }
 }
-
-

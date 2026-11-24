@@ -69,12 +69,12 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import gc.david.dfm.R
 import gc.david.dfm.core.address.domain.model.Address
+import gc.david.dfm.elevation.presentation.components.ElevationChart
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
 import gc.david.dfm.main.presentation.components.AppNavigationRail
 import gc.david.dfm.main.presentation.components.CollapsedNavigationRailWidth
 import gc.david.dfm.main.presentation.components.DistanceSelectionDialog
-import gc.david.dfm.main.presentation.components.ElevationChart
 import gc.david.dfm.main.presentation.components.LottieProgress
 import gc.david.dfm.main.presentation.components.MapContent
 import gc.david.dfm.main.presentation.components.NavigationRailWidth
