@@ -26,6 +26,7 @@ import gc.david.dfm.elevation.domain.model.ElevationResult
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.test.CoroutineExtension
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -103,7 +104,7 @@ class ElevationViewModelTest {
 
         viewModel.onCoordinatesSelected(PATH)
 
-        assertEquals(ElevationUiModel(listOf(329.72, 658.46), "ft"), viewModel.uiState.value.elevation)
+        assertEquals(ElevationUiModel(persistentListOf(329.72, 658.46), "ft"), viewModel.uiState.value.elevation)
         assertTrue(viewModel.uiState.value.showChart)
     }
 
@@ -163,7 +164,7 @@ class ElevationViewModelTest {
 
         earlierResult.complete(ElevationResult.Found(listOf(1.0)))
 
-        assertEquals(ElevationUiModel(listOf(2.0), "m"), viewModel.uiState.value.elevation)
+        assertEquals(ElevationUiModel(persistentListOf(2.0), "m"), viewModel.uiState.value.elevation)
     }
 
     @Test
@@ -248,7 +249,7 @@ class ElevationViewModelTest {
         whenever(getElevationByCoordinatesUseCase(PATH)).thenReturn(ElevationResult.Found(listOf(1.0)))
         viewModel.onCoordinatesSelected(PATH)
         viewModel.onShowChartHandled()
-        assertEquals(ElevationUiModel(listOf(1.0), "m"), viewModel.uiState.value.elevation)
+        assertEquals(ElevationUiModel(persistentListOf(1.0), "m"), viewModel.uiState.value.elevation)
     }
 
     private fun givenChartEnabled(unitSystem: UnitSystem = UnitSystem.METRIC, altitudeUnit: String = "m") {

@@ -16,7 +16,9 @@
 
 package gc.david.dfm.elevation.presentation.model
 
+import kotlinx.collections.immutable.ImmutableList
+
 data class ElevationUiModel(
-    val elevationList: List<Double>,
+    val elevationList: ImmutableList<Double>,
     val altitudeUnit: String
 )

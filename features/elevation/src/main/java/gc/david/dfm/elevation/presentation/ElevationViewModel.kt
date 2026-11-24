@@ -28,6 +28,7 @@ import gc.david.dfm.elevation.presentation.model.ElevationUiState
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.coroutines.launchCatching
 import gc.david.dfm.support.coroutines.logUnexpectedFailure
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,7 +74,7 @@ class ElevationViewModel(
     private fun showChart(samples: List<Double>) {
         val normalizedElevationList = samples.map { elevation ->
             unitFormatter.formatAltitude(elevation, unitSystem)
-        }
+        }.toImmutableList()
         val altitudeUnit = unitFormatter.getAltitudeUnitLabel(unitSystem)
         _uiState.update { current ->
             current.copy(

@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.coroutines)
     implementation(libs.graphview)
+    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin)
     implementation(libs.koin.android)
