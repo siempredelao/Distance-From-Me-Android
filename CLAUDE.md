@@ -86,6 +86,9 @@ App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initia
 - A module with unit tests applies the `dfm.unit-test` convention plugin, which adds JUnit 5, Mockito and `kotlinx-coroutines-test`, plus `:support:test` in Android modules. JVM modules can't use `:support:test`, an Android library, and have no Main dispatcher to swap.
 - The project aims for a test for every UseCase, Repository, Mapper, Formatter, and ViewModel. `BRANCH_COVERAGE_REPORT.md` and the Testing section of `README.md` track coverage by hand, so update them when coverage changes significantly.
 
+## Prepare for release
+When the user asks to prepare a release, or to tag and merge one after its Play Store upload, read [RELEASING.md](RELEASING.md) first and follow its steps in order. Don't start either phase unasked.
+
 ## Known issues
 - `MainActivity` leaks when it's destroyed before its map loads, for example a size, density or dark-mode change within about a second of launch. maps-compose 6.x waits for the map with a non-cancellable `awaitMap()`, so the window recomposer never shuts down (comment at the `GoogleMap` call in `MapContent.kt`). maps-compose 9 fixes it, but needs compileSdk 37 and AGP 9.1; that upgrade is planned separately.
 - A release build uploads its mapping file to Firebase. Exclude `uploadCrashlyticsMappingFileRelease` for local builds that aren't a release, and remember that running such a build reports to the production Crashlytics project.
