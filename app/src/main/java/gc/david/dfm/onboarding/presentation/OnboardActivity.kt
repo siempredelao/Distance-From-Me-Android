@@ -16,6 +16,7 @@
 
 package gc.david.dfm.onboarding.presentation
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +32,8 @@ import timber.log.Timber
  * Created by david on 07.11.16.
  */
 class OnboardActivity : AppCompatActivity() {
+
+    private var playServicesDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -56,10 +59,14 @@ class OnboardActivity : AppCompatActivity() {
             if (googleApiAvailabilityInstance.isUserResolvableError(resultCode)) {
                 Timber.tag(TAG).d("checkPlayServices isUserRecoverableError")
 
+                // Every resume checks again, so don't stack a second dialog on one that is still open
+                if (playServicesDialog?.isShowing == true) return
+
                 val googlePlayServicesRequestCode = 9000
-                googleApiAvailabilityInstance
-                        .getErrorDialog(this, resultCode, googlePlayServicesRequestCode)
-                        ?.show()
+                // There is nothing behind the dialog, so cancelling it closes the app
+                playServicesDialog = googleApiAvailabilityInstance
+                        .getErrorDialog(this, resultCode, googlePlayServicesRequestCode) { finish() }
+                        ?.apply { show() }
             } else {
                 Timber.tag(TAG).e("checkPlayServices device not supported, finishing")
                 UiUtils.toastIt(R.string.play_services_not_supported, this)
