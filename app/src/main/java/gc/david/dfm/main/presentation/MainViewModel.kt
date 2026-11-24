@@ -296,6 +296,8 @@ class MainViewModel(
     fun onPositionByNameResolved(coordinates: Coordinates) {
         when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT if this@MainViewModel.coordinates.isEmpty() -> {
+                // The place starts a path, so the next tap adds to it instead of clearing it
+                isUserSelectingPoints = true
                 coordinatesRepository.append(coordinates)
                 val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
                 _uiState.update {

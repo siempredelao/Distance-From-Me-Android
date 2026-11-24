@@ -423,6 +423,17 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `a tap after a search keeps the searched place as the start in any position mode`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onPositionByNameResolved(POINT_A)
+
+        viewModel.onMapClick(POINT_B)
+
+        assertEquals(listOf(POINT_A, POINT_B), storedPath)
+        assertEquals(listOf(MarkerData(POINT_A), MarkerData(POINT_B)), markers)
+    }
+
+    @Test
     fun `onMapLongClick with empty coordinates in any position mode shows missing start point error`() {
         viewModel.onDistanceFromAnyPositionSet()
         val message = "Start point needed"
