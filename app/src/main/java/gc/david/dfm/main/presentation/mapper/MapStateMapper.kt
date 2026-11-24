@@ -18,6 +18,7 @@ package gc.david.dfm.main.presentation.mapper
 
 import android.content.Context
 import gc.david.dfm.R
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.settings.domain.model.CameraAnimation
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
@@ -64,7 +65,7 @@ class MapStateMapper(private val context: Context) {
                 if (shouldShowMarker) {
                     add(
                         MarkerData(
-                            position = coordinate,
+                            position = coordinate.toUiModel(),
                             infoWindow = createInfoWindow(isLastMarker, model)
                         )
                     )
@@ -91,8 +92,8 @@ class MapStateMapper(private val context: Context) {
             for (i in 0 until coordinates.lastIndex) {
                 add(
                     PolylineData(
-                        start = coordinates[i],
-                        end = coordinates[i + 1],
+                        start = coordinates[i].toUiModel(),
+                        end = coordinates[i + 1].toUiModel(),
                         color = color,
                         width = lineWidth
                     )
@@ -115,13 +116,13 @@ class MapStateMapper(private val context: Context) {
 
             CameraAnimation.Animate.Centre -> {
                 CameraUpdate.FitBounds(
-                    coordinates = model.positionList,
+                    coordinates = model.positionList.map(Coordinates::toUiModel),
                     padding = 200
                 )
             }
 
             CameraAnimation.Animate.Destination -> {
-                CameraUpdate.MoveTo(position = model.positionList.last())
+                CameraUpdate.MoveTo(position = model.positionList.last().toUiModel())
             }
         }
     }

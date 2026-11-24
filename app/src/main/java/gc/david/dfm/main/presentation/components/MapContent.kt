@@ -39,8 +39,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.main.presentation.model.CameraUpdate
+import gc.david.dfm.main.presentation.model.CoordinatesUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
@@ -191,9 +191,9 @@ private fun Markers(
 }
 
 /**
- * Extension function to convert Coordinates to LatLng
+ * Extension function to convert CoordinatesUiModel to LatLng
  */
-private fun Coordinates.toLatLng() = LatLng(latitude, longitude)
+private fun CoordinatesUiModel.toLatLng() = LatLng(latitude, longitude)
 
 /**
  * Extension function to convert CameraUpdate to Google Maps CameraUpdate
@@ -236,7 +236,7 @@ private fun PolylineData.LineColor.toComposeColor(): Color {
 @Composable
 private fun MapContentPreview() {
     // Note: Run the preview on the emulator/device to see the actual preview
-    val position = Coordinates(40.7128, -74.0060)
+    val position = CoordinatesUiModel(40.7128, -74.0060)
 
     MapContent(
         mapState = MapUiState(

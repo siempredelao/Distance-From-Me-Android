@@ -36,6 +36,7 @@ import gc.david.dfm.location.domain.PermissionChecker
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.main.presentation.mapper.toUiModel
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MainUiState
@@ -226,7 +227,7 @@ class MainViewModel(
     fun onMyLocationButtonClick() {
         val coordinates = currentLocation ?: return
         _uiState.update {
-            it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates)))
+            it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates.toUiModel())))
         }
     }
 
@@ -252,7 +253,7 @@ class MainViewModel(
             Timber.tag(TAG).d("onLocationChanged appHasJustStarted")
 
             _uiState.update {
-                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.ZoomTo(coordinates)))
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.ZoomTo(coordinates.toUiModel())))
             }
             appHasJustStarted = false
         }
@@ -291,7 +292,7 @@ class MainViewModel(
         coordinatesRepository.append(coordinates)
 
         // Update map with simple markers (no distance info yet)
-        val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
+        val markers = this@MainViewModel.coordinates.map { MarkerData(position = it.toUiModel()) }
         _uiState.update {
             it.copy(mapState = it.mapState.copy(markers = markers))
         }
@@ -303,12 +304,12 @@ class MainViewModel(
                 // The place starts a path, so the next tap adds to it instead of clearing it
                 isUserSelectingPoints = true
                 coordinatesRepository.append(coordinates)
-                val markers = this@MainViewModel.coordinates.map { MarkerData(position = it) }
+                val markers = this@MainViewModel.coordinates.map { MarkerData(position = it.toUiModel()) }
                 _uiState.update {
                     it.copy(
                         mapState = it.mapState.copy(
                             markers = markers,
-                            cameraUpdate = CameraUpdate.MoveTo(coordinates)
+                            cameraUpdate = CameraUpdate.MoveTo(coordinates.toUiModel())
                         )
                     )
                 }
@@ -316,7 +317,7 @@ class MainViewModel(
 
             // Without a current location there is no distance to draw yet, so just show the place
             DistanceMode.FROM_CURRENT_POINT if currentLocation == null -> _uiState.update {
-                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates)))
+                it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates.toUiModel())))
             }
 
             DistanceMode.FROM_ANY_POINT, DistanceMode.FROM_CURRENT_POINT -> onMapLongClick(

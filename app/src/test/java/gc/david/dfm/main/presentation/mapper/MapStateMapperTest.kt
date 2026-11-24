@@ -23,6 +23,7 @@ import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.settings.domain.model.CameraAnimation
 import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
+import gc.david.dfm.main.presentation.model.CoordinatesUiModel
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
@@ -83,24 +84,24 @@ internal class MapStateMapperTest {
         val expected = MapUiState(
             markers = listOf(
                 MarkerData(
-                    position = Coordinates(0.0, 0.0),
+                    position = CoordinatesUiModel(0.0, 0.0),
                     infoWindow = MarkerData.InfoWindow.None
                 ),
                 MarkerData(
-                    position = Coordinates(2.0, 2.0),
+                    position = CoordinatesUiModel(2.0, 2.0),
                     infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
             polylines = listOf(
                 PolylineData(
-                    start = Coordinates(0.0, 0.0),
-                    end = Coordinates(1.0, 1.0),
+                    start = CoordinatesUiModel(0.0, 0.0),
+                    end = CoordinatesUiModel(1.0, 1.0),
                     color = PolylineData.LineColor.YELLOW,
                     width = LINE_WIDTH
                 ),
                 PolylineData(
-                    start = Coordinates(1.0, 1.0),
-                    end = Coordinates(2.0, 2.0),
+                    start = CoordinatesUiModel(1.0, 1.0),
+                    end = CoordinatesUiModel(2.0, 2.0),
                     color = PolylineData.LineColor.YELLOW,
                     width = LINE_WIDTH
                 )
@@ -130,24 +131,24 @@ internal class MapStateMapperTest {
         val expected = MapUiState(
             markers = listOf(
                 MarkerData(
-                    position = Coordinates(0.0, 0.0),
+                    position = CoordinatesUiModel(0.0, 0.0),
                     infoWindow = MarkerData.InfoWindow.None
                 ),
                 MarkerData(
-                    position = Coordinates(2.0, 2.0),
+                    position = CoordinatesUiModel(2.0, 2.0),
                     infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
             polylines = listOf(
                 PolylineData(
-                    start = Coordinates(0.0, 0.0),
-                    end = Coordinates(1.0, 1.0),
+                    start = CoordinatesUiModel(0.0, 0.0),
+                    end = CoordinatesUiModel(1.0, 1.0),
                     color = PolylineData.LineColor.GREEN,
                     width = LINE_WIDTH
                 ),
                 PolylineData(
-                    start = Coordinates(1.0, 1.0),
-                    end = Coordinates(2.0, 2.0),
+                    start = CoordinatesUiModel(1.0, 1.0),
+                    end = CoordinatesUiModel(2.0, 2.0),
                     color = PolylineData.LineColor.GREEN,
                     width = LINE_WIDTH
                 )
@@ -172,7 +173,7 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expectedCameraUpdate = CameraUpdate.FitBounds(
-            coordinates = coords,
+            coordinates = coords.map { it.toUiModel() },
             padding = 200
         )
         assertEquals(expectedCameraUpdate, actual.cameraUpdate)
@@ -191,7 +192,7 @@ internal class MapStateMapperTest {
 
         val actual = mapper.toMapUiState(model)
 
-        val expectedCameraUpdate = CameraUpdate.MoveTo(position = coords.last())
+        val expectedCameraUpdate = CameraUpdate.MoveTo(position = coords.last().toUiModel())
         assertEquals(expectedCameraUpdate, actual.cameraUpdate)
     }
 
@@ -224,7 +225,7 @@ internal class MapStateMapperTest {
 
         val expectedMarkers = listOf(
             MarkerData(
-                position = Coordinates(2.0, 2.0),
+                position = CoordinatesUiModel(2.0, 2.0),
                 infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.5 km")
             )
         )

@@ -16,8 +16,6 @@
 
 package gc.david.dfm.main.presentation.model
 
-import gc.david.dfm.core.coordinates.domain.model.Coordinates
-
 /**
  * UI state for map rendering.
  * Contains all information needed to render markers, polylines, and camera position.
@@ -34,7 +32,7 @@ data class MapUiState(
  * Data for rendering a marker on the map.
  */
 data class MarkerData(
-    val position: Coordinates,
+    val position: CoordinatesUiModel,
     val infoWindow: InfoWindow = InfoWindow.None
 ) {
     
@@ -54,8 +52,8 @@ data class MarkerData(
  * Data for rendering a polyline on the map.
  */
 data class PolylineData(
-    val start: Coordinates,
-    val end: Coordinates,
+    val start: CoordinatesUiModel,
+    val end: CoordinatesUiModel,
     val color: LineColor,
     val width: Float
 ) {
@@ -74,9 +72,9 @@ data class PolylineData(
  */
 sealed interface CameraUpdate {
 
-    data class ZoomTo(val position: Coordinates, val zoom: Float = 17f) : CameraUpdate
+    data class ZoomTo(val position: CoordinatesUiModel, val zoom: Float = 17f) : CameraUpdate
 
-    data class MoveTo(val position: Coordinates) : CameraUpdate
+    data class MoveTo(val position: CoordinatesUiModel) : CameraUpdate
 
-    data class FitBounds(val coordinates: List<Coordinates>, val padding: Int) : CameraUpdate
+    data class FitBounds(val coordinates: List<CoordinatesUiModel>, val padding: Int) : CameraUpdate
 }

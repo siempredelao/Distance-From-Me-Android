@@ -42,6 +42,7 @@ import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.domain.model.StoredDistances
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.main.presentation.mapper.toUiModel
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MarkerData
@@ -105,7 +106,7 @@ class MainViewModelTest {
     private val drawnPath
         get() = viewModel.uiState.value.mapState.polylines.let { lines ->
             lines.take(1).map(PolylineData::start) + lines.map(PolylineData::end)
-        }
+        }.map { Coordinates(it.latitude, it.longitude) }
     private val markers get() = viewModel.uiState.value.mapState.markers
 
     private lateinit var viewModel: MainViewModel
@@ -398,7 +399,7 @@ class MainViewModelTest {
 
         locations.emit(LONDON)
 
-        assertEquals(CameraUpdate.ZoomTo(LONDON), viewModel.uiState.value.mapState.cameraUpdate)
+        assertEquals(CameraUpdate.ZoomTo(LONDON.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
     }
 
     @Test
@@ -409,7 +410,7 @@ class MainViewModelTest {
 
         viewModel.onMyLocationButtonClick()
 
-        assertEquals(CameraUpdate.MoveTo(LONDON), viewModel.uiState.value.mapState.cameraUpdate)
+        assertEquals(CameraUpdate.MoveTo(LONDON.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
     }
 
     @Test
@@ -439,7 +440,7 @@ class MainViewModelTest {
         viewModel.onPositionByNameResolved(coordinates)
 
         assertEquals(listOf(coordinates), storedPath)
-        assertEquals(CameraUpdate.MoveTo(coordinates), viewModel.uiState.value.mapState.cameraUpdate)
+        assertEquals(CameraUpdate.MoveTo(coordinates.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
     }
 
     @Test
@@ -450,7 +451,7 @@ class MainViewModelTest {
         viewModel.onMapClick(POINT_B)
 
         assertEquals(listOf(POINT_A, POINT_B), storedPath)
-        assertEquals(listOf(MarkerData(POINT_A), MarkerData(POINT_B)), markers)
+        assertEquals(listOf(MarkerData(POINT_A.toUiModel()), MarkerData(POINT_B.toUiModel())), markers)
     }
 
     @Test
@@ -495,7 +496,7 @@ class MainViewModelTest {
 
         viewModel.onPositionByNameResolved(coordinates)
 
-        assertEquals(CameraUpdate.MoveTo(coordinates), viewModel.uiState.value.mapState.cameraUpdate)
+        assertEquals(CameraUpdate.MoveTo(coordinates.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
         assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
@@ -509,8 +510,8 @@ class MainViewModelTest {
         assertEquals(listOf(POINT_A, POINT_B), drawnPath)
         assertEquals(
             listOf(
-                MarkerData(POINT_A),
-                MarkerData(POINT_B, MarkerData.InfoWindow.Visible("111.19 km")),
+                MarkerData(POINT_A.toUiModel()),
+                MarkerData(POINT_B.toUiModel(), MarkerData.InfoWindow.Visible("111.19 km")),
             ),
             markers
         )
@@ -524,7 +525,7 @@ class MainViewModelTest {
         viewModel.onMapLongClick(POINT_B)
 
         assertEquals(listOf(POINT_A, POINT_B), drawnPath)
-        assertEquals(listOf(MarkerData(POINT_B, MarkerData.InfoWindow.Visible("111.19 km"))), markers)
+        assertEquals(listOf(MarkerData(POINT_B.toUiModel(), MarkerData.InfoWindow.Visible("111.19 km"))), markers)
     }
 
     @Test
@@ -547,7 +548,7 @@ class MainViewModelTest {
 
         assertEquals(listOf(POINT_C), storedPath)
         assertEquals(emptyList<Coordinates>(), drawnPath)
-        assertEquals(listOf(MarkerData(POINT_C)), markers)
+        assertEquals(listOf(MarkerData(POINT_C.toUiModel())), markers)
     }
 
     @Test
