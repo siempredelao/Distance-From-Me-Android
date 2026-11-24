@@ -59,22 +59,23 @@ import gc.david.dfm.R
 /**
  * Transparent search bar with gradient background for readability.
  * Default: menu and search icons. Active: back to collapse and an outlined search field.
+ * The caller keeps [isSearchActive].
  * Without [onMenuClick] there is no menu icon, for layouts where the navigation rail is always on screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransparentSearchBar(
+    isSearchActive: Boolean,
+    onSearchActiveChange: (Boolean) -> Unit,
     onMenuClick: (() -> Unit)?,
     onSearchQuery: (String) -> Unit,
     modifier: Modifier = Modifier,
-    initiallySearchActive: Boolean = false,
 ) {
     var searchText by rememberSaveable { mutableStateOf("") }
-    var isSearchActive by rememberSaveable { mutableStateOf(initiallySearchActive) }
     val focusRequester = remember { FocusRequester() }
 
     BackHandler(enabled = isSearchActive) {
-        isSearchActive = false
+        onSearchActiveChange(false)
     }
 
     Box(
@@ -118,7 +119,7 @@ fun TransparentSearchBar(
                             onSearch = {
                                 if (searchText.isNotBlank()) {
                                     onSearchQuery(searchText)
-                                    isSearchActive = false
+                                    onSearchActiveChange(false)
                                     searchText = ""
                                 }
                             }
@@ -135,7 +136,7 @@ fun TransparentSearchBar(
             },
             navigationIcon = {
                 if (isSearchActive) {
-                    IconButton(onClick = { isSearchActive = false }) {
+                    IconButton(onClick = { onSearchActiveChange(false) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.search_bar_close),
@@ -154,7 +155,7 @@ fun TransparentSearchBar(
             },
             actions = {
                 if (!isSearchActive) {
-                    IconButton(onClick = { isSearchActive = true }) {
+                    IconButton(onClick = { onSearchActiveChange(true) }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.action_bar_search_title),
@@ -176,6 +177,8 @@ fun TransparentSearchBar(
 @Composable
 private fun TransparentSearchBarPreview() {
     TransparentSearchBar(
+        isSearchActive = false,
+        onSearchActiveChange = {},
         onMenuClick = {},
         onSearchQuery = {}
     )
@@ -185,8 +188,9 @@ private fun TransparentSearchBarPreview() {
 @Composable
 private fun TransparentSearchBarActivePreview() {
     TransparentSearchBar(
+        isSearchActive = true,
+        onSearchActiveChange = {},
         onMenuClick = {},
-        onSearchQuery = {},
-        initiallySearchActive = true
+        onSearchQuery = {}
     )
 }

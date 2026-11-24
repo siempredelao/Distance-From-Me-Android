@@ -21,8 +21,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
@@ -39,6 +41,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
@@ -69,6 +72,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import gc.david.dfm.R
 import gc.david.dfm.address.presentation.model.AddressUiModel
+import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.elevation.presentation.components.ElevationChart
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
@@ -84,6 +88,9 @@ import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.model.SideNavigationUiState
+import gc.david.dfm.onboarding.domain.model.MapHint
+import gc.david.dfm.onboarding.presentation.components.MapHintBanner
+import gc.david.dfm.onboarding.presentation.textRes
 import kotlinx.collections.immutable.ImmutableList
 
 /**
@@ -102,6 +109,8 @@ fun MainScreen(
     distancesToLoad: ImmutableList<DistanceSelectionUiModel>?,
     addressSuggestions: ImmutableList<AddressUiModel>?,
     isMyLocationEnabled: Boolean,
+    hint: MapHint?,
+    onHintClose: (MapHint) -> Unit,
     onSearchQuery: (String) -> Unit,
     onMapClick: (LatLng) -> Unit,
     onMapLongClick: (LatLng) -> Unit,
@@ -124,6 +133,7 @@ fun MainScreen(
     val hasPermanentRail = currentWindowAdaptiveInfo().windowSizeClass
         .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
     var isRailExpanded by rememberSaveable { mutableStateOf(false) }
+    var isSearchActive by rememberSaveable { mutableStateOf(false) }
     // The scrim, the rail and the FAB offset all follow this one transition, so they move together
     val railTransition = updateTransition(targetState = isRailExpanded, label = "Rail")
     val fabOffsetX by railTransition.animateDp(label = "FAB offset") { expanded ->
@@ -181,7 +191,7 @@ fun MainScreen(
                 )
             )
 
-            // Top UI elements stacked vertically (Search Bar + Elevation Chart)
+            // Top UI elements stacked vertically (Search Bar + Hint + Elevation Chart)
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -189,9 +199,20 @@ fun MainScreen(
                     .then(besideRailModifier)
             ) {
                 TransparentSearchBar(
+                    isSearchActive = isSearchActive,
+                    onSearchActiveChange = { isSearchActive = it },
                     // A permanent rail has its own toggle
                     onMenuClick = if (hasPermanentRail) null else ({ isRailExpanded = !isRailExpanded }),
                     onSearchQuery = onSearchQuery
+                )
+
+                MapHint(
+                    hint = hint.takeUnless { isSearchActive },
+                    onClose = onHintClose,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        // In landscape, clear of the display cutout
+                        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                 )
 
                 ElevationChart(
@@ -322,6 +343,38 @@ fun MainScreen(
 }
 
 /**
+ * The banner for [hint], which goes away when there is none.
+ */
+@Composable
+private fun MapHint(
+    hint: MapHint?,
+    onClose: (MapHint) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Keeps the last hint's text while the banner goes away
+    var lastHint by remember { mutableStateOf(hint) }
+    if (hint != null) {
+        lastHint = hint
+    }
+    AnimatedVisibility(
+        visible = hint != null,
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+        modifier = modifier
+    ) {
+        lastHint?.let {
+            MapHintBanner(
+                text = stringResource(it.textRes),
+                onDismiss = if (it.isShownOnce) ({ onClose(it) }) else null,
+                modifier = Modifier
+                    .padding(Spacing.s)
+                    .widthIn(max = MapHintMaxWidth)
+            )
+        }
+    }
+}
+
+/**
  * The navigation rail, following [railTransition]. A rail that [collapses] animates between its collapsed and
  * expanded widths; otherwise it is always expanded. Its width is read here so each animation frame only
  * recomposes the rail.
@@ -351,3 +404,6 @@ private fun MainNavigationRail(
         modifier = modifier
     )
 }
+
+// A line much longer than this is hard to read on a wide screen
+private val MapHintMaxWidth = 480.dp

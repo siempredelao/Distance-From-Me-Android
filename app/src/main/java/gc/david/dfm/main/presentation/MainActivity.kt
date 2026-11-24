@@ -104,6 +104,7 @@ class MainActivity : FragmentActivity() {
         setContent {
             DfmTheme {
                 val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+                val hint by mainViewModel.hint.collectAsStateWithLifecycle()
                 val elevationUiState by elevationViewModel.uiState.collectAsStateWithLifecycle()
                 val addressUiState by addressViewModel.uiState.collectAsStateWithLifecycle()
                 
@@ -231,6 +232,8 @@ class MainActivity : FragmentActivity() {
                     addressSuggestions = addressUiState.multipleAddressesFound,
                     isMyLocationEnabled = mainUiState.distanceMode == DistanceMode.FROM_CURRENT_POINT
                             && mainUiState.isLocationPermissionGranted,
+                    hint = hint.takeUnless { mainUiState.requestLocationPermission },
+                    onHintClose = { mainViewModel.onHintClosed(it) },
                     onSearchQuery = { query ->
                         mainViewModel.onAddressSearch(query)
                     },

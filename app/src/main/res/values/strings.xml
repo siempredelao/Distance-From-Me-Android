@@ -58,4 +58,12 @@
 
     <string name="toast_no_internet_connection">No internet connection</string>
     <string name="play_services_not_supported">This device is not supported by Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">Waiting for your position…</string>
+    <string name="map_hint_measure_from_location">Long press a place to measure the distance from where you are</string>
+    <string name="map_hint_start_anywhere">Tap a place to start measuring</string>
+    <string name="map_hint_add_or_finish">Tap to add points, or long press the last one to finish</string>
+    <string name="map_hint_open_details">Tap the label to see the addresses, share the distance or save it</string>
+    <string name="map_hint_close">Close hint</string>
 </resources>

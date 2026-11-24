@@ -53,8 +53,7 @@ class MapHintProcessor(private val hintRepository: HintRepository) {
     }
 
     private fun retire(hint: MapHint) {
-        // It tells what the app is doing, rather than teaching a gesture, so it's shown whenever it applies
-        if (hint != MapHint.WAITING_FOR_LOCATION) {
+        if (hint.isShownOnce) {
             hintRepository.markSeen(hint)
         }
     }

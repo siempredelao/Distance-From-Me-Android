@@ -21,10 +21,13 @@ package gc.david.dfm.onboarding.domain.model
  *
  * The names are stored, so renaming one shows its hint again.
  */
-enum class MapHint {
+enum class MapHint(
+    /** Whether it teaches something, so it's shown until the user has done it or closed it. */
+    val isShownOnce: Boolean = true,
+) {
 
-    /** The app measures from the current position, and doesn't know it yet. */
-    WAITING_FOR_LOCATION,
+    /** The app measures from the current position, and doesn't know it yet. Shown whenever that is so. */
+    WAITING_FOR_LOCATION(isShownOnce = false),
 
     /** A long press measures from the current position. */
     MEASURE_FROM_LOCATION,

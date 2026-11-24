@@ -47,4 +47,12 @@
     <string name="snackbar_location_permission_action">Abrir definições</string>
     <string name="toast_no_internet_connection">Sem ligação à internet</string>
     <string name="play_services_not_supported">Este dispositivo não é suportado pelo Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">À espera da sua posição…</string>
+    <string name="map_hint_measure_from_location">Mantenha premido um local para medir a distância a partir de onde está</string>
+    <string name="map_hint_start_anywhere">Toque num local para começar a medir</string>
+    <string name="map_hint_add_or_finish">Toque para adicionar pontos ou mantenha premido o último para terminar</string>
+    <string name="map_hint_open_details">Toque na etiqueta para ver os endereços, partilhar a distância ou guardá-la</string>
+    <string name="map_hint_close">Fechar sugestão</string>
 </resources>

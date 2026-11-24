@@ -47,4 +47,12 @@
     <string name="snackbar_location_permission_action">Obrir configuració</string>
     <string name="toast_no_internet_connection">Sense connexió a internet</string>
     <string name="play_services_not_supported">Aquest dispositiu no és compatible amb Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">Esperant la seva posició…</string>
+    <string name="map_hint_measure_from_location">Faci una pressió llarga en un lloc per mesurar la distància des d\'on és</string>
+    <string name="map_hint_start_anywhere">Toqui un lloc per començar a mesurar</string>
+    <string name="map_hint_add_or_finish">Toqui per afegir punts, o faci una pressió llarga a l\'últim per acabar</string>
+    <string name="map_hint_open_details">Toqui l\'etiqueta per veure les adreces, compartir la distància o desar-la</string>
+    <string name="map_hint_close">Tancar el consell</string>
 </resources>
