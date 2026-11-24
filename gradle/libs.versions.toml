@@ -30,6 +30,7 @@ koin = "4.1.0"
 konsist = "0.17.3"
 kotlin = "2.3.10"
 ksp = "2.3.6"
+kotlinxCollectionsImmutable = "0.3.8"
 kotlinxSerialization = "1.11.0"
 leakCanary = "2.14"
 lifecycle = "2.10.0"
@@ -74,6 +75,7 @@ crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx", version
 graphview = { module = "com.jjoe64:graphview", version.ref = "graphview" }
 koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }

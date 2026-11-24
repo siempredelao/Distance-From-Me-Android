@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.compose.material.icons)
     implementation(libs.compose.runtime.livedata)
+    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.lifecycle.runtime)
     implementation(project(":core:design-system"))
 

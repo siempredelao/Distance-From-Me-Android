@@ -50,11 +50,12 @@ import gc.david.dfm.designsystem.plus
 import gc.david.dfm.faq.R
 import gc.david.dfm.faq.presentation.model.Faq
 import gc.david.dfm.faq.presentation.model.faqs
+import kotlinx.collections.immutable.ImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FaqScreen(
-    faqs: List<Faq>,
+    faqs: ImmutableList<Faq>,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

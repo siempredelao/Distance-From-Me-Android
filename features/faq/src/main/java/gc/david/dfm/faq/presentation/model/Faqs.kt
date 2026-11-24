@@ -17,8 +17,9 @@
 package gc.david.dfm.faq.presentation.model
 
 import gc.david.dfm.faq.R
+import kotlinx.collections.immutable.persistentListOf
 
-internal val faqs = listOf(
+internal val faqs = persistentListOf(
     Faq(R.string.faq_question_distance, R.string.faq_answer_distance),
     Faq(R.string.faq_question_distance_current_position, R.string.faq_answer_distance_current_position),
     Faq(R.string.faq_question_distance_any_position, R.string.faq_answer_distance_any_position),
