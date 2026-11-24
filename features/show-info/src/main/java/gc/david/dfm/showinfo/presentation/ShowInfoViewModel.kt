@@ -78,16 +78,19 @@ class ShowInfoViewModel(
         val distanceInMetres = distanceCalculator.calculateTotalDistance(positionsList)
         val distance = unitFormatter.formatDistance(distanceInMetres, unitSystem)
         this.inputParams = InputParams(positionsList, distance)
+        // The distance is calculated on the device, so show it even when the addresses can't be loaded
+        val distanceMessage = resourceProvider.get(R.string.info_distance_title, distance)
+        _uiState.update { it.copy(distanceMessage = distanceMessage) }
 
-        load(distance, positionsList)
+        load(positionsList)
     }
 
     fun onRefresh() {
         val params = inputParams ?: return
-        load(params.distance, params.positionsList)
+        load(params.positionsList)
     }
 
-    private fun load(distance: String, positionsList: List<Coordinates>) {
+    private fun load(positionsList: List<Coordinates>) {
         if (!connectionManager.isOnline()) {
             _uiState.update {
                 it.copy(userMessage = resourceProvider.get(R.string.toast_network_problems))
@@ -95,8 +98,7 @@ class ShowInfoViewModel(
             return
         }
 
-        val distanceMessage = resourceProvider.get(R.string.info_distance_title, distance)
-        _uiState.update { it.copy(isLoading = true, distanceMessage = distanceMessage) }
+        _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val originPosition = positionsList.first()

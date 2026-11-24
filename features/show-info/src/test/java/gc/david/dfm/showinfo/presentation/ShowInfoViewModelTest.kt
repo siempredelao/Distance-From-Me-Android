@@ -95,6 +95,7 @@ internal class ShowInfoViewModelTest {
         val coordinatesList = listOf(COORDS_1, COORDS_2)
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
         whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
@@ -106,10 +107,27 @@ internal class ShowInfoViewModelTest {
     }
 
     @Test
+    fun `shows the distance when offline`() = runTest {
+        val coordinatesList = listOf(COORDS_1, COORDS_2)
+        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
+        whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
+        whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
+        whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
+
+        viewModel.onStart()
+
+        assertEquals("Distance: 100 m", viewModel.uiState.value.distanceMessage)
+    }
+
+    @Test
     fun `onRefresh calls load with stored parameters`() = runTest {
         val coordinatesList = listOf(COORDS_1, COORDS_2)
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
         whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
@@ -199,6 +217,7 @@ internal class ShowInfoViewModelTest {
         val coordinatesList = listOf(COORDS_1, COORDS_2)
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
         whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
         whenever(distanceCalculator.calculateTotalDistance(coordinatesList)).thenReturn(100.0)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
