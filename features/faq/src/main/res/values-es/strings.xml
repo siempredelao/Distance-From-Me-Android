@@ -19,11 +19,11 @@
     <string name="faq_title">Ayuda y comentarios</string>
     <string name="faq_navigate_back">Volver</string>
     <string name="faq_question_distance">¿Cómo puedo obtener una distancia?</string>
-    <string name="faq_answer_distance">¡Solo tienes que mantener pulsado el mapa! :)</string>
+    <string name="faq_answer_distance">Desde tu posición actual, ¡solo tienes que mantener pulsado el mapa! Desde cualquier otra posición, toca antes el punto inicial :)</string>
     <string name="faq_question_distance_current_position">¿Cómo puedo obtener la distancia desde mi posición actual hasta cualquier punto del mapa?</string>
     <string name="faq_answer_distance_current_position">En la barra lateral, selecciona &quot;Posición actual&quot; y luego realiza una pulsación larga en el lugar deseado del mapa.</string>
     <string name="faq_question_distance_any_position">¿Cómo puedo obtener la distancia desde cualquier posición a otra posición del mapa?</string>
-    <string name="faq_answer_distance_any_position">En la barra lateral, selecciona &quot;Cualquier posición&quot; y luego realiza una pulsación larga en el lugar deseado del mapa.</string>
+    <string name="faq_answer_distance_any_position">En la barra lateral, selecciona &quot;Cualquier posición&quot;, toca el punto inicial en el mapa y luego realiza una pulsación larga en el lugar deseado.</string>
     <string name="faq_question_permission_current_position">¿Necesito conceder el permiso de &quot;Ubicación&quot; para obtener distancias desde el punto actual?</string>
     <string name="faq_answer_permission_current_position">Sí.</string>
     <string name="faq_question_permission_any_position">¿Necesito conceder el permiso de &quot;Ubicación&quot; para obtener distancias desde cualquier punto?</string>

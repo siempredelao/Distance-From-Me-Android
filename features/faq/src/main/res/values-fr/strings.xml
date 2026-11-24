@@ -19,11 +19,11 @@
     <string name="faq_title">Aide et commentaires</string>
     <string name="faq_navigate_back">Retour</string>
     <string name="faq_question_distance">Comment obtenir une distance ?</string>
-    <string name="faq_answer_distance">Il suffit d’appuyer longuement sur la carte :)</string>
+    <string name="faq_answer_distance">Depuis votre position actuelle, il suffit d’appuyer longuement sur la carte. Depuis toute autre position, touchez d’abord le point de départ :)</string>
     <string name="faq_question_distance_current_position">Comment obtenir la distance entre ma position actuelle et n’importe quel point de la carte ?</string>
     <string name="faq_answer_distance_current_position">Dans la barre latérale, sélectionnez « Position actuelle » puis appuyez longuement sur l’endroit souhaité sur la carte.</string>
     <string name="faq_question_distance_any_position">Comment obtenir la distance entre n’importe quelle position et une autre position sur la carte ?</string>
-    <string name="faq_answer_distance_any_position">Dans la barre latérale, sélectionnez « N’importe quelle position » puis appuyez longuement sur l’endroit souhaité sur la carte.</string>
+    <string name="faq_answer_distance_any_position">Dans la barre latérale, sélectionnez « N’importe quelle position », touchez le point de départ sur la carte puis appuyez longuement sur l’endroit souhaité.</string>
     <string name="faq_question_permission_current_position">Dois-je autoriser la « localisation » pour obtenir la distance depuis le point actuel ?</string>
     <string name="faq_answer_permission_current_position">Oui.</string>
     <string name="faq_question_permission_any_position">Dois-je autoriser la « localisation » pour obtenir la distance depuis n’importe quel point ?</string>

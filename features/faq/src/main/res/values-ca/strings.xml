@@ -19,11 +19,11 @@
     <string name="faq_title">Ajuda i comentaris</string>
     <string name="faq_navigate_back">Tornar enrere</string>
     <string name="faq_question_distance">Com puc obtenir una distància?</string>
-    <string name="faq_answer_distance">Només cal fer una pressió llarga al mapa :)</string>
+    <string name="faq_answer_distance">Des de la seva posició actual, només cal fer una pressió llarga al mapa. Des de qualsevol altra posició, toqui abans el punt inicial :)</string>
     <string name="faq_question_distance_current_position">Com puc obtenir una distància entre la meva posició actual i qualsevol punt del mapa?</string>
     <string name="faq_answer_distance_current_position">A la barra lateral, seleccioni &quot;Posició actual&quot; i després faci una pressió llarga al lloc desitjat del mapa.</string>
     <string name="faq_question_distance_any_position">Com puc obtenir una distància entre qualsevol posició i una altra del mapa?</string>
-    <string name="faq_answer_distance_any_position">A la barra lateral, seleccioni &quot;Qualsevol posició&quot; i després faci una pressió llarga al lloc desitjat del mapa.</string>
+    <string name="faq_answer_distance_any_position">A la barra lateral, seleccioni &quot;Qualsevol posició&quot;, toqui el punt inicial al mapa i després faci una pressió llarga al lloc desitjat.</string>
     <string name="faq_question_permission_current_position">He de concedir el permís de &quot;localització&quot; per obtenir distàncies des del punt actual?</string>
     <string name="faq_answer_permission_current_position">Sí.</string>
     <string name="faq_question_permission_any_position">He de concedir el permís de &quot;localització&quot; per obtenir distàncies des de qualsevol punt?</string>
