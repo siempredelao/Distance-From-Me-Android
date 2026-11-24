@@ -21,12 +21,12 @@
     <string name="faq_question_distance">Como posso obter uma distância?</string>
     <string name="faq_answer_distance">A partir da sua posição atual, basta manter premido o mapa. A partir de qualquer outra posição, toque primeiro no ponto de partida :)</string>
     <string name="faq_question_distance_current_position">Como posso obter a distância da minha posição atual para qualquer ponto do mapa?</string>
-    <string name="faq_answer_distance_current_position">Na barra lateral, selecione &quot;Posição atual&quot; e depois mantenha premido o local desejado no mapa.</string>
+    <string name="faq_answer_distance_current_position">Na barra lateral, selecione \"Posição atual\" e depois mantenha premido o local desejado no mapa.</string>
     <string name="faq_question_distance_any_position">Como posso obter a distância de qualquer posição para outra posição no mapa?</string>
-    <string name="faq_answer_distance_any_position">Na barra lateral, selecione &quot;Qualquer posição&quot;, toque no ponto de partida no mapa e depois mantenha premido o local desejado.</string>
-    <string name="faq_question_permission_current_position">Preciso conceder a permissão de &quot;Localização&quot; para obter distâncias a partir do ponto atual?</string>
+    <string name="faq_answer_distance_any_position">Na barra lateral, selecione \"Qualquer posição\", toque no ponto de partida no mapa e depois mantenha premido o local desejado.</string>
+    <string name="faq_question_permission_current_position">Preciso conceder a permissão de \"Localização\" para obter distâncias a partir do ponto atual?</string>
     <string name="faq_answer_permission_current_position">Sim.</string>
-    <string name="faq_question_permission_any_position">Preciso conceder a permissão de &quot;Localização&quot; para obter distâncias a partir de qualquer ponto?</string>
+    <string name="faq_question_permission_any_position">Preciso conceder a permissão de \"Localização\" para obter distâncias a partir de qualquer ponto?</string>
     <string name="faq_answer_permission_any_position">Não.</string>
     <string name="faq_question_multiple_points">Como posso criar uma distância com vários pontos?</string>
     <string name="faq_answer_multiple_points">Faça cliques simples nos pontos desejados e um clique longo no último.</string>

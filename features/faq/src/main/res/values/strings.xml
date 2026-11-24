@@ -23,12 +23,12 @@
     <string name="faq_question_distance">How can I get a distance?</string>
     <string name="faq_answer_distance">From your current position, just do a long press in the map. From any other position, tap the starting point first :)</string>
     <string name="faq_question_distance_current_position">How can I get a distance from my current position to any position in the map?</string>
-    <string name="faq_answer_distance_current_position">In the side bar, select "Current position" and then perform a long press on the desired place in the map.</string>
+    <string name="faq_answer_distance_current_position">In the side bar, select \"Current position\" and then perform a long press on the desired place in the map.</string>
     <string name="faq_question_distance_any_position">How can I get a distance from any position to another position in the map?</string>
-    <string name="faq_answer_distance_any_position">In the side bar, select "Any position", tap the starting point in the map and then perform a long press on the desired place.</string>
-    <string name="faq_question_permission_current_position">Do I need to grant "Location" permission to get distances from current point?</string>
+    <string name="faq_answer_distance_any_position">In the side bar, select \"Any position\", tap the starting point in the map and then perform a long press on the desired place.</string>
+    <string name="faq_question_permission_current_position">Do I need to grant \"Location\" permission to get distances from current point?</string>
     <string name="faq_answer_permission_current_position">Yes.</string>
-    <string name="faq_question_permission_any_position">Do I need to grant "Location" permission to get distances from any point?</string>
+    <string name="faq_question_permission_any_position">Do I need to grant \"Location\" permission to get distances from any point?</string>
     <string name="faq_answer_permission_any_position">No.</string>
     <string name="faq_question_multiple_points">How can I create a multiple points distance?</string>
     <string name="faq_answer_multiple_points">Perform single clicks on the desired points and a long click on the last one.</string>
