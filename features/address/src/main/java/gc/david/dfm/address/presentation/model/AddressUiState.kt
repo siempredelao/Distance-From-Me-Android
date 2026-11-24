@@ -16,10 +16,12 @@
 
 package gc.david.dfm.address.presentation.model
 
+import kotlinx.collections.immutable.ImmutableList
+
 data class AddressUiState(
     val isLoading: Boolean = false,
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
     val addressFound: AddressUiModel? = null,
-    val multipleAddressesFound: List<AddressUiModel>? = null,
+    val multipleAddressesFound: ImmutableList<AddressUiModel>? = null,
 )

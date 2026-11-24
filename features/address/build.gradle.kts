@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.koin)
     implementation(libs.koin.android)
+    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.lifecycle.viewmodel)
     implementation(project(":core:address"))
     implementation(project(":core:coordinates"))

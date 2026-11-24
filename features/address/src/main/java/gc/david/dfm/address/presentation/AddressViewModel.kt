@@ -31,6 +31,7 @@ import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.coroutines.launchCatching
 import gc.david.dfm.support.coroutines.logUnexpectedFailure
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -75,7 +76,7 @@ class AddressViewModel(
                     is GeocodingResult.Found ->
                         current.copy(
                             isLoading = false,
-                            multipleAddressesFound = result.addresses.map(Address::toUiModel),
+                            multipleAddressesFound = result.addresses.map(Address::toUiModel).toImmutableList(),
                         )
                     GeocodingResult.NoResults ->
                         current.copy(

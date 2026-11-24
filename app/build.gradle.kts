@@ -93,6 +93,7 @@ dependencies {
 	implementation(libs.crashlytics)
 	implementation(libs.koin)
 	implementation(libs.koin.android)
+	implementation(libs.kotlinx.collections.immutable)
 	debugImplementation(libs.leakcanary)
 	implementation(libs.lifecycle.runtime)
 	implementation(libs.lifecycle.viewmodel)
