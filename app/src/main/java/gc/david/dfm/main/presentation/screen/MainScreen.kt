@@ -165,9 +165,11 @@ fun MainScreen(
         },
         contentWindowInsets = WindowInsets(0),
         modifier = modifier
-    ) { _ ->
+    ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             // Map as background
             MapContent(
