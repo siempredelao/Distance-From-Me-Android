@@ -34,6 +34,7 @@ import gc.david.dfm.showinfo.presentation.model.ShowInfoUiState
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -123,6 +125,37 @@ internal class ShowInfoViewModelTest {
     }
 
     @Test
+    fun `shows the coordinates when offline`() = runTest {
+        setupSuccessfulStart(listOf(COORDS_1, COORDS_2))
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
+
+        viewModel.onStart()
+
+        assertEquals("(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("(3.0,4.0)", viewModel.uiState.value.destinationAddress)
+    }
+
+    @Test
+    fun `shows the coordinates and the distance until the addresses are found`() = runTest {
+        setupSuccessfulStart(listOf(COORDS_1, COORDS_2))
+        val lookup = CompletableDeferred<GeocodingResult>()
+        whenever(getAddressNameByCoordinatesUseCase(any())).doSuspendableAnswer { lookup.await() }
+
+        viewModel.onStart()
+
+        assertTrue(viewModel.uiState.value.isLoading)
+        assertEquals("(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("(3.0,4.0)", viewModel.uiState.value.destinationAddress)
+        assertEquals("Distance: 100 m", viewModel.uiState.value.distanceMessage)
+
+        lookup.complete(GeocodingResult.Found(listOf(createAddress("Address"))))
+
+        assertEquals("Address\n\n(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("Address\n\n(3.0,4.0)", viewModel.uiState.value.destinationAddress)
+    }
+
+    @Test
     fun `onRefresh calls load with stored parameters`() = runTest {
         val coordinatesList = listOf(COORDS_1, COORDS_2)
         whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(coordinatesList))
@@ -158,6 +191,68 @@ internal class ShowInfoViewModelTest {
         assertEquals("Share", shareData?.title)
         assertEquals("Subject", shareData?.subject)
         assertEquals("Message", shareData?.message)
+    }
+
+    @Test
+    fun `onShare sends the addresses that were found`() = runTest {
+        setupSuccessfulStart(listOf(COORDS_1, COORDS_2))
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(GeocodingResult.Found(listOf(createAddress("Address 1"))))
+            .thenReturn(GeocodingResult.Found(listOf(createAddress("Address 2"))))
+        setupShare()
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onShare()
+
+        verify(shareInfoMessageMapper)
+            .mapMessage("Address 1\n\n(1.0,2.0)", "Address 2\n\n(3.0,4.0)", "100 m")
+    }
+
+    @Test
+    fun `onShare sends the coordinates of a rejected or failed lookup instead of its error`() = runTest {
+        setupSuccessfulStart(listOf(COORDS_1, COORDS_2))
+        whenever(geocodingErrorMessageMapper.map(GeocodingError.OVER_QUERY_LIMIT)).thenReturn("Too many requests")
+        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn("Geocoding failed")
+        whenever(getAddressNameByCoordinatesUseCase(any()))
+            .thenReturn(GeocodingResult.Rejected(GeocodingError.OVER_QUERY_LIMIT))
+            .thenAnswer { throw IOException("Network error") }
+        setupShare()
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onShare()
+
+        verify(shareInfoMessageMapper).mapMessage("(1.0,2.0)", "(3.0,4.0)", "100 m")
+        assertEquals("Too many requests\n\n(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("Geocoding failed\n\n(3.0,4.0)", viewModel.uiState.value.destinationAddress)
+    }
+
+    @Test
+    fun `onShare sends the coordinates of a place without an address`() = runTest {
+        setupSuccessfulStart(listOf(COORDS_1, COORDS_2))
+        whenever(resourceProvider.get(R.string.error_no_address_found_message)).thenReturn("No address found")
+        whenever(getAddressNameByCoordinatesUseCase(any())).thenReturn(GeocodingResult.NoResults)
+        setupShare()
+        viewModel.onStart()
+        testScheduler.advanceUntilIdle()
+
+        viewModel.onShare()
+
+        verify(shareInfoMessageMapper).mapMessage("(1.0,2.0)", "(3.0,4.0)", "100 m")
+    }
+
+    @Test
+    fun `onShare sends the coordinates when offline`() = runTest {
+        setupSuccessfulStart(listOf(COORDS_1, COORDS_2))
+        whenever(connectionManager.isOnline()).thenReturn(false)
+        whenever(resourceProvider.get(R.string.toast_network_problems)).thenReturn("network problems")
+        setupShare()
+        viewModel.onStart()
+
+        viewModel.onShare()
+
+        verify(shareInfoMessageMapper).mapMessage("(1.0,2.0)", "(3.0,4.0)", "100 m")
     }
 
     @Test
@@ -268,8 +363,8 @@ internal class ShowInfoViewModelTest {
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
 
-        assertEquals("No address found", viewModel.uiState.value.originAddress)
-        assertEquals("No address found", viewModel.uiState.value.destinationAddress)
+        assertEquals("No address found\n\n(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("No address found\n\n(3.0,4.0)", viewModel.uiState.value.destinationAddress)
     }
 
     @Test
@@ -287,8 +382,8 @@ internal class ShowInfoViewModelTest {
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
 
-        assertEquals("Geocoding failed", viewModel.uiState.value.originAddress)
-        assertEquals("Geocoding failed", viewModel.uiState.value.destinationAddress)
+        assertEquals("Geocoding failed\n\n(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("Geocoding failed\n\n(3.0,4.0)", viewModel.uiState.value.destinationAddress)
     }
 
     @Test
@@ -302,8 +397,8 @@ internal class ShowInfoViewModelTest {
         viewModel.onStart()
         testScheduler.advanceUntilIdle()
 
-        assertEquals("Request denied", viewModel.uiState.value.originAddress)
-        assertEquals("Request denied", viewModel.uiState.value.destinationAddress)
+        assertEquals("Request denied\n\n(1.0,2.0)", viewModel.uiState.value.originAddress)
+        assertEquals("Request denied\n\n(3.0,4.0)", viewModel.uiState.value.destinationAddress)
     }
 
     @Test
@@ -319,7 +414,7 @@ internal class ShowInfoViewModelTest {
         testScheduler.advanceUntilIdle()
 
         assertEquals(false, viewModel.uiState.value.isLoading)
-        assertEquals("Geocoding failed", viewModel.uiState.value.originAddress)
+        assertEquals("Geocoding failed\n\n(1.0,2.0)", viewModel.uiState.value.originAddress)
         assertTrue(viewModel.uiState.value.destinationAddress.contains("Address 2"))
     }
 
@@ -357,6 +452,12 @@ internal class ShowInfoViewModelTest {
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
         whenever(unitFormatter.formatDistance(100.0, UnitSystem.METRIC)).thenReturn("100 m")
         whenever(resourceProvider.get(R.string.info_distance_title, "100 m")).thenReturn("Distance: 100 m")
+    }
+
+    private fun setupShare() {
+        whenever(shareInfoMessageMapper.getSubject()).thenReturn("Subject")
+        whenever(shareInfoMessageMapper.mapMessage(any(), any(), any())).thenReturn("Message")
+        whenever(resourceProvider.get(R.string.action_bar_item_social_share_title)).thenReturn("Share")
     }
 
     private fun createAddress(formattedAddress: String) =

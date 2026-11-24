@@ -41,7 +41,7 @@ class AddressFormatterTest {
 
         val result = formatter.format(null, latitude, longitude)
 
-        assertEquals("null\n\n(51.5074,-0.1278)", result)
+        assertEquals("(51.5074,-0.1278)", result)
     }
 
     @Test

@@ -18,7 +18,9 @@ package gc.david.dfm.showinfo.presentation.mapper
 
 class AddressFormatter {
 
+    /** Formats a place as its [address] and coordinates, or only the coordinates when it has no address. */
     fun format(address: String?, latitude: Double, longitude: Double): String {
-        return "$address\n\n($latitude,$longitude)"
+        val coordinates = "($latitude,$longitude)"
+        return if (address == null) coordinates else "$address\n\n$coordinates"
     }
 }

@@ -66,6 +66,13 @@ class ShowInfoViewModel(
     // Null until onStart finds a distance to show, for example after process death
     private var inputParams: InputParams? = null
 
+    // Share needs to know which addresses were found: the UI state only has texts, which can also be errors
+    private var lookedUpAddresses =
+        LookedUpAddresses(
+            origin = LookedUpAddress.NotResolved,
+            destination = LookedUpAddress.NotResolved
+        )
+
     fun onStart() {
         if (inputParams != null) return
 
@@ -78,9 +85,15 @@ class ShowInfoViewModel(
         val distanceInMetres = distanceCalculator.calculateTotalDistance(positionsList)
         val distance = unitFormatter.formatDistance(distanceInMetres, unitSystem)
         this.inputParams = InputParams(positionsList, distance)
-        // The distance is calculated on the device, so show it even when the addresses can't be loaded
+        // The coordinates and the distance are known without a connection, so show them until the addresses are found
         val distanceMessage = resourceProvider.get(R.string.info_distance_title, distance)
-        _uiState.update { it.copy(distanceMessage = distanceMessage) }
+        _uiState.update {
+            it.copy(
+                originAddress = formatWithCoordinates(null, positionsList.first()),
+                destinationAddress = formatWithCoordinates(null, positionsList.last()),
+                distanceMessage = distanceMessage,
+            )
+        }
 
         load(positionsList)
     }
@@ -113,6 +126,10 @@ class ShowInfoViewModel(
             val (originAddressResult, destinationAddressResult) =
                 originAddressDeferred.await() to destinationAddressDeferred.await()
 
+            lookedUpAddresses = LookedUpAddresses(
+                origin = originAddressResult.toLookedUpAddress(),
+                destination = destinationAddressResult.toLookedUpAddress(),
+            )
             _uiState.update { current ->
                 current.copy(
                     isLoading = false,
@@ -123,15 +140,11 @@ class ShowInfoViewModel(
         }
     }
 
-    private fun resolveAddress(result: Result<GeocodingResult>, coordinates: Coordinates): String =
-        result.fold({ geocodingResult ->
+    /** The address, or why there is none, with the coordinates. */
+    private fun resolveAddress(result: Result<GeocodingResult>, coordinates: Coordinates): String {
+        val addressOrError = result.fold({ geocodingResult ->
             when (geocodingResult) {
-                is GeocodingResult.Found ->
-                    addressFormatter.format(
-                        geocodingResult.addresses.first().formattedAddress,
-                        coordinates.latitude,
-                        coordinates.longitude,
-                    )
+                is GeocodingResult.Found -> geocodingResult.addresses.first().formattedAddress
                 GeocodingResult.NoResults ->
                     resourceProvider.get(R.string.error_no_address_found_message)
                 is GeocodingResult.Rejected -> {
@@ -144,14 +157,33 @@ class ShowInfoViewModel(
             geocodingErrorMessageMapper.unexpectedFailureMessage()
         })
 
+        return formatWithCoordinates(addressOrError, coordinates)
+    }
+
+    private fun formatWithCoordinates(text: String?, coordinates: Coordinates): String =
+        addressFormatter.format(text, coordinates.latitude, coordinates.longitude)
+
+    private fun Result<GeocodingResult>.toLookedUpAddress(): LookedUpAddress =
+        when (val result = getOrNull()) {
+            is GeocodingResult.Found -> LookedUpAddress.Resolved(result.addresses.first().formattedAddress)
+            GeocodingResult.NoResults, is GeocodingResult.Rejected, null -> LookedUpAddress.NotResolved
+        }
+
+    private fun LookedUpAddress.toShareText(coordinates: Coordinates): String {
+        val address = when (this) {
+            is LookedUpAddress.Resolved -> formattedAddress
+            LookedUpAddress.NotResolved -> null
+        }
+        return formatWithCoordinates(address, coordinates)
+    }
+
     fun onShare() {
         val params = inputParams ?: return
-        val state = _uiState.value
         val subject = shareInfoMessageMapper.getSubject()
         val message =
             shareInfoMessageMapper.mapMessage(
-                originAddress = state.originAddress,
-                destinationAddress = state.destinationAddress,
+                originAddress = lookedUpAddresses.origin.toShareText(params.positionsList.first()),
+                destinationAddress = lookedUpAddresses.destination.toShareText(params.positionsList.last()),
                 distance = params.distance,
             )
 
@@ -189,4 +221,17 @@ class ShowInfoViewModel(
     }
 
     data class InputParams(val positionsList: List<Coordinates>, val distance: String)
+
+    private data class LookedUpAddresses(
+        val origin: LookedUpAddress,
+        val destination: LookedUpAddress
+    )
+
+    private sealed interface LookedUpAddress {
+
+        data class Resolved(val formattedAddress: String) : LookedUpAddress
+
+        /** The lookup failed, found nothing, or hasn't finished. */
+        data object NotResolved : LookedUpAddress
+    }
 }
