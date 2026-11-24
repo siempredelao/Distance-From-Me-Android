@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import gc.david.dfm.R
 import gc.david.dfm.address.presentation.AddressViewModel
+import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.designsystem.DfmTheme
 import gc.david.dfm.distance.domain.model.DistanceMode
@@ -138,7 +139,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(addressUiState.addressFound) {
                     addressUiState.addressFound?.let { address ->
-                        mainViewModel.onPositionByNameResolved(address.coordinates)
+                        mainViewModel.onPositionByNameResolved(address.toCoordinates())
                         addressViewModel.onAddressHandled()
                     }
                 }
@@ -322,3 +323,5 @@ class MainActivity : FragmentActivity() {
 }
 
 private fun LatLng.toCoordinates() = Coordinates(latitude, longitude)
+
+private fun AddressUiModel.toCoordinates() = Coordinates(latitude, longitude)

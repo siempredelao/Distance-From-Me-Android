@@ -17,6 +17,7 @@
 package gc.david.dfm.address.presentation
 
 import gc.david.dfm.address.R
+import gc.david.dfm.address.presentation.mapper.toUiModel
 import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.core.address.domain.model.Address
@@ -104,7 +105,7 @@ class AddressViewModelTest {
         viewModel.onAddressSearch(LOCATION_NAME)
 
         assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(ADDRESS, viewModel.uiState.value.addressFound)
+        assertEquals(ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
     }
 
     @Test
@@ -117,7 +118,7 @@ class AddressViewModelTest {
             viewModel.onAddressSearch(LOCATION_NAME)
 
             assertFalse(viewModel.uiState.value.isLoading)
-            assertEquals(addresses, viewModel.uiState.value.multipleAddressesFound)
+            assertEquals(addresses.map(Address::toUiModel), viewModel.uiState.value.multipleAddressesFound)
         }
 
     @Test
@@ -146,9 +147,9 @@ class AddressViewModelTest {
 
     @Test
     fun `select address in dialog shows position by name with address`() {
-        viewModel.onAddressSelected(ADDRESS)
+        viewModel.onAddressSelected(ADDRESS.toUiModel())
 
-        assertEquals(ADDRESS, viewModel.uiState.value.addressFound)
+        assertEquals(ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
     }
 
     @Test
@@ -190,7 +191,7 @@ class AddressViewModelTest {
         viewModel.onAddressSearch(COORDINATES)
 
         assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(ADDRESS, viewModel.uiState.value.addressFound)
+        assertEquals(ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
     }
 
     @Test
@@ -229,7 +230,7 @@ class AddressViewModelTest {
 
         earlierResult.complete(GeocodingResult.Found(listOf(ADDRESS)))
 
-        assertEquals(LATER_ADDRESS, viewModel.uiState.value.addressFound)
+        assertEquals(LATER_ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
         assertFalse(viewModel.uiState.value.isLoading)
     }
 
@@ -245,7 +246,7 @@ class AddressViewModelTest {
 
         earlierResult.complete(GeocodingResult.Found(listOf(ADDRESS)))
 
-        assertEquals(LATER_ADDRESS, viewModel.uiState.value.addressFound)
+        assertEquals(LATER_ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
         assertFalse(viewModel.uiState.value.isLoading)
     }
 

@@ -19,6 +19,7 @@ package gc.david.dfm.konsist
 import com.lemonappdev.konsist.api.Konsist
 import com.lemonappdev.konsist.api.architecture.KoArchitectureCreator.assertArchitecture
 import com.lemonappdev.konsist.api.architecture.Layer
+import com.lemonappdev.konsist.api.ext.list.withPackage
 import com.lemonappdev.konsist.api.verify.assertFalse
 import com.lemonappdev.konsist.api.verify.assertTrue
 import org.junit.jupiter.api.Test
@@ -59,9 +60,43 @@ class ArchitectureKonsistTest {
     }
 
     @Test
+    fun `presentation models do not hold domain models`() {
+        Konsist.scopeFromProduction()
+            .files
+            .withPackage("gc.david.dfm..presentation.model..")
+            .assertTrue { file ->
+                val domainModels = file.imports.map { it.name }.filter { DOMAIN_MODEL.matches(it) }
+                DOMAIN_MODELS_ALLOWED_IN[file.name].orEmpty().containsAll(domainModels)
+            }
+    }
+
+    @Test
     fun `packages match their directories`() {
         Konsist.scopeFromProject()
             .packages
             .assertTrue { it.hasMatchingPath }
+    }
+
+    private companion object {
+
+        val DOMAIN_MODEL = Regex("gc\\.david\\.dfm\\..*domain\\.model\\..*")
+
+        // The known exceptions. An enum is stable wherever it comes from, but a class such as Coordinates isn't,
+        // because its module doesn't run the Compose compiler
+        val DOMAIN_MODELS_ALLOWED_IN = mapOf(
+            // The input of MapStateMapper
+            "DrawDistanceUiModel" to setOf(
+                "gc.david.dfm.core.coordinates.domain.model.Coordinates",
+                "gc.david.dfm.core.settings.domain.model.CameraAnimation",
+                "gc.david.dfm.distance.domain.model.DistanceMode",
+            ),
+            // triggerElevationUpdate, which MainActivity hands over to ElevationViewModel
+            "MainUiState" to setOf(
+                "gc.david.dfm.core.coordinates.domain.model.Coordinates",
+                "gc.david.dfm.distance.domain.model.DistanceMode",
+            ),
+            // SaveDialogData, which ShowInfoActivity hands over to SaveDistanceViewModel. It keeps the state unstable
+            "ShowInfoUiState" to setOf("gc.david.dfm.core.coordinates.domain.model.Coordinates"),
+        )
     }
 }

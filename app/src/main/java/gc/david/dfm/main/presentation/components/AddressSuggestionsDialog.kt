@@ -28,8 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.R
-import gc.david.dfm.core.address.domain.model.Address
-import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.designsystem.Spacing
 
 /**
@@ -37,8 +36,8 @@ import gc.david.dfm.designsystem.Spacing
  */
 @Composable
 fun AddressSuggestionsDialog(
-    addresses: List<Address>,
-    onAddressSelected: (Address) -> Unit,
+    addresses: List<AddressUiModel>,
+    onAddressSelected: (AddressUiModel) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -71,17 +70,20 @@ fun AddressSuggestionsDialog(
 private fun AddressSuggestionsDialogPreview() {
     AddressSuggestionsDialog(
         addresses = listOf(
-            Address(
+            AddressUiModel(
                 formattedAddress = "123 Main Street, New York, NY 10001",
-                coordinates = Coordinates(40.7128, -74.0060)
+                latitude = 40.7128,
+                longitude = -74.0060
             ),
-            Address(
+            AddressUiModel(
                 formattedAddress = "456 Park Avenue, New York, NY 10022",
-                coordinates = Coordinates(40.7614, -73.9776)
+                latitude = 40.7614,
+                longitude = -73.9776
             ),
-            Address(
+            AddressUiModel(
                 formattedAddress = "789 Broadway, New York, NY 10003",
-                coordinates = Coordinates(40.7308, -73.9973)
+                latitude = 40.7308,
+                longitude = -73.9973
             )
         ),
         onAddressSelected = {},

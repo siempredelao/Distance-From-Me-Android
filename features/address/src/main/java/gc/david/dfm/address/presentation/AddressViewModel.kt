@@ -18,6 +18,8 @@ package gc.david.dfm.address.presentation
 
 import androidx.lifecycle.ViewModel
 import gc.david.dfm.address.R
+import gc.david.dfm.address.presentation.mapper.toUiModel
+import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.address.presentation.model.AddressUiState
 import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
 import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
@@ -68,12 +70,12 @@ class AddressViewModel(
                     is GeocodingResult.Found if result.addresses.size == 1 ->
                         current.copy(
                             isLoading = false,
-                            addressFound = result.addresses.first(),
+                            addressFound = result.addresses.first().toUiModel(),
                         )
                     is GeocodingResult.Found ->
                         current.copy(
                             isLoading = false,
-                            multipleAddressesFound = result.addresses,
+                            multipleAddressesFound = result.addresses.map(Address::toUiModel),
                         )
                     GeocodingResult.NoResults ->
                         current.copy(
@@ -90,7 +92,7 @@ class AddressViewModel(
         }
     }
 
-    fun onAddressSelected(address: Address) {
+    fun onAddressSelected(address: AddressUiModel) {
         _uiState.update { it.copy(addressFound = address) }
     }
 
@@ -114,7 +116,7 @@ class AddressViewModel(
                     is GeocodingResult.Found ->
                         current.copy(
                             isLoading = false,
-                            addressFound = result.addresses.first(),
+                            addressFound = result.addresses.first().toUiModel(),
                         )
                     GeocodingResult.NoResults ->
                         current.copy(

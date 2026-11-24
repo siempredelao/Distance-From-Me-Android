@@ -16,12 +16,10 @@
 
 package gc.david.dfm.address.presentation.model
 
-import gc.david.dfm.core.address.domain.model.Address
-
 data class AddressUiState(
     val isLoading: Boolean = false,
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
-    val addressFound: Address? = null,
-    val multipleAddressesFound: List<Address>? = null,
+    val addressFound: AddressUiModel? = null,
+    val multipleAddressesFound: List<AddressUiModel>? = null,
 )

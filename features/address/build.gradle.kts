@@ -16,6 +16,7 @@
 
 plugins {
     alias(libs.plugins.dfm.android.library)
+    alias(libs.plugins.dfm.android.compose)
     alias(libs.plugins.dfm.unit.test)
 }
 

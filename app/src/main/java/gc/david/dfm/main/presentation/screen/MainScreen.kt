@@ -68,7 +68,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import gc.david.dfm.R
-import gc.david.dfm.core.address.domain.model.Address
+import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.elevation.presentation.components.ElevationChart
 import gc.david.dfm.elevation.presentation.model.ElevationUiModel
 import gc.david.dfm.main.presentation.components.AddressSuggestionsDialog
@@ -99,7 +99,7 @@ fun MainScreen(
     showChart: Boolean,
     showChartFab: Boolean,
     distancesToLoad: List<DistanceSelectionUiModel>?,
-    addressSuggestions: List<Address>?,
+    addressSuggestions: List<AddressUiModel>?,
     isMyLocationEnabled: Boolean,
     onSearchQuery: (String) -> Unit,
     onMapClick: (LatLng) -> Unit,
@@ -112,7 +112,7 @@ fun MainScreen(
     onDistanceSelected: (id: Long, name: String) -> Unit,
     onRateAppClick: () -> Unit,
     onDistanceSelectionDismiss: () -> Unit,
-    onAddressSelected: (Address) -> Unit,
+    onAddressSelected: (AddressUiModel) -> Unit,
     onAddressSuggestionsDismiss: () -> Unit,
     onCameraUpdateHandled: () -> Unit,
     onMapClearHandled: () -> Unit,
