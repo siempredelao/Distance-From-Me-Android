@@ -5,7 +5,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 ## MEMORY.md (index)
 
 ```markdown
-- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) completed 2026-11-23; toolchain upgrade for the maps-compose leak still to plan
+- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) completed 2026-11-23; fourth plan (skill audit, mighty-dazzling-fog) in progress; toolchain upgrade for the maps-compose leak still to plan
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
 - [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
 - [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
@@ -85,7 +85,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 48899b67-0df0-47ef-a9fb-e0767c19cb40
-  modified: 2026-11-23T12:30:37.855Z
+  modified: 2026-11-23T21:11:48.201Z
 ---
 
 Since Oct 2026 the user has been cleaning up the codebase with the Android/Compose/Kotlin skills, one commit per fix on `develop`. No transcript of the session that started it was saved locally; rebuild context from `git log 34cf8d8..HEAD`.
@@ -190,9 +190,32 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - Found 2026-11-23, not fixed: `:app:assembleRelease` fails in R8 at HEAD 5df975d (missing `androidx.window.extensions.*`, probably since material3-adaptive in 15b). Release icons were checked via merged resources instead.
   - 4a's `gc.david.dfm.core.address` rename left some import blocks out of ASCII order; offered a sort pass.
 
+## Fourth plan: skill audit (approved 2026-11-23, in progress)
+- File: `.claude/plans/mighty-dazzling-fog-of-e16aef91-1ff0-43bb-832a-04fc608c3bfb.md` (the user edited it twice; follow the file). Committed as b314a26.
+- Progress:
+  - Step 1 baseline: 338 tests pass, Konsist passes, lint fails only on the known `MainScreen.kt:153` error. Full Compose reports need `compileReleaseKotlin --rerun` per Compose module with `-Pkotlin.incremental=false`.
+  - Step 1 report findings: `MapProperties`/`MapUiSettings` aren't listed as unstable (affects step 18); `AnimatedVisibilityScope` is (library type, always the same instance); `ShowInfoUiState` stays unstable while `SaveDialogData` holds `Coordinates`.
+  - Step 2 reproduced the reopened-map bug; GIF sent; the user chose "start empty" for step 7.
+  - Step 3 (Settings fragment): committed 71b4c71.
+  - Step 4 (rating: `PlayStorePage.kt`, `isStateSaved` check): committed 42cb9a1. The background crash only shows with the callback delayed by a temporary patch, since the emulator image has no Play Store and the request fails at once.
+  - Step 5 (`MainViewModelTest` on real repositories, calculator, formatter and `MapStateMapper`): committed 8263d3a5. Checked by breaking `MainViewModel` three ways; that exposed a test the rewrite had weakened.
+  - Step 6 (search start kept): committed 383bc0b0. The API 36 emulator crashed once more (KVM dump) after about an hour idle.
+  - Step 7 (start empty, `clear()` in `MainViewModel.init`): committed 282be6ef; long press checked for 6 and 7 together.
+  - Step 8 (interrupted camera animation in `MapContent`): committed 2721a4eb at the user's request; its long-press check is still open.
+  - The user said no to committing later steps unasked: stop after each step and wait (2026-11-23).
+- Groups: 0 evidence (1-2), 1 bugs (3-14), 2 unstable composable parameters (15-18), 3 onboarding hints (19-22), 4 startup and lint (23-24), 5 dead code (25-30), 6 tests and docs (31-32).
+- User decisions:
+  - follow it in auto mode; the file still says one commit per fix, only when they ask
+  - step 7 (reopened map) waits for a video (step 2) before they choose between clearing and restoring
+  - a tap after a search keeps the searched place; deleting saved distances stays one tap; no backup rules
+  - onboarding: hints on the map, everyone once, no replay
+  - step 15: no domain models in UI models (they rejected a stability config file), and `ElevationChart` moves to `:features:elevation`
+  - dropped by them: the stuck selection flag after loading a distance, `ORDER BY` for positions, removing `positionsList` from `SaveDialogData` (so the step 15 and 16 guards need that exception)
+
 ## Emulator notes
 - Target the emulator with `ANDROID_SERIAL=emulator-5554`; the user's Pixel 10 may be plugged in over USB.
 - The Geocoding and Elevation APIs rate-limit after many scripted runs ("Demasiadas solicitudes", OVER_QUERY_LIMIT). Keep scripted API runs few; prefer flows that don't search.
+- Location: `pm grant` the two location permissions (revoke afterwards) and repeat `adb emu geo fix <lon> <lat>` for about 12 s; a single fix right after launch is ignored. To interrupt an animation, run tap and swipe in one `adb shell "input tap …; input swipe …"`.
 - In any-position mode the first point needs a tap, later points a long press.
 - After a force-stop, a relaunch shows the location rationale dialog (tap Cancelar); after a cold boot Android's own permission dialog appears first (tap "No permitir").
 - Kill the emulator by process name (`ps -eo pid,comm | awk '$2 ~ /^qemu-system/'`); `pkill -f` with the AVD name also matches, and kills, the shell running it.
@@ -209,7 +232,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 
 ## Stray map tap after a long press (open)
 - Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point: the Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, at the coordinate under the finger when it lifted during the zoom animation. The user reproduced it with the mouse; scripted `adb input` presses never triggered it.
-- Later builds still show it at a low rate: 2 of 10 on the first plan's step 6 build, 1 of 6 on the second plan's step 2 build. Not bisected.
+- Later builds still show it at a low rate: 2 of 10 on the first plan's step 6 build, 1 of 6 on the second plan's step 2 build. Not bisected. On the fourth plan's steps 6+7 build (2026-11-24): 34 manual presses, 1 clear stray tap (0.53 s later, same spot), 3 unclear clicks 1.0-1.7 s later.
 - **How to apply:** keep `clearMap` until the cause is understood. Any change to the map state flow needs the user's manual long press while logcat is filtered for `MainViewModel` `onMapClick`/`onMapLongClick`; a scripted run proves nothing. It may relate to the deferred chart-visibility work.
 
 ## Deferred by the user
@@ -309,7 +332,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: c32d0a74-26a2-4a0c-beb1-bcf2897c09c0
-  modified: 2026-11-21T15:58:43.043Z
+  modified: 2026-11-23T21:09:53.421Z
 ---
 
 Back each change with images or videos whenever possible: screenshots (`adb exec-out screencap -p`) or screen recordings (`adb shell screenrecord`), taken on the build before the change and the build after it, following the same steps on both. Send them to the user with SendUserFile, labelled BEFORE/AFTER, together with the written reproduction steps. For a flow over time, such as a dialog sequence or an animation, prefer a recording; for a static difference, a side-by-side image. When a change has nothing visible, say so instead of producing filler images.
@@ -317,6 +340,8 @@ Back each change with images or videos whenever possible: screenshots (`adb exec
 **Why:** on 2026-11-21, while reviewing step 5 fix 2 of [[konsist-cleanup-series]], the user asked for this because they were away from their computer and review on another device, where they can't run the app themselves.
 
 **Recording pitfall (2026-11-22):** stopping `adb shell screenrecord` by killing the local adb client leaves the MP4 without its `moov` index, so it won't play; the user reported the step 2 and step 4 videos as unplayable. Stop it on the device with `adb shell pkill -INT screenrecord`, wait for the local process to exit, then pull. Re-encode with ffmpeg (`-c:v libx264 -pix_fmt yuv420p -movflags +faststart`, scaled to 540 px wide) and check it with `ffprobe` before sending.
+
+**Send a GIF too (2026-11-23):** the user couldn't watch an MP4 that was valid (H.264 High, yuv420p, moov first, decodes fully), so a good file isn't enough. Send recordings as a GIF (about 300 px wide, 6 fps) shown inline, with the MP4 only as an attachment.
 
 **How to apply:** for each fix, build the "before" by stashing the change, capture, restore it, then capture the "after", and reinstall the "after" build at the end. Send the evidence before asking to commit. Extends [[reproduction-steps-for-fixes]].
 ```
