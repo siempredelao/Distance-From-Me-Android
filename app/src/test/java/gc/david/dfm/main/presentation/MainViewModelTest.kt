@@ -65,6 +65,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -242,8 +244,19 @@ class MainViewModelTest {
 
         assertEquals(listOf(POINT_B, POINT_C), storedPath)
         assertEquals(listOf(POINT_B, POINT_C), drawnPath)
-        assertEquals(MarkerData.InfoWindow.Visible("Home\n111.19 km"), markers.last().infoWindow)
+        assertEquals(MarkerData.InfoWindow.Visible(title = "Home", snippet = "111.19 km"), markers.last().infoWindow)
         assertEquals(listOf(POINT_B, POINT_C), viewModel.uiState.value.triggerElevationUpdate)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "  "])
+    fun `onDistanceToShowSelected shows only the distance when the stored one has no name`(name: String) = runTest {
+        val positions = listOf(Position(0.0, 0.0), Position(0.0, 1.0))
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
+
+        viewModel.onDistanceToShowSelected(1L, name)
+
+        assertEquals(MarkerData.InfoWindow.Visible("111.19 km"), markers.last().infoWindow)
     }
 
     @Test

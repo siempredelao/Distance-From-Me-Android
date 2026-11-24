@@ -74,10 +74,10 @@ class MapStateMapper(private val context: Context) {
     }
 
     private fun createInfoWindow(isLastMarker: Boolean, model: DrawDistanceUiModel) =
-        if (isLastMarker) {
-            MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
-        } else {
-            MarkerData.InfoWindow.None
+        when {
+            !isLastMarker -> MarkerData.InfoWindow.None
+            model.distanceName.isBlank() -> MarkerData.InfoWindow.Visible(title = model.formattedDistance)
+            else -> MarkerData.InfoWindow.Visible(title = model.distanceName, snippet = model.formattedDistance)
         }
 
     private fun createPolylines(model: DrawDistanceUiModel): List<PolylineData> {

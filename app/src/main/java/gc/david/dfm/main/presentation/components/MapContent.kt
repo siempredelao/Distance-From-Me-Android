@@ -163,9 +163,8 @@ private fun Markers(
                 position = markerData.position.toLatLng()
             )
 
-            // Extract title from InfoWindow
-            val title = when (val infoWindow = markerData.infoWindow) {
-                is MarkerData.InfoWindow.Visible -> infoWindow.title
+            val infoWindow = when (val infoWindow = markerData.infoWindow) {
+                is MarkerData.InfoWindow.Visible -> infoWindow
                 MarkerData.InfoWindow.None -> null
             }
             
@@ -183,7 +182,8 @@ private fun Markers(
             
             Marker(
                 state = markerState,
-                title = title,
+                title = infoWindow?.title,
+                snippet = infoWindow?.snippet,
                 onInfoWindowClick = { onMarkerClick(markerData) }
             )
         }

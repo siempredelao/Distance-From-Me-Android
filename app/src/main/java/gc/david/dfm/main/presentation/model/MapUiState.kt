@@ -45,7 +45,8 @@ data class MarkerData(
         
         data object None : InfoWindow
         
-        data class Visible(val title: String) : InfoWindow
+        /** The [snippet] is a second, smaller line below the [title]. Each of them is cut off after one line. */
+        data class Visible(val title: String, val snippet: String? = null) : InfoWindow
     }
 }
 

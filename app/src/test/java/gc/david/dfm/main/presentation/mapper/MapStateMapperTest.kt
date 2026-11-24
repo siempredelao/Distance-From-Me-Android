@@ -31,6 +31,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -86,7 +88,7 @@ internal class MapStateMapperTest {
                 ),
                 MarkerData(
                     position = Coordinates(2.0, 2.0),
-                    infoWindow = MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+                    infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
             polylines = listOf(
@@ -133,7 +135,7 @@ internal class MapStateMapperTest {
                 ),
                 MarkerData(
                     position = Coordinates(2.0, 2.0),
-                    infoWindow = MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+                    infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
             polylines = listOf(
@@ -210,14 +212,12 @@ internal class MapStateMapperTest {
     }
 
     @Test
-    fun `sets marker title with distance info`() {
+    fun `sets the name as the title and the distance as the snippet`() {
         val coords = listOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0), Coordinates(2.0, 2.0))
-        val distanceName = "Distance: "
-        val formattedDistance = "1.5 km"
         val model = createDrawDistanceModel(
             coordinates = coords,
-            distanceName = distanceName,
-            formattedDistance = formattedDistance
+            distanceName = "Home",
+            formattedDistance = "1.5 km"
         )
 
         val result = mapper.toMapUiState(model)
@@ -225,10 +225,25 @@ internal class MapStateMapperTest {
         val expectedMarkers = listOf(
             MarkerData(
                 position = Coordinates(2.0, 2.0),
-                infoWindow = MarkerData.InfoWindow.Visible(title = distanceName + formattedDistance)
+                infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.5 km")
             )
         )
         assertEquals(expectedMarkers, result.markers)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "  "])
+    fun `sets the distance as the title without a name`(distanceName: String) {
+        val coords = listOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0))
+        val model = createDrawDistanceModel(
+            coordinates = coords,
+            distanceName = distanceName,
+            formattedDistance = "1.5 km"
+        )
+
+        val result = mapper.toMapUiState(model)
+
+        assertEquals(MarkerData.InfoWindow.Visible(title = "1.5 km"), result.markers.last().infoWindow)
     }
 
     private fun createDrawDistanceModel(
@@ -236,7 +251,7 @@ internal class MapStateMapperTest {
         source: DrawDistanceUiModel.Source = DrawDistanceUiModel.Source.MANUAL,
         distanceMode: DistanceMode = DistanceMode.FROM_CURRENT_POINT,
         cameraAnimation: CameraAnimation = CameraAnimation.Animate.Centre,
-        distanceName: String = "Distance: ",
+        distanceName: String = "Home",
         formattedDistance: String = "1.0 km"
     ): DrawDistanceUiModel {
         return DrawDistanceUiModel(

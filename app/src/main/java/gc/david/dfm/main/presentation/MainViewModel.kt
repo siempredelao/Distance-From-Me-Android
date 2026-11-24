@@ -185,7 +185,7 @@ class MainViewModel(
                     val coordinates = result.positions.toCoordinates()
                     coordinatesRepository.setList(coordinates)
 
-                    plotDistances(coordinates, name + "\n", DrawDistanceUiModel.Source.DATABASE)
+                    plotDistances(coordinates, name, DrawDistanceUiModel.Source.DATABASE)
                 }
 
                 // Keep the current drawing instead of clearing the map for a distance with nothing to show
