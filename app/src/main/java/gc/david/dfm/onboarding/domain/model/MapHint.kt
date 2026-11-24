@@ -18,6 +18,8 @@ package gc.david.dfm.onboarding.domain.model
 
 /**
  * What the map can tell the user about its next step.
+ *
+ * The names are stored, so renaming one shows its hint again.
  */
 enum class MapHint {
 

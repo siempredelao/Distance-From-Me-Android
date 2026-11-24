@@ -47,6 +47,8 @@ import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import gc.david.dfm.onboarding.data.BaseHintRepository
+import gc.david.dfm.onboarding.data.HintDiskDataSource
 import gc.david.dfm.onboarding.domain.MapHintProcessor
 import gc.david.dfm.onboarding.domain.model.MapHint
 import gc.david.dfm.support.android.domain.ConnectionManager
@@ -96,6 +98,7 @@ class MainViewModelTest {
     private val locations = MutableSharedFlow<Coordinates>(extraBufferCapacity = 1)
     private val permissionChecker = mock<PermissionChecker>()
     private val coordinatesRepository = BaseCoordinatesRepository(CoordinatesMemoryDataSource())
+    private val hintRepository = BaseHintRepository(mock<HintDiskDataSource>())
     private val buildConfigProvider = mock<BuildConfigProvider>()
     private val context = mock<Context>()
     private val resources = mock<Resources>()
@@ -654,8 +657,8 @@ class MainViewModelTest {
         viewModel.onMapLongClick(POINT_B)
         assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
 
-        viewModel.onDistanceFromAnyPositionSet()
-        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+        viewModel.onInfoWindowClick()
+        assertNull(viewModel.hint.value)
     }
 
     @Test
@@ -670,6 +673,79 @@ class MainViewModelTest {
 
         viewModel.onMapLongClick(POINT_A)
         assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+    }
+
+    @Test
+    fun `hints that were followed are not shown again, not even on a reopened map`() = runTest {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+        viewModel.onMapLongClick(POINT_B)
+
+        viewModel = createViewModel()
+        viewModel.onDistanceFromAnyPositionSet()
+        assertNull(viewModel.hint.value)
+
+        viewModel.onMapClick(POINT_A)
+        assertNull(viewModel.hint.value)
+
+        viewModel.onMapLongClick(POINT_B)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+    }
+
+    @Test
+    fun `a long press in current position mode retires its hint`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
+        viewModel.onMapLongClick(POINT_A)
+
+        viewModel.onDistanceFromCurrentPositionSet()
+
+        assertNull(viewModel.hint.value)
+    }
+
+    @Test
+    fun `a search draws the distance but leaves the long press hint for later`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
+        viewModel.onPositionByNameResolved(POINT_A)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+
+        viewModel.onDistanceFromCurrentPositionSet()
+
+        assertEquals(MapHint.MEASURE_FROM_LOCATION, viewModel.hint.value)
+    }
+
+    @Test
+    fun `a search starts a path but leaves the tap hint for later`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onPositionByNameResolved(POINT_A)
+        assertEquals(MapHint.ADD_OR_FINISH, viewModel.hint.value)
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+    }
+
+    @Test
+    fun `loading a distance leaves the earlier hints for later`() = runTest {
+        val positions = listOf(Position(0.0, 0.0), Position(0.0, 1.0))
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onDistanceToShowSelected(1L, "Home")
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+    }
+
+    @Test
+    fun `onHintClosed retires the hint`() {
+        viewModel.onDistanceFromAnyPositionSet()
+
+        viewModel.onHintClosed(MapHint.START_ANYWHERE)
+
+        assertNull(viewModel.hint.value)
     }
 
     private fun createViewModel() =
@@ -689,7 +765,7 @@ class MainViewModelTest {
             buildConfigProvider,
             MapStateMapper(context),
             loadDistancesMapper,
-            MapHintProcessor()
+            MapHintProcessor(hintRepository)
         )
 
     // Grants location and tracks it, as MainActivity does while started; emit to locations to deliver one

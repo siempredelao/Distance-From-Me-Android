@@ -36,6 +36,9 @@ import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.onboarding.data.BaseHintRepository
+import gc.david.dfm.onboarding.data.HintDiskDataSource
+import gc.david.dfm.onboarding.domain.HintRepository
 import gc.david.dfm.onboarding.domain.MapHintProcessor
 import gc.david.dfm.support.navigation.Navigator
 import org.koin.android.ext.koin.androidContext
@@ -55,7 +58,10 @@ val appModule = module {
     factory<Navigator> { (activity: Activity) -> AppNavigator(activity) }
     single { MapStateMapper(get()) }
     single { LoadDistancesMapper(get()) }
-    single { MapHintProcessor() }
+    single { HintDiskDataSource(get()) }
+    single<HintRepository> { BaseHintRepository(get()) }
+    // One per map screen, so anything it comes to remember starts again with the screen
+    factory { MapHintProcessor(get()) }
     single { GetStoredDistancesUseCase(get()) }
     viewModel { MainViewModel(get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }

@@ -44,6 +44,7 @@ import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.onboarding.domain.MapHintProcessor
 import gc.david.dfm.onboarding.domain.model.MapHint
+import gc.david.dfm.onboarding.domain.model.MapHintEvent
 import gc.david.dfm.onboarding.domain.model.MapSituation
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
@@ -84,7 +85,7 @@ class MainViewModel(
     private val buildConfigProvider: BuildConfigProvider,
     private val mapStateMapper: MapStateMapper,
     private val loadDistancesMapper: LoadDistancesMapper,
-    mapHintProcessor: MapHintProcessor
+    private val mapHintProcessor: MapHintProcessor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -105,6 +106,9 @@ class MainViewModel(
         mapHintProcessor
             .observeHint(combine(_uiState, currentLocation) { state, location -> state.toMapSituation(location) })
             .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
+
+    // The situation that the user is acting on
+    private val currentSituation get() = _uiState.value.toMapSituation(currentLocation.value)
 
     // Determines whether a multi-point distance is being marked on the map
     private var isUserSelectingPoints: Boolean = false
@@ -276,6 +280,7 @@ class MainViewModel(
 
     fun onMapClick(coordinates: Coordinates) {
         Timber.tag(TAG).d("onMapClick $coordinates")
+        mapHintProcessor.onEvent(MapHintEvent.MapTapped(currentSituation))
 
         val origin = when (distanceModeRepository.getDistanceMode()) {
             DistanceMode.FROM_ANY_POINT -> null
@@ -334,14 +339,17 @@ class MainViewModel(
                 it.copy(mapState = it.mapState.copy(cameraUpdate = CameraUpdate.MoveTo(coordinates.toUiModel())))
             }
 
-            DistanceMode.FROM_ANY_POINT, DistanceMode.FROM_CURRENT_POINT -> onMapLongClick(
-                coordinates
-            )
+            DistanceMode.FROM_ANY_POINT, DistanceMode.FROM_CURRENT_POINT -> finishPath(coordinates)
         }
     }
 
     fun onMapLongClick(coordinates: Coordinates) {
         Timber.tag(TAG).d("onMapLongClick $coordinates")
+        mapHintProcessor.onEvent(MapHintEvent.MapLongPressed(currentSituation))
+        finishPath(coordinates)
+    }
+
+    private fun finishPath(coordinates: Coordinates) {
         isUserSelectingPoints = true
 
         when (distanceModeRepository.getDistanceMode()) {
@@ -426,7 +434,12 @@ class MainViewModel(
         _uiState.update { it.copy(showChart = false) }
     }
 
+    fun onHintClosed(hint: MapHint) {
+        mapHintProcessor.onEvent(MapHintEvent.HintClosed(hint))
+    }
+
     fun onInfoWindowClick() {
+        mapHintProcessor.onEvent(MapHintEvent.DetailsOpened)
         _uiState.update { it.copy(openShowInfo = true) }
     }
 
