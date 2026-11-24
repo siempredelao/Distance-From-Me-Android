@@ -14,6 +14,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Lists over paragraphs in memory](memory-lists-over-paragraphs.md) — write memory, especially plan progress, as short unordered lists
 - [Show diff after each change](show-diff-after-each-change.md) — end every change report with its diff in the reply
 - [JVM or Android module](jvm-or-android-module.md) — check a new module's imports first; plain Kotlin goes in a dfm.jvm.library module, not an Android library
+- [Sealed interface or class](sealed-interface-or-class.md) — sealed interface for domain models, sealed class for presentation models
 ```
 
 ## commit-only-what-is-asked.md
@@ -146,7 +147,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - Step 16: read-only investigation of package and module reorganisation, ending in a proposal.
 - Found while testing, not fixed (reported to the user):
   - 2026-11-23: Back with the elevation chart open closed the map screen and showed the onboarding pages (SKIP/NEXT), instead of closing the chart. Not checked against the pre-move build.
-  - When reverse geocoding fails, Show info puts the error text ("Demasiadas solicitudes…") into the shared message as the address.
+  - When reverse geocoding fails, Show info puts the error text ("Demasiadas solicitudes…") into the shared message as the address. Covered by the fourth plan's step 10b.
   - On a tablet the app has no large-screen layout; the FAB slides 256 dp into the middle of the screen when the rail opens (covered by 15b).
 
 ## Third plan: module reorganisation (approved and completed 2026-11-23; follow-up: separate toolchain-upgrade plan for maps-compose 9)
@@ -202,6 +203,36 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - Step 6 (search start kept): committed 383bc0b0. The API 36 emulator crashed once more (KVM dump) after about an hour idle.
   - Step 7 (start empty, `clear()` in `MainViewModel.init`): committed 282be6ef; long press checked for 6 and 7 together.
   - Step 8 (interrupted camera animation in `MapContent`): committed 2721a4eb at the user's request; its long-press check is still open.
+  - Step 9 (bounds padding): dropped by the user on 2026-11-24 (option A) and reverted. The old 200 px crashes only when the map is about 400 px or less (320x480, 480x320, 640x360 at 160 dpi); at 13 realistic sizes (phones 320-412 dp wide, landscape, split halves, tablet) neither build crashes. With 72dp the start pin goes under the search bar on several small, landscape, split and tablet sizes.
+  - Step 10a (distance shown offline in Show info): committed 78b9b442.
+  - Step 10b (Share sends coordinates instead of errors, and Show info shows the coordinates from the start): the user's design, a private sealed `LookedUpAddress` per end in `LookedUpAddresses` inside `ShowInfoViewModel`; UI state keeps texts (error + coordinates on failure, coordinate precision unchanged). Committed 5027ea7c.
+  - Step 11a (default unit by country): the user chose a fixed list US, GB, LR, MM (CLDR 46) over `LocaleData` (API 28); committed d98bcb4d.
+  - Step 11b (`DecimalFormat` per use in `UnitFormatter`): committed b89fe301.
+  - Step 12 (location snackbar: long duration, dismiss action, action on its own line): committed 90df3940.
+  - Step 13 (Play Services dialog in `OnboardActivity`): committed c94c1006.
+  - Step 14a (blank search): committed 2864b11a.
+  - Step 14b (marker label, replaced at the user's choice by `title`/`snippet` on `InfoWindow.Visible`; before, a saved distance showed only its name or "…"): committed 57ad7e15. Touches `MapContent`, so include it in the open long-press check.
+  - Step 14c (`DATA_NOT_AVAILABLE` to `NoData`, and `OVER_DAILY_LIMIT` as a rejection, added by the user; both checked in Google's Elevation docs): committed cf98846f. A search summary says Google moves `DATA_NOT_AVAILABLE` to HTTP 4xx, which our client would still log as `HttpException`; not handled.
+  - Group 1 checkpoint (2026-11-24): tests and Konsist pass, scripted smoke run of steps 3-14b passed with no crashes on the cf98846f build. Open: the user's long-press check for steps 8 and 14b, wanted before Group 2.
+  - Step 15a (`ElevationChart` and the Compose compiler in `:features:elevation`): committed 76baf53f. The user chose to go on and check the long press for 8, 14b and 15b together. The Elevation API hit OVER_QUERY_LIMIT on 2026-11-24, so the chart was checked with a temporary canned answer in `ElevationRemoteDataSource` (removed). The chart still doesn't open by itself (deferred chart-visibility bug), same on both builds.
+  - Step 15b (`CoordinatesUiModel` in `MarkerData`, `PolylineData`, `CameraUpdate`; `Coordinates.toUiModel()`): map identical on both builds, committed dbfbd424; the long-press check for 8, 14b and 15b is still open. `MarkerData` is now "runtime" because of the sealed `InfoWindow` (step 17).
+  - Step 15c (`AddressUiModel` in `:features:address`, Konsist guard `presentation models do not hold domain models` with three listed exceptions): committed d672e844.
+  - Step 16 (`ImmutableList`, one commit per module: faq, opensource, elevation, address, `:app`, then the guard): faq committed 5df12aa0; opensource committed ab74b2f4; elevation committed 62ccf506; address committed a5927b7e; `:app` committed fc134bd6, long-press check open for 8, 14b, 15b and it; `kotlinx-collections-immutable` 0.3.8 in the catalog. A search that gives several results: "Springfield".
+  - Step 16 guard (`ComposeStabilityKonsistTest`, three allowed properties): done, checked with six deliberate breaks, committed 880e5f18.
+  - Step 17 (`InfoWindow`, `DistanceSelectionUiModel`, `CameraUpdate`, `OpenSourceUiState` as sealed classes, the user's idea instead of `@Immutable` on sealed interfaces: the compiler infers a sealed class without properties as stable; plus a Konsist check for no `var` in presentation models): committed 8cd7d4e3.
+  - Step 18 measured (2026-11-24, temporary logs, nothing left in the code): during the rail animation `MapContent` recomposes 0 times both before Group 2 (cf98846f) and now (8cd7d4e3), same counts after a long press, so Group 2 brought no measurable gain there. Reading the FAB offset in layout takes the screen content from about 10 recompositions per animation to 1; frame times don't change beyond noise. The user dropped the whole step. Group 2 done.
+  - Step 19 (c6d733e5; the user's design: `MapHintProcessor` in `onboarding/domain`, fed with a `Flow<MapSituation>`, so the repository stays its internal detail; `MainViewModel.hint` as its own `StateFlow`; no hint in current position without permission).
+  - Step 20 (events through `MapHintProcessor.onEvent`: `HintClosed`, `MapTapped`, `MapLongPressed`, `DetailsOpened`): 70440577.
+    - Gestures are events because loading a saved distance and searching also draw, without teaching the gesture.
+    - No use cases: the Konsist guard only allows suspending ones or ones returning a Flow.
+    - `WAITING_FOR_LOCATION` is never retired, so step 21 gives it no close button.
+    - `flowOf(...).toList()` hangs on `observeHint`, because the seen hints never complete.
+  - Step 21 (`MapHintBanner` in `onboarding/presentation/components`, `MapHint.isShownOnce`, search-active state hoisted to `MainScreen`): 8ee0ca30.
+    - TalkBack on the emulator: needs `adb root`, `pref_tts_overlay` and `pref_log_level` in its preferences; `input mouse tap` bypasses touch exploration; `uiautomator events` gets none of Compose's events.
+  - Step 22 (two FAQ answers, 7 languages): deb648b0.
+  - Rename of `OnboardActivity` to `launcher/presentation/LauncherActivity` (user's request): ff541493. The launcher entry keeps the released name through an `activity-alias` (user chose it), guarded by `ActivityKonsistTest`; the emulator scripts still work with the old component name. The Pixel launcher kept a placed icon even without the alias.
+  - FAQ quotes escaped as `\"` (24 strings, separate commit): done and checked, uncommitted, waiting for the user. Then Group 4.
+  - Step 27 also deletes unused resources, not only strings (user agreed): the five `onboard_background.png` drawables in `:app`, and any others found then.
   - The user said no to committing later steps unasked: stop after each step and wait (2026-11-23).
 - Groups: 0 evidence (1-2), 1 bugs (3-14), 2 unstable composable parameters (15-18), 3 onboarding hints (19-22), 4 startup and lint (23-24), 5 dead code (25-30), 6 tests and docs (31-32).
 - User decisions:
@@ -226,6 +257,9 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 - Rotation with `user_rotation` needs `settings put system accelerometer_rotation 0` (restore to 1 afterwards).
 - After the cold boots on 2026-11-22 the emulator's locale is en-US, so scripts must match English labels too ("Menu", "Cancel", "Don’t allow"). A system notification-permission prompt sometimes covers the app; the app itself never requests `POST_NOTIFICATIONS`.
 - screenrecord writes few frames (83 in 12 s), too coarse to time animations; slow them with `settings put global animator_duration_scale 10` and take screenshots instead (reset to 1).
+- To make lookups fail while online: `adb root`, then `iptables -I OUTPUT -p tcp --dport 443 -m owner --uid-owner <app uid> -j REJECT` (and `ip6tables`); delete both rules and `adb unroot` afterwards.
+- Fresh-start checks: back up `databases` and `shared_prefs` first (`adb shell "run-as gc.david.dfm tar cf - databases shared_prefs"`) and restore them afterwards. App language: `cmd locale set-app-locales gc.david.dfm --user 0 --locales es-US`, reset with `--locales '""'`.
+- To return to the app as the launcher does, use `am start -f 0x10200000 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n …`; without the flag `am start` creates a new copy of the Activity. Play Services off: `pm disable-user --user 0 com.google.android.gms`, then `pm enable`.
 - Airplane mode: `adb shell cmd connectivity airplane-mode enable|disable`. Dark mode: `cmd uimode night yes|no`.
 - The API 36 emulator crashes with a KVM register dump in its log (three times so far, twice right after Chrome opened); test link taps with Chrome disabled (`pm disable-user --user 0 com.android.chrome`, the app shows its no-app toast), and re-enable it afterwards; cold-boot with `-no-snapshot-load` and wrap adb calls in `timeout` to notice a hang.
 - The repo's MEMORY.md is a copy of this directory made by `.claude/hooks/dump-memory.sh`; don't edit it. The hook runs on Write/Edit and at the end of a turn, not after Bash edits, so before committing memory changed through Bash, run `CLAUDE_PROJECT_DIR=$PWD .claude/hooks/dump-memory.sh </dev/null`.
@@ -298,6 +332,24 @@ For every change I report, include steps to reproduce what it fixes: how to trig
 **How to apply:** add a "How to reproduce" section to the summary of each plan step or fix, split per fix when a step has several. Related: [[konsist-cleanup-series]], [[commit-only-what-is-asked]].
 ```
 
+## sealed-interface-or-class.md
+
+```markdown
+---
+name: sealed-interface-or-class
+description: "Sealed types: sealed interface for domain models, sealed class for presentation models"
+metadata:
+  type: feedback
+---
+
+- Domain models: `sealed interface` (as `GeocodingResult`, `PositionListResult`, `ElevationResult`, `MapHintEvent`).
+- Presentation models (UI state and UI models that composables receive): `sealed class`.
+
+**Why:** the Compose compiler infers a sealed class without properties as stable but leaves a sealed interface undecided, so step 17 of [[konsist-cleanup-series]] made the UI's sealed types classes. Domain types never reach a composable, so they don't need it. On 2026-11-24 I made `MapHintEvent` (domain) a sealed class in step 20; the user asked for an interface and for this rule.
+
+**How to apply:** choose by the package, `domain/` or `presentation/`, when adding a sealed type.
+```
+
 ## show-diff-after-each-change.md
 
 ```markdown
@@ -342,6 +394,8 @@ Back each change with images or videos whenever possible: screenshots (`adb exec
 **Recording pitfall (2026-11-22):** stopping `adb shell screenrecord` by killing the local adb client leaves the MP4 without its `moov` index, so it won't play; the user reported the step 2 and step 4 videos as unplayable. Stop it on the device with `adb shell pkill -INT screenrecord`, wait for the local process to exit, then pull. Re-encode with ffmpeg (`-c:v libx264 -pix_fmt yuv420p -movflags +faststart`, scaled to 540 px wide) and check it with `ffprobe` before sending.
 
 **Send a GIF too (2026-11-23):** the user couldn't watch an MP4 that was valid (H.264 High, yuv420p, moov first, decodes fully), so a good file isn't enough. Send recordings as a GIF (about 300 px wide, 6 fps) shown inline, with the MP4 only as an attachment.
+
+**Realistic sizes, clear captions (2026-11-24):** the user asked for common and average small screen sizes instead of very small ones, and for a side-by-side before/after recording with captions when a bug wasn't clear. Test real device sizes first (360x800, 412x915, 360x640, 320x569 dp, landscape, split, tablet), and caption each step of a recording.
 
 **How to apply:** for each fix, build the "before" by stashing the change, capture, restore it, then capture the "after", and reinstall the "after" build at the end. Send the evidence before asking to commit. Extends [[reproduction-steps-for-fixes]].
 ```
