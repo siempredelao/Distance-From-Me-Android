@@ -118,28 +118,35 @@ class MainViewModelTest {
         whenever(settingsRepository.getCameraAnimation()).thenReturn(CameraAnimation.None)
         whenever(context.resources).thenReturn(resources)
 
-        viewModel = MainViewModel(
-            getDistancesUseCase,
-            getStoredDistancesUseCase,
-            getPositionListUseCase,
-            connectionManager,
-            resourceProvider,
-            settingsRepository,
-            distanceModeRepository,
-            locationRepository,
-            permissionChecker,
-            coordinatesRepository,
-            DistanceCalculator(),
-            UnitFormatter(UnitConverter()),
-            buildConfigProvider,
-            MapStateMapper(context),
-            loadDistancesMapper
-        )
+        viewModel = createViewModel()
     }
 
     @AfterEach
     fun tearDown() {
         Locale.setDefault(defaultLocale)
+    }
+
+    @Test
+    fun `a new view model drops the points left by the previous one`() {
+        givenDistanceDrawn()
+
+        viewModel = createViewModel()
+
+        assertEquals(emptyList<Coordinates>(), storedPath)
+        assertEquals(emptyList<MarkerData>(), markers)
+    }
+
+    @Test
+    fun `a long press on a reopened map asks for a starting point in any position mode`() {
+        val message = "Start point needed"
+        whenever(resourceProvider.get(R.string.toast_first_point_needed)).thenReturn(message)
+        givenDistanceDrawn()
+        viewModel = createViewModel()
+
+        viewModel.onMapLongClick(POINT_C)
+
+        assertEquals(message, viewModel.uiState.value.errorMessage)
+        assertEquals(emptyList<Coordinates>(), drawnPath)
     }
 
     @Test
@@ -618,6 +625,25 @@ class MainViewModelTest {
 
         assertFalse(viewModel.uiState.value.requestLocationPermission)
     }
+
+    private fun createViewModel() =
+        MainViewModel(
+            getDistancesUseCase,
+            getStoredDistancesUseCase,
+            getPositionListUseCase,
+            connectionManager,
+            resourceProvider,
+            settingsRepository,
+            distanceModeRepository,
+            locationRepository,
+            permissionChecker,
+            coordinatesRepository,
+            DistanceCalculator(),
+            UnitFormatter(UnitConverter()),
+            buildConfigProvider,
+            MapStateMapper(context),
+            loadDistancesMapper
+        )
 
     // Grants location and tracks it, as MainActivity does while started; emit to locations to deliver one
     private fun TestScope.givenLocationTracked() {

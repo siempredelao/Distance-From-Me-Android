@@ -100,6 +100,10 @@ class MainViewModel(
     private var isObservingStoredDistances = false
 
     init {
+        // The points outlive the screen, but its drawing doesn't: without this, a long press on a reopened map would
+        // join the points of a path that is no longer drawn
+        coordinatesRepository.clear()
+
         // Initialize with current distance mode and side navigation state
         val initialDistanceMode = distanceModeRepository.getDistanceMode()
         _uiState.update {
