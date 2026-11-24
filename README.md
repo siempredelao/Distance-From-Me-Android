@@ -126,6 +126,9 @@ Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md
 ## Download
 [![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=gc.david.dfm)
 
+## Privacy
+See the [privacy policy](PRIVACY_POLICY.md).
+
 ## License
 ```
    Copyright (c) 2026 David Aguiar Gonzalez
