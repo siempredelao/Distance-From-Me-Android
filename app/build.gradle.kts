@@ -118,7 +118,6 @@ dependencies {
     implementation(project(":core:units"))
     implementation(project(":features:about"))
     implementation(project(":features:address"))
-    implementation(project(":features:connectivity"))
     implementation(project(":features:elevation"))
     implementation(project(":features:faq"))
     implementation(project(":features:feedback"))

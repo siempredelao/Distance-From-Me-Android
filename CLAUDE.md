@@ -45,7 +45,7 @@ Modules are grouped by role, and each group may only depend inwards. `ModuleGrou
 
 `:app` sits outside the groups and depends on all of them. It owns `MainActivity` (the Compose map screen), `LauncherActivity` (checks Play Services, then opens the map; launchers see it under its former name through an `activity-alias`), the map hints in `onboarding`, `AppNavigator`, the location and distance-mode code, `PermissionChecker` and `BuildConfigProvider`.
 
-- Features: `:features:about`, `:features:address` (only the search `AddressViewModel`), `:features:connectivity`, `:features:elevation`, `:features:faq`, `:features:feedback`, `:features:opensource`, `:features:settings`, `:features:show-info`.
+- Features: `:features:about`, `:features:address` (only the search `AddressViewModel`), `:features:elevation`, `:features:faq`, `:features:feedback`, `:features:opensource`, `:features:settings`, `:features:show-info`.
 - `:core:address`: geocoding and reverse geocoding (remote data source, repository, use cases, `GeocodingResult`) and `GeocodingErrorMessageMapper` with its strings. Used by `:features:address`, `:features:show-info` and `:app`.
 - `:core:coordinates` (JVM): `Coordinates`, `DistanceCalculator`, and the `CoordinatesRepository` backed by one in-memory list of points, which the map writes and Show info reads.
 - `:core:design-system`: the Compose theme, shared UI pieces and the launcher icon (orange in `src/main`, overridden by the green one in `src/release`).

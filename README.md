@@ -24,7 +24,6 @@ Modules are grouped by role, and each group only depends inwards: features on co
 | **Features** | |
 | `:features:about` | About screen and app information |
 | `:features:address` | Address search ViewModel |
-| `:features:connectivity` | Connection issues UI |
 | `:features:elevation` | Elevation profile feature |
 | `:features:faq` | FAQ / Help & Feedback feature |
 | `:features:feedback` | In-app review dialog |
