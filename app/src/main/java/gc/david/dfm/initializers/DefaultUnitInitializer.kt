@@ -25,8 +25,8 @@ class DefaultUnitInitializer(
     private val settingsRepository: SettingsRepository
 ) : Initializer {
 
-    private val isImperialLocale: Boolean
-        get() = Locale.getDefault() == Locale.US
+    private val isImperialCountry: Boolean
+        get() = Locale.getDefault().country in IMPERIAL_COUNTRIES
 
     override fun init(application: Application) {
         if (settingsRepository.hasUnitSystemPreference()) {
@@ -34,7 +34,14 @@ class DefaultUnitInitializer(
         }
 
         settingsRepository.setUnitSystemPreference(
-            if (isImperialLocale) UnitSystem.IMPERIAL else UnitSystem.METRIC
+            if (isImperialCountry) UnitSystem.IMPERIAL else UnitSystem.METRIC
         )
+    }
+
+    private companion object {
+
+        // The countries that Unicode CLDR 46 doesn't count as metric. Android's LocaleData.getMeasurementSystem gives
+        // the same ones, but needs API 28
+        val IMPERIAL_COUNTRIES = setOf("US", "GB", "LR", "MM")
     }
 }

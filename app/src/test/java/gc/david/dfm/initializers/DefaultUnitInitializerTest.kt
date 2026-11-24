@@ -21,6 +21,8 @@ import gc.david.dfm.core.settings.domain.SettingsRepository
 import gc.david.dfm.core.units.domain.model.UnitSystem
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -50,9 +52,10 @@ class DefaultUnitInitializerTest {
         verify(settingsRepository, never()).setUnitSystemPreference(any())
     }
 
-    @Test
-    fun `init stores imperial when nothing is stored and the locale is US`() {
-        Locale.setDefault(Locale.US)
+    @ParameterizedTest
+    @ValueSource(strings = ["en-US", "es-US", "en-GB", "cy-GB", "en-LR", "my-MM"])
+    fun `init stores imperial when nothing is stored and the country uses miles`(languageTag: String) {
+        Locale.setDefault(Locale.forLanguageTag(languageTag))
         whenever(settingsRepository.hasUnitSystemPreference()).thenReturn(false)
 
         initializer.init(application)
@@ -60,9 +63,10 @@ class DefaultUnitInitializerTest {
         verify(settingsRepository).setUnitSystemPreference(UnitSystem.IMPERIAL)
     }
 
-    @Test
-    fun `init stores metric when nothing is stored and the locale is not US`() {
-        Locale.setDefault(Locale.forLanguageTag("es-ES"))
+    @ParameterizedTest
+    @ValueSource(strings = ["es-ES", "en-IE", "en-CA", "es-PR", "en"])
+    fun `init stores metric when nothing is stored and the country doesn't use miles`(languageTag: String) {
+        Locale.setDefault(Locale.forLanguageTag(languageTag))
         whenever(settingsRepository.hasUnitSystemPreference()).thenReturn(false)
 
         initializer.init(application)
