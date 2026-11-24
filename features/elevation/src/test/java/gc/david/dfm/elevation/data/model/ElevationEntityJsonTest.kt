@@ -59,8 +59,17 @@ class ElevationEntityJsonTest {
     }
 
     @Test
-    fun `falls back to UNKNOWN_ERROR for a status not modelled`() {
+    fun `parses the status of a place without data`() {
         val json = """{ "results": [], "status": "DATA_NOT_AVAILABLE" }"""
+
+        val entity = googleApiJson.decodeFromString<ElevationEntity>(json)
+
+        assertEquals(ElevationStatus.DATA_NOT_AVAILABLE, entity.status)
+    }
+
+    @Test
+    fun `falls back to UNKNOWN_ERROR for a status not modelled`() {
+        val json = """{ "results": [], "status": "A_FUTURE_STATUS" }"""
 
         val entity = googleApiJson.decodeFromString<ElevationEntity>(json)
 

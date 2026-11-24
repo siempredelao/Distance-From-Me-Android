@@ -36,7 +36,10 @@ class ElevationEntityDataMapper {
                 val samples = elevationEntity.results.map { it.elevation }
                 if (samples.isEmpty()) ElevationResult.NoData else ElevationResult.Found(samples)
             }
+            ElevationStatus.DATA_NOT_AVAILABLE -> ElevationResult.NoData
+
             ElevationStatus.INVALID_REQUEST -> ElevationResult.Rejected(ElevationError.INVALID_REQUEST)
+            ElevationStatus.OVER_DAILY_LIMIT -> ElevationResult.Rejected(ElevationError.OVER_DAILY_LIMIT)
             ElevationStatus.OVER_QUERY_LIMIT -> ElevationResult.Rejected(ElevationError.OVER_QUERY_LIMIT)
             ElevationStatus.REQUEST_DENIED -> ElevationResult.Rejected(ElevationError.REQUEST_DENIED)
             ElevationStatus.UNKNOWN_ERROR -> ElevationResult.Rejected(ElevationError.UNKNOWN_ERROR)

@@ -51,9 +51,19 @@ class ElevationEntityDataMapperTest {
         assertEquals(ElevationResult.NoData, result)
     }
 
+    @Test
+    fun `transforms DATA_NOT_AVAILABLE to NoData`() {
+        val entity = ElevationEntity(results = emptyList(), status = ElevationStatus.DATA_NOT_AVAILABLE)
+
+        val result = mapper.transform(entity)
+
+        assertEquals(ElevationResult.NoData, result)
+    }
+
     @ParameterizedTest
     @CsvSource(
         "INVALID_REQUEST, INVALID_REQUEST",
+        "OVER_DAILY_LIMIT, OVER_DAILY_LIMIT",
         "OVER_QUERY_LIMIT, OVER_QUERY_LIMIT",
         "REQUEST_DENIED, REQUEST_DENIED",
         "UNKNOWN_ERROR, UNKNOWN_ERROR",

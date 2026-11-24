@@ -31,9 +31,20 @@ enum class ElevationStatus {
     OK,
 
     /**
+     * There is no elevation data for the input locations.
+     */
+    DATA_NOT_AVAILABLE,
+
+    /**
      * The service request was malformed.
      */
     INVALID_REQUEST,
+
+    /**
+     * The API key is missing or invalid, billing is not enabled, a self-imposed usage cap has been exceeded, or the
+     * method of payment is no longer valid.
+     */
+    OVER_DAILY_LIMIT,
 
     /**
      * The requestor has exceeded quota.
