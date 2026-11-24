@@ -44,7 +44,10 @@ import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 
 /**
  * Google Map content with declarative rendering of markers and polylines.
@@ -71,7 +74,14 @@ fun MapContent(
     LaunchedEffect(mapState.cameraUpdate, isMapLoaded) {
         if (!isMapLoaded) return@LaunchedEffect
         mapState.cameraUpdate?.let { cameraUpdate ->
-            cameraPositionState.animate(cameraUpdate.toCameraUpdate())
+            try {
+                cameraPositionState.animate(cameraUpdate.toCameraUpdate())
+            } catch (_: CancellationException) {
+                // A gesture stopped the animation, which is this update's end too. Left unhandled, the next update to
+                // the same place would be equal to it and do nothing. When a newer update replaced this one, the
+                // effect itself is cancelled, and the newer update must not be marked as handled.
+                currentCoroutineContext().ensureActive()
+            }
             onCameraUpdateHandled()
         }
     }
