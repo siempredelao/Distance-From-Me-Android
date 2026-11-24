@@ -25,6 +25,7 @@ import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.test.CoroutineExtension
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -59,7 +60,7 @@ class OpenSourceViewModelTest {
 
         verify(useCase)()
         val state = viewModel.uiState.value
-        assertEquals(OpenSourceUiState.Content(listOf(libraryModel)), state)
+        assertEquals(OpenSourceUiState.Content(persistentListOf(libraryModel)), state)
     }
 
     @Test
@@ -84,7 +85,7 @@ class OpenSourceViewModelTest {
         viewModel.onStart()
 
         verify(useCase, times(1))()
-        assertEquals(OpenSourceUiState.Content(listOf(DUMMY_LIBRARY_UI_MODEL)), viewModel.uiState.value)
+        assertEquals(OpenSourceUiState.Content(persistentListOf(DUMMY_LIBRARY_UI_MODEL)), viewModel.uiState.value)
     }
 
     @Test
@@ -111,7 +112,7 @@ class OpenSourceViewModelTest {
         viewModel.onStart()
 
         verify(useCase, times(2))()
-        assertEquals(OpenSourceUiState.Content(listOf(DUMMY_LIBRARY_UI_MODEL)), viewModel.uiState.value)
+        assertEquals(OpenSourceUiState.Content(persistentListOf(DUMMY_LIBRARY_UI_MODEL)), viewModel.uiState.value)
     }
 
     companion object {

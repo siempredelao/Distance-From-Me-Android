@@ -24,6 +24,7 @@ import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.coroutines.launchCatching
 import gc.david.dfm.support.coroutines.logUnexpectedFailure
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,7 +55,7 @@ class OpenSourceViewModel(
             }
         }) {
             val libraries = getOpenSourceLibrariesUseCase()
-            _uiState.update { OpenSourceUiState.Content(uiMapper(libraries)) }
+            _uiState.update { OpenSourceUiState.Content(uiMapper(libraries).toImmutableList()) }
         }
     }
 

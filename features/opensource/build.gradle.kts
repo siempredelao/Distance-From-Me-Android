@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.compose.material.icons)
     implementation(libs.compose.navigation)
     implementation(libs.compose.runtime.livedata)
+    implementation(libs.kotlinx.collections.immutable)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel)

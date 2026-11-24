@@ -58,6 +58,7 @@ import gc.david.dfm.designsystem.plus
 import gc.david.dfm.opensource.R
 import gc.david.dfm.opensource.presentation.model.OpenSourceLibraryUiModel
 import gc.david.dfm.opensource.presentation.model.OpenSourceUiState
+import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -216,7 +217,7 @@ private fun OpenSourceListScreenContentPreview() {
             androidx.compose.animation.AnimatedVisibility(visible = true) {
                 OpenSourceListScreen(
                     uiState = OpenSourceUiState.Content(
-                        libraries = listOf(
+                        libraries = persistentListOf(
                             OpenSourceLibraryUiModel(
                                 name = "Kotlin",
                                 description = "The Kotlin Programming Language",
