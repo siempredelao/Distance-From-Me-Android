@@ -27,7 +27,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +52,7 @@ import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
 import gc.david.dfm.support.android.UiUtils
 import gc.david.dfm.support.android.collectOnStarted
+import gc.david.dfm.support.android.tryStartActivity
 import gc.david.dfm.support.navigation.Navigator
 import gc.david.dfm.support.navigation.Route
 import org.koin.android.ext.android.inject
@@ -187,12 +190,15 @@ class MainActivity : FragmentActivity() {
                     if (mainUiState.showLocationPermissionSnackbar) {
                         val result = snackbarHostState.showSnackbar(
                             message = getString(R.string.snackbar_location_permission_needed),
-                            actionLabel = getString(R.string.snackbar_location_permission_action)
+                            actionLabel = getString(R.string.snackbar_location_permission_action),
+                            withDismissAction = true,
+                            // With an action it would otherwise stay over the buttons until it's tapped
+                            duration = SnackbarDuration.Long
                         )
-                        if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                        if (result == SnackbarResult.ActionPerformed) {
                             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                             intent.data = "package:$packageName".toUri()
-                            startActivity(intent)
+                            tryStartActivity(intent)
                         }
                         mainViewModel.onLocationPermissionSnackbarShown()
                     }

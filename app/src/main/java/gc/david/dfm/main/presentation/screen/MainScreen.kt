@@ -47,6 +47,7 @@ import androidx.compose.material3.DrawerDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -146,7 +147,10 @@ fun MainScreen(
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier.navigationBarsPadding()
-            )
+            ) { data ->
+                // Beside the action and the close button, long words break on small screens
+                Snackbar(snackbarData = data, actionOnNewLine = true)
+            }
         },
         contentWindowInsets = WindowInsets(0),
         modifier = modifier
