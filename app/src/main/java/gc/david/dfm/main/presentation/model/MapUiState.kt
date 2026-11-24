@@ -42,12 +42,12 @@ data class MarkerData(
     /**
      * Info window state for a marker.
      */
-    sealed interface InfoWindow {
+    sealed class InfoWindow {
         
-        data object None : InfoWindow
+        data object None : InfoWindow()
         
         /** The [snippet] is a second, smaller line below the [title]. Each of them is cut off after one line. */
-        data class Visible(val title: String, val snippet: String? = null) : InfoWindow
+        data class Visible(val title: String, val snippet: String? = null) : InfoWindow()
     }
 }
 
@@ -73,11 +73,11 @@ data class PolylineData(
 /**
  * Camera update instructions.
  */
-sealed interface CameraUpdate {
+sealed class CameraUpdate {
 
-    data class ZoomTo(val position: CoordinatesUiModel, val zoom: Float = 17f) : CameraUpdate
+    data class ZoomTo(val position: CoordinatesUiModel, val zoom: Float = 17f) : CameraUpdate()
 
-    data class MoveTo(val position: CoordinatesUiModel) : CameraUpdate
+    data class MoveTo(val position: CoordinatesUiModel) : CameraUpdate()
 
-    data class FitBounds(val coordinates: ImmutableList<CoordinatesUiModel>, val padding: Int) : CameraUpdate
+    data class FitBounds(val coordinates: ImmutableList<CoordinatesUiModel>, val padding: Int) : CameraUpdate()
 }

@@ -24,8 +24,9 @@ import com.lemonappdev.konsist.api.verify.assertFalse
 import org.junit.jupiter.api.Test
 
 /**
- * A List, Set or Map may be mutable, so Compose treats whatever holds one as unstable. Use ImmutableList,
- * ImmutableSet or ImmutableMap from kotlinx-collections-immutable instead.
+ * Keeps composable parameters stable. A List, Set or Map may be mutable, so Compose treats whatever holds one as
+ * unstable: use ImmutableList, ImmutableSet or ImmutableMap from kotlinx-collections-immutable instead. A var makes its
+ * class unstable too, and Compose doesn't notice when that class is a subclass of a sealed one.
  */
 class ComposeStabilityKonsistTest {
 
@@ -46,6 +47,15 @@ class ComposeStabilityKonsistTest {
             .flatMap { file -> file.classes().properties() }
             .filterNot { it.name in ALLOWED_PROPERTIES }
             .assertFalse { property -> property.type?.let { MUTABLE_COLLECTION.containsMatchIn(it.text) } ?: false }
+    }
+
+    @Test
+    fun `presentation models have no var`() {
+        Konsist.scopeFromProduction()
+            .files
+            .withPackage("gc.david.dfm..presentation.model..")
+            .flatMap { file -> file.classes().properties() }
+            .assertFalse { it.isVar }
     }
 
     private companion object {

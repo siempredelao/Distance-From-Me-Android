@@ -18,11 +18,11 @@ package gc.david.dfm.opensource.presentation.model
 
 import kotlinx.collections.immutable.ImmutableList
 
-sealed interface OpenSourceUiState {
+sealed class OpenSourceUiState {
 
-    data object Loading : OpenSourceUiState
+    data object Loading : OpenSourceUiState()
 
-    data class Content(val libraries: ImmutableList<OpenSourceLibraryUiModel>) : OpenSourceUiState
+    data class Content(val libraries: ImmutableList<OpenSourceLibraryUiModel>) : OpenSourceUiState()
 
-    data class Error(val message: String) : OpenSourceUiState
+    data class Error(val message: String) : OpenSourceUiState()
 }
