@@ -21,5 +21,5 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val addressModule = module {
-    viewModel { AddressViewModel(get(), get(), get(), get(), get()) }
+    viewModel { AddressViewModel(get(), get(), get(), get()) }
 }

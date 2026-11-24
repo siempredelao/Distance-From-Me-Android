@@ -19,7 +19,6 @@ package gc.david.dfm.address.presentation
 import gc.david.dfm.address.R
 import gc.david.dfm.address.presentation.mapper.toUiModel
 import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingError
 import gc.david.dfm.core.address.domain.model.GeocodingResult
@@ -52,7 +51,6 @@ class AddressViewModelTest {
     val coroutineExtension = CoroutineExtension()
 
     private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameUseCase>()
-    private val getAddressNameByCoordinatesUseCase = mock<GetAddressNameByCoordinatesUseCase>()
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
     private val geocodingErrorMessageMapper = mock<GeocodingErrorMessageMapper>()
@@ -60,7 +58,6 @@ class AddressViewModelTest {
     private val viewModel =
         AddressViewModel(
             getAddressCoordinatesByNameUseCase,
-            getAddressNameByCoordinatesUseCase,
             connectionManager,
             resourceProvider,
             geocodingErrorMessageMapper
@@ -153,72 +150,6 @@ class AddressViewModelTest {
     }
 
     @Test
-    fun `shows connection problems dialog when no connection available in position by coordinates`() {
-        whenever(connectionManager.isOnline()).thenReturn(false)
-
-        viewModel.onAddressSearch(COORDINATES)
-
-        assertTrue(viewModel.uiState.value.showConnectionIssue)
-    }
-
-    @Test
-    fun `executes name by coordinates use case when connection available`() = runTest {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        givenNameByCoordinatesReturns(GeocodingResult.NoResults)
-
-        viewModel.onAddressSearch(COORDINATES)
-
-        verify(getAddressNameByCoordinatesUseCase)(COORDINATES)
-    }
-
-    @Test
-    fun `shows no matches when position by coordinates use case returns no results`() = runTest {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        givenNameByCoordinatesReturns(GeocodingResult.NoResults)
-        whenever(resourceProvider.get(R.string.toast_no_results)).thenReturn(NO_RESULTS_MESSAGE)
-
-        viewModel.onAddressSearch(COORDINATES)
-
-        assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(NO_RESULTS_MESSAGE, viewModel.uiState.value.errorMessage)
-    }
-
-    @Test
-    fun `shows position by coordinates when use case returns one result`() = runTest {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        givenNameByCoordinatesReturns(GeocodingResult.Found(listOf(ADDRESS)))
-
-        viewModel.onAddressSearch(COORDINATES)
-
-        assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
-    }
-
-    @Test
-    fun `shows rejection message when position by coordinates request is rejected`() = runTest {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        givenNameByCoordinatesReturns(GeocodingResult.Rejected(GeocodingError.REQUEST_DENIED))
-        whenever(geocodingErrorMessageMapper.map(GeocodingError.REQUEST_DENIED)).thenReturn(REJECTED_MESSAGE)
-
-        viewModel.onAddressSearch(COORDINATES)
-
-        assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(REJECTED_MESSAGE, viewModel.uiState.value.errorMessage)
-    }
-
-    @Test
-    fun `shows generic error when position by coordinates use case throws`() = runTest {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        whenever(getAddressNameByCoordinatesUseCase(any())).thenAnswer { throw IOException("Network error") }
-        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn(GENERIC_MESSAGE)
-
-        viewModel.onAddressSearch(COORDINATES)
-
-        assertFalse(viewModel.uiState.value.isLoading)
-        assertEquals(GENERIC_MESSAGE, viewModel.uiState.value.errorMessage)
-    }
-
-    @Test
     fun `shows the latest search by name when an earlier one finishes later`() = runTest {
         whenever(connectionManager.isOnline()).thenReturn(true)
         val earlierResult = CompletableDeferred<GeocodingResult>()
@@ -234,28 +165,8 @@ class AddressViewModelTest {
         assertFalse(viewModel.uiState.value.isLoading)
     }
 
-    @Test
-    fun `shows the latest search when an earlier search by coordinates finishes later`() = runTest {
-        whenever(connectionManager.isOnline()).thenReturn(true)
-        val earlierResult = CompletableDeferred<GeocodingResult>()
-        whenever(getAddressNameByCoordinatesUseCase(COORDINATES)).doSuspendableAnswer { earlierResult.await() }
-        whenever(getAddressCoordinatesByNameUseCase(LATER_LOCATION_NAME))
-            .thenReturn(GeocodingResult.Found(listOf(LATER_ADDRESS)))
-        viewModel.onAddressSearch(COORDINATES)
-        viewModel.onAddressSearch(LATER_LOCATION_NAME)
-
-        earlierResult.complete(GeocodingResult.Found(listOf(ADDRESS)))
-
-        assertEquals(LATER_ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
-        assertFalse(viewModel.uiState.value.isLoading)
-    }
-
     private suspend fun givenCoordinatesByNameReturns(result: GeocodingResult) {
         whenever(getAddressCoordinatesByNameUseCase(any())).thenReturn(result)
-    }
-
-    private suspend fun givenNameByCoordinatesReturns(result: GeocodingResult) {
-        whenever(getAddressNameByCoordinatesUseCase(any())).thenReturn(result)
     }
 
     companion object {
@@ -266,8 +177,7 @@ class AddressViewModelTest {
         private const val REJECTED_MESSAGE = "rejected"
         private const val GENERIC_MESSAGE = "generic"
 
-        private val COORDINATES = Coordinates(0.0, 0.0)
-        private val ADDRESS = Address(LOCATION_NAME, COORDINATES)
+        private val ADDRESS = Address(LOCATION_NAME, Coordinates(0.0, 0.0))
         private val LATER_ADDRESS = Address(LATER_LOCATION_NAME, Coordinates(1.0, 1.0))
     }
 }

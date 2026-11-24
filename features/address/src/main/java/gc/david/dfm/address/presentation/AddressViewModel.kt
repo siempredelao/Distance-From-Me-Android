@@ -22,11 +22,9 @@ import gc.david.dfm.address.presentation.mapper.toUiModel
 import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.address.presentation.model.AddressUiState
 import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
-import gc.david.dfm.core.address.domain.GetAddressNameByCoordinatesUseCase
 import gc.david.dfm.core.address.domain.model.Address
 import gc.david.dfm.core.address.domain.model.GeocodingResult
 import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
-import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.support.android.domain.ConnectionManager
 import gc.david.dfm.support.android.presentation.ResourceProvider
 import gc.david.dfm.support.coroutines.launchCatching
@@ -40,7 +38,6 @@ import kotlinx.coroutines.flow.update
 
 class AddressViewModel(
     private val getAddressCoordinatesByNameUseCase: GetAddressCoordinatesByNameUseCase,
-    private val getAddressNameByCoordinatesUseCase: GetAddressNameByCoordinatesUseCase,
     private val connectionManager: ConnectionManager,
     private val resourceProvider: ResourceProvider,
     private val geocodingErrorMessageMapper: GeocodingErrorMessageMapper,
@@ -95,43 +92,6 @@ class AddressViewModel(
 
     fun onAddressSelected(address: AddressUiModel) {
         _uiState.update { it.copy(addressFound = address) }
-    }
-
-    fun onAddressSearch(coordinates: Coordinates) {
-        if (!connectionManager.isOnline()) {
-            _uiState.update { it.copy(showConnectionIssue = true) }
-        } else {
-            onSearchPositionByCoordinatesWithConnectionAvailable(coordinates)
-        }
-    }
-
-    private fun onSearchPositionByCoordinatesWithConnectionAvailable(coordinates: Coordinates) {
-        _uiState.update { it.copy(isLoading = true) }
-
-        // Only the latest search matters, so a slower earlier one must not overwrite its result
-        searchJob?.cancel()
-        searchJob = launchCatching(onError = ::onUnexpectedFailure) {
-            val result = getAddressNameByCoordinatesUseCase(coordinates)
-            _uiState.update { current ->
-                when (result) {
-                    is GeocodingResult.Found ->
-                        current.copy(
-                            isLoading = false,
-                            addressFound = result.addresses.first().toUiModel(),
-                        )
-                    GeocodingResult.NoResults ->
-                        current.copy(
-                            isLoading = false,
-                            errorMessage = resourceProvider.get(R.string.toast_no_results),
-                        )
-                    is GeocodingResult.Rejected ->
-                        current.copy(
-                            isLoading = false,
-                            errorMessage = geocodingErrorMessageMapper.map(result.error),
-                        )
-                }
-            }
-        }
     }
 
     private fun onUnexpectedFailure(error: Throwable) {
