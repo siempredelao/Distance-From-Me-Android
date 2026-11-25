@@ -5,7 +5,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 ## MEMORY.md (index)
 
 ```markdown
-- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) completed 2026-11-23; fourth plan (skill audit, mighty-dazzling-fog) in progress; toolchain upgrade for the maps-compose leak still to plan
+- [Konsist cleanup series](konsist-cleanup-series.md) — skill-driven cleanup on develop: first 6-step plan done; second 15-step plan (iridescent-bouncing-squirrel) in progress; third plan (module reorganisation, eager-scribbling-ladybug) completed 2026-11-23; fourth plan (skill audit, mighty-dazzling-fog) completed 2026-11-25; toolchain upgrade for the maps-compose leak still to plan
 - [Commit only what is asked](commit-only-what-is-asked.md) — never commit work the user did not name; leave it for their review
 - [Reproduction steps for fixes](reproduction-steps-for-fixes.md) — every reported fix comes with before/after steps to reproduce it
 - [One plan step at a time](one-plan-step-at-a-time.md) — finish and commit the current step before starting the next
@@ -191,7 +191,13 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - Found 2026-11-23, not fixed: `:app:assembleRelease` fails in R8 at HEAD 5df975d (missing `androidx.window.extensions.*`, probably since material3-adaptive in 15b). Release icons were checked via merged resources instead.
   - 4a's `gc.david.dfm.core.address` rename left some import blocks out of ASCII order; offered a sort pass.
 
-## Fourth plan: skill audit (approved 2026-11-23, in progress)
+## Fourth plan: skill audit (approved 2026-11-23, complete, closed by the user 2026-11-25)
+- Open findings, none of them started; bring them up only if asked:
+  - The source of the stray second press (mouse, computer or emulator): touchpad test on the emulator, finger test on the Pixel.
+  - A drawn distance keeps its old unit after the unit changes, until it's drawn again (already so before the plan).
+  - 999.999 m shows as "1,000.00 m": the unit is chosen before rounding.
+  - No test runs the `catch` in `MainViewModel.onLoadDistancesClick`.
+  - Smoke run left out: the waiting-for-location hint, deleting saved distances, the browser links.
 - File: `.claude/plans/mighty-dazzling-fog-of-e16aef91-1ff0-43bb-832a-04fc608c3bfb.md` (the user edited it twice; follow the file). Committed as b314a26.
 - Progress:
   - Step 1 baseline: 338 tests pass, Konsist passes, lint fails only on the known `MainScreen.kt:153` error. Full Compose reports need `compileReleaseKotlin --rerun` per Compose module with `-Pkotlin.incremental=false`.
@@ -245,7 +251,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
     - `FirebaseInitializer` starts Firebase, so removing `FirebaseInitProvider` doesn't turn Crashlytics off in a test build (a throwaway crash got queued, and its row was removed unsent with the user's OK). Turn the emulator's network off or find a sure way before provoking a crash.
   - Step 31 (`UnitConverterTest` 25 cases, `DistanceCalculatorTest` 23, no production change): checked 2026-11-25 with 21 deliberate breaks (19 caught, 2 change no result: `min(1.0, …)` and the `size < 2` return), committed 84ffd59d.
   - Step 32 (CLAUDE.md, README, and BRANCH_COVERAGE_REPORT.md rewritten from a JaCoCo run through a throwaway Gradle init script; 261/292 branches, 89%): committed 1b317328 (with the README test command, no longer tied to a folder). JVM modules may keep stale Android classes in `build/tmp/kotlin-classes`, which break a JaCoCo report.
-  - Verification (2026-11-25, at 1b317328): 396 unit tests (step 1: 338), 46 Konsist, lint 0 errors, `assembleRelease` passes; smoke run of a release APK with Crashlytics collection off in the manifest, 0 crashes. Emulator back on the debug build with its data. Open: the user's long-press pass (8, 14b, 15b, 16). Pushed to origin at 1b317328.
+  - Verification (2026-11-25, at 1b317328): 396 unit tests (step 1: 338), 46 Konsist, lint 0 errors, `assembleRelease` passes; smoke run of a release APK with Crashlytics collection off in the manifest, 0 crashes. Emulator back on the debug build with its data. Long-press pass done 2026-11-25, no app fault seen (see the stray-tap section). Pushed to origin at 1b317328.
   - 2026-11-25: disk full and low memory, then a reboot that wiped the scratchpad (scripts, APKs); check `df -h` and `free -h` before long builds.
   - 2026-11-25: the elevation API answers again (no canned answer needed).
   - The user said no to committing later steps unasked: stop after each step and wait (2026-11-23).
@@ -282,6 +288,7 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 ## Stray map tap after a long press (open)
 - Removing `MapUiState.clearMap`, its `LaunchedEffect` in `MapContent` and `onMapClearHandled` made a long press in any-position mode add a stray point: the Maps SDK fired `onMapClick` about 0.57 s after `onMapLongClick`, at the coordinate under the finger when it lifted during the zoom animation. The user reproduced it with the mouse; scripted `adb input` presses never triggered it.
 - Later builds still show it at a low rate: 2 of 10 on the first plan's step 6 build, 1 of 6 on the second plan's step 2 build. Not bisected. On the fourth plan's steps 6+7 build (2026-11-24): 34 manual presses, 1 clear stray tap (0.53 s later, same spot), 3 unclear clicks 1.0-1.7 s later.
+- Manual pass on 2026-11-25 (debug build at 1b317328, mouse, `getevent -lt` recorded next to logcat): 10 long presses, 10 `onMapLongClick`; 12 `onMapClick`, each with its own touch. All 3 stray clicks (after the 1.05, 1.47 and 1.23 s holds) come from a second press in the kernel's touch stream, 36-45 ms after the release, same pixel: too fast for a hand. So neither the app nor the Maps SDK invents them; the mouse (switch bounce), the host or the emulator does. Not told apart yet: needs a touchpad or a finger on the Pixel, or `xinput test-xi2 --root` on the host.
 - **How to apply:** keep `clearMap` until the cause is understood. Any change to the map state flow needs the user's manual long press while logcat is filtered for `MainViewModel` `onMapClick`/`onMapLongClick`; a scripted run proves nothing. It may relate to the deferred chart-visibility work.
 
 ## Deferred by the user
