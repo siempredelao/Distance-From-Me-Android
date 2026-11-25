@@ -60,6 +60,23 @@ The notes of 4.0.3 (version code 35) also exist in four locales that have no lis
 
 If a command stops with "The caller does not have permission", a permission from step 2 is missing. Play can take a few minutes, and sometimes longer, to accept a change.
 
+## Upload the listing
+
+**What this uploads goes to review for all users, whatever the track**, so run it once the version it describes is in production.
+
+```bash
+# See what would be uploaded, with no key:
+scripts/upload_store_listing.sh --skip-images --stage-only <new folder>
+
+# Ask Play to check it, changing nothing:
+scripts/upload_store_listing.sh --skip-images --validate-only
+
+# Upload, which asks for the version name in a terminal:
+scripts/upload_store_listing.sh --skip-images
+```
+
+Without `--skip-images` it also uploads the icon, the feature graphic and the screenshots in `art/play-store/`. It stops unless every language has 4 to 8 of them for `phone`, `tablet-7` and `tablet-10`.
+
 ## Download the live listing
 
 It opens a Play edit and aborts it, so nothing changes on Play. It skips the download if the folder already exists, so use a new one outside the repository:
