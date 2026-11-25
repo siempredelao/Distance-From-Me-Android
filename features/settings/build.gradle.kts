@@ -29,7 +29,6 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.preference)
     implementation(libs.coroutines)
     implementation(libs.koin)
@@ -38,7 +37,6 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.material.components)
     implementation(libs.timber)
-    implementation(project(":core:design-system"))
     implementation(project(":core:distances"))
     implementation(project(":support:android"))
     implementation(project(":support:coroutines"))

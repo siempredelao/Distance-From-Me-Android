@@ -40,7 +40,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin)
     implementation(libs.koin.android)
-    implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.okhttp)
     implementation(libs.okhttp.coroutines)

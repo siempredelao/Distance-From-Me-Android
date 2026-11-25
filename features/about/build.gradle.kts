@@ -30,8 +30,6 @@ dependencies {
     implementation(libs.compose.material.icons)
     implementation(libs.compose.material3)
     implementation(libs.compose.ui)
-    implementation(libs.lifecycle.runtime)
-    implementation(libs.lifecycle.viewmodel)
     implementation(libs.koin.android)
     implementation(project(":core:design-system"))
     implementation(project(":support:android"))

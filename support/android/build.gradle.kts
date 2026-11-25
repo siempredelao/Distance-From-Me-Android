@@ -25,10 +25,8 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.core.ktx)
     implementation(libs.coroutines)
     implementation(libs.koin)
-    implementation(libs.koin.android)
     implementation(libs.lifecycle.runtime)
     implementation(libs.timber)
 }

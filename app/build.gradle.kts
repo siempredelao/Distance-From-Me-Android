@@ -95,7 +95,6 @@ dependencies {
 	implementation(libs.lifecycle.viewmodel)
 	implementation(libs.lottie.compose)
 	implementation(libs.maps.compose)
-	implementation(libs.material.components)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	implementation(libs.timber)

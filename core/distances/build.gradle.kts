@@ -33,9 +33,6 @@ dependencies {
 
     implementation(libs.coroutines)
     implementation(libs.koin)
-    implementation(libs.koin.android)
     ksp(libs.room.compiler)
-    implementation(libs.room.ktx)
     implementation(libs.room.runtime)
-    implementation(libs.timber)
 }

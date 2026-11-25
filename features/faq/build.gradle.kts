@@ -17,7 +17,6 @@
 plugins {
     alias(libs.plugins.dfm.android.library)
     alias(libs.plugins.dfm.android.compose)
-    alias(libs.plugins.dfm.unit.test)
 }
 
 android {
@@ -27,9 +26,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.compose.material.icons)
     implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.lifecycle.runtime)
     implementation(project(":core:design-system"))
 }
