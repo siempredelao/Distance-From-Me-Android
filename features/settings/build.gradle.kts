@@ -42,6 +42,4 @@ dependencies {
     implementation(project(":core:distances"))
     implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
-
-    testImplementation(libs.androidx.arch.core.testing)
 }

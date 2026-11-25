@@ -30,7 +30,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.compose.material.icons)
     implementation(libs.compose.navigation)
-    implementation(libs.compose.runtime.livedata)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.runtime.compose)
@@ -41,6 +40,4 @@ dependencies {
     implementation(project(":core:design-system"))
     implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
-
-    testImplementation(libs.androidx.arch.core.testing)
 }

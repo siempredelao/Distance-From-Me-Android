@@ -21,7 +21,6 @@ plugins {
 	alias(libs.plugins.dfm.android.application)
 	alias(libs.plugins.dfm.android.compose)
 	alias(libs.plugins.dfm.unit.test)
-	id("kotlin-parcelize")
 	alias(libs.plugins.google.services)
 	alias(libs.plugins.crashlytics)
 }
@@ -83,9 +82,6 @@ dependencies {
 
 	implementation(libs.androidx.activity.compose)
 	implementation(libs.androidx.activity.ktx)
-	implementation(libs.androidx.cardview)
-	implementation(libs.androidx.collection.ktx)
-	implementation(libs.androidx.constraintlayout)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.preference)
 	implementation(libs.splashscreen)
@@ -100,8 +96,6 @@ dependencies {
 	implementation(libs.lottie.compose)
 	implementation(libs.maps.compose)
 	implementation(libs.material.components)
-	implementation(libs.okhttp)
-	implementation(libs.okhttp.coroutines)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	implementation(libs.timber)
@@ -127,6 +121,4 @@ dependencies {
     implementation(project(":support:android"))
     implementation(project(":support:coroutines"))
     implementation(project(":support:navigation"))
-
-	testImplementation(libs.androidx.arch.core.testing)
 }

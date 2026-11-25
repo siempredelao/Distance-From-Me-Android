@@ -10,12 +10,8 @@ appVersionName = "4.0.3"
 
 # Library versions
 activityKtx = "1.12.4"
-archCompTesting = "2.2.0"
-cardView = "1.0.0"
-collectionKtx = "1.5.0"
 composeBom = "2026.02.01"
 composeMaterial3Adaptive = "1.2.0"
-constraintLayout = "2.2.1"
 coreKtx = "1.17.0"
 fragmentKtx = "1.8.8"
 coroutines = "1.10.2"
@@ -52,9 +48,6 @@ timber = "5.0.1"
 # Regular dependencies
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityKtx" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
-androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardView" }
-androidx-collection-ktx = { module = "androidx.collection:collection-ktx", version.ref = "collectionKtx" }
-androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayout" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-preference = { module = "androidx.preference:preference", version.ref = "preference" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
@@ -64,7 +57,6 @@ compose-material-icons = { module = "androidx.compose.material:material-icons-ex
 compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "composeMaterial3Adaptive" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version = "2.9.7" }
-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -96,7 +88,6 @@ splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "spla
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 # Test dependencies
-androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "archCompTesting" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
