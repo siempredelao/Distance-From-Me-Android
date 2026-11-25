@@ -10,7 +10,6 @@
     <string name="share_distance_from_message">Von</string>
     <string name="share_distance_to_message">Bis</string>
     <string name="share_distance_there_are_message">Es gibt</string>
-    <string name="toast_no_location_found">Fehler in der Suche der Adresse. Klicken Sie auf AKTUALISIEREN, um die Information zu bearbeiten</string>
     <string name="toast_network_problems">Internet-Verbindung nicht aktiviert. Aktivieren Sie Ihre Verbindung und versuchen Sie es erneut</string>
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Bestimmen Sie einen Alias für die Entfernung:</string>

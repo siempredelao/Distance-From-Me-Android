@@ -10,7 +10,6 @@
     <string name="share_distance_from_message">Da</string>
     <string name="share_distance_to_message">A</string>
     <string name="share_distance_there_are_message">Ci sono</string>
-    <string name="toast_no_location_found">Impossibile ottenere l\'indirizzo. Fare clic sul pulsante Aggiorna per aggiornare l\'informazioni</string>
     <string name="toast_network_problems">Connessione a Internet non è attiva. Attivare la connessione e riprovare</string>
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Associare un alias alla distanza:</string>

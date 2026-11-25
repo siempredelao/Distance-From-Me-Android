@@ -10,7 +10,6 @@
     <string name="share_distance_from_message">Des de</string>
     <string name="share_distance_to_message">Fins a</string>
     <string name="share_distance_there_are_message">Hi ha</string>
-    <string name="toast_no_location_found">Error en obtenir adreça. Prema el botó Actualitzar per refrescar la informació</string>
     <string name="toast_network_problems">Connexió a Internet no activada. Active la seva connexió i torne a intentar-ho</string>
     <string name="alias_dialog_title">Àlies</string>
     <string name="alias_dialog_message">Associe un àlies a la distància:</string>

@@ -22,7 +22,6 @@
     <string name="search_bar_close">Cerrar búsqueda</string>
     <string name="navigation_rail_close">Cerrar menú</string>
     <string name="search_bar_clear">Borrar</string>
-    <string name="toast_no_find_address">Servicio inactivo o señal de red muy pobre. Pruebe de nuevo pasados unos instantes</string>
     <string name="toast_loading_position">Buscando su posición. Por favor, espere unos instantes</string>
     <string name="menu_load_title">Cargar distancia</string>
     <string name="dialog_select_address_title">Elija una dirección</string>

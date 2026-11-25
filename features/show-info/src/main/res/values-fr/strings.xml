@@ -10,7 +10,6 @@
     <string name="share_distance_from_message">De</string>
     <string name="share_distance_to_message">À</string>
     <string name="share_distance_there_are_message">Il y a</string>
-    <string name="toast_no_location_found">Pas possible obtenir la direction. Appuyez sur le bouton Actualiser pour rafraichir l\'information</string>
     <string name="toast_network_problems">Aucune connexion réseau n\'est disponible actuellement. Vérifiez l\'etat de votre connexion réseau</string>
     <string name="alias_dialog_title">Alias</string>
     <string name="alias_dialog_message">Associez un surnom à la distance:</string>
