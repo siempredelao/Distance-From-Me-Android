@@ -26,7 +26,7 @@ From its `art/README.md`, `tool/take_store_screenshots.sh` and test:
 - One command takes every language, or only those named. `art/README.md` lists the pictures and the command.
 - They are taken again after a change to how the screens look.
 
-**Yours:** they can be taken at any time, whether or not a feature is in progress. So the script never checks for a clean tree, a version commit or anything else unfinished: it takes the app as it is.
+**Yours (changed on 2026-11-25):** they show the release build and are taken after the version commit. So the script stops unless the working tree is clean (other than `MEMORY.md`) and the last commit is `Version <code> (<name>) final`.
 
 **Different, with the reason:**
 - Emulator only. Cephalopod also allows a phone, but clearing the app's data on your Pixel would delete your saved distances (debug and release share the package).
@@ -65,7 +65,7 @@ From its `art/README.md`, `tool/take_store_screenshots.sh` and test:
 | Track | The script uploads to internal testing only. You promote to production in Play Console, once your testers have tested it |
 | Who uploads | Claude runs `--validate-only`. **You run every upload**, and Claude gives you the exact command each time |
 | Play notes | An unordered list, separate from `whats_new_message`, which stays a short paragraph |
-| Screenshots | Cephalopod's rules, at any time, for phones, 7" tablets and 10" tablets |
+| Screenshots | Cephalopod's rules, of the release build after the version commit, for phones, 7" tablets and 10" tablets. Git ignores the pictures |
 
 ## How each step is worked
 
@@ -168,7 +168,8 @@ The script turns the one emulator into each device with `wm size` and `wm densit
 - **So your list of screens needs 4 to 8 entries**, the same for every device.
 
 ### 5. Screenshot test, English only, on the three devices
-- **Test:** a UI Automator test in `:app/src/androidTest`, on the debug build. It finds controls by their string resource, so it works in every language. It is the project's first `androidTest`, so `:app` gets a test runner and UI Automator, and the Konsist guards that read every source file may need to know about the folder.
+- **Build (changed on 2026-11-25):** the release build. It is minified, so the test and the data below, which rely on the debug build and Koin, have to be redesigned before step 5.
+- **Test:** a UI Automator test in `:app/src/androidTest`. It finds controls by their string resource, so it works in every language. It is the project's first `androidTest`, so `:app` gets a test runner and UI Automator, and the Konsist guards that read every source file may need to know about the folder.
 - **Data:** starts from cleared data, adds distances through the repository from Koin and loads one, instead of tapping points on the map. No address search, which spares the rate-limited Geocoding API.
 - **Screens: you will define them later.** Steps 5 and 6 wait for that. The script takes whatever the test captures, so the list can also change afterwards.
 - **Known risks, depending on the screens:**
@@ -184,7 +185,7 @@ The script turns the one emulator into each device with `wm size` and `wm densit
 
 ### 6. Screenshots in every language
 - Run it for the 7 languages and the three devices (21 pictures for each screen) and look for cut or untranslated text.
-- You approve the pictures before they are committed.
+- You approve the pictures. Git ignores them, so they aren't committed.
 
 ## Group 3: documentation
 
@@ -193,8 +194,7 @@ The script turns the one emulator into each device with `wm size` and `wm densit
   - **Phase 1:**
     - step 1 leaves out `MEMORY.md`
     - step 5 asks for approval of two texts in every language: `whats_new_message`, a short paragraph, and `changelogs/<code>.txt`, an unordered list of up to 500 characters, both user friendly
-    - the two TODOs become "update the Play Store texts if needed" and "take the screenshots again if the screens changed". Both move before the version commit, so that the checks and the push cover them
-    - "Update the screenshots" can also be asked for on its own, at any time
+    - the two TODOs become "update the Play Store texts if needed" and "take the screenshots again if the screens changed". The texts move before the version commit, so that the checks and the push cover them. The screenshots stay after it, as in today's step 8
   - **Upload (new, replaces your manual build and upload):**
     1. Claude runs `upload_release.sh --validate-only` and reports the result.
     2. Claude gives you the upload command, and you run it: `scripts/upload_release.sh`
