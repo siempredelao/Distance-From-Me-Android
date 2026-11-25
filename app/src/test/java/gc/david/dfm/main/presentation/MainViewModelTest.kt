@@ -570,6 +570,26 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `a tap after a drawn distance drops its elevation profile`() {
+        givenDistanceDrawn()
+        viewModel.onElevationUpdateHandled()
+
+        viewModel.onMapClick(POINT_C)
+
+        assertEquals(emptyList<Coordinates>(), viewModel.uiState.value.triggerElevationUpdate)
+    }
+
+    @Test
+    fun `setting the distance mode drops the elevation profile`() {
+        givenDistanceDrawn()
+        viewModel.onElevationUpdateHandled()
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(emptyList<Coordinates>(), viewModel.uiState.value.triggerElevationUpdate)
+    }
+
+    @Test
     fun `onConnectionIssueShown clears connection issue`() {
         viewModel.onConnectionIssueShown()
 

@@ -298,7 +298,9 @@ class MainViewModel(
                         clearMap = true,
                         markers = persistentListOf(),
                         polylines = persistentListOf()
-                    )
+                    ),
+                    // No distance, so no profile either
+                    triggerElevationUpdate = emptyList()
                 )
             }
         }
@@ -397,7 +399,9 @@ class MainViewModel(
                     markers = persistentListOf(),
                     polylines = persistentListOf()
                 ),
-                showChart = false
+                showChart = false,
+                // No distance, so no profile either
+                triggerElevationUpdate = emptyList()
             )
         }
     }

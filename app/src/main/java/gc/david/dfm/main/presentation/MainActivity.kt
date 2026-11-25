@@ -226,7 +226,8 @@ class MainActivity : FragmentActivity() {
                     snackbarHostState = snackbarHostState,
                     isLoading = addressUiState.isLoading,
                     elevationData = elevationUiState.elevation,
-                    showChart = showChart,
+                    // The chart keeps its last drawing, which belongs to another distance, until it has a profile
+                    showChart = showChart && elevationUiState.elevation != null,
                     showChartFab = elevationUiState.elevation != null && !showChart,
                     distancesToLoad = mainUiState.selectFromDistancesLoaded,
                     addressSuggestions = addressUiState.multipleAddressesFound,
