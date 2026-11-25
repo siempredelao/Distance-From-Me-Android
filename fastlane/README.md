@@ -21,7 +21,9 @@ art/play-store/
 
 `<language>` is the app's own code (see [Locales](#locales)). There are no tablet screenshots on Play yet.
 
-The files were downloaded from the live listing on 2026-11-25 and are unchanged. **The app is live: never overwrite its listing without reading it first.**
+The files come from the live listing, downloaded on 2026-11-25, and the descriptions were rewritten after that. **The app is live: never overwrite its listing without reading it first.**
+
+The English text is the source: when it changes, change the others with it. The texts say that the app has no ads and no accounts. If that stops being true, change them, and the Data safety form in Play Console too.
 
 ## Locales
 
@@ -37,7 +39,9 @@ The folder names are the codes Play Console uses, which differ from the app's ow
 | `it` | `it-IT` |
 | `pt` | `pt-PT` |
 
-The notes of 4.0.3 (version code 35) also exist in four locales that have no listing of their own: `en-US`, `es-419`, `es-US` and `pt-BR`. Their folders hold only `changelogs/`.
+The notes of 4.0.3 (version code 35) also exist in four locales that have no listing of their own: `en-US`, `es-419`, `es-US` and `pt-BR`. Their folders hold only `changelogs/`, and every release has notes in all 11. `en-US` copies `en-GB`, and `es-US` copies `es-419`.
+
+`StoreListingKonsistTest` in `:tools:konsist` checks the locales, the limits and that the notes are lists. A new language needs its entry there too.
 
 ## Setup
 

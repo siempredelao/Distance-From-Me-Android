@@ -1,15 +1,18 @@
-Distance From Me est un outil intuitif pour calculer les distances à des endroits en ligne droite (en mètres ou kilomètres). Vous pouvez spécifier l’emplacement manuellement, ou rechercher avec le chercheur (la recherche vocale est incluse) et partager votre recherche avec des amis.
+Distance From Me mesure la distance en ligne droite entre des lieux sur une carte satellite. Partez de votre position actuelle ou de n'importe quel autre lieu, puis appuyez longuement sur le point où vous voulez terminer.
 
-En outre, il est en français, espagnol, anglais,… qui sera réglé automatiquement avec la langue de votre smartphone.
+Fonctionnalités :
+- Mesurez depuis votre position actuelle ou depuis n'importe quel lieu de la carte
+- Ajoutez autant de points que nécessaire pour mesurer un parcours fait de lignes droites
+- Recherchez un lieu par son nom ou son adresse
+- Consultez le profil d'élévation de la distance
+- Voyez les adresses et les coordonnées du premier et du dernier point
+- Enregistrez vos distances avec un nom et rechargez-les plus tard
+- Partagez une distance avec vos amis
+- Choisissez entre kilomètres et mètres, ou miles, yards et pieds
+- Disponible en français, anglais, espagnol, allemand, italien, portugais et catalan
 
-Caractéristiques:
--	Recherche des lies
--	Permet affiner la position avec une longe pression sur le  marqueur
--	Permet montre le profil d’élévation
--	Charger et sauvegarder distances
--	Capture des positions des autres applications et calcule la distance
--	Partager distances avec amis
--	Sans intermédiaires! Communication directe avec l’équipe de développement
--	Langues: français, espagnol, anglais, allemand, italien, portugais et catalan
+Votre position n'est utilisée que si vous l'autorisez. Sans elle, vous pouvez toujours mesurer entre n'importe quels points de la carte.
 
-(Il faut Google Play Services pour le bon fonctionnement)
+L'application est open source, sans publicité et sans compte utilisateur.
+
+Elle nécessite les services Google Play et une connexion Internet.

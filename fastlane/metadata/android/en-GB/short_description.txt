@@ -1,1 +1,1 @@
-Intuitive tool to calculate distances to places in a straight line.
+Measure straight-line distances on a map, from your position or any other place.

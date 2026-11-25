@@ -1,1 +1,1 @@
-Outil intuitif pour calculer les distances des lieux droites.
+Distances en ligne droite sur une carte, depuis votre position ou ailleurs.

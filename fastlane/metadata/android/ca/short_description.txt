@@ -1,1 +1,1 @@
-Intuïtiva ferramenta per calcular distàncies a llocs en línia recta
+Distàncies en línia recta en un mapa, des de la seva posició o un altre lloc.

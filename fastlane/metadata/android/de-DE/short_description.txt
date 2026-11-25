@@ -1,1 +1,1 @@
-App, um die Entfernungen zu Orten in einer geraden Linie zu berechnen.
+Luftlinien auf einer Karte messen, von Ihrer Position oder jedem anderen Ort.

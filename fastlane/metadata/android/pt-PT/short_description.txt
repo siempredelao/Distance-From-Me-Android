@@ -1,1 +1,1 @@
-Ferramenta intuitiva para calcular distâncias a locais em linha reta.
+Distâncias em linha reta num mapa, a partir da sua posição ou de outro local.
