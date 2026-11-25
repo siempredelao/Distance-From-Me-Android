@@ -238,6 +238,15 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
   - Step 26 (delete `AddressViewModel.onAddressSearch(coordinates)`): 69b7c0dc. Step 32: the `AddressViewModel` row of BRANCH_COVERAGE_REPORT.md is out of date.
   - Step 27 (unused resources in every module: 3 strings, 2 dimens, `:app`'s copy of `white`, 2 drawables in 5 densities): 28b74cbf.
   - Step 28 (unused dependencies and plugins): 1284ccd0. Side effects: constraintlayout 2.2.1 -> 2.1.0 (Material's), parcelize runtime 2.3.10 -> 1.9.22 (datastore's), JUnit 4 gone from `:app`'s test classpath. The other unused declarations are step 28b (asked for 2026-11-25), before step 29.
+  - Step 28b (18 more declarations in 10 modules, with `dfm.unit-test` in faq, plus `room-ktx` in the catalog): 28912a1f. Release dex identical.
+  - Step 29 (ConstraintLayout entry removed; JUnit 5.11.4 with EPL-2.0 instead of EPL-1.0, beyond the plan, text from the JUnit jar's `LICENSE.md`): committed 2b1a6a44.
+  - Step 30 (2026-11-25): `MAPS_RECEIVE` removed, committed 4d614d29.
+    - `org.apache.http.legacy` stays, unlike the plan: Maps 20.0.0 dropped it from its own manifest, and with the legacy renderer and Play Services below 25.50.34 the map crashes without it (reproduced on the emulator, Play Services 25.26.35). The entry has a comment.
+    - `FirebaseInitializer` starts Firebase, so removing `FirebaseInitProvider` doesn't turn Crashlytics off in a test build (a throwaway crash got queued, and its row was removed unsent with the user's OK). Turn the emulator's network off or find a sure way before provoking a crash.
+  - Step 31 (`UnitConverterTest` 25 cases, `DistanceCalculatorTest` 23, no production change): checked 2026-11-25 with 21 deliberate breaks (19 caught, 2 change no result: `min(1.0, …)` and the `size < 2` return), committed 84ffd59d.
+  - Step 32 (CLAUDE.md, README, and BRANCH_COVERAGE_REPORT.md rewritten from a JaCoCo run through a throwaway Gradle init script; 261/292 branches, 89%): committed 1b317328 (with the README test command, no longer tied to a folder). JVM modules may keep stale Android classes in `build/tmp/kotlin-classes`, which break a JaCoCo report.
+  - Verification (2026-11-25, at 1b317328): 396 unit tests (step 1: 338), 46 Konsist, lint 0 errors, `assembleRelease` passes; smoke run of a release APK with Crashlytics collection off in the manifest, 0 crashes. Emulator back on the debug build with its data. Open: the user's long-press pass (8, 14b, 15b, 16). Pushed to origin at 1b317328.
+  - 2026-11-25: disk full and low memory, then a reboot that wiped the scratchpad (scripts, APKs); check `df -h` and `free -h` before long builds.
   - 2026-11-25: the elevation API answers again (no canned answer needed).
   - The user said no to committing later steps unasked: stop after each step and wait (2026-11-23).
 - Groups: 0 evidence (1-2), 1 bugs (3-14), 2 unstable composable parameters (15-18), 3 onboarding hints (19-22), 4 startup and lint (23-24), 5 dead code (25-30), 6 tests and docs (31-32).
