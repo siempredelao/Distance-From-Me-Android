@@ -54,15 +54,15 @@ class LicenseMapperTest {
     }
 
     @Test
-    fun `maps EPL 1_0 license correctly`() {
+    fun `maps EPL 2_0 license correctly`() {
         val year = "2021"
         val author = "EPL Author"
-        whenever(resourceProvider.get(R.string.license_epl1))
-            .thenReturn("Eclipse Public License 1.0")
+        whenever(resourceProvider.get(R.string.license_epl2))
+            .thenReturn("Eclipse Public License 2.0")
 
-        val result = mapper(License.EPL_1_0, year, author)
+        val result = mapper(License.EPL_2_0, year, author)
 
-        assertEquals("Eclipse Public License 1.0", result)
+        assertEquals("Eclipse Public License 2.0", result)
     }
 
     @Test

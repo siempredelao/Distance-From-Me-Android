@@ -80,15 +80,6 @@ class OpenSourceDiskDataSource {
             "Apache-2.0",
             "2017"
         )
-        private val CONSTRAINT_LAYOUT = OpenSourceLibraryEntity(
-            "ConstraintLayout",
-            "ConstraintLayout allows you to create large and complex layouts with a flat view hierarchy (no nested view groups).",
-            "The Android Open Source Project",
-            "2.2.1",
-            "https://developer.android.com/training/constraint-layout/index.html",
-            "Apache-2.0",
-            "2007-2017"
-        )
         private val LEAK_CANARY = OpenSourceLibraryEntity(
             "LeakCanary",
             "A memory leak detection library for Android and Java.",
@@ -100,12 +91,12 @@ class OpenSourceDiskDataSource {
         )
         private val JUNIT = OpenSourceLibraryEntity(
             "JUnit",
-            "JUnit is a simple framework to write repeatable tests. It is an instance of the xUnit architecture for unit testing frameworks.",
-            "JUnit",
-            "4.13.2",
-            "https://junit.org/junit4/",
-            "EPL-1.0",
-            "2002-2021"
+            "The 5th major version of the programmer-friendly testing framework for Java and the JVM.",
+            "The original author or authors",
+            "5.11.4",
+            "https://junit.org/junit5/",
+            "EPL-2.0",
+            "2015-2024"
         )
         private val MOCKITO = OpenSourceLibraryEntity(
             "Mockito",
@@ -174,7 +165,6 @@ class OpenSourceDiskDataSource {
             MATERIAL_COMPONENTS,
             OKHTTP,
             KOTLINX_SERIALIZATION,
-            CONSTRAINT_LAYOUT,
             LEAK_CANARY,
             TIMBER,
             JUNIT,

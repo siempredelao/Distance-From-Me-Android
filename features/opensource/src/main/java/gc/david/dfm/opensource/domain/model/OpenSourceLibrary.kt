@@ -29,7 +29,7 @@ data class OpenSourceLibrary(
 enum class License(val code: String) {
     APACHE_V2("Apache-2.0"),
     MIT("MIT"),
-    EPL_1_0("EPL-1.0"),
+    EPL_2_0("EPL-2.0"),
     COPYRIGHT("Copyright");
 
     companion object {

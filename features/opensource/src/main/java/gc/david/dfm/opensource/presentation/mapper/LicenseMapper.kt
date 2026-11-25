@@ -31,8 +31,8 @@ class LicenseMapper(private val resourceProvider: ResourceProvider) {
                 resourceProvider.get(R.string.license_apache2, year, author)
             License.MIT ->
                 resourceProvider.get(R.string.license_mit, year, author)
-            License.EPL_1_0 ->
-                resourceProvider.get(R.string.license_epl1)
+            License.EPL_2_0 ->
+                resourceProvider.get(R.string.license_epl2)
             License.COPYRIGHT ->
                 resourceProvider.get(R.string.license_copyright, year, author)
         }

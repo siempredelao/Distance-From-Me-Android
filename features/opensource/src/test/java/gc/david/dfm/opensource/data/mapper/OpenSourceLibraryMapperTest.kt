@@ -57,7 +57,7 @@ class OpenSourceLibraryMapperTest {
             ),
             OpenSourceLibraryEntity(
                 name = "Lib2", description = "Desc2", author = "Author2",
-                version = "2.0", link = "link2", licenseCode = "EPL-1.0", licenseYear = "2021"
+                version = "2.0", link = "link2", licenseCode = "EPL-2.0", licenseYear = "2021"
             )
         )
 
@@ -67,7 +67,7 @@ class OpenSourceLibraryMapperTest {
         assertEquals("Lib1", result[0].name)
         assertEquals(License.MIT, result[0].license)
         assertEquals("Lib2", result[1].name)
-        assertEquals(License.EPL_1_0, result[1].license)
+        assertEquals(License.EPL_2_0, result[1].license)
     }
 
     @Test
@@ -97,11 +97,11 @@ class OpenSourceLibraryMapperTest {
 
     @Test
     fun `maps EPL license code correctly`() {
-        val entity = OpenSourceLibraryEntity("Test", "", "", "", "", "EPL-1.0", "")
+        val entity = OpenSourceLibraryEntity("Test", "", "", "", "", "EPL-2.0", "")
 
         val result = mapper(entity)
 
-        assertEquals(License.EPL_1_0, result.license)
+        assertEquals(License.EPL_2_0, result.license)
     }
 
     @Test
