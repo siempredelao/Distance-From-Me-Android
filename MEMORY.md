@@ -231,8 +231,14 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
     - TalkBack on the emulator: needs `adb root`, `pref_tts_overlay` and `pref_log_level` in its preferences; `input mouse tap` bypasses touch exploration; `uiautomator events` gets none of Compose's events.
   - Step 22 (two FAQ answers, 7 languages): deb648b0.
   - Rename of `OnboardActivity` to `launcher/presentation/LauncherActivity` (user's request): ff541493. The launcher entry keeps the released name through an `activity-alias` (user chose it), guarded by `ActivityKonsistTest`; the emulator scripts still work with the old component name. The Pixel launcher kept a placed icon even without the alias.
-  - FAQ quotes escaped as `\"` (24 strings, separate commit): done and checked, uncommitted, waiting for the user. Then Group 4.
-  - Step 27 also deletes unused resources, not only strings (user agreed): the five `onboard_background.png` drawables in `:app`, and any others found then.
+  - FAQ quotes escaped as `\"` (24 strings): 4c62b865.
+  - Step 23 measured (2026-11-24, 10 clean cold starts each, debug build): `MapsInitializer.initialize` takes about 180 ms in `Application.onCreate`, but without it the total (2440 vs 2440 ms) and the map loaded (3246 vs 3276 ms) are the same, and the map works identically. The user kept it and had its comment corrected: ddfdf141.
+  - Step 24 (`innerPadding` in `MainScreen`, lint passes): 8886e025.
+  - Step 25 (delete `:features:connectivity`): 86c8afb7.
+  - Step 26 (delete `AddressViewModel.onAddressSearch(coordinates)`): 69b7c0dc. Step 32: the `AddressViewModel` row of BRANCH_COVERAGE_REPORT.md is out of date.
+  - Step 27 (unused resources in every module: 3 strings, 2 dimens, `:app`'s copy of `white`, 2 drawables in 5 densities): 28b74cbf.
+  - Step 28 (unused dependencies and plugins): 1284ccd0. Side effects: constraintlayout 2.2.1 -> 2.1.0 (Material's), parcelize runtime 2.3.10 -> 1.9.22 (datastore's), JUnit 4 gone from `:app`'s test classpath. The other unused declarations are step 28b (asked for 2026-11-25), before step 29.
+  - 2026-11-25: the elevation API answers again (no canned answer needed).
   - The user said no to committing later steps unasked: stop after each step and wait (2026-11-23).
 - Groups: 0 evidence (1-2), 1 bugs (3-14), 2 unstable composable parameters (15-18), 3 onboarding hints (19-22), 4 startup and lint (23-24), 5 dead code (25-30), 6 tests and docs (31-32).
 - User decisions:
