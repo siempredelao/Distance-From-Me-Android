@@ -1,122 +1,87 @@
-# 📊 Branch Coverage Analysis Report
+# Branch Coverage Report
 **Project**: Distance From Me Android
-**Method**: Manual code vs tests analysis
----
-## 🎯 Quick Overview
-```
-┌─────────────────────────────────────────────────────────────┐
-│  TEST COVERAGE DASHBOARD                                    │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  📦 FILE COVERAGE:        100% ✅ (37/37 classes)          │
-│  🌿 BRANCH COVERAGE:       89% ✅ (127/143 branches)       │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ Per Component Type:                                 │   │
-│  ├─────────────────────────────────────────────────────┤   │
-│  │ UseCases        ████████████████████ 100% ✅        │   │
-│  │ Repositories    ████████████████████ 100% ✅        │   │
-│  │ Formatters      ████████████████████ 100% ✅        │   │
-│  │ Mappers         ███████████████████░  98% ✅        │   │
-│  │ ViewModels      ███████████████████░  83% ✅        │   │
-│  └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-```
-See [README.md](README.md) for quick testing commands.
----
-## 📈 Coverage by Component Type
-### File Coverage vs Branch Coverage Comparison
-| Component | Files | Files w/Tests | Branches | Branches Covered | File Coverage | Branch Coverage |
-|-----------|-------|---------------|----------|------------------|---------------|-----------------|
-| **UseCases** | 8 | 8 ✅ | ~18 | ~18 | **100%** ✅ | **100%** ✅ |
-| **Repositories** | 8 | 8 ✅ | ~16 | ~16 | **100%** ✅ | **100%** ✅ |
-| **Formatters** | 3 | 3 ✅ | ~2 | ~2 | **100%** ✅ | **100%** ✅ |
-| **Mappers** | 11 | 11 ✅ | ~26 | ~25 | **100%** ✅ | **98%** ✅ |
-| **ViewModels** | 7 | 7 ✅ | ~82 | ~68 | **100%** ✅ | **83%** ✅ |
-| **TOTAL** | **37** | **37** ✅ | **~143** | **~127** | **100%** 🎉 | **~89%** ✅ |
-**Key Notes**: 
-- ✅ **File Coverage 100%** = All critical classes have at least ONE test file
-- ✅ **Branch Coverage 89%** = Most code branches (if/when/else) are tested, including the expanded `MainViewModel` coverage
----
-## 📊 Detailed Branch Coverage by Component
-### 1️⃣ UseCases (100% Branch Coverage) ✅
-| UseCase | Methods | Branches | Coverage | Status |
-|---------|---------|----------|----------|---------|
-| GetAddressCoordinatesByNameUseCase | 1 | 3 | **100%** | ✅ |
-| GetAddressNameByCoordinatesUseCase | 1 | 3 | **100%** | ✅ |
-| SaveDistanceUseCase | 1 | 1 | **100%** | ✅ |
-| GetPositionListUseCase | 1 | 1 | **100%** | ✅ |
-| GetElevationByCoordinatesUseCase | 1 | 2 | **100%** | ✅ |
-| GetOpenSourceLibrariesUseCase | 1 | 1 | **100%** | ✅ |
-| ClearDistancesUseCase | 1 | 1 | **100%** | ✅ |
-| GetDistancesUseCase | 1 | 1 | **100%** | ✅ |
-| GetStoredDistancesUseCase | 1 | 1 | **100%** | ✅ |
-| **AVERAGE** | - | - | **100%** | ✅ |
-**All UseCases have complete branch coverage including success, failure, and exception paths.**
----
-### 2️⃣ Repositories (100% Branch Coverage) ✅
-| Repository | Methods | Branches | Coverage | Status |
-|------------|---------|----------|----------|---------|
-| BaseSettingsRepository | 4 | 6 | **100%** | ✅ |
-| BaseAddressRepository | 2 | 0 | **100%** | ✅ |
-| BaseElevationRepository | 1 | 0 | **100%** | ✅ |
-| BaseCoordinatesRepository | 3 | 0 | **100%** | ✅ |
-| BaseDistanceRepository | 4 | 2 | **100%** | ✅ |
-| BaseOpenSourceRepository | 1 | 0 | **100%** | ✅ |
-| BaseDistanceModeRepository | 2 | 0 | **100%** | ✅ |
-| BaseLocationRepository | 1 | 6 | **100%** | ✅ |
-| **AVERAGE** | - | - | **100%** | ✅ |
-**BaseSettingsRepository** has the most branches (6) - all tested:
-- ✅ Unit system IMPERIAL/METRIC/unknown
-- ✅ Set unit system IMPERIAL/METRIC
-- ✅ Camera animation DESTINATION/CENTRE/None
 
-**BaseLocationRepository** wraps the fused location client in a `callbackFlow` - all 6 branches tested:
-- ✅ Last known location present/missing
-- ✅ Location update with/without a location
-- ✅ Location permission granted/missing (`SecurityException` completes the flow)
----
-### 3️⃣ Formatters (100% Branch Coverage) ✅
-| Formatter | Methods | Branches | Coverage | Status |
-|-----------|---------|----------|----------|---------|
-| UnitFormatter | 3 | 0 | **100%** | ✅ |
-| AddressFormatter | 1 | 0 | **100%** | ✅ |
-| ShareInfoMessageMapper | 2 | 0 | **100%** | ✅ |
-| **AVERAGE** | - | - | **100%** | ✅ |
-**Details**:
-- **UnitFormatter**: Delegates to UnitConverter (tested via mocks) - 9 tests cover all scenarios
-- **AddressFormatter**: Simple concatenation - 4 tests cover all input variations
-- **ShareInfoMessageMapper**: String templates - 3 tests cover all cases
----
-### 4️⃣ Mappers (98% Branch Coverage) ✅
-| Mapper | Methods | Branches | Coverage | Status |
-|--------|---------|----------|----------|---------|
-| LicenseMapper | 1 | 4 | **100%** | ✅ |
-| ElevationEntityDataMapper | 1 | 6 | **100%** | ✅ |
-| OpenSourceLibraryMapper | 2 | 4 | **100%** | ✅ |
-| DistanceEntityMapper | 2 | 1 | **100%** | ✅ |
-| PositionEntityMapper | 2 | 0 | **100%** | ✅ |
-| AddressCollectionEntityDataMapper | 1 | 0 | **100%** | ✅ |
-| OpenSourceLibraryUiMapper | 1 | 0 | **100%** | ✅ |
-| GeocodingErrorMessageMapper | 1 | ~7 | **~95%** | ✅ |
-| MapStateMapper | 1 | ~3 | **~95%** | ✅ |
-| LoadDistancesMapper | 1 | ~4 | **~95%** | ✅ |
-| **AVERAGE** | - | - | **~98%** | ✅ |
-**Key mappers** with when/if branches are fully tested (LicenseMapper, ElevationEntityDataMapper).
----
-### 5️⃣ ViewModels (~83% Branch Coverage) ✅
-| ViewModel | Methods | Tests | Branches | Covered | Branch % | Status |
-|-----------|---------|-------|----------|---------|----------|---------|
-| **SaveDistanceViewModel** | 3 | 5 | ~2 | ~2 | **~90%** | ✅ High |
-| **ShowInfoViewModel** | 8 | 12 | ~8 | ~7 | **~90%** | ✅ High |
-| **ElevationViewModel** | 2 | 10 | ~7 | ~7 | **100%** | ✅ High |
-| **AddressViewModel** | 8 | ~15 | ~6 | ~5 | **~85%** | ✅ High |
-| **OpenSourceViewModel** | 1 | 5 | ~5 | ~5 | **100%** | ✅ High |
-| **SettingsViewModel** | 5 | ~5 | ~3 | ~3 | **~80%** | ✅ High |
-| **MainViewModel** | 25+ | 44 | ~50 | ~28 | **~56%** | 🟡 Improved |
-| **AVERAGE** | - | - | - | - | **~83%** | ✅ |
+**Method**: JaCoCo 0.8.12 over `./gradlew testDebugUnitTest`, measured on 2026-11-25. The build doesn't run JaCoCo, so these numbers only change when someone measures again. "Tests" counts each case of a parameterized test.
 
-`MainViewModel`'s branch estimate predates the location-permission and location-tracking tests (`onLocationPermissionDenied`, the once-per-screen prompt, `trackLocation`, the stored-distances collection), so its real coverage is likely higher.
----
-**All Tests Status**: ✅ PASSING  
-**Quality Assessment**: ✅ Production-Ready
+JaCoCo counts branches in the bytecode, so some belong to code the compiler adds, for example for coroutines, and a test may not be able to reach them. "none" means a class has no branches.
+
+## Summary
+| Component | Classes | With tests | Tests | Branches | Lines |
+|---|---|---|---|---|---|
+| UseCases | 9 | 9 | 25 | 4/4 (100%) | 24/25 (96%) |
+| Repositories | 9 | 9 | 43 | 19/21 (90%) | 88/90 (97%) |
+| Mappers | 11 | 11 | 56 | 60/60 (100%) | 161/162 (99%) |
+| Formatters | 2 | 2 | 14 | 2/2 (100%) | 10/10 (100%) |
+| ViewModels | 7 | 7 | 122 | 126/149 (84%) | 522/540 (96%) |
+| Other domain classes | 3 | 3 | 75 | 50/56 (89%) | 61/63 (96%) |
+| **Total** | **41** | **41** | **335** | **261/292 (89%)** | **866/890 (97%)** |
+
+## UseCases
+| Class | Tests | Branches | Lines |
+|---|---|---|---|
+| ClearDistancesUseCase | 2 | none | 2/2 (100%) |
+| GetAddressCoordinatesByNameUseCase | 3 | none | 2/2 (100%) |
+| GetAddressNameByCoordinatesUseCase | 3 | none | 2/2 (100%) |
+| GetDistancesUseCase | 2 | none | 2/2 (100%) |
+| GetElevationByCoordinatesUseCase | 6 | 4/4 (100%) | 4/4 (100%) |
+| GetOpenSourceLibrariesUseCase | 2 | none | 2/2 (100%) |
+| GetPositionListUseCase | 3 | none | 2/2 (100%) |
+| GetStoredDistancesUseCase | 2 | none | 6/7 (85%) |
+| SaveDistanceUseCase | 2 | none | 2/2 (100%) |
+
+## Repositories
+| Class | Tests | Branches | Lines |
+|---|---|---|---|
+| BaseAddressRepository | 3 | none | 5/5 (100%) |
+| BaseCoordinatesRepository | 5 | none | 5/5 (100%) |
+| BaseDistanceModeRepository | 2 | none | 5/5 (100%) |
+| BaseDistanceRepository | 5 | 2/2 (100%) | 10/10 (100%) |
+| BaseElevationRepository | 2 | none | 4/4 (100%) |
+| BaseHintRepository | 5 | 2/2 (100%) | 9/9 (100%) |
+| BaseLocationRepository | 7 | 7/9 (77%) | 28/30 (93%) |
+| BaseOpenSourceRepository | 1 | none | 5/5 (100%) |
+| BaseSettingsRepository | 13 | 8/8 (100%) | 17/17 (100%) |
+
+## Mappers
+| Class | Tests | Branches | Lines |
+|---|---|---|---|
+| AddressCollectionEntityDataMapper | 8 | 8/8 (100%) | 12/12 (100%) |
+| DistanceEntityMapper | 4 | 2/2 (100%) | 7/7 (100%) |
+| ElevationEntityDataMapper | 8 | 9/9 (100%) | 11/11 (100%) |
+| GeocodingErrorMessageMapper | 6 | 5/5 (100%) | 9/9 (100%) |
+| LicenseMapper | 5 | 4/4 (100%) | 7/7 (100%) |
+| LoadDistancesMapper | 2 | 2/2 (100%) | 18/18 (100%) |
+| MapStateMapper | 9 | 30/30 (100%) | 56/56 (100%) |
+| OpenSourceLibraryMapper | 7 | none | 11/11 (100%) |
+| OpenSourceLibraryUiMapper | 1 | none | 13/14 (92%) |
+| PositionEntityMapper | 3 | none | 5/5 (100%) |
+| ShareInfoMessageMapper | 3 | none | 12/12 (100%) |
+
+## Formatters
+| Class | Tests | Branches | Lines |
+|---|---|---|---|
+| AddressFormatter | 4 | 2/2 (100%) | 3/3 (100%) |
+| UnitFormatter | 10 | none | 7/7 (100%) |
+
+## ViewModels
+| Class | Tests | Branches | Lines |
+|---|---|---|---|
+| AddressViewModel | 9 | 12/12 (100%) | 46/54 (85%) |
+| ElevationViewModel | 16 | 12/12 (100%) | 33/33 (100%) |
+| MainViewModel | 63 | 55/75 (73%) | 265/273 (97%) |
+| OpenSourceViewModel | 5 | 8/8 (100%) | 18/18 (100%) |
+| SaveDistanceViewModel | 5 | 4/4 (100%) | 33/33 (100%) |
+| SettingsViewModel | 2 | none | 12/14 (85%) |
+| ShowInfoViewModel | 22 | 35/38 (92%) | 115/115 (100%) |
+
+## Other domain classes
+| Class | Tests | Branches | Lines |
+|---|---|---|---|
+| MapHintProcessor | 27 | 32/36 (88%) | 27/29 (93%) |
+| UnitConverter | 25 | 14/16 (87%) | 12/12 (100%) |
+| DistanceCalculator | 23 | 4/4 (100%) | 22/22 (100%) |
+
+## Missed branches
+- `MainViewModel` (20): among them the `catch` in `onLoadDistancesClick`, which no test runs, and one to three branches on each of 14 other lines.
+- `MapHintProcessor` (4), `ShowInfoViewModel` (3) and `UnitConverter` (2): each is one branch of a line whose others are covered.
+- `BaseLocationRepository` (2): on the line that opens its `callbackFlow`.

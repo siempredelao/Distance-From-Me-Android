@@ -57,7 +57,7 @@ Modules are grouped by role, and each group may only depend inwards. `ModuleGrou
 - `:support:coroutines`: `launchCatching`, `suspendRunCatching`, `logUnexpectedFailure` and the IO `CoroutineDispatcher` binding.
 - `:support:navigation`: `Navigator` and `Route` (see Navigation).
 - `:support:test`: `CoroutineExtension`, the JUnit 5 extension that swaps `Dispatchers.Main`.
-- `:tools:konsist`: a plain Kotlin JVM module whose tests use Konsist to parse every module's sources and enforce the conventions in this file: module groups, build conventions, layer dependencies, use case and ViewModel shape, repository naming, Koin registration and navigator scope, Activity `open` functions, accessibility labels, license headers, and test presence. When you add a convention, add a guard there too.
+- `:tools:konsist`: a plain Kotlin JVM module whose tests use Konsist to parse every module's sources and enforce the conventions in this file: module groups, build conventions, layer dependencies, UI models (no domain models, immutable collections, no `var`), use case and ViewModel shape, repository naming, Koin registration and navigator scope, Activity `open` functions, accessibility labels, license headers, and test presence. When you add a convention, add a guard there too.
 
 A new module that only needs Kotlin, the JDK, coroutines or Koin core is a JVM module (`dfm.jvm.library`, with `libs.coroutines.core` rather than the Android `libs.coroutines`). Anything that touches the Android framework, resources, ViewModels or Compose is an Android library (`dfm.android.library`). A JVM module can't depend on an Android library.
 
@@ -71,11 +71,20 @@ Screens in another module are opened through `:support:navigation`, so features 
 - Koin creates a navigator per Activity (`factory`), because it holds that Activity. `DependencyInjectionKonsistTest` forbids binding it as a `single`.
 - If the routes grow well beyond a handful, reconsider this setup (see the comment on `Route`).
 
+### Map hints
+The hints on the map live in `:app`'s `onboarding` package:
+- `MapHintProcessor` (domain) picks the hint from the current `MapSituation`, so a hint can't disagree with what is on the map. `MainViewModel` passes it the situation as a `Flow` and exposes the result as `hint`; `MapHintBanner` shows it.
+- Events (`MapHintProcessor.onEvent` with a `MapHintEvent`) only retire hints: a hint the user closed, or whose advice they followed, isn't shown again. `WAITING_FOR_LOCATION` is never retired (`isShownOnce = false`).
+- `HintRepository` stores the names of the retired `MapHint`s, so renaming one shows its hint again.
+
 ### Layering inside a feature module
 Packages are `data/` → `domain/` → `presentation/` → `di/`:
 - `data/`: `*RemoteDataSource` (OkHttp calls to Google Geocoding/Elevation APIs, parsed with kotlinx.serialization using the shared `googleApiJson` from `:core:geocoding`, on the injected IO `CoroutineDispatcher`) or `*DiskDataSource`. `Base*Repository` implements the domain `*Repository` interface. `data/mapper/*EntityDataMapper` turns entities into domain models.
 - `domain/`: repository interface, domain models, and `*UseCase` classes with a single `operator fun invoke(...)`, either `suspend` and returning a value or non-suspending and returning a `Flow`. Model outcomes the caller is expected to handle as a domain sealed type (for example `GeocodingResult` in `:core:address`) rather than `kotlin.Result`. Let unexpected failures (network, parsing, bugs) propagate: ViewModels launch with `launchCatching` from `:support:coroutines`, and `suspendRunCatching` is only for turning a failure into a value where it must not cancel sibling calls. Never swallow `CancellationException`: rethrow it from any broad catch.
-- `presentation/`: a `ViewModel` that exposes `StateFlow<*UiState>`, UI mappers, and Compose `screen/`. `:features:settings` still uses a preference `Fragment`, and `:features:elevation` uses a GraphView-based `ElevationChartView`.
+- `presentation/`: a `ViewModel` that exposes `StateFlow<*UiState>`, UI mappers, and Compose `screen/`. `:features:settings` still uses a preference `Fragment`, and `:features:elevation` uses a GraphView-based `ElevationChartView`, which its `ElevationChart` composable wraps and `:app` shows on the map.
+  - UI models (`presentation/model`) hold no domain models: map them to a UI model first (`CoordinatesUiModel`, `AddressUiModel`). Domain modules don't run the Compose compiler, so Compose treats their classes as unstable. `ArchitectureKonsistTest` lists the few exceptions.
+  - UI models and composable parameters use `ImmutableList`, `ImmutableSet` or `ImmutableMap` (`kotlinx-collections-immutable`) instead of `List`, `Set` or `Map`, and UI models have no `var` (`ComposeStabilityKonsistTest`).
+  - A sealed type is a sealed class in `presentation/model`, so that Compose infers it as stable, and a sealed interface in `domain/model`.
 - `di/`: a Koin `module { }` (for example `addressModule`). **Every new Koin module has to be added to `startKoin { modules(...) }` in `app/.../DFMApplication.kt`.** Constructor injection uses positional `get()` calls, so a changed constructor signature means updating the matching `get()` count in the module.
 
 App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initializer`s, which are registered in `appModule` and run from `DFMApplication.onCreate`.
@@ -84,7 +93,7 @@ App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initia
 - JUnit 5 (Jupiter) on every module via `useJUnitPlatform()`, with Mockito + mockito-kotlin (`mock<>()`, `whenever`) and `kotlinx-coroutines-test` (`runTest`).
 - ViewModel tests register `@JvmField @RegisterExtension val coroutineExtension = CoroutineExtension()`.
 - A module with unit tests applies the `dfm.unit-test` convention plugin, which adds JUnit 5, Mockito and `kotlinx-coroutines-test`, plus `:support:test` in Android modules. JVM modules can't use `:support:test`, an Android library, and have no Main dispatcher to swap.
-- The project aims for a test for every UseCase, Repository, Mapper, Formatter, and ViewModel. `BRANCH_COVERAGE_REPORT.md` and the Testing section of `README.md` track coverage by hand, so update them when coverage changes significantly.
+- The project aims for a test for every UseCase, Repository, Mapper, Formatter, and ViewModel. `BRANCH_COVERAGE_REPORT.md` and the Testing section of `README.md` record a JaCoCo measurement, which the build doesn't run, so update them when coverage changes significantly.
 
 ## Prepare for release
 When the user asks to prepare a release, or to tag and merge one after its Play Store upload, read [RELEASING.md](RELEASING.md) first and follow its steps in order. Don't start either phase unasked.

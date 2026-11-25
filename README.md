@@ -55,6 +55,7 @@ Shared Gradle setup lives in the `build-logic/` convention plugins.
 * [Room](https://developer.android.com/topic/libraries/architecture/room)
 * [OkHttp](https://square.github.io/okhttp/)
 * [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
+* [kotlinx.collections.immutable](https://github.com/Kotlin/kotlinx.collections.immutable)
 * [Material Components](https://github.com/material-components/material-components-android)
 * [Lottie](https://github.com/airbnb/lottie-android)
 * [Timber](https://github.com/JakeWharton/timber)
@@ -66,17 +67,16 @@ Shared Gradle setup lives in the `build-logic/` convention plugins.
 
 ## Testing
 
-The project has comprehensive test coverage for all critical components:
-- **100% file coverage** 🎉 - All ViewModels, Mappers, Repositories, Formatters, and UseCases have unit tests
-- **~89% branch coverage** 🟡 - Most code branches (if/when/else) are tested, including the expanded `MainViewModel` flow coverage
+- **File coverage: 100%** - All ViewModels, Mappers, Repositories, Formatters, and UseCases have unit tests
+- **Branch coverage: 89%** - Measured with JaCoCo over those classes, `MapHintProcessor`, `UnitConverter` and `DistanceCalculator`
 
 For detailed branch coverage analysis, see [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 
 ### Run all unit tests
 
 ```bash
-# Run all module tests with visual progress feedback
-cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core:address core:coordinates core:distances core:geocoding core:settings core:units features:address features:elevation features:opensource features:settings features:show-info support:android support:coroutines app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
+# Run all module tests with visual progress feedback, from the root of the repository
+printf "=== RUNNING ALL UNIT TESTS ===\n\n" && for module in core:address core:coordinates core:distances core:geocoding core:settings core:units features:address features:elevation features:opensource features:settings features:show-info support:android support:coroutines app; do printf "📦 Testing: %s\n" "$module"; ./gradlew :"$module":testDebugUnitTest --quiet 2>&1 > /dev/null && printf "✅ PASSED\n\n" || printf "❌ FAILED\n\n"; done && printf "=== TESTS COMPLETED ===\n"
 
 # Or run tests for all modules at once (debug variant; plain Kotlin modules run their `test` task)
 ./gradlew testDebugUnitTest
@@ -103,21 +103,17 @@ cd /home/david/projects/Distance-From-Me-Android && printf "=== RUNNING ALL UNIT
 
 ### Test Coverage Summary
 
-#### File Coverage (All classes have tests)
-- ✅ **UseCases**: 100% (9/9)
-- ✅ **Mappers**: 100% (12/12)
-- ✅ **Formatters**: 100% (1/1)
-- ✅ **ViewModels**: 100% (8/8)
-- ✅ **Repositories**: 100% (8/8)
+| Component | Classes with tests | Branches covered |
+|---|---|---|
+| UseCases | 9/9 | 4/4 (100%) |
+| Repositories | 9/9 | 19/21 (90%) |
+| Mappers | 11/11 | 60/60 (100%) |
+| Formatters | 2/2 | 2/2 (100%) |
+| ViewModels | 7/7 | 126/149 (84%) |
+| Other domain classes | 3/3 | 50/56 (89%) |
+| **Total** | **41/41** | **261/292 (89%)** |
 
-#### Branch Coverage (Code paths tested)
-- ✅ **UseCases**: ~100% - All if/when branches covered
-- ✅ **Repositories**: ~100% - All if/when branches covered
-- ✅ **Formatters**: ~100% - All formatting paths covered
-- ✅ **Mappers**: ~98% - Almost all branches covered
-- ✅ **ViewModels**: ~83% - Main application flows and edge cases are now well covered
- 
-**Overall**: 100% file coverage, ~89% branch coverage. See detailed analysis in [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
+See the detailed analysis in [BRANCH_COVERAGE_REPORT.md](BRANCH_COVERAGE_REPORT.md).
 
 ## Contributions
 Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md) for more information. 
