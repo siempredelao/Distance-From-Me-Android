@@ -1,0 +1,15 @@
+Distance From Me è uno strumento intuitivo per calcolare distanze in linea retta tra la posizione corrente e luoghi specificati (in metri o chilometri). È possibile specificare la posizione manualmente, o rilassarsi con la ricerca (ricerca vocale è incluso) e condividere la tua ricerca con gli amici.
+
+Inoltre, è in italiano, inglese, francese, ... che configura automaticamente la lingua del vostro smartphone.
+
+Caratteristiche:
+-	Ricerca per località scritte vocali.
+-	Permette perfezionare la posizione con una lunga pressione sul segnaposto.
+-	Permette visualizzare il profilo elevazione tra i due punti.
+-	Caricare e salvare le distanze.
+-	Cattura le altre posizioni e calcola le sue applicazioni a distanza.
+-	Condividi le distanze con i vostri amici.
+-	Nessun intermediario! Comunicazione diretta con il team di sviluppo.
+-	Lingue: italiano, spagnolo, inglese, francese, tedesco, portoghese e catalano.
+
+(È necessario installare Google Play Services per il corretto funzionamento delle app)

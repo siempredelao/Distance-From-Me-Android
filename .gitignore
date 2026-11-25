@@ -17,5 +17,11 @@ local.properties
 # Keystore properties (local signing config)
 keystore.properties
 
+# fastlane's report of its last run
+fastlane/report.xml
+
+# Play Store pictures, kept only on this computer because of their size
+/art/play-store/**/*.png
+
 # Personal Claude Code settings
 .claude/settings.local.json

@@ -1,0 +1,6 @@
+- Nouveau design moderne et plus simple à utiliser.
+- Sections « À propos » et « Aide » améliorées.
+- Performances plus fluides et plus rapides.
+- Meilleure prise en charge des derniers téléphones Android.
+- Amélioration de l'accessibilité et de la lisibilité.
+- Possibilité de nous noter plus facilement.

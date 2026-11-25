@@ -1,0 +1,1 @@
+App, um die Entfernungen zu Orten in einer geraden Linie zu berechnen.

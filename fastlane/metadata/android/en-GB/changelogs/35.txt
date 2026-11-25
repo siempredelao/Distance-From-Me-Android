@@ -1,0 +1,6 @@
+- New modern design that is easier to use.
+- Improved "About" and "Help" sections.
+- Smoother and faster performance.
+- Better support for the latest Android phones.
+- Improved accessibility and readability.
+- Added a simple way to rate us.

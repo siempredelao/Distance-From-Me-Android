@@ -1,0 +1,1 @@
+Strumento intuitivo per calcolare le distanze in luoghi rette.

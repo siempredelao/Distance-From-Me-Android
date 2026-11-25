@@ -1,0 +1,1 @@
+Ferramenta intuitiva para calcular distâncias a locais em linha reta.
