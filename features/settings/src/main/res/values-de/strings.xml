@@ -32,7 +32,7 @@
     <string name="category_unit_title">Maßeinheit</string>
     <string name="preference_unit_dialog_title">Wählen Sie die Maßeinheit</string>
     <string name="preference_unit_entry_EU">Meter, Kilometer</string>
-    <string name="preference_unit_entry_US">Meilen, Yards, Füße</string>
+    <string name="preference_unit_entry_US">Meilen, Yards, Fuß</string>
     <string name="preference_unit_summary">Wählen Sie eine Maßeinheit. Standardmäßig in Bezug auf Ihre aktuelle Geräte Sprache sie gesetzt ist.</string>
     <string name="preference_unit_title">Wählen Sie bevorzugte Einheit</string>
 </resources>
