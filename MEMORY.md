@@ -16,6 +16,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [JVM or Android module](jvm-or-android-module.md) — check a new module's imports first; plain Kotlin goes in a dfm.jvm.library module, not an Android library
 - [Sealed interface or class](sealed-interface-or-class.md) — sealed interface for domain models, sealed class for presentation models
 - [fastlane Play Store plan](fastlane-play-store-plan.md) — steps 0-5 and 7 committed 2026-11-26; step 6 waits for the version commit; uploads only by the user
+- [Map behaviour decisions](map-behaviour-decisions.md) — extending a drawn distance by search or long press is intended; showChart removal deferred
 ```
 
 ## commit-only-what-is-asked.md
@@ -323,6 +324,26 @@ Since Oct 2026 the user has been cleaning up the codebase with the Android/Compo
 
 **Why:** in 2026-11 I mistook the Konsist failures for the to-do list and refactored `:app` before being asked. The user had me revert it, and later approved that work explicitly as plan step 6.
 **How to apply:** when resuming, check `ls -t .claude/plans/` (in the repo) for a plan newer than the one named here, then follow the latest approved plan in order and check `git status` first. Don't pick up deferred items unless the user brings them up. Related: [[commit-only-what-is-asked]], [[one-plan-step-at-a-time]], [[explain-step-before-changing]].
+```
+
+## map-behaviour-decisions.md
+
+```markdown
+---
+name: map-behaviour-decisions
+description: "App behaviours the user confirmed as intended, and cleanups they deferred, so they aren't raised again as bugs"
+metadata:
+  node_type: memory
+  type: project
+  originSessionId: ba0d2614-7981-4658-a11e-dfa9b4d5b807
+  modified: 2026-11-26T14:06:17.936Z
+---
+
+- A search or long press after a drawn distance extends that distance instead of starting a new one: intended (user, 2026-11-26).
+- `MainUiState.showChart` is never read: removing it is deferred, "later" (user, 2026-11-26).
+
+**Why:** both came up as questions during the Play Store plan ([[fastlane-play-store-plan]]).
+**How to apply:** don't report the first as a bug; offer the second only when working near `MainUiState`.
 ```
 
 ## memory-lists-over-paragraphs.md
