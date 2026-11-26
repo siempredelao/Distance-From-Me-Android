@@ -15,6 +15,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Show diff after each change](show-diff-after-each-change.md) — end every change report with its diff in the reply
 - [JVM or Android module](jvm-or-android-module.md) — check a new module's imports first; plain Kotlin goes in a dfm.jvm.library module, not an Android library
 - [Sealed interface or class](sealed-interface-or-class.md) — sealed interface for domain models, sealed class for presentation models
+- [fastlane Play Store plan](fastlane-play-store-plan.md) — steps 0-5 committed 2026-11-26; step 6 waits for the version commit; uploads only by the user
 ```
 
 ## commit-only-what-is-asked.md
@@ -51,6 +52,30 @@ When moving to the next plan step, first explain it to the user in a few lines: 
 
 **Why:** on 2026-11-22 the user said "Add to the memory to explain the next step before making any change", after I went straight from committing step 4 into step 5 edits (manifests, FaqScreen, a Konsist guard) without saying what step 5 would do.
 **How to apply:** the explanation goes in the message that starts the step, before the first Edit. This doesn't mean waiting for approval unless the step is risky or ambiguous. Related: [[one-plan-step-at-a-time]], [[konsist-cleanup-series]].
+```
+
+## fastlane-play-store-plan.md
+
+```markdown
+---
+name: fastlane-play-store-plan
+description: "Progress of the fastlane Play Store plan (.claude/plans/fastlane-play-store.md, steps 0-7) and its standing constraints"
+metadata:
+  node_type: memory
+  type: project
+  originSessionId: ba0d2614-7981-4658-a11e-dfa9b4d5b807
+  modified: 2026-11-26T12:50:21.680Z
+---
+
+- Steps 0-5 done and committed on develop by 2026-11-26 (step 5 = f4a25c48 build, 5789576c scripts).
+- Next: step 6 (all 21 screenshot sets, only after the release's version commit), step 7 (RELEASING.md, CLAUDE.md, README).
+- The user runs every real upload; Claude may only run `--validate-only`, and asks first.
+- Google quota is ~100 requests/day on purpose: no address/elevation requests, only map tiles (the screenshots build has canned data).
+- Emulator only, never the phone. The first run after a cold boot can stop on "System UI isn't responding": wait ~1 min after boot, then run again.
+- 10" tablet pictures are 1920x1080 @240 because 2560x1440 went past Play's 8 MB per picture. The user wants the 10" tablet kept at 1280x720 dp from now on (only the 10", not the 7"); the script checks it.
+
+**Why:** a long, multi-session plan, and the user decides each commit ([[commit-only-what-is-asked]], [[one-plan-step-at-a-time]]).
+**How to apply:** read the plan file first and continue from the next open step.
 ```
 
 ## jvm-or-android-module.md
