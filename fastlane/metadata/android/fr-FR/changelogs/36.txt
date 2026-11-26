@@ -1,0 +1,8 @@
+- La carte affiche des conseils pour apprendre à mesurer
+- Fonctionne avec une position approximative ou sans position
+- Sur tablette et grand écran, le menu reste à côté de la carte
+- Les détails fonctionnent hors ligne et affichent les coordonnées sans adresse
+- Les distances enregistrées affichent leur longueur sur la carte
+- Unité de mesure choisie par défaut selon votre pays
+- Politique de confidentialité dans « À propos »
+- De nombreuses corrections pour une application plus fiable

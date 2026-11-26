@@ -28,7 +28,7 @@
     <string name="link_open_source_licenses">Ver licencias de código abierto</string>
     <string name="link_privacy_policy">Política de privacidad</string>
     <string name="whats_new_title">Novedades</string>
-    <string name="whats_new_message">La app es más fácil de navegar, el mapa se usa con más fluidez, las traducciones son más claras y pequeños ajustes hacen la experiencia más fiable.</string>
+    <string name="whats_new_message">Ahora unas pistas en el mapa te enseñan a hacer mediciones, y la app funciona también con una ubicación aproximada o sin ninguna. En tablets y pantallas anchas, el menú se queda junto al mapa. La pantalla de información de la distancia funciona sin conexión, las distancias guardadas muestran su longitud y muchas pequeñas correcciones hacen la app más fiable.</string>
     <string name="translations_title">Traducciones</string>
     <string name="translations_message">Esta app está disponible en varios idiomas. Si encuentras un error o quieres sugerir una mejor traducción, toca aquí para escribirme un email.</string>
     <string name="translations_email_subject">Comentarios sobre traducciones de Distance From Me</string>

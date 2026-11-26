@@ -1,0 +1,8 @@
+- O mapa mostra dicas que ensinam a fazer medições
+- Funciona com localização aproximada ou sem localização
+- Em tablets e ecrãs largos, o menu fica ao lado do mapa
+- Os detalhes funcionam sem Internet e mostram coordenadas se não houver morada
+- As distâncias guardadas mostram o seu comprimento no mapa
+- Unidade de medida selecionada por predefinição segundo o seu país
+- Ligação para a política de privacidade em "Sobre"
+- Muitas correções que tornam a aplicação mais fiável

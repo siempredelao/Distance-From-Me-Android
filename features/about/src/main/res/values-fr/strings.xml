@@ -28,7 +28,7 @@
     <string name="link_open_source_licenses">Voir les licences Open Source</string>
     <string name="link_privacy_policy">Politique de confidentialité</string>
     <string name="whats_new_title">Nouveautés</string>
-    <string name="whats_new_message">L\'application est plus facile à parcourir, la carte est plus fluide à utiliser, les traductions sont plus claires et de petites améliorations rendent l\'expérience plus fiable.</string>
+    <string name="whats_new_message">Désormais, des conseils sur la carte vous apprennent à faire des mesures, et l\'application fonctionne aussi avec une position approximative ou sans aucune. Sur les tablettes et les grands écrans, le menu reste à côté de la carte. L\'écran d\'informations de la distance fonctionne hors ligne, les distances enregistrées affichent leur longueur et de nombreuses petites corrections rendent l\'application plus fiable.</string>
     <string name="translations_title">Traductions</string>
     <string name="translations_message">Cette application est disponible dans plusieurs langues. Si tu trouves une erreur ou veux suggérer une meilleure traduction, appuie ici pour m\'écrire un email.</string>
     <string name="translations_email_subject">Retour sur les traductions de Distance From Me</string>

@@ -1,0 +1,8 @@
+- Hinweise auf der Karte zeigen dir, wie du misst
+- Funktioniert mit ungefährem Standort oder ganz ohne
+- Auf Tablets und breiten Bildschirmen bleibt das Menü neben der Karte
+- Die Details funktionieren offline und zeigen ohne Adresse die Koordinaten
+- Gespeicherte Entfernungen zeigen ihre Länge auf der Karte
+- Maßeinheit standardmäßig nach deinem Land gewählt
+- Link zur Datenschutzerklärung unter „Info“
+- Viele Korrekturen für eine zuverlässigere App
