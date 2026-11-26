@@ -22,9 +22,9 @@
     <string name="search_bar_close">Fechar pesquisa</string>
     <string name="navigation_rail_close">Fechar menu</string>
     <string name="search_bar_clear">Limpar</string>
-    <string name="toast_loading_position">Procurando a sua posiçao. Por favor, aguarde</string>
+    <string name="toast_loading_position">Procurando a sua posição. Por favor, aguarde</string>
     <string name="menu_load_title">Carregar distância</string>
-    <string name="dialog_select_address_title">Escolha una direçao</string>
+    <string name="dialog_select_address_title">Escolha una direção</string>
     <string name="dialog_load_distances_title">Escolha una distância</string>
     <string name="menu_rate_app_title">Avaliar aplicativo</string>
     <string name="rate_app_prompt">Você gosta de usar este aplicativo?</string>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_bar_item_social_share_title">Compartilhar</string>
-    <string name="info_current_position_title">Posiçao atual aproximada:</string>
+    <string name="info_current_position_title">Posição atual aproximada:</string>
     <string name="info_destination_position_title">Destino aproximado:</string>
-    <string name="error_no_address_found_message">Não foi encontrado direçao</string>
+    <string name="error_no_address_found_message">Não foi encontrado direção</string>
     <string name="info_distance_title">Distância: %s</string>
     <string name="action_bar_item_refresh_title">Refrescar dados</string>
     <string name="action_bar_item_save_title">Guardar</string>
