@@ -33,8 +33,10 @@ The 10" tablet must keep its 1280x720 dp window, because the app's layout depend
    scripts/take_store_screenshots.sh
    scripts/take_store_screenshots.sh --device phone en es
    ```
-   One language on one device takes about 6 minutes, so all of them take about 2 hours.
+   One language on one device takes about 6 minutes, so all of them take about 2 hours. Take only the devices and languages whose screens changed.
 4. Look at every picture.
+
+Right after the emulator starts, it may show "System UI isn't responding", and the script stops at its first picture. Wait a minute and run it again.
 
 It stops at the first thing it can't find, and says where it saved the screen it stopped at. A set replaces the old one only when it is complete, so run it again for the languages that are missing. The emulator is put back as it was, also after Ctrl-C.
 

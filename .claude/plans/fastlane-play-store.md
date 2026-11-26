@@ -176,8 +176,8 @@ The script turns the one emulator into each device with `wm size` and `wm densit
 - **Check:** the English pictures of the three devices, sent to you, with their total size. Emulator settings are back to normal, also after Ctrl-C.
 
 ### 6. Screenshots in every language
-- Run it for the 7 languages and the three devices (21 pictures for each screen) and look for cut or untranslated text.
-- You approve the pictures. Git ignores them, so they aren't committed.
+- Run it once for the 7 languages and the three devices (21 pictures for each screen), in the background, after the version commit.
+- To save tokens (2026-11-26), Claude reports only the sets it didn't finish and doesn't look at every picture. You look at them for cut or untranslated text and approve them. Git ignores them, so they aren't committed.
 
 ## Group 3: documentation
 

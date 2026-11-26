@@ -121,6 +121,9 @@ Contributions are welcome. Please read the [contributions guide](CONTRIBUTING.md
 ## Download
 [![Get it on Google Play](https://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=gc.david.dfm)
 
+## Releases
+Releases go to Google Play through fastlane: see [RELEASING.md](RELEASING.md), [fastlane/README.md](fastlane/README.md) for the listing and [art/README.md](art/README.md) for the screenshots.
+
 ## Privacy
 See the [privacy policy](PRIVACY_POLICY.md).
 

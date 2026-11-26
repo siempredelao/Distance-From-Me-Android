@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew lint                               # Android lint (app/lint.xml is empty, so defaults apply)
 ```
 
-Build types are `debug` and `release`. `release` needs `keystore.properties` at the repo root. It is gitignored and holds `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`. The `release` signing config reads it unconditionally.
+Build types are `debug`, `release` and `screenshots` (only for the Play Store screenshots, see below). `release` needs `keystore.properties` at the repo root. It is gitignored and holds `storeFile`, `storePassword`, `keyAlias`, and `keyPassword`. The `release` signing config reads it unconditionally.
 
 API keys live in gitignored `other.xml` string resources: `maps_api_key` in `app/src/main/res/values/other.xml`, and `maps_geocode_api_key` in `core/geocoding/src/{main,debug,release}/res/values/other.xml`. A fresh clone won't build until these exist.
 
@@ -97,6 +97,8 @@ App startup work (Firebase, Timber, Maps SDK, default unit) goes through `Initia
 
 ## Prepare for release
 When the user asks to prepare a release, or to tag and merge one after its Play Store upload, read [RELEASING.md](RELEASING.md) first and follow its steps in order. Don't start either phase unasked.
+
+Play Store work lives in `scripts/` (the fastlane uploads of a release and of the listing, and the screenshots), `fastlane/metadata/` (the listing texts and release notes, see `fastlane/README.md`) and `art/` (the pictures, git-ignored, see `art/README.md`). The screenshots use the `screenshots` build type (`app/src/screenshots`): release with canned addresses and elevation, never uploaded.
 
 ## Known issues
 - `MainActivity` leaks when it's destroyed before its map loads, for example a size, density or dark-mode change within about a second of launch. maps-compose 6.x waits for the map with a non-cancellable `awaitMap()`, so the window recomposer never shuts down (comment at the `GoogleMap` call in `MapContent.kt`). maps-compose 9 fixes it, but needs compileSdk 37 and AGP 9.1; that upgrade is planned separately.
