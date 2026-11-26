@@ -39,7 +39,7 @@ import org.koin.core.context.startKoin
 /**
  * Created by David on 28/10/2014.
  */
-class DFMApplication : Application() {
+open class DFMApplication : Application() {
 
     val initializers: Initializers by inject()
 

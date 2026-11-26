@@ -71,6 +71,21 @@ android {
 			}
 			proguardFiles(*proguards.toList().toTypedArray())
 		}
+
+		// The release app with canned addresses and elevation, for the Play Store pictures. Never uploaded
+		create("screenshots") {
+			initWith(getByName("release"))
+			matchingFallbacks += "release"
+
+			configure<CrashlyticsExtension> {
+				mappingFileUploadEnabled = false
+			}
+		}
+	}
+
+	sourceSets {
+		// The release Maps key
+		getByName("screenshots").res.srcDir("src/release/res")
 	}
 
 	buildFeatures {

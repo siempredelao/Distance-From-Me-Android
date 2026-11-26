@@ -25,9 +25,9 @@ import kotlinx.collections.immutable.toImmutableList
 import java.text.DateFormat
 import java.util.Locale
 
-class LoadDistancesMapper(private val resourceProvider: ResourceProvider) {
+open class LoadDistancesMapper(private val resourceProvider: ResourceProvider) {
 
-    fun map(storedDistances: StoredDistances): ImmutableList<DistanceSelectionUiModel> {
+    open fun map(storedDistances: StoredDistances): ImmutableList<DistanceSelectionUiModel> {
         val mappedDistances = storedDistances.distances
             .map { distance ->
                 DistanceSelectionUiModel.Distance(

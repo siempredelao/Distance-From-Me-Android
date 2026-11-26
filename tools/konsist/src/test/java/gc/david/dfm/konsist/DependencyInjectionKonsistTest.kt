@@ -45,7 +45,10 @@ class DependencyInjectionKonsistTest {
             .single()
             .text
 
-        koinModules.assertTrue { Regex("""\b${it.name}\b""").containsMatchIn(startKoin) }
+        koinModules
+            // The screenshots build adds its own module to the app's, which can't see it
+            .filterNot { "/src/screenshots/" in it.path }
+            .assertTrue { Regex("""\b${it.name}\b""").containsMatchIn(startKoin) }
     }
 
     @Test
