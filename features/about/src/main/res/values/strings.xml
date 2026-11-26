@@ -26,6 +26,7 @@
     <string name="link_github">GitHub profile</string>
     <string name="link_google_play">Open on Google Play</string>
     <string name="link_open_source_licenses">See open source licenses</string>
+    <string name="link_privacy_policy">Privacy policy</string>
     <string name="whats_new_title">What\'s new</string>
     <string name="whats_new_message">The app has become easier to navigate, the map is smoother to use, the translations are clearer, and small fixes make the whole experience more reliable.</string>
     <string name="translations_title">Translations</string>

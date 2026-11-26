@@ -26,6 +26,7 @@
     <string name="link_github">GitHub-Profil</string>
     <string name="link_google_play">Im Google Play Store öffnen</string>
     <string name="link_open_source_licenses">Open-Source-Lizenzen ansehen</string>
+    <string name="link_privacy_policy">Datenschutzerklärung</string>
     <string name="whats_new_title">Neuigkeiten</string>
     <string name="whats_new_message">Die App ist einfacher zu bedienen, die Karte lässt sich flüssiger nutzen, die Übersetzungen sind klarer und kleine Verbesserungen machen die gesamte Erfahrung zuverlässiger.</string>
     <string name="translations_title">Übersetzungen</string>

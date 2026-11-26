@@ -26,6 +26,7 @@
     <string name="link_github">Perfil no GitHub</string>
     <string name="link_google_play">Abrir na Google Play</string>
     <string name="link_open_source_licenses">Ver licenças de código aberto</string>
+    <string name="link_privacy_policy">Política de privacidade</string>
     <string name="whats_new_title">Novidades</string>
     <string name="whats_new_message">A aplicação é mais fácil de navegar, o mapa é mais suave de usar, as traduções são mais claras e pequenos ajustes tornam a experiência mais fiável.</string>
     <string name="translations_title">Traduções</string>

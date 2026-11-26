@@ -26,6 +26,7 @@
     <string name="link_github">Profil GitHub</string>
     <string name="link_google_play">Ouvrir sur Google Play</string>
     <string name="link_open_source_licenses">Voir les licences Open Source</string>
+    <string name="link_privacy_policy">Politique de confidentialité</string>
     <string name="whats_new_title">Nouveautés</string>
     <string name="whats_new_message">L\'application est plus facile à parcourir, la carte est plus fluide à utiliser, les traductions sont plus claires et de petites améliorations rendent l\'expérience plus fiable.</string>
     <string name="translations_title">Traductions</string>

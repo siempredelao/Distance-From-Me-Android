@@ -208,6 +208,11 @@ private fun InfoCard(title: String, text: String, onClick: (() -> Unit)? = null)
     }
 }
 
+private const val GITHUB_PROFILE_URL = "https://github.com/siempredelao"
+private const val GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=gc.david.dfm"
+private const val PRIVACY_POLICY_URL =
+    "https://github.com/siempredelao/Distance-From-Me-Android/blob/master/PRIVACY_POLICY.md"
+
 @Composable
 private fun LinksCard(
     onOpenLink: (String) -> Unit,
@@ -222,17 +227,22 @@ private fun LinksCard(
 
         LinkAction(
             label = stringResource(R.string.link_github),
-            onClick = { onOpenLink("https://github.com/siempredelao") },
+            onClick = { onOpenLink(GITHUB_PROFILE_URL) },
         )
 
         LinkAction(
             label = stringResource(R.string.link_google_play),
-            onClick = { onOpenLink("https://play.google.com/store/apps/details?id=gc.david.dfm") },
+            onClick = { onOpenLink(GOOGLE_PLAY_URL) },
         )
 
         LinkAction(
             label = stringResource(R.string.link_open_source_licenses),
             onClick = onOpenSourceLicenses,
+        )
+
+        LinkAction(
+            label = stringResource(R.string.link_privacy_policy),
+            onClick = { onOpenLink(PRIVACY_POLICY_URL) },
         )
     }
 }
