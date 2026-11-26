@@ -15,7 +15,7 @@ Verbatim copy of `~/.claude/projects/-home-david-projects-Distance-From-Me-Andro
 - [Show diff after each change](show-diff-after-each-change.md) — end every change report with its diff in the reply
 - [JVM or Android module](jvm-or-android-module.md) — check a new module's imports first; plain Kotlin goes in a dfm.jvm.library module, not an Android library
 - [Sealed interface or class](sealed-interface-or-class.md) — sealed interface for domain models, sealed class for presentation models
-- [fastlane Play Store plan](fastlane-play-store-plan.md) — steps 0-5 committed 2026-11-26; step 6 waits for the version commit; uploads only by the user
+- [fastlane Play Store plan](fastlane-play-store-plan.md) — steps 0-5 and 7 committed 2026-11-26; step 6 waits for the version commit; uploads only by the user
 ```
 
 ## commit-only-what-is-asked.md
@@ -67,12 +67,13 @@ metadata:
   modified: 2026-11-26T12:50:21.680Z
 ---
 
-- Steps 0-5 done and committed on develop by 2026-11-26 (step 5 = f4a25c48 build, 5789576c scripts).
-- Next: step 6 (all 21 screenshot sets, only after the release's version commit), step 7 (RELEASING.md, CLAUDE.md, README).
+- Steps 0-5 and 7 done and committed on develop by 2026-11-26 (step 5 = f4a25c48 build, 5789576c scripts; step 7 = a0164797).
+- Only step 6 left: all 21 screenshot sets once, after the next release's version commit, run in the background; report only unfinished sets, the user looks at the pictures (saves tokens).
 - The user runs every real upload; Claude may only run `--validate-only`, and asks first.
 - Google quota is ~100 requests/day on purpose: no address/elevation requests, only map tiles (the screenshots build has canned data).
 - Emulator only, never the phone. The first run after a cold boot can stop on "System UI isn't responding": wait ~1 min after boot, then run again.
 - 10" tablet pictures are 1920x1080 @240 because 2560x1440 went past Play's 8 MB per picture. The user wants the 10" tablet kept at 1280x720 dp from now on (only the 10", not the 7"); the script checks it.
+- About links to the privacy policy on master (beea3e87), which 404s until the next release is merged there: do Phase 2 soon after the upload, then point the Play Console privacy policy field at the same URL; the old blog page can then go.
 
 **Why:** a long, multi-session plan, and the user decides each commit ([[commit-only-what-is-asked]], [[one-plan-step-at-a-time]]).
 **How to apply:** read the plan file first and continue from the next open step.
