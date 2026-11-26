@@ -16,11 +16,13 @@ Saved as `art/play-store/<language>/<device>/<n>-<screen>.png`, numbered in the 
 | 6 | `saved-distances` | The dialog with three saved distances |
 | 7 | `loaded-distance` | A saved distance, in yellow with its name: Auditorio Alfredo Kraus to La Puntilla |
 
-| Folder | Size | Density |
-|---|---|---|
-| `phone` | 1080x1920 | 420 |
-| `tablet-7` | 1080x1920 | 288 |
-| `tablet-10` | 1920x1080 | 240 |
+| Folder | Size | Density | Window |
+|---|---|---|---|
+| `phone` | 1080x1920 | 420 | 411x731 dp |
+| `tablet-7` | 1080x1920 | 288 | 600x1067 dp |
+| `tablet-10` | 1920x1080 | 240 | 1280x720 dp |
+
+The 10" tablet must keep its 1280x720 dp window, because the app's layout depends on it. A new size needs a density that keeps it, and the script stops if it doesn't.
 
 ## Take them
 

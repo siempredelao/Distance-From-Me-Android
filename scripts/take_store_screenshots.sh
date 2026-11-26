@@ -39,6 +39,21 @@ devices=(phone tablet-7 tablet-10)
 languages=()
 declare -A size_of=([phone]=1080x1920 [tablet-7]=1080x1920 [tablet-10]=1920x1080)
 declare -A density_of=([phone]=420 [tablet-7]=288 [tablet-10]=240)
+# The window the 10" tablet's pictures must keep, in dp, whatever its pixels:
+# the layout depends on it. A new size needs a density that keeps it.
+declare -A window_of=([tablet-10]=1280x720)
+
+# Stops unless SIZE (pixels, WIDTHxHEIGHT) at DENSITY gives DEVICE's window.
+check_window() {
+  local device_name=$1 size=$2 density=$3 expected=${window_of[$1]:-}
+  [[ -n "$expected" ]] || return 0
+  [[ "$size" =~ ^[0-9]+x[0-9]+$ && "$density" =~ ^[0-9]+$ ]] ||
+    fail "$device_name has no size or density to check: '$size', '$density'."
+  local width=${size%x*} height=${size#*x}
+  local window="$(((width * 160 + density / 2) / density))x$(((height * 160 + density / 2) / density))"
+  [[ "$window" == "$expected" ]] ||
+    fail "$device_name at $size, density $density, is $window dp; it must stay $expected dp."
+}
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -65,6 +80,10 @@ done
 [[ ${#languages[@]} -gt 0 ]] || languages=("${!locale_of[@]}")
 for language in "${languages[@]}"; do
   [[ -n "${locale_of[$language]:-}" ]] || fail "Unknown language: $language"
+done
+
+for device_name in "${devices[@]}"; do
+  check_window "$device_name" "${size_of[$device_name]}" "${density_of[$device_name]}"
 done
 
 read_version
@@ -143,6 +162,10 @@ device shell cmd overlay enable-exclusive --category com.android.internal.system
 for device_name in "${devices[@]}"; do
   device shell wm size "${size_of[$device_name]}"
   device shell wm density "${density_of[$device_name]}"
+  # What the emulator applied, in case it ignored or changed a value.
+  check_window "$device_name" \
+    "$(device shell wm size | sed -n 's/^Override size: //p' | tr -d '\r')" \
+    "$(device shell wm density | sed -n 's/^Override density: //p' | tr -d '\r')"
   sleep 10
   clean_status_bar
   for language in "${languages[@]}"; do

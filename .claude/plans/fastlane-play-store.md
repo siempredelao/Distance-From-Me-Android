@@ -164,7 +164,7 @@ The script turns the one emulator into each device with `wm size` and `wm densit
 | `tablet-7` | `sevenInchScreenshots` | 1080 x 1920 | 288 | 600 x 1067 dp, portrait |
 | `tablet-10` | `tenInchScreenshots` | 1920 x 1080 | 240 | 1280 x 720 dp, landscape |
 
-- **Play's rules (help page, read 2026-11-24):** up to 8 pictures per device; tablets want at least 4, at 16:9 or 9:16, with sides of 1080 px or more. It gives both 3840 and 7680 px as the largest side; these sizes fit either. It has no separate rules for 7" and 10". Guides give 8 MB per picture: at 2560 x 1440 four pictures went past 8,000,000 bytes, so the 10" tablet uses 1920 x 1080 at density 240, the same 1280 x 720 dp.
+- **Play's rules (help page, read 2026-11-24):** up to 8 pictures per device; tablets want at least 4, at 16:9 or 9:16, with sides of 1080 px or more. It gives both 3840 and 7680 px as the largest side; these sizes fit either. It has no separate rules for 7" and 10". Guides give 8 MB per picture: at 2560 x 1440 four pictures went past 8,000,000 bytes, so the 10" tablet uses 1920 x 1080 at density 240, the same 1280 x 720 dp. The script keeps the 10" tablet at 1280 x 720 dp: it checks its own size before it starts and what the emulator applied, and stops if either is off.
 - **So your list of screens needs 4 to 8 entries**, the same for every device.
 
 ### 5. Screenshot scripts, on the three devices
