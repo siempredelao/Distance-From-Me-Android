@@ -18,6 +18,8 @@ On `develop`:
 6. Write two texts from the same commits, user friendly and not too technical, and ask for their approval together with the version name:
    - `whats_new_message` (`features/about/src/main/res/values*/strings.xml`): a short paragraph, in all supported locales.
    - `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt`: the release notes, an unordered list (`- ` lines) of up to 500 characters, in all 11 locales. `en-US` copies `en-GB`, and `es-US` copies `es-419`.
+
+   Write the English and Spanish first, and get both approved: the user checks only those two. Then translate Catalan, French, Italian and Portuguese from the approved Spanish, and German from the approved English. Don't commit any translation before that.
 7. Run `./gradlew testDebugUnitTest :tools:konsist:test lint`. If a test, a Konsist guard or lint (errors only) fails, stop and report it: don't commit, push or fix it as part of the release unless the user says so. Report lint warnings, but don't stop for them.
 8. Commit the version bump and the two texts, and nothing else, as `Version <code> (<name>) final`.
 9. Say whether the screens in the Play Store screenshots changed since they were last taken, from the same commits, and for which devices. Take them again only if they did, and only those (see [art/README.md](art/README.md)): run `scripts/take_store_screenshots.sh` in the background, with `--device` and the languages when not all are needed, and report only the sets it didn't finish. Don't look at every picture: the user does.
