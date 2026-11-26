@@ -21,7 +21,7 @@ On `develop`:
 
    Write the English and Spanish first, and get both approved: the user checks only those two. Then translate Catalan, French, Italian and Portuguese from the approved Spanish, and German from the approved English. Don't commit any translation before that.
 7. Run `./gradlew testDebugUnitTest :tools:konsist:test lint`. If a test, a Konsist guard or lint (errors only) fails, stop and report it: don't commit, push or fix it as part of the release unless the user says so. Report lint warnings, but don't stop for them.
-8. Commit the version bump and the two texts, and nothing else, as `Version <code> (<name>) final`.
+8. Commit the two texts, and nothing else, as `Write the release notes of <name>`. Then commit the version bump alone as `Version <code> (<name>) final`, so that it holds only the new app versions and is the last commit.
 9. Say whether the screens in the Play Store screenshots changed since they were last taken, from the same commits, and for which devices. Take them again only if they did, and only those (see [art/README.md](art/README.md)): run `scripts/take_store_screenshots.sh` in the background, with `--device` and the languages when not all are needed, and report only the sets it didn't finish. Don't look at every picture: the user does.
 10. Push `develop` to origin, without asking again.
 
