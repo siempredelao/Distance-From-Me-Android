@@ -61,12 +61,7 @@ done
 # The commit that is uploaded has to be the pushed version commit, so that the
 # tag of phase 2 in RELEASING.md is on what was shipped.
 check_commit() {
-  # The memory hook can change MEMORY.md at any time.
-  [[ -z "$(git status --porcelain -- . ':(exclude)MEMORY.md')" ]] ||
-    fail 'The working tree has uncommitted changes.'
-  local expected="Version $version_code ($version_name) final"
-  [[ "$(git log -1 --format=%s)" == "$expected" ]] ||
-    fail "The last commit is not \"$expected\"."
+  check_version_commit
   git fetch --quiet origin develop
   git merge-base --is-ancestor HEAD FETCH_HEAD ||
     fail 'The last commit is not pushed to develop.'

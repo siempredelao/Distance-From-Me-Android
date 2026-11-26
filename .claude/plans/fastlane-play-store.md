@@ -26,7 +26,7 @@ From its `art/README.md`, `tool/take_store_screenshots.sh` and test:
 - One command takes every language, or only those named. `art/README.md` lists the pictures and the command.
 - They are taken again after a change to how the screens look.
 
-**Yours (changed on 2026-11-25):** they show the release build and are taken after the version commit. So the script stops unless the working tree is clean (other than `MEMORY.md`) and the last commit is `Version <code> (<name>) final`.
+**Yours (changed on 2026-11-25):** they show the release app (a `screenshots` build of it) and are taken after the version commit. So the script stops unless the working tree is clean (other than `MEMORY.md`) and the last commit is `Version <code> (<name>) final`.
 
 **Different, with the reason:**
 - Emulator only. Cephalopod also allows a phone, but clearing the app's data on your Pixel would delete your saved distances (debug and release share the package).
@@ -162,26 +162,18 @@ The script turns the one emulator into each device with `wm size` and `wm densit
 |---|---|---|---|---|
 | `phone` | `phoneScreenshots` | 1080 x 1920 | 420 | 411 x 731 dp, portrait |
 | `tablet-7` | `sevenInchScreenshots` | 1080 x 1920 | 288 | 600 x 1067 dp, portrait |
-| `tablet-10` | `tenInchScreenshots` | 2560 x 1440 | 320 | 1280 x 720 dp, landscape |
+| `tablet-10` | `tenInchScreenshots` | 1920 x 1080 | 240 | 1280 x 720 dp, landscape |
 
-- **Play's rules (help page, read 2026-11-24):** up to 8 pictures per device; tablets want at least 4, at 16:9 or 9:16, with sides of 1080 px or more. It gives both 3840 and 7680 px as the largest side; these sizes fit either. It has no separate rules for 7" and 10".
+- **Play's rules (help page, read 2026-11-24):** up to 8 pictures per device; tablets want at least 4, at 16:9 or 9:16, with sides of 1080 px or more. It gives both 3840 and 7680 px as the largest side; these sizes fit either. It has no separate rules for 7" and 10". Guides give 8 MB per picture: at 2560 x 1440 four pictures went past 8,000,000 bytes, so the 10" tablet uses 1920 x 1080 at density 240, the same 1280 x 720 dp.
 - **So your list of screens needs 4 to 8 entries**, the same for every device.
 
-### 5. Screenshot test, English only, on the three devices
-- **Build (changed on 2026-11-25):** the release build. It is minified, so the test and the data below, which rely on the debug build and Koin, have to be redesigned before step 5.
-- **Test:** a UI Automator test in `:app/src/androidTest`. It finds controls by their string resource, so it works in every language. It is the project's first `androidTest`, so `:app` gets a test runner and UI Automator, and the Konsist guards that read every source file may need to know about the folder.
-- **Data:** starts from cleared data, adds distances through the repository from Koin and loads one, instead of tapping points on the map. No address search, which spares the rate-limited Geocoding API.
-- **Screens: you will define them later.** Steps 5 and 6 wait for that. The script takes whatever the test captures, so the list can also change afterwards.
-- **Known risks, depending on the screens:**
-  - the elevation chart may not open by itself, so the test would open it
-  - Show info uses the Geocoding API and the chart the Elevation API, which answered `OVER_QUERY_LIMIT` on 2026-11-24; the run fails rather than saving a picture without its data. Three devices and 7 languages make 21 requests or more for each screen that needs one, so the script can also wait between runs
-  - the Google logo must stay visible on the map
-- **Script** `scripts/take_store_screenshots.sh [--device phone|tablet-7|tablet-10] [languages]` (every device and language by default):
-  - stops if the device isn't an emulator (`emulator-*`)
-  - sets the size and density of each device, the clean status bar (demo mode), the app language (`cmd locale set-app-locales`, Android 13+) and dark mode, and resets everything with `trap`
-  - grants the location permissions, so that no dialog covers the map
-- **Docs:** `art/README.md`, with the table of pictures and the command, as in Cephalopod.
-- **Check:** the English pictures of the three devices, sent to you, with their total size, because map PNGs are larger than Cephalopod's (5.7 MB for 12 languages). Emulator settings are back to normal, also after Ctrl-C.
+### 5. Screenshot scripts, on the three devices
+- **Build (2026-11-25):** a `screenshots` build type, copied from release, with canned addresses and elevation, because Google's services are limited to about 100 requests a day. Release has none of it.
+- **No test in the app:** `scripts/take_store_screenshots.sh` drives the installed app with `adb`, through `scripts/store_screenshots.py`. It stops unless the working tree is clean (other than `MEMORY.md`) and the last commit is the version commit.
+- **Pictures:** `distance`, `start`, `points`, `elevation`, `details`, `saved-distances`, `loaded-distance`, in that order.
+- **Routes:** Las Palmas de Gran Canaria to Puerto del Rosario. The elevation goes to Santa María de Guía, and the loaded distance from Auditorio Alfredo Kraus to La Puntilla.
+- **Docs:** `art/README.md`.
+- **Check:** the English pictures of the three devices, sent to you, with their total size. Emulator settings are back to normal, also after Ctrl-C.
 
 ### 6. Screenshots in every language
 - Run it for the 7 languages and the three devices (21 pictures for each screen) and look for cut or untranslated text.
@@ -201,7 +193,7 @@ The script turns the one emulator into each device with `wm size` and `wm densit
     3. Your testers test it, and you promote it to production in Play Console.
     4. If the texts or pictures changed, Claude runs `upload_store_listing.sh --validate-only` and gives you its upload command: `scripts/upload_store_listing.sh`
   - **Phase 2:** unchanged: tag, merge and push when you ask.
-- **`CLAUDE.md`:** one line on `scripts/`, `fastlane/` and `art/`, and the first `androidTest`.
+- **`CLAUDE.md`:** one line on `scripts/`, `fastlane/` and `art/`, and the `screenshots` build type.
 - **README:** a link to `RELEASING.md`.
 
 ## Verification

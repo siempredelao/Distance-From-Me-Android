@@ -35,6 +35,16 @@ read_version() {
     fail 'Could not read the version from gradle/libs.versions.toml.'
 }
 
+# Stops unless the version commit is checked out, with nothing uncommitted.
+check_version_commit() {
+  # The memory hook can change MEMORY.md at any time.
+  [[ -z "$(git status --porcelain -- . ':(exclude)MEMORY.md')" ]] ||
+    fail 'The working tree has uncommitted changes.'
+  local expected="Version $version_code ($version_name) final"
+  [[ "$(git log -1 --format=%s)" == "$expected" ]] ||
+    fail "The last commit is not \"$expected\"."
+}
+
 # Stops unless fastlane and the service account's key are there.
 require_play_access() {
   command -v fastlane >/dev/null || fail 'fastlane is not installed: see fastlane/README.md.'
