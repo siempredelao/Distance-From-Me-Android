@@ -23,6 +23,7 @@
     <string name="action_bar_search_hint">Search Distance From Me</string>
     <string name="search_bar_open_menu">Menu</string>
     <string name="search_bar_close">Close search</string>
+    <string name="navigation_rail_close">Close menu</string>
     <string name="search_bar_clear">Clear</string>
     <string name="menu_load_title">Load distance</string>
     <string name="menu_rate_app_title">Rate app</string>
@@ -35,7 +36,6 @@
     <string name="snackbar_location_permission_action">Open settings</string>
 
     <string name="toast_loading_position">Searching your position. Please, wait</string>
-    <string name="toast_no_find_address">No backend service available or very poor network signal. Try again in a while</string>
     <string name="dialog_select_address_title">Select an address</string>
     <string name="dialog_load_distances_title">Choose a distance</string>
 
@@ -54,8 +54,15 @@
     <string name="permission_rationale_cancel">Cancel</string>
 
     <!-- ACTIVITY FEEDBACK -->
-    <string name="toast_send_feedback_error">There are no email clients installed</string>
 
     <string name="toast_no_internet_connection">No internet connection</string>
     <string name="play_services_not_supported">This device is not supported by Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">Waiting for your position…</string>
+    <string name="map_hint_measure_from_location">Long press a place to measure the distance from where you are</string>
+    <string name="map_hint_start_anywhere">Tap a place to start measuring</string>
+    <string name="map_hint_add_or_finish">Tap to add points, or long press the last one to finish</string>
+    <string name="map_hint_open_details">Tap the label to see the addresses, share the distance or save it</string>
+    <string name="map_hint_close">Close hint</string>
 </resources>

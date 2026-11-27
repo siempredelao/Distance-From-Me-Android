@@ -16,7 +16,8 @@
 
 package gc.david.dfm.main.presentation.model
 
-import gc.david.dfm.common.Coordinates
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * UI state for map rendering.
@@ -24,8 +25,8 @@ import gc.david.dfm.common.Coordinates
  * This is a pure data model without any rendering logic.
  */
 data class MapUiState(
-    val markers: List<MarkerData> = emptyList(),
-    val polylines: List<PolylineData> = emptyList(),
+    val markers: ImmutableList<MarkerData> = persistentListOf(),
+    val polylines: ImmutableList<PolylineData> = persistentListOf(),
     val cameraUpdate: CameraUpdate? = null,
     val clearMap: Boolean = false
 )
@@ -34,18 +35,19 @@ data class MapUiState(
  * Data for rendering a marker on the map.
  */
 data class MarkerData(
-    val position: Coordinates,
+    val position: CoordinatesUiModel,
     val infoWindow: InfoWindow = InfoWindow.None
 ) {
     
     /**
      * Info window state for a marker.
      */
-    sealed interface InfoWindow {
+    sealed class InfoWindow {
         
-        data object None : InfoWindow
+        data object None : InfoWindow()
         
-        data class Visible(val title: String) : InfoWindow
+        /** The [snippet] is a second, smaller line below the [title]. Each of them is cut off after one line. */
+        data class Visible(val title: String, val snippet: String? = null) : InfoWindow()
     }
 }
 
@@ -53,8 +55,8 @@ data class MarkerData(
  * Data for rendering a polyline on the map.
  */
 data class PolylineData(
-    val start: Coordinates,
-    val end: Coordinates,
+    val start: CoordinatesUiModel,
+    val end: CoordinatesUiModel,
     val color: LineColor,
     val width: Float
 ) {
@@ -71,11 +73,11 @@ data class PolylineData(
 /**
  * Camera update instructions.
  */
-sealed interface CameraUpdate {
+sealed class CameraUpdate {
 
-    data class ZoomTo(val position: Coordinates, val zoom: Float = 17f) : CameraUpdate
+    data class ZoomTo(val position: CoordinatesUiModel, val zoom: Float = 17f) : CameraUpdate()
 
-    data class MoveTo(val position: Coordinates) : CameraUpdate
+    data class MoveTo(val position: CoordinatesUiModel) : CameraUpdate()
 
-    data class FitBounds(val coordinates: List<Coordinates>, val padding: Int) : CameraUpdate
+    data class FitBounds(val coordinates: ImmutableList<CoordinatesUiModel>, val padding: Int) : CameraUpdate()
 }

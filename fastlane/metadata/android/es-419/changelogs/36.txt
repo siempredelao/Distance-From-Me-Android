@@ -1,0 +1,8 @@
+- El mapa muestra pistas que te enseñan a hacer mediciones
+- Funciona con ubicación aproximada o sin ubicación
+- En tablets y pantallas anchas, el menú se queda junto al mapa
+- Los detalles funcionan sin conexión y muestran coordenadas si no hay dirección
+- Las distancias guardadas muestran su longitud en el mapa
+- Unidad de medida seleccionada de forma predeterminada según tu país
+- Enlace a la política de privacidad en "Acerca de"
+- Muchas correcciones que hacen la app más confiable

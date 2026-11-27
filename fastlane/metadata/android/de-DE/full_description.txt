@@ -1,0 +1,18 @@
+Distance From Me misst die Entfernung in Luftlinie zwischen Orten auf einer Satellitenkarte. Beginnen Sie an Ihrer aktuellen Position oder an einem beliebigen anderen Ort und drücken Sie lange auf den Punkt, an dem Sie enden möchten.
+
+Funktionen:
+- Messen Sie von Ihrer aktuellen Position oder von jedem Ort auf der Karte
+- Fügen Sie beliebig viele Punkte hinzu, um eine Strecke aus geraden Linien zu messen
+- Suchen Sie einen Ort nach Namen oder Adresse
+- Sehen Sie das Höhenprofil der Entfernung
+- Sehen Sie die Adressen und Koordinaten des ersten und letzten Punkts
+- Speichern Sie Ihre Entfernungen mit einem Namen und laden Sie sie später wieder
+- Teilen Sie eine Entfernung mit Ihren Freunden
+- Wählen Sie zwischen Kilometern und Metern oder Meilen, Yards und Fuß
+- Verfügbar auf Deutsch, Englisch, Spanisch, Französisch, Italienisch, Portugiesisch und Katalanisch
+
+Ihr Standort wird nur verwendet, wenn Sie es erlauben. Ohne ihn können Sie weiterhin zwischen beliebigen Punkten auf der Karte messen.
+
+Die App ist Open Source und hat keine Werbung und keine Benutzerkonten.
+
+Sie benötigt die Google Play-Dienste und eine Internetverbindung.

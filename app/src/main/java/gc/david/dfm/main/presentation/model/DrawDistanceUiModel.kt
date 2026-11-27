@@ -16,9 +16,9 @@
 
 package gc.david.dfm.main.presentation.model
 
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.distance.data.model.DistanceMode
-import gc.david.dfm.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.distance.domain.model.DistanceMode
 
 data class DrawDistanceUiModel(
     val positionList: List<Coordinates>,

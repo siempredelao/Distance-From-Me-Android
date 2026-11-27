@@ -1,0 +1,6 @@
+- Nou disseny més modern i fàcil d'utilitzar.
+- Seccions de "Sobre l'aplicació" i "Ajuda" millorades.
+- Més ràpida i amb millor rendiment.
+- Millor suport per als telèfons Android més nous.
+- Millores en l'accessibilitat i la lectura.
+- Ara pots valorar-nos més fàcilment.

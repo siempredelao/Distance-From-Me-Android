@@ -17,6 +17,7 @@
 package gc.david.dfm.main.domain
 
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
+import gc.david.dfm.main.domain.model.StoredDistances
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

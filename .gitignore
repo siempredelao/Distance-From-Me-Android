@@ -12,10 +12,16 @@ local.properties
 *.iml
 
 # API keys specific to build variants
-*/src/debug/res/values/other.xml
-*/src/release/res/values/other.xml
-app/src/*/res/values/other.xml
-/common/src/main/res/values/other.xml
+**/src/*/res/values/other.xml
 
 # Keystore properties (local signing config)
 keystore.properties
+
+# fastlane's report of its last run
+fastlane/report.xml
+
+# Play Store pictures, kept only on this computer because of their size
+/art/play-store/**/*.png
+
+# Personal Claude Code settings
+.claude/settings.local.json

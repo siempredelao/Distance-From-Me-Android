@@ -16,8 +16,9 @@
 
 package gc.david.dfm.main.presentation.model
 
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.distance.domain.model.DistanceMode
+import kotlinx.collections.immutable.ImmutableList
 
 data class MainUiState(
     val mapState: MapUiState = MapUiState(),
@@ -25,11 +26,12 @@ data class MainUiState(
     val sideNavigationState: SideNavigationUiState = SideNavigationUiState(),
     val showConnectionIssue: Boolean = false,
     val errorMessage: String? = null,
-    val selectFromDistancesLoaded: List<DistanceSelectionUiModel>? = null,
+    val selectFromDistancesLoaded: ImmutableList<DistanceSelectionUiModel>? = null,
     val searchAddress: String? = null,
     val showChart: Boolean = false,
     val showLocationPermissionSnackbar: Boolean = false,
     val requestLocationPermission: Boolean = false,
+    val isLocationPermissionGranted: Boolean = false,
     val openShowInfo: Boolean = false,
     val triggerElevationUpdate: List<Coordinates>? = null,
 )

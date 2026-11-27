@@ -21,7 +21,8 @@ import com.google.android.gms.maps.MapsInitializer
 import timber.log.Timber
 
 /**
- * Initializes Google Maps SDK to avoid crashes when using CameraUpdateFactory.
+ * Initializes Google Maps SDK, so CameraUpdateFactory can be used before a map exists. The map would initialize it
+ * anyway, so this doesn't make the start slower.
  */
 class MapInitializer : Initializer {
 

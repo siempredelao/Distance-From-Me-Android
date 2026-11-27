@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2026 David Aguiar Gonzalez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package gc.david.dfm.feedback
+
+import androidx.fragment.app.FragmentActivity
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.review.ReviewManagerFactory
+import timber.log.Timber
+
+object InAppReviewHandler {
+
+    private const val TAG = "InAppReviewHandler"
+
+    fun rateApp(activity: FragmentActivity, skipFallbackDialog: Boolean = false) {
+        showRateApp(activity, skipFallbackDialog)
+    }
+
+    /**
+     * Shows rate app bottom sheet using In-App review API
+     * The bottom sheet might or might not show depending on the Quotas and limitations
+     * https://developer.android.com/guide/playcore/in-app-review#quotas
+     * We show fallback dialog if there is any error
+     */
+    private fun showRateApp(activity: FragmentActivity, skipFallbackDialog: Boolean) {
+        val reviewManager = ReviewManagerFactory.create(activity)
+        val request: Task<ReviewInfo> = reviewManager.requestReviewFlow()
+        request.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Timber.tag(TAG).d("showRateApp success")
+                val reviewInfo: ReviewInfo = task.result
+                val flow: Task<Void> = reviewManager.launchReviewFlow(activity, reviewInfo)
+                flow.addOnCompleteListener { Timber.tag(TAG).i("Review process finished") }
+            } else {
+                Timber.tag(TAG).d("showRateApp failure")
+                if (activity.supportFragmentManager.isStateSaved) {
+                    // The user left while the request was pending, and showing a dialog now would crash
+                    return@addOnCompleteListener
+                }
+                if (skipFallbackDialog) {
+                    activity.openPlayStorePage()
+                } else {
+                    RateAppFallbackDialogFragment().show(activity.supportFragmentManager, null)
+                }
+            }
+        }
+    }
+}

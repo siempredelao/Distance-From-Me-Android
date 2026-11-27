@@ -1,0 +1,1 @@
+Misura distanze in linea retta sulla mappa, da dove ti trovi o da altri luoghi.

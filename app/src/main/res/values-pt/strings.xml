@@ -20,16 +20,15 @@
     <string name="action_bar_search_hint">Pesquisar no Distance From Me</string>
     <string name="search_bar_open_menu">Menu</string>
     <string name="search_bar_close">Fechar pesquisa</string>
+    <string name="navigation_rail_close">Fechar menu</string>
     <string name="search_bar_clear">Limpar</string>
-    <string name="toast_no_find_address">Serviço inativo o sinal da rede muito pobre. Tente novamente em alguns instantes.</string>
-    <string name="toast_loading_position">Procurando a sua posiçao. Por favor, aguarde</string>
+    <string name="toast_loading_position">Procurando a sua posição. Por favor, aguarde</string>
     <string name="menu_load_title">Carregar distância</string>
-    <string name="dialog_select_address_title">Escolha una direçao</string>
-    <string name="dialog_load_distances_title">Escolha una distância</string>
+    <string name="dialog_select_address_title">Escolha uma direção</string>
+    <string name="dialog_load_distances_title">Escolha uma distância</string>
     <string name="menu_rate_app_title">Avaliar aplicativo</string>
     <string name="rate_app_prompt">Você gosta de usar este aplicativo?</string>
     <string name="rate_app_cta">Avalie agora</string>
-    <string name="toast_send_feedback_error">Nenhum cliente de correio eletrónico disponível</string>
     <string name="menu_settings_title">Preferências</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualquer posição</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posição Atual</string>
@@ -47,4 +46,12 @@
     <string name="snackbar_location_permission_action">Abrir definições</string>
     <string name="toast_no_internet_connection">Sem ligação à internet</string>
     <string name="play_services_not_supported">Este dispositivo não é suportado pelo Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">À espera da sua posição…</string>
+    <string name="map_hint_measure_from_location">Mantenha premido um local para medir a distância a partir de onde está</string>
+    <string name="map_hint_start_anywhere">Toque num local para começar a medir</string>
+    <string name="map_hint_add_or_finish">Toque para adicionar pontos ou mantenha premido o último para terminar</string>
+    <string name="map_hint_open_details">Toque na etiqueta para ver os endereços, partilhar a distância ou guardá-la</string>
+    <string name="map_hint_close">Fechar sugestão</string>
 </resources>

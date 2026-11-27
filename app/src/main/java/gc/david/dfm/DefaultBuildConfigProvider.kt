@@ -15,7 +15,6 @@
  */
 package gc.david.dfm
 
-import gc.david.dfm.common.BuildConfigProvider
 
 /**
  * Default implementation of BuildConfigProvider.

@@ -45,13 +45,15 @@ import gc.david.dfm.R
 import gc.david.dfm.designsystem.DfmGreen
 import gc.david.dfm.designsystem.Spacing
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Dialog showing saved distances to load.
  */
 @Composable
 fun DistanceSelectionDialog(
-    list: List<DistanceSelectionUiModel>,
+    list: ImmutableList<DistanceSelectionUiModel>,
     onDistanceSelected: (id: Long, name: String) -> Unit,
     onRateAppClick: () -> Unit,
     onDismiss: () -> Unit,
@@ -62,7 +64,17 @@ fun DistanceSelectionDialog(
         title = { Text(stringResource(R.string.dialog_load_distances_title)) },
         text = {
             LazyColumn {
-                items(list) { item ->
+                items(
+                    items = list,
+                    key = { item ->
+                        when (item) {
+                            is DistanceSelectionUiModel.Distance -> "distance-${item.id}"
+                            // The list holds at most one rate prompt
+                            is DistanceSelectionUiModel.RateApp -> "rate-app"
+                        }
+                    },
+                    contentType = { item -> item::class }
+                ) { item ->
                     when (item) {
                         is DistanceSelectionUiModel.Distance ->
                             Distance(item, onDistanceSelected, onDismiss)
@@ -156,7 +168,7 @@ private fun RateCta(
 @Composable
 private fun DistanceSelectionDialogPreview() {
     DistanceSelectionDialog(
-        list = listOf(
+        list = persistentListOf(
             DistanceSelectionUiModel.Distance(
                 id = 1,
                 name = "Home to Office",

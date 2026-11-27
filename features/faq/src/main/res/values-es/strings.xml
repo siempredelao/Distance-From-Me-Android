@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2026 David Aguiar Gonzalez
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="faq_title">Ayuda y comentarios</string>
+    <string name="faq_navigate_back">Volver</string>
+    <string name="faq_question_distance">¿Cómo puedo obtener una distancia?</string>
+    <string name="faq_answer_distance">Desde tu posición actual, ¡solo tienes que mantener pulsado el mapa! Desde cualquier otra posición, toca antes el punto inicial :)</string>
+    <string name="faq_question_distance_current_position">¿Cómo puedo obtener la distancia desde mi posición actual hasta cualquier punto del mapa?</string>
+    <string name="faq_answer_distance_current_position">En la barra lateral, selecciona \"Posición actual\" y luego realiza una pulsación larga en el lugar deseado del mapa.</string>
+    <string name="faq_question_distance_any_position">¿Cómo puedo obtener la distancia desde cualquier posición a otra posición del mapa?</string>
+    <string name="faq_answer_distance_any_position">En la barra lateral, selecciona \"Cualquier posición\", toca el punto inicial en el mapa y luego realiza una pulsación larga en el lugar deseado.</string>
+    <string name="faq_question_permission_current_position">¿Necesito conceder el permiso de \"Ubicación\" para obtener distancias desde el punto actual?</string>
+    <string name="faq_answer_permission_current_position">Sí.</string>
+    <string name="faq_question_permission_any_position">¿Necesito conceder el permiso de \"Ubicación\" para obtener distancias desde cualquier punto?</string>
+    <string name="faq_answer_permission_any_position">No.</string>
+    <string name="faq_question_multiple_points">¿Cómo puedo crear una distancia con varios puntos?</string>
+    <string name="faq_answer_multiple_points">Haz clics sencillos en los puntos deseados y un clic largo en el último.</string>
+    <string name="faq_question_reset_map">¿Cómo puedo restablecer el estado del mapa?</string>
+    <string name="faq_answer_reset_map">Selecciona cualquier modo de posición en la barra lateral.</string>
+    <string name="faq_question_gps_accuracy">¿Por qué mi posición GPS no es precisa?</string>
+    <string name="faq_answer_gps_accuracy">Este problema podría estar relacionado con el sensor GPS de tu dispositivo.</string>
+</resources>

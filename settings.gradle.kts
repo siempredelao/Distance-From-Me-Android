@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         gradlePluginPortal()
         google()
@@ -29,17 +30,24 @@ dependencyResolutionManagement {
     }
 }
 
-include(":about")
-include(":address")
 include(":app")
-include(":common")
-include(":connectivity")
-include(":core-distances")
-include(":design-system")
-include(":elevation")
-include(":faq")
-include(":feedback")
-include(":opensource")
-include(":show-info")
-include(":settings")
-include(":test-support")
+include(":core:address")
+include(":core:coordinates")
+include(":core:design-system")
+include(":core:distances")
+include(":core:geocoding")
+include(":core:settings")
+include(":core:units")
+include(":features:about")
+include(":features:address")
+include(":features:elevation")
+include(":features:faq")
+include(":features:feedback")
+include(":features:opensource")
+include(":features:settings")
+include(":features:show-info")
+include(":support:android")
+include(":support:coroutines")
+include(":support:navigation")
+include(":support:test")
+include(":tools:konsist")

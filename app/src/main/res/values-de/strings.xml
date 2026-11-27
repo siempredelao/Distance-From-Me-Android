@@ -20,16 +20,15 @@
     <string name="action_bar_search_hint">Distance From Me suchen</string>
     <string name="search_bar_open_menu">Menü</string>
     <string name="search_bar_close">Suche schließen</string>
+    <string name="navigation_rail_close">Menü schließen</string>
     <string name="search_bar_clear">Löschen</string>
-    <string name="toast_no_find_address">Dienst inaktiv oder sehr schlechte Netzwerk-Signal. Bitte versuchen Sie es später noch einmal</string>
     <string name="toast_loading_position">Suche Ihrer Position im Vorgang. Bitte warten</string>
     <string name="menu_load_title">Entfernung laden</string>
     <string name="dialog_select_address_title">Wählen Sie eine Adresse aus</string>
-    <string name="dialog_load_distances_title">Wählen Sie einen Entfernung aux</string>
+    <string name="dialog_load_distances_title">Wählen Sie eine Entfernung aus</string>
     <string name="menu_rate_app_title">App bewerten</string>
     <string name="rate_app_prompt">Gefällt Ihnen diese App?</string>
     <string name="rate_app_cta">Jetzt bewerten</string>
-    <string name="toast_send_feedback_error">Es gibt keine E-Mail-Clients installiert</string>
     <string name="menu_settings_title">Einstellungen</string>
     <string name="navigation_drawer_starting_point_current_position_item">Aktuelle Position</string>
     <string name="toast_first_point_needed">Startpunkt benötigt. Bitte wählen Sie einen Punkt.</string>
@@ -47,4 +46,12 @@
     <string name="snackbar_location_permission_action">Einstellungen öffnen</string>
     <string name="toast_no_internet_connection">Keine Internetverbindung</string>
     <string name="play_services_not_supported">Dieses Gerät wird von Google Play Services nicht unterstützt.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">Warten auf Ihre Position…</string>
+    <string name="map_hint_measure_from_location">Drücken Sie lange auf einen Ort, um die Entfernung von Ihrer Position zu messen</string>
+    <string name="map_hint_start_anywhere">Tippen Sie auf einen Ort, um mit der Messung zu beginnen</string>
+    <string name="map_hint_add_or_finish">Tippen Sie, um Punkte hinzuzufügen, oder drücken Sie zum Beenden lange auf den letzten</string>
+    <string name="map_hint_open_details">Tippen Sie auf die Beschriftung, um die Adressen zu sehen oder die Entfernung zu teilen oder zu speichern</string>
+    <string name="map_hint_close">Hinweis schließen</string>
 </resources>

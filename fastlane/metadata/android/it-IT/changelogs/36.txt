@@ -1,0 +1,8 @@
+- La mappa mostra suggerimenti che ti insegnano a misurare
+- Funziona con posizione approssimativa o senza posizione
+- Su tablet e schermi ampi, il menu resta accanto alla mappa
+- I dettagli funzionano offline e mostrano le coordinate se non c'è un indirizzo
+- Le distanze salvate mostrano la loro lunghezza sulla mappa
+- Unità di misura predefinita selezionata in base al tuo paese
+- Link all'informativa sulla privacy in "Informazioni"
+- Tante correzioni che rendono l'app più affidabile

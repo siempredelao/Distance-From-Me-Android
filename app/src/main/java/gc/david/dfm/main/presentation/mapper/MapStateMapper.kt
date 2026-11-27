@@ -18,13 +18,17 @@ package gc.david.dfm.main.presentation.mapper
 
 import android.content.Context
 import gc.david.dfm.R
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
-import gc.david.dfm.settings.domain.model.CameraAnimation
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Maps DrawDistanceModel (presentation model) to MapUiState (rendering model).
@@ -48,9 +52,9 @@ class MapStateMapper(private val context: Context) {
         )
     }
 
-    private fun createMarkers(model: DrawDistanceUiModel): List<MarkerData> {
+    private fun createMarkers(model: DrawDistanceUiModel): ImmutableList<MarkerData> {
         val coordinates = model.positionList
-        if (coordinates.isEmpty()) return emptyList()
+        if (coordinates.isEmpty()) return persistentListOf()
 
         return buildList {
             coordinates.forEachIndexed { index, coordinate ->
@@ -64,25 +68,25 @@ class MapStateMapper(private val context: Context) {
                 if (shouldShowMarker) {
                     add(
                         MarkerData(
-                            position = coordinate,
+                            position = coordinate.toUiModel(),
                             infoWindow = createInfoWindow(isLastMarker, model)
                         )
                     )
                 }
             }
-        }
+        }.toImmutableList()
     }
 
     private fun createInfoWindow(isLastMarker: Boolean, model: DrawDistanceUiModel) =
-        if (isLastMarker) {
-            MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
-        } else {
-            MarkerData.InfoWindow.None
+        when {
+            !isLastMarker -> MarkerData.InfoWindow.None
+            model.distanceName.isBlank() -> MarkerData.InfoWindow.Visible(title = model.formattedDistance)
+            else -> MarkerData.InfoWindow.Visible(title = model.distanceName, snippet = model.formattedDistance)
         }
 
-    private fun createPolylines(model: DrawDistanceUiModel): List<PolylineData> {
+    private fun createPolylines(model: DrawDistanceUiModel): ImmutableList<PolylineData> {
         val coordinates = model.positionList
-        if (coordinates.size < 2) return emptyList()
+        if (coordinates.size < 2) return persistentListOf()
 
         val lineWidth = context.resources.getDimension(R.dimen.map_line_width)
         val color = createLineColor(model.source)
@@ -91,14 +95,14 @@ class MapStateMapper(private val context: Context) {
             for (i in 0 until coordinates.lastIndex) {
                 add(
                     PolylineData(
-                        start = coordinates[i],
-                        end = coordinates[i + 1],
+                        start = coordinates[i].toUiModel(),
+                        end = coordinates[i + 1].toUiModel(),
                         color = color,
                         width = lineWidth
                     )
                 )
             }
-        }
+        }.toImmutableList()
     }
 
     private fun createLineColor(source: DrawDistanceUiModel.Source) =
@@ -110,18 +114,18 @@ class MapStateMapper(private val context: Context) {
     private fun createCameraUpdate(model: DrawDistanceUiModel): CameraUpdate? {
         if (model.positionList.isEmpty()) return null
 
-        if (model.cameraAnimation !is CameraAnimation.Animate) return null
-
         return when (model.cameraAnimation) {
-            is CameraAnimation.Animate.Centre -> {
+            CameraAnimation.None -> null
+
+            CameraAnimation.Animate.Centre -> {
                 CameraUpdate.FitBounds(
-                    coordinates = model.positionList,
+                    coordinates = model.positionList.map(Coordinates::toUiModel).toImmutableList(),
                     padding = 200
                 )
             }
 
-            is CameraAnimation.Animate.Destination -> {
-                CameraUpdate.MoveTo(position = model.positionList.last())
+            CameraAnimation.Animate.Destination -> {
+                CameraUpdate.MoveTo(position = model.positionList.last().toUiModel())
             }
         }
     }

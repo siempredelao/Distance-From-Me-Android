@@ -1,0 +1,18 @@
+Distance From Me mesure la distance en ligne droite entre des lieux sur une carte satellite. Partez de votre position actuelle ou de n'importe quel autre lieu, puis appuyez longuement sur le point où vous voulez terminer.
+
+Fonctionnalités :
+- Mesurez depuis votre position actuelle ou depuis n'importe quel lieu de la carte
+- Ajoutez autant de points que nécessaire pour mesurer un parcours fait de lignes droites
+- Recherchez un lieu par son nom ou son adresse
+- Consultez le profil d'élévation de la distance
+- Voyez les adresses et les coordonnées du premier et du dernier point
+- Enregistrez vos distances avec un nom et rechargez-les plus tard
+- Partagez une distance avec vos amis
+- Choisissez entre kilomètres et mètres, ou miles, yards et pieds
+- Disponible en français, anglais, espagnol, allemand, italien, portugais et catalan
+
+Votre position n'est utilisée que si vous l'autorisez. Sans elle, vous pouvez toujours mesurer entre n'importe quels points de la carte.
+
+L'application est open source, sans publicité et sans compte utilisateur.
+
+Elle nécessite les services Google Play et une connexion Internet.

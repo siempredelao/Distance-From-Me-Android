@@ -20,8 +20,8 @@
     <string name="action_bar_search_hint">Rechercher Distance From Me</string>
     <string name="search_bar_open_menu">Menu</string>
     <string name="search_bar_close">Fermer la recherche</string>
+    <string name="navigation_rail_close">Fermer le menu</string>
     <string name="search_bar_clear">Effacer</string>
-    <string name="toast_no_find_address">Le service est inactif ou votre signal de réseau est très pauvre. Veuillez réessayer ultérieurement.</string>
     <string name="toast_loading_position">En recherchant de votre position. Attendez, s\'il vous plaît!</string>
     <string name="menu_load_title">Chargez distance</string>
     <string name="dialog_select_address_title">Choisissez une direction</string>
@@ -29,7 +29,6 @@
     <string name="menu_rate_app_title">Noter application</string>
     <string name="rate_app_prompt">Vous aimez utiliser cette application ?</string>
     <string name="rate_app_cta">Notez\'la maintenant</string>
-    <string name="toast_send_feedback_error">Pas de client de messagerie installé</string>
     <string name="menu_settings_title">Paramètres</string>
     <string name="toast_first_point_needed">Indiquez un point de départ, s\'il vous plaît</string>
     <string name="navigation_drawer_starting_point_current_position_item">Position actuelle</string>
@@ -47,4 +46,12 @@
     <string name="snackbar_location_permission_action">Ouvrir les paramètres</string>
     <string name="toast_no_internet_connection">Pas de connexion Internet</string>
     <string name="play_services_not_supported">Cet appareil n’est pas pris en charge par Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">En attente de votre position…</string>
+    <string name="map_hint_measure_from_location">Appuyez longuement sur un lieu pour mesurer la distance depuis votre position</string>
+    <string name="map_hint_start_anywhere">Touchez un lieu pour commencer à mesurer</string>
+    <string name="map_hint_add_or_finish">Touchez pour ajouter des points, ou appuyez longuement sur le dernier pour terminer</string>
+    <string name="map_hint_open_details">Touchez l’étiquette pour voir les adresses, partager la distance ou l’enregistrer</string>
+    <string name="map_hint_close">Fermer le conseil</string>
 </resources>

@@ -1,0 +1,183 @@
+/*
+ * Copyright (c) 2026 David Aguiar Gonzalez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package gc.david.dfm.address.presentation
+
+import gc.david.dfm.address.R
+import gc.david.dfm.address.presentation.mapper.toUiModel
+import gc.david.dfm.core.address.domain.GetAddressCoordinatesByNameUseCase
+import gc.david.dfm.core.address.domain.model.Address
+import gc.david.dfm.core.address.domain.model.GeocodingError
+import gc.david.dfm.core.address.domain.model.GeocodingResult
+import gc.david.dfm.core.address.presentation.mapper.GeocodingErrorMessageMapper
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.support.android.domain.ConnectionManager
+import gc.david.dfm.support.android.presentation.ResourceProvider
+import gc.david.dfm.support.test.CoroutineExtension
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import java.io.IOException
+
+/**
+ * Created by david on 15.01.17.
+ */
+class AddressViewModelTest {
+
+    @JvmField
+    @RegisterExtension
+    val coroutineExtension = CoroutineExtension()
+
+    private val getAddressCoordinatesByNameUseCase = mock<GetAddressCoordinatesByNameUseCase>()
+    private val connectionManager = mock<ConnectionManager>()
+    private val resourceProvider = mock<ResourceProvider>()
+    private val geocodingErrorMessageMapper = mock<GeocodingErrorMessageMapper>()
+
+    private val viewModel =
+        AddressViewModel(
+            getAddressCoordinatesByNameUseCase,
+            connectionManager,
+            resourceProvider,
+            geocodingErrorMessageMapper
+        )
+
+    @Test
+    fun `shows connection problems dialog when no connection available in position by name`() {
+        whenever(connectionManager.isOnline()).thenReturn(false)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertTrue(viewModel.uiState.value.showConnectionIssue)
+    }
+
+    @Test
+    fun `executes coordinates by name use case when connection available`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        givenCoordinatesByNameReturns(GeocodingResult.NoResults)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        verify(getAddressCoordinatesByNameUseCase)(LOCATION_NAME)
+    }
+
+    @Test
+    fun `shows no matches when position by name use case returns no results`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        givenCoordinatesByNameReturns(GeocodingResult.NoResults)
+        whenever(resourceProvider.get(R.string.toast_no_results)).thenReturn(NO_RESULTS_MESSAGE)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals(NO_RESULTS_MESSAGE, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `shows position by name when use case returns one result`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        givenCoordinatesByNameReturns(GeocodingResult.Found(listOf(ADDRESS)))
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals(ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
+    }
+
+    @Test
+    fun `shows address selection dialog when position by name use case returns several results`() =
+        runTest {
+            whenever(connectionManager.isOnline()).thenReturn(true)
+            val addresses = listOf(ADDRESS, ADDRESS)
+            givenCoordinatesByNameReturns(GeocodingResult.Found(addresses))
+
+            viewModel.onAddressSearch(LOCATION_NAME)
+
+            assertFalse(viewModel.uiState.value.isLoading)
+            assertEquals(addresses.map(Address::toUiModel), viewModel.uiState.value.multipleAddressesFound)
+        }
+
+    @Test
+    fun `shows rejection message when position by name request is rejected`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        givenCoordinatesByNameReturns(GeocodingResult.Rejected(GeocodingError.OVER_QUERY_LIMIT))
+        whenever(geocodingErrorMessageMapper.map(GeocodingError.OVER_QUERY_LIMIT)).thenReturn(REJECTED_MESSAGE)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals(REJECTED_MESSAGE, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `shows generic error when position by name use case throws`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        whenever(getAddressCoordinatesByNameUseCase(any())).thenAnswer { throw IOException("Network error") }
+        whenever(geocodingErrorMessageMapper.unexpectedFailureMessage()).thenReturn(GENERIC_MESSAGE)
+
+        viewModel.onAddressSearch(LOCATION_NAME)
+
+        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals(GENERIC_MESSAGE, viewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun `select address in dialog shows position by name with address`() {
+        viewModel.onAddressSelected(ADDRESS.toUiModel())
+
+        assertEquals(ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
+    }
+
+    @Test
+    fun `shows the latest search by name when an earlier one finishes later`() = runTest {
+        whenever(connectionManager.isOnline()).thenReturn(true)
+        val earlierResult = CompletableDeferred<GeocodingResult>()
+        whenever(getAddressCoordinatesByNameUseCase(LOCATION_NAME)).doSuspendableAnswer { earlierResult.await() }
+        whenever(getAddressCoordinatesByNameUseCase(LATER_LOCATION_NAME))
+            .thenReturn(GeocodingResult.Found(listOf(LATER_ADDRESS)))
+        viewModel.onAddressSearch(LOCATION_NAME)
+        viewModel.onAddressSearch(LATER_LOCATION_NAME)
+
+        earlierResult.complete(GeocodingResult.Found(listOf(ADDRESS)))
+
+        assertEquals(LATER_ADDRESS.toUiModel(), viewModel.uiState.value.addressFound)
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
+    private suspend fun givenCoordinatesByNameReturns(result: GeocodingResult) {
+        whenever(getAddressCoordinatesByNameUseCase(any())).thenReturn(result)
+    }
+
+    companion object {
+
+        private const val LOCATION_NAME = "fake location name"
+        private const val LATER_LOCATION_NAME = "later location name"
+        private const val NO_RESULTS_MESSAGE = "no matches"
+        private const val REJECTED_MESSAGE = "rejected"
+        private const val GENERIC_MESSAGE = "generic"
+
+        private val ADDRESS = Address(LOCATION_NAME, Coordinates(0.0, 0.0))
+        private val LATER_ADDRESS = Address(LATER_LOCATION_NAME, Coordinates(1.0, 1.0))
+    }
+}

@@ -16,35 +16,54 @@
 
 package gc.david.dfm.main.presentation
 
-import android.location.Location
-import gc.david.dfm.ConnectionManager
-import gc.david.dfm.PermissionChecker
+import android.content.Context
+import android.content.res.Resources
+import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.R
-import gc.david.dfm.common.BuildConfigProvider
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.domain.DistanceCalculator
-import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.common.presentation.DistanceFormatter
-import gc.david.dfm.common.presentation.ResourceProvider
+import gc.david.dfm.core.coordinates.data.BaseCoordinatesRepository
+import gc.david.dfm.core.coordinates.data.CoordinatesMemoryDataSource
+import gc.david.dfm.core.coordinates.domain.DistanceCalculator
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.core.distances.domain.GetDistancesUseCase
 import gc.david.dfm.core.distances.domain.GetPositionListUseCase
 import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.data.model.DistanceMode
-import gc.david.dfm.distance.data.model.Point
-import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.core.distances.domain.model.Position
+import gc.david.dfm.core.distances.domain.model.PositionListResult
+import gc.david.dfm.core.settings.domain.SettingsRepository
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.core.units.domain.UnitConverter
+import gc.david.dfm.core.units.domain.model.UnitSystem
+import gc.david.dfm.core.units.presentation.UnitFormatter
+import gc.david.dfm.distance.data.BaseDistanceModeRepository
+import gc.david.dfm.distance.domain.model.DistanceMode
+import gc.david.dfm.location.domain.LocationRepository
+import gc.david.dfm.location.domain.PermissionChecker
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
-import gc.david.dfm.main.domain.StoredDistances
+import gc.david.dfm.main.domain.model.StoredDistances
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.main.presentation.mapper.toUiModel
 import gc.david.dfm.main.presentation.model.CameraUpdate
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
-import gc.david.dfm.settings.domain.SettingsRepository
-import gc.david.dfm.testsupport.CoroutineExtension
+import gc.david.dfm.main.presentation.model.MarkerData
+import gc.david.dfm.main.presentation.model.PolylineData
+import gc.david.dfm.onboarding.data.BaseHintRepository
+import gc.david.dfm.onboarding.data.HintDiskDataSource
+import gc.david.dfm.onboarding.domain.MapHintProcessor
+import gc.david.dfm.onboarding.domain.model.MapHint
+import gc.david.dfm.support.android.domain.ConnectionManager
+import gc.david.dfm.support.android.presentation.ResourceProvider
+import gc.david.dfm.support.test.CoroutineExtension
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -52,12 +71,16 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
-import org.mockito.kotlin.any
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
     @JvmField
@@ -70,42 +93,93 @@ class MainViewModelTest {
     private val connectionManager = mock<ConnectionManager>()
     private val resourceProvider = mock<ResourceProvider>()
     private val settingsRepository = mock<SettingsRepository>()
-    private val distanceModeProvider = mock<DistanceModeProvider>()
-    private val currentLocationProvider = mock<CurrentLocationProvider>()
+    private val distanceModeRepository = BaseDistanceModeRepository()
+    private val locationRepository = mock<LocationRepository>()
+    private val locations = MutableSharedFlow<Coordinates>(extraBufferCapacity = 1)
     private val permissionChecker = mock<PermissionChecker>()
-    private val coordinatesRepository = mock<CoordinatesRepository>()
-    private val distanceCalculator = mock<DistanceCalculator>()
-    private val distanceFormatter = mock<DistanceFormatter>()
+    private val coordinatesRepository = BaseCoordinatesRepository(CoordinatesMemoryDataSource())
+    private val hintRepository = BaseHintRepository(mock<HintDiskDataSource>())
     private val buildConfigProvider = mock<BuildConfigProvider>()
-    private val mapStateMapper = mock<MapStateMapper>()
+    private val context = mock<Context>()
+    private val resources = mock<Resources>()
     private val loadDistancesMapper = mock<LoadDistancesMapper>()
+    private val defaultLocale = Locale.getDefault()
+
+    // The points of the path, which the repository keeps between calls
+    private val storedPath get() = coordinatesRepository.observeDistance().value
+
+    // The path as the map draws it
+    private val drawnPath
+        get() = viewModel.uiState.value.mapState.polylines.let { lines ->
+            lines.take(1).map(PolylineData::start) + lines.map(PolylineData::end)
+        }.map { Coordinates(it.latitude, it.longitude) }
+    private val markers get() = viewModel.uiState.value.mapState.markers
 
     private lateinit var viewModel: MainViewModel
 
     @BeforeEach
     fun setup() {
+        // The label's separators follow the locale
+        Locale.setDefault(Locale.US)
         whenever(getDistancesUseCase()).thenReturn(flowOf(emptyList()))
-        whenever(coordinatesRepository.observeDistance()).thenReturn(MutableStateFlow(emptyList()))
+        whenever(locationRepository.observeLocation()).thenReturn(locations)
         whenever(settingsRepository.getUnitSystemPreference()).thenReturn(UnitSystem.METRIC)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
+        whenever(settingsRepository.getCameraAnimation()).thenReturn(CameraAnimation.None)
+        whenever(context.resources).thenReturn(resources)
 
-        viewModel = MainViewModel(
-            getDistancesUseCase,
-            getStoredDistancesUseCase,
-            getPositionListUseCase,
-            connectionManager,
-            resourceProvider,
-            settingsRepository,
-            distanceModeProvider,
-            currentLocationProvider,
-            permissionChecker,
-            coordinatesRepository,
-            distanceCalculator,
-            distanceFormatter,
-            buildConfigProvider,
-            mapStateMapper,
-            loadDistancesMapper
-        )
+        viewModel = createViewModel()
+    }
+
+    @AfterEach
+    fun tearDown() {
+        Locale.setDefault(defaultLocale)
+    }
+
+    @Test
+    fun `a new view model drops the points left by the previous one`() {
+        givenDistanceDrawn()
+
+        viewModel = createViewModel()
+
+        assertEquals(emptyList<Coordinates>(), storedPath)
+        assertEquals(emptyList<MarkerData>(), markers)
+    }
+
+    @Test
+    fun `a long press on a reopened map asks for a starting point in any position mode`() {
+        val message = "Start point needed"
+        whenever(resourceProvider.get(R.string.toast_first_point_needed)).thenReturn(message)
+        givenDistanceDrawn()
+        viewModel = createViewModel()
+
+        viewModel.onMapLongClick(POINT_C)
+
+        assertEquals(message, viewModel.uiState.value.errorMessage)
+        assertEquals(emptyList<Coordinates>(), drawnPath)
+    }
+
+    @Test
+    fun `does not read stored distances before onStart`() {
+        verify(getDistancesUseCase, never()).invoke()
+    }
+
+    @Test
+    fun `onStart shows the load menu item once distances are stored`() {
+        val storedDistances = MutableStateFlow(emptyList<Distance>())
+        whenever(getDistancesUseCase()).thenReturn(storedDistances)
+        viewModel.onStart()
+
+        storedDistances.value = listOf(Distance(1L, "Home", "3.2 km", java.util.Date(0)))
+
+        assertTrue(viewModel.uiState.value.sideNavigationState.showLoadMenuItem)
+    }
+
+    @Test
+    fun `onStart reads stored distances only once`() {
+        viewModel.onStart()
+        viewModel.onStart()
+
+        verify(getDistancesUseCase).invoke()
     }
 
     @Test
@@ -148,10 +222,10 @@ class MainViewModelTest {
     @Test
     fun `onLoadDistancesClick updates selectFromDistancesLoaded with mapped distance list`() = runTest {
         val storedDistances = StoredDistances(
-            distances = listOf(Distance(1L, "Home", "3.2 km", java.util.Date(0))),
+            distances = listOf(Distance(1L, "Home", "3.2 km", Date(0))),
             rateRequest = StoredDistances.RateRequest.NotAvailable
         )
-        val expected = listOf(
+        val expected = persistentListOf<DistanceSelectionUiModel>(
             DistanceSelectionUiModel.Distance(
                 id = 1L,
                 name = "Home",
@@ -168,11 +242,62 @@ class MainViewModelTest {
     }
 
     @Test
+    fun `onDistanceToShowSelected replaces the drawn distance with the stored one`() = runTest {
+        givenDistanceDrawn()
+        val positions = listOf(Position(0.0, 1.0), Position(0.0, 2.0))
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
+
+        viewModel.onDistanceToShowSelected(1L, "Home")
+
+        assertEquals(listOf(POINT_B, POINT_C), storedPath)
+        assertEquals(listOf(POINT_B, POINT_C), drawnPath)
+        assertEquals(MarkerData.InfoWindow.Visible(title = "Home", snippet = "111.19 km"), markers.last().infoWindow)
+        assertEquals(listOf(POINT_B, POINT_C), viewModel.uiState.value.triggerElevationUpdate)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "  "])
+    fun `onDistanceToShowSelected shows only the distance when the stored one has no name`(name: String) = runTest {
+        val positions = listOf(Position(0.0, 0.0), Position(0.0, 1.0))
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
+
+        viewModel.onDistanceToShowSelected(1L, name)
+
+        assertEquals(MarkerData.InfoWindow.Visible("111.19 km"), markers.last().infoWindow)
+    }
+
+    @Test
+    fun `onDistanceToShowSelected keeps the map when the distance has no positions`() = runTest {
+        givenDistanceDrawn()
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.NotFound)
+        val mapState = viewModel.uiState.value.mapState
+
+        viewModel.onDistanceToShowSelected(1L, "Home")
+
+        assertEquals(listOf(POINT_A, POINT_B), storedPath)
+        assertEquals(mapState, viewModel.uiState.value.mapState)
+    }
+
+    @Test
+    fun `onDistanceToShowSelected keeps the map when loading the positions fails`() = runTest {
+        givenDistanceDrawn()
+        whenever(getPositionListUseCase(1L)).thenAnswer { throw IllegalStateException("Database error") }
+        val mapState = viewModel.uiState.value.mapState
+
+        viewModel.onDistanceToShowSelected(1L, "Home")
+
+        assertEquals(listOf(POINT_A, POINT_B), storedPath)
+        assertEquals(mapState, viewModel.uiState.value.mapState)
+    }
+
+    @Test
     fun `onDistanceFromCurrentPositionSet updates distance mode`() {
+        givenDistanceDrawn()
+
         viewModel.onDistanceFromCurrentPositionSet()
 
-        verify(distanceModeProvider).set(DistanceMode.FROM_CURRENT_POINT)
-        verify(coordinatesRepository).clear()
+        assertEquals(DistanceMode.FROM_CURRENT_POINT, distanceModeRepository.getDistanceMode())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
@@ -194,16 +319,73 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onDistanceFromAnyPositionSet updates distance mode`() {
-        viewModel.onDistanceFromAnyPositionSet()
+    fun `onStart asks for location permission in current position mode without permission`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(false)
 
-        verify(distanceModeProvider).set(DistanceMode.FROM_ANY_POINT)
-        verify(coordinatesRepository).clear()
+        viewModel.onStart()
+
+        assertTrue(viewModel.uiState.value.requestLocationPermission)
     }
 
     @Test
-    fun `onMyLocationButtonClick does nothing when current location is undefined`() {
-        whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
+    fun `onStart asks for location permission only once`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(false)
+        viewModel.onStart()
+        viewModel.onLocationPermissionRequestHandled()
+
+        viewModel.onStart()
+
+        assertFalse(viewModel.uiState.value.requestLocationPermission)
+    }
+
+    @Test
+    fun `onLocationPermissionDenied switches to any position mode`() {
+        viewModel.onLocationPermissionDenied(permanently = false)
+
+        assertEquals(DistanceMode.FROM_ANY_POINT, distanceModeRepository.getDistanceMode())
+        assertEquals(DistanceMode.FROM_ANY_POINT, viewModel.uiState.value.distanceMode)
+        assertFalse(viewModel.uiState.value.showLocationPermissionSnackbar)
+    }
+
+    @Test
+    fun `onLocationPermissionDenied permanently points the user to settings`() {
+        viewModel.onLocationPermissionDenied(permanently = true)
+
+        assertEquals(DistanceMode.FROM_ANY_POINT, distanceModeRepository.getDistanceMode())
+        assertTrue(viewModel.uiState.value.showLocationPermissionSnackbar)
+    }
+
+    @Test
+    fun `onLocationPermissionChanged exposes a grant`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(true)
+
+        viewModel.onLocationPermissionChanged()
+
+        assertTrue(viewModel.uiState.value.isLocationPermissionGranted)
+    }
+
+    @Test
+    fun `onLocationPermissionChanged exposes a revocation`() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(true, false)
+        viewModel.onLocationPermissionChanged()
+
+        viewModel.onLocationPermissionChanged()
+
+        assertFalse(viewModel.uiState.value.isLocationPermissionGranted)
+    }
+
+    @Test
+    fun `onDistanceFromAnyPositionSet updates distance mode`() {
+        givenDistanceDrawn()
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(DistanceMode.FROM_ANY_POINT, distanceModeRepository.getDistanceMode())
+        assertEquals(emptyList<Coordinates>(), storedPath)
+    }
+
+    @Test
+    fun `onMyLocationButtonClick does nothing without a location`() {
 
         viewModel.onMyLocationButtonClick()
 
@@ -211,76 +393,96 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onLocationChanged on first update zooms to current location`() {
-        val location = mock<Location>()
-        whenever(location.latitude).thenReturn(51.5074)
-        whenever(location.longitude).thenReturn(-0.1278)
+    fun `trackLocation does not observe location without permission`() = runTest {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.trackLocation() }
 
-        viewModel.onLocationChanged(location)
+        verify(locationRepository, never()).observeLocation()
+    }
 
-        assertEquals(
-            Coordinates(51.5074, -0.1278),
-            (viewModel.uiState.value.mapState.cameraUpdate as CameraUpdate.ZoomTo).position
-        )
+    @Test
+    fun `trackLocation zooms to the first location once location is granted`() = runTest {
+        givenLocationTracked()
+
+        locations.emit(LONDON)
+
+        assertEquals(CameraUpdate.ZoomTo(LONDON.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
+    }
+
+    @Test
+    fun `onMyLocationButtonClick moves to the current location`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
+        viewModel.onCameraUpdateHandled()
+
+        viewModel.onMyLocationButtonClick()
+
+        assertEquals(CameraUpdate.MoveTo(LONDON.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
     }
 
     @Test
     fun `onMapClick appends coordinates to repository in any position mode`() {
         val coordinates = Coordinates(40.7128, -74.0060)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        viewModel.onDistanceFromAnyPositionSet()
 
         viewModel.onMapClick(coordinates)
 
-        verify(coordinatesRepository).append(coordinates)
+        assertEquals(listOf(coordinates), storedPath)
     }
 
     @Test
-    fun `onMapClick does nothing without current location when mode is current position`() {
+    fun `onMapClick does nothing without a location when mode is current position`() {
         val coordinates = Coordinates(40.7128, -74.0060)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
-        whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
 
         viewModel.onMapClick(coordinates)
 
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
     fun `onPositionByNameResolved appends first point and moves camera in any position mode`() {
         val coordinates = Coordinates(40.0, -3.0)
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        viewModel.onDistanceFromAnyPositionSet()
 
         viewModel.onPositionByNameResolved(coordinates)
 
-        verify(coordinatesRepository).append(coordinates)
-        assertEquals(CameraUpdate.MoveTo(coordinates), viewModel.uiState.value.mapState.cameraUpdate)
+        assertEquals(listOf(coordinates), storedPath)
+        assertEquals(CameraUpdate.MoveTo(coordinates.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
+    }
+
+    @Test
+    fun `a tap after a search keeps the searched place as the start in any position mode`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onPositionByNameResolved(POINT_A)
+
+        viewModel.onMapClick(POINT_B)
+
+        assertEquals(listOf(POINT_A, POINT_B), storedPath)
+        assertEquals(listOf(MarkerData(POINT_A.toUiModel()), MarkerData(POINT_B.toUiModel())), markers)
     }
 
     @Test
     fun `onMapLongClick with empty coordinates in any position mode shows missing start point error`() {
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_ANY_POINT)
+        viewModel.onDistanceFromAnyPositionSet()
         val message = "Start point needed"
         whenever(resourceProvider.get(R.string.toast_first_point_needed)).thenReturn(message)
 
         viewModel.onMapLongClick(Coordinates(40.0, -3.0))
 
         assertEquals(message, viewModel.uiState.value.errorMessage)
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
-    fun `onMapLongClick with undefined current location in current-position mode does nothing`() {
-        whenever(distanceModeProvider.get()).thenReturn(DistanceMode.FROM_CURRENT_POINT)
-        whenever(currentLocationProvider.get()).thenReturn(CurrentLocationProvider.UNDEFINED)
-
+    fun `onMapLongClick without a location in current-position mode does nothing`() {
         viewModel.onMapLongClick(Coordinates(40.0, -3.0))
 
-        verify(coordinatesRepository, never()).append(any())
+        assertEquals(emptyList<Coordinates>(), storedPath)
     }
 
     @Test
-    fun `onAddressSearch records query when current location is available`() {
-        whenever(currentLocationProvider.get()).thenReturn(Point(51.5074, -0.1278))
+    fun `onAddressSearch records query when current location is available`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
 
         viewModel.onAddressSearch("London")
 
@@ -288,13 +490,103 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `resetMap clears map state and hides chart`() {
-        viewModel.resetMap()
+    fun `onAddressSearch records query without a current location`() {
+        viewModel.onAddressSearch("Madrid")
+
+        assertEquals("Madrid", viewModel.uiState.value.searchAddress)
+    }
+
+    @Test
+    fun `onPositionByNameResolved without a location in current-position mode moves camera only`() {
+        val coordinates = Coordinates(40.4168, -3.7038)
+
+        viewModel.onPositionByNameResolved(coordinates)
+
+        assertEquals(CameraUpdate.MoveTo(coordinates.toUiModel()), viewModel.uiState.value.mapState.cameraUpdate)
+        assertEquals(emptyList<Coordinates>(), storedPath)
+    }
+
+    @Test
+    fun `a long press draws the distance from the tapped point in any position mode`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+
+        viewModel.onMapLongClick(POINT_B)
+
+        assertEquals(listOf(POINT_A, POINT_B), drawnPath)
+        assertEquals(
+            listOf(
+                MarkerData(POINT_A.toUiModel()),
+                MarkerData(POINT_B.toUiModel(), MarkerData.InfoWindow.Visible("111.19 km")),
+            ),
+            markers
+        )
+    }
+
+    @Test
+    fun `a long press draws the distance from the current location in current position mode`() = runTest {
+        givenLocationTracked()
+        locations.emit(POINT_A)
+
+        viewModel.onMapLongClick(POINT_B)
+
+        assertEquals(listOf(POINT_A, POINT_B), drawnPath)
+        assertEquals(listOf(MarkerData(POINT_B.toUiModel(), MarkerData.InfoWindow.Visible("111.19 km"))), markers)
+    }
+
+    @Test
+    fun `taps add points that a long press joins into one path`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+        viewModel.onMapClick(POINT_B)
+
+        viewModel.onMapLongClick(POINT_C)
+
+        assertEquals(listOf(POINT_A, POINT_B, POINT_C), drawnPath)
+        assertEquals(MarkerData.InfoWindow.Visible("222.39 km"), markers.last().infoWindow)
+    }
+
+    @Test
+    fun `a tap after a drawn distance starts a new path`() {
+        givenDistanceDrawn()
+
+        viewModel.onMapClick(POINT_C)
+
+        assertEquals(listOf(POINT_C), storedPath)
+        assertEquals(emptyList<Coordinates>(), drawnPath)
+        assertEquals(listOf(MarkerData(POINT_C.toUiModel())), markers)
+    }
+
+    @Test
+    fun `onDistanceFromAnyPositionSet clears map state and hides chart`() {
+        givenDistanceDrawn()
+
+        viewModel.onDistanceFromAnyPositionSet()
 
         assertTrue(viewModel.uiState.value.mapState.clearMap)
         assertTrue(viewModel.uiState.value.mapState.markers.isEmpty())
         assertTrue(viewModel.uiState.value.mapState.polylines.isEmpty())
         assertFalse(viewModel.uiState.value.showChart)
+    }
+
+    @Test
+    fun `a tap after a drawn distance drops its elevation profile`() {
+        givenDistanceDrawn()
+        viewModel.onElevationUpdateHandled()
+
+        viewModel.onMapClick(POINT_C)
+
+        assertEquals(emptyList<Coordinates>(), viewModel.uiState.value.triggerElevationUpdate)
+    }
+
+    @Test
+    fun `setting the distance mode drops the elevation profile`() {
+        givenDistanceDrawn()
+        viewModel.onElevationUpdateHandled()
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(emptyList<Coordinates>(), viewModel.uiState.value.triggerElevationUpdate)
     }
 
     @Test
@@ -372,5 +664,150 @@ class MainViewModelTest {
         viewModel.onLocationPermissionRequestHandled()
 
         assertFalse(viewModel.uiState.value.requestLocationPermission)
+    }
+
+    @Test
+    fun `hints follow the path in any position mode`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+
+        viewModel.onMapClick(POINT_A)
+        assertEquals(MapHint.ADD_OR_FINISH, viewModel.hint.value)
+
+        viewModel.onMapLongClick(POINT_B)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+
+        viewModel.onInfoWindowClick()
+        assertNull(viewModel.hint.value)
+    }
+
+    @Test
+    fun `hints follow the location in current position mode`() = runTest {
+        assertNull(viewModel.hint.value)
+
+        givenLocationTracked()
+        assertEquals(MapHint.WAITING_FOR_LOCATION, viewModel.hint.value)
+
+        locations.emit(LONDON)
+        assertEquals(MapHint.MEASURE_FROM_LOCATION, viewModel.hint.value)
+
+        viewModel.onMapLongClick(POINT_A)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+    }
+
+    @Test
+    fun `hints that were followed are not shown again, not even on a reopened map`() = runTest {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+        viewModel.onMapLongClick(POINT_B)
+
+        viewModel = createViewModel()
+        viewModel.onDistanceFromAnyPositionSet()
+        assertNull(viewModel.hint.value)
+
+        viewModel.onMapClick(POINT_A)
+        assertNull(viewModel.hint.value)
+
+        viewModel.onMapLongClick(POINT_B)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+    }
+
+    @Test
+    fun `a long press in current position mode retires its hint`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
+        viewModel.onMapLongClick(POINT_A)
+
+        viewModel.onDistanceFromCurrentPositionSet()
+
+        assertNull(viewModel.hint.value)
+    }
+
+    @Test
+    fun `a search draws the distance but leaves the long press hint for later`() = runTest {
+        givenLocationTracked()
+        locations.emit(LONDON)
+        viewModel.onPositionByNameResolved(POINT_A)
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+
+        viewModel.onDistanceFromCurrentPositionSet()
+
+        assertEquals(MapHint.MEASURE_FROM_LOCATION, viewModel.hint.value)
+    }
+
+    @Test
+    fun `a search starts a path but leaves the tap hint for later`() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onPositionByNameResolved(POINT_A)
+        assertEquals(MapHint.ADD_OR_FINISH, viewModel.hint.value)
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+    }
+
+    @Test
+    fun `loading a distance leaves the earlier hints for later`() = runTest {
+        val positions = listOf(Position(0.0, 0.0), Position(0.0, 1.0))
+        whenever(getPositionListUseCase(1L)).thenReturn(PositionListResult.Found(positions))
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onDistanceToShowSelected(1L, "Home")
+        assertEquals(MapHint.OPEN_DETAILS, viewModel.hint.value)
+
+        viewModel.onDistanceFromAnyPositionSet()
+
+        assertEquals(MapHint.START_ANYWHERE, viewModel.hint.value)
+    }
+
+    @Test
+    fun `onHintClosed retires the hint`() {
+        viewModel.onDistanceFromAnyPositionSet()
+
+        viewModel.onHintClosed(MapHint.START_ANYWHERE)
+
+        assertNull(viewModel.hint.value)
+    }
+
+    private fun createViewModel() =
+        MainViewModel(
+            getDistancesUseCase,
+            getStoredDistancesUseCase,
+            getPositionListUseCase,
+            connectionManager,
+            resourceProvider,
+            settingsRepository,
+            distanceModeRepository,
+            locationRepository,
+            permissionChecker,
+            coordinatesRepository,
+            DistanceCalculator(),
+            UnitFormatter(UnitConverter()),
+            buildConfigProvider,
+            MapStateMapper(context),
+            loadDistancesMapper,
+            MapHintProcessor(hintRepository)
+        )
+
+    // Grants location and tracks it, as MainActivity does while started; emit to locations to deliver one
+    private fun TestScope.givenLocationTracked() {
+        whenever(permissionChecker.isLocationPermissionGranted()).thenReturn(true)
+        viewModel.onLocationPermissionChanged()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.trackLocation() }
+    }
+
+    // Draws POINT_A to POINT_B in any position mode
+    private fun givenDistanceDrawn() {
+        viewModel.onDistanceFromAnyPositionSet()
+        viewModel.onMapClick(POINT_A)
+        viewModel.onMapLongClick(POINT_B)
+    }
+
+    private companion object {
+
+        // One degree apart on the equator, so 111.19 km from one to the next
+        val POINT_A = Coordinates(0.0, 0.0)
+        val POINT_B = Coordinates(0.0, 1.0)
+        val POINT_C = Coordinates(0.0, 2.0)
+        val LONDON = Coordinates(51.5074, -0.1278)
     }
 }

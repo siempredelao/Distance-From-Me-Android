@@ -1,0 +1,1 @@
+Luftlinien auf einer Karte messen, von Ihrer Position oder jedem anderen Ort.

@@ -1,0 +1,8 @@
+- Hints on the map show you how to measure
+- Works with approximate location, or with no location at all
+- On tablets and wide screens, the menu stays beside the map
+- Distance details work offline, and show coordinates when there is no address
+- Saved distances show their length on the map
+- Unit of measurement chosen by default from your country
+- A link to the privacy policy in About
+- Many fixes that make the app more reliable

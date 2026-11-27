@@ -1,0 +1,8 @@
+- El mapa mostra consells que t'ensenyen a fer mesures
+- Funciona amb ubicació aproximada o sense ubicació
+- En tauletes i pantalles amples, el menú es queda al costat del mapa
+- Els detalls funcionen sense connexió i mostren coordenades si no hi ha adreça
+- Les distàncies desades mostren la seva longitud al mapa
+- Unitat de mesura seleccionada per defecte segons el teu país
+- Enllaç a la política de privadesa a "Quant a"
+- Moltes correccions que fan l'aplicació més fiable

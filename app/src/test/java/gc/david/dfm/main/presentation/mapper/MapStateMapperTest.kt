@@ -19,18 +19,23 @@ package gc.david.dfm.main.presentation.mapper
 import android.content.Context
 import android.content.res.Resources
 import gc.david.dfm.R
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
+import gc.david.dfm.core.settings.domain.model.CameraAnimation
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.main.presentation.model.CameraUpdate
+import gc.david.dfm.main.presentation.model.CoordinatesUiModel
 import gc.david.dfm.main.presentation.model.DrawDistanceUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
-import gc.david.dfm.settings.domain.model.CameraAnimation
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -53,8 +58,8 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expected = MapUiState(
-            markers = emptyList(),
-            polylines = emptyList(),
+            markers = persistentListOf(),
+            polylines = persistentListOf(),
             cameraUpdate = null,
             clearMap = true
         )
@@ -79,26 +84,26 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expected = MapUiState(
-            markers = listOf(
+            markers = persistentListOf(
                 MarkerData(
-                    position = Coordinates(0.0, 0.0),
+                    position = CoordinatesUiModel(0.0, 0.0),
                     infoWindow = MarkerData.InfoWindow.None
                 ),
                 MarkerData(
-                    position = Coordinates(2.0, 2.0),
-                    infoWindow = MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+                    position = CoordinatesUiModel(2.0, 2.0),
+                    infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
-            polylines = listOf(
+            polylines = persistentListOf(
                 PolylineData(
-                    start = Coordinates(0.0, 0.0),
-                    end = Coordinates(1.0, 1.0),
+                    start = CoordinatesUiModel(0.0, 0.0),
+                    end = CoordinatesUiModel(1.0, 1.0),
                     color = PolylineData.LineColor.YELLOW,
                     width = LINE_WIDTH
                 ),
                 PolylineData(
-                    start = Coordinates(1.0, 1.0),
-                    end = Coordinates(2.0, 2.0),
+                    start = CoordinatesUiModel(1.0, 1.0),
+                    end = CoordinatesUiModel(2.0, 2.0),
                     color = PolylineData.LineColor.YELLOW,
                     width = LINE_WIDTH
                 )
@@ -126,26 +131,26 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expected = MapUiState(
-            markers = listOf(
+            markers = persistentListOf(
                 MarkerData(
-                    position = Coordinates(0.0, 0.0),
+                    position = CoordinatesUiModel(0.0, 0.0),
                     infoWindow = MarkerData.InfoWindow.None
                 ),
                 MarkerData(
-                    position = Coordinates(2.0, 2.0),
-                    infoWindow = MarkerData.InfoWindow.Visible(title = model.distanceName + model.formattedDistance)
+                    position = CoordinatesUiModel(2.0, 2.0),
+                    infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.0 km")
                 )
             ),
-            polylines = listOf(
+            polylines = persistentListOf(
                 PolylineData(
-                    start = Coordinates(0.0, 0.0),
-                    end = Coordinates(1.0, 1.0),
+                    start = CoordinatesUiModel(0.0, 0.0),
+                    end = CoordinatesUiModel(1.0, 1.0),
                     color = PolylineData.LineColor.GREEN,
                     width = LINE_WIDTH
                 ),
                 PolylineData(
-                    start = Coordinates(1.0, 1.0),
-                    end = Coordinates(2.0, 2.0),
+                    start = CoordinatesUiModel(1.0, 1.0),
+                    end = CoordinatesUiModel(2.0, 2.0),
                     color = PolylineData.LineColor.GREEN,
                     width = LINE_WIDTH
                 )
@@ -170,7 +175,7 @@ internal class MapStateMapperTest {
         val actual = mapper.toMapUiState(model)
 
         val expectedCameraUpdate = CameraUpdate.FitBounds(
-            coordinates = coords,
+            coordinates = coords.map { it.toUiModel() }.toImmutableList(),
             padding = 200
         )
         assertEquals(expectedCameraUpdate, actual.cameraUpdate)
@@ -189,7 +194,7 @@ internal class MapStateMapperTest {
 
         val actual = mapper.toMapUiState(model)
 
-        val expectedCameraUpdate = CameraUpdate.MoveTo(position = coords.last())
+        val expectedCameraUpdate = CameraUpdate.MoveTo(position = coords.last().toUiModel())
         assertEquals(expectedCameraUpdate, actual.cameraUpdate)
     }
 
@@ -210,25 +215,38 @@ internal class MapStateMapperTest {
     }
 
     @Test
-    fun `sets marker title with distance info`() {
+    fun `sets the name as the title and the distance as the snippet`() {
         val coords = listOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0), Coordinates(2.0, 2.0))
-        val distanceName = "Distance: "
-        val formattedDistance = "1.5 km"
         val model = createDrawDistanceModel(
             coordinates = coords,
-            distanceName = distanceName,
-            formattedDistance = formattedDistance
+            distanceName = "Home",
+            formattedDistance = "1.5 km"
         )
 
         val result = mapper.toMapUiState(model)
 
         val expectedMarkers = listOf(
             MarkerData(
-                position = Coordinates(2.0, 2.0),
-                infoWindow = MarkerData.InfoWindow.Visible(title = distanceName + formattedDistance)
+                position = CoordinatesUiModel(2.0, 2.0),
+                infoWindow = MarkerData.InfoWindow.Visible(title = "Home", snippet = "1.5 km")
             )
         )
         assertEquals(expectedMarkers, result.markers)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["", "  "])
+    fun `sets the distance as the title without a name`(distanceName: String) {
+        val coords = listOf(Coordinates(0.0, 0.0), Coordinates(1.0, 1.0))
+        val model = createDrawDistanceModel(
+            coordinates = coords,
+            distanceName = distanceName,
+            formattedDistance = "1.5 km"
+        )
+
+        val result = mapper.toMapUiState(model)
+
+        assertEquals(MarkerData.InfoWindow.Visible(title = "1.5 km"), result.markers.last().infoWindow)
     }
 
     private fun createDrawDistanceModel(
@@ -236,7 +254,7 @@ internal class MapStateMapperTest {
         source: DrawDistanceUiModel.Source = DrawDistanceUiModel.Source.MANUAL,
         distanceMode: DistanceMode = DistanceMode.FROM_CURRENT_POINT,
         cameraAnimation: CameraAnimation = CameraAnimation.Animate.Centre,
-        distanceName: String = "Distance: ",
+        distanceName: String = "Home",
         formattedDistance: String = "1.0 km"
     ): DrawDistanceUiModel {
         return DrawDistanceUiModel(

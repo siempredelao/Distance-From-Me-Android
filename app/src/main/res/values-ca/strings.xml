@@ -20,8 +20,8 @@
     <string name="action_bar_search_hint">Cercar Distance From Me</string>
     <string name="search_bar_open_menu">Menú</string>
     <string name="search_bar_close">Tancar la cerca</string>
+    <string name="navigation_rail_close">Tancar el menú</string>
     <string name="search_bar_clear">Esborrar</string>
-    <string name="toast_no_find_address">Servei inactiu o senyal de xarxa molt pobre</string>
     <string name="toast_loading_position">Cercant la seva posició. Per favor, espere uns instants</string>
     <string name="menu_load_title">Carregar distància</string>
     <string name="dialog_select_address_title">Triï una adreça</string>
@@ -29,7 +29,6 @@
     <string name="menu_rate_app_title">Puntua aplicació</string>
     <string name="rate_app_prompt">T\'agrada fer servir aquesta aplicació?</string>
     <string name="rate_app_cta">Puntua-la</string>
-    <string name="toast_send_feedback_error">No hi ha clients d\'email disponibles</string>
     <string name="menu_settings_title">Preferències</string>
     <string name="navigation_drawer_starting_point_any_position_item">Qualsevol posició</string>
     <string name="navigation_drawer_starting_point_current_position_item">Posició actual</string>
@@ -47,4 +46,12 @@
     <string name="snackbar_location_permission_action">Obrir configuració</string>
     <string name="toast_no_internet_connection">Sense connexió a internet</string>
     <string name="play_services_not_supported">Aquest dispositiu no és compatible amb Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">Esperant la seva posició…</string>
+    <string name="map_hint_measure_from_location">Faci una pressió llarga en un lloc per mesurar la distància des d\'on és</string>
+    <string name="map_hint_start_anywhere">Toqui un lloc per començar a mesurar</string>
+    <string name="map_hint_add_or_finish">Toqui per afegir punts, o faci una pressió llarga a l\'últim per acabar</string>
+    <string name="map_hint_open_details">Toqui l\'etiqueta per veure les adreces, compartir la distància o desar-la</string>
+    <string name="map_hint_close">Tancar el consell</string>
 </resources>

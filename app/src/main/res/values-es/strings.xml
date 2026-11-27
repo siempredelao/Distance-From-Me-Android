@@ -20,8 +20,8 @@
     <string name="action_bar_search_hint">Buscar Distance From Me</string>
     <string name="search_bar_open_menu">Menú</string>
     <string name="search_bar_close">Cerrar búsqueda</string>
+    <string name="navigation_rail_close">Cerrar menú</string>
     <string name="search_bar_clear">Borrar</string>
-    <string name="toast_no_find_address">Servicio inactivo o señal de red muy pobre. Pruebe de nuevo pasados unos instantes</string>
     <string name="toast_loading_position">Buscando su posición. Por favor, espere unos instantes</string>
     <string name="menu_load_title">Cargar distancia</string>
     <string name="dialog_select_address_title">Elija una dirección</string>
@@ -29,7 +29,6 @@
     <string name="menu_rate_app_title">Valorar aplicación</string>
     <string name="rate_app_prompt">¿Te gusta usar esta aplicación?</string>
     <string name="rate_app_cta">Valórala ahora</string>
-    <string name="toast_send_feedback_error">No hay clientes de email disponibles</string>
     <string name="menu_settings_title">Preferencias</string>
     <string name="toast_first_point_needed">Por favor, señale un punto inicial.</string>
     <string name="navigation_drawer_starting_point_any_position_item">Cualquier posición</string>
@@ -47,4 +46,12 @@
     <string name="snackbar_location_permission_action">Abrir ajustes</string>
     <string name="toast_no_internet_connection">Sin conexión a Internet</string>
     <string name="play_services_not_supported">Este dispositivo no es compatible con Google Play Services.</string>
+
+    <!-- MAP HINTS -->
+    <string name="map_hint_waiting_for_location">Esperando su posición…</string>
+    <string name="map_hint_measure_from_location">Mantenga pulsado un lugar para medir la distancia desde donde está</string>
+    <string name="map_hint_start_anywhere">Toque un lugar para empezar a medir</string>
+    <string name="map_hint_add_or_finish">Toque para añadir puntos, o mantenga pulsado el último para terminar</string>
+    <string name="map_hint_open_details">Toque la etiqueta para ver las direcciones, compartir la distancia o guardarla</string>
+    <string name="map_hint_close">Cerrar consejo</string>
 </resources>

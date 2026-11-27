@@ -18,7 +18,6 @@ package gc.david.dfm.main.presentation
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -28,7 +27,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,55 +40,57 @@ import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
-import gc.david.dfm.PermissionChecker
 import gc.david.dfm.R
-import gc.david.dfm.about.presentation.AboutActivity
 import gc.david.dfm.address.presentation.AddressViewModel
-import gc.david.dfm.common.Coordinates
-import gc.david.dfm.common.UiUtils
+import gc.david.dfm.address.presentation.model.AddressUiModel
+import gc.david.dfm.core.coordinates.domain.model.Coordinates
 import gc.david.dfm.designsystem.DfmTheme
-import gc.david.dfm.distance.data.model.DistanceMode
+import gc.david.dfm.distance.domain.model.DistanceMode
 import gc.david.dfm.elevation.presentation.ElevationViewModel
-import gc.david.dfm.faq.presentation.FaqActivity
 import gc.david.dfm.feedback.InAppReviewHandler
-import gc.david.dfm.location.GeofencingLocationManager
 import gc.david.dfm.main.presentation.components.PermissionRationaleDialog
 import gc.david.dfm.main.presentation.model.SideNavigationItemId
 import gc.david.dfm.main.presentation.screen.MainScreen
-import gc.david.dfm.settings.presentation.SettingsActivity
-import gc.david.dfm.showinfo.presentation.ShowInfoActivity
+import gc.david.dfm.support.android.UiUtils
+import gc.david.dfm.support.android.collectOnStarted
+import gc.david.dfm.support.android.tryStartActivity
+import gc.david.dfm.support.navigation.Navigator
+import gc.david.dfm.support.navigation.Route
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import gc.david.dfm.address.domain.model.Coordinates as AddressCoordinate
 
 class MainActivity : FragmentActivity() {
 
     private val appContext: Context by inject()
-    private val permissionChecker: PermissionChecker by inject()
-    private val locationManager: GeofencingLocationManager by inject()
+    private val navigator: Navigator by inject { parametersOf(this) }
     private val mainViewModel: MainViewModel by viewModel()
     private val elevationViewModel: ElevationViewModel by viewModel()
     private val addressViewModel: AddressViewModel by viewModel()
 
 
-    @SuppressLint("MissingPermission")
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val granted = permissions.values.all { it }
+        mainViewModel.onLocationPermissionChanged()
+        // Either precise or approximate location is enough
+        val granted = permissions.values.any { it }
         if (granted) {
             Timber.tag(TAG).d("permissions GRANTED")
+            // onLocationPermissionChanged above starts location tracking
             UiUtils.toastIt(R.string.toast_loading_position, appContext)
-            locationManager.startAfterPermissionGranted()
         } else {
             Timber.tag(TAG).d("permissions DENIED/INTERRUPTED")
-            mainViewModel.resetMap()
+            // Right after a refusal, no rationale means Android won't show its permission dialog again
+            mainViewModel.onLocationPermissionDenied(
+                permanently = PERMISSIONS.none { shouldShowRequestPermissionRationale(it) },
+            )
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.tag(TAG).d("onCreate savedInstanceState=%s", UiUtils.dumpBundleToString(savedInstanceState))
+        Timber.tag(TAG).d("onCreate savedInstanceState=%s", savedInstanceState)
 
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
@@ -95,12 +98,13 @@ class MainActivity : FragmentActivity() {
         )
         super.onCreate(savedInstanceState)
 
-        lifecycle.addObserver(locationManager)
-        locationManager.setOnLocationChangedListener(mainViewModel::onLocationChanged)
+        // Location updates follow the screen: they stop below STARTED and resume when it's visible again
+        collectOnStarted { mainViewModel.trackLocation() }
 
         setContent {
             DfmTheme {
                 val mainUiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+                val hint by mainViewModel.hint.collectAsStateWithLifecycle()
                 val elevationUiState by elevationViewModel.uiState.collectAsStateWithLifecycle()
                 val addressUiState by addressViewModel.uiState.collectAsStateWithLifecycle()
                 
@@ -136,7 +140,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(addressUiState.addressFound) {
                     addressUiState.addressFound?.let { address ->
-                        mainViewModel.onPositionByNameResolved(address.coordinates.toCommonCoordinates())
+                        mainViewModel.onPositionByNameResolved(address.toCoordinates())
                         addressViewModel.onAddressHandled()
                     }
                 }
@@ -179,7 +183,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(mainUiState.openShowInfo) {
                     if (mainUiState.openShowInfo) {
-                        ShowInfoActivity.open(this@MainActivity)
+                        navigator.navigate(Route.ShowInfo)
                         mainViewModel.onOpenShowInfoHandled()
                     }
                 }
@@ -188,12 +192,15 @@ class MainActivity : FragmentActivity() {
                     if (mainUiState.showLocationPermissionSnackbar) {
                         val result = snackbarHostState.showSnackbar(
                             message = getString(R.string.snackbar_location_permission_needed),
-                            actionLabel = getString(R.string.snackbar_location_permission_action)
+                            actionLabel = getString(R.string.snackbar_location_permission_action),
+                            withDismissAction = true,
+                            // With an action it would otherwise stay over the buttons until it's tapped
+                            duration = SnackbarDuration.Long
                         )
-                        if (result == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                        if (result == SnackbarResult.ActionPerformed) {
                             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                             intent.data = "package:$packageName".toUri()
-                            startActivity(intent)
+                            tryStartActivity(intent)
                         }
                         mainViewModel.onLocationPermissionSnackbarShown()
                     }
@@ -219,12 +226,15 @@ class MainActivity : FragmentActivity() {
                     snackbarHostState = snackbarHostState,
                     isLoading = addressUiState.isLoading,
                     elevationData = elevationUiState.elevation,
-                    showChart = showChart,
+                    // The chart keeps its last drawing, which belongs to another distance, until it has a profile
+                    showChart = showChart && elevationUiState.elevation != null,
                     showChartFab = elevationUiState.elevation != null && !showChart,
                     distancesToLoad = mainUiState.selectFromDistancesLoaded,
                     addressSuggestions = addressUiState.multipleAddressesFound,
-                    isMyLocationEnabled = mainUiState.distanceMode == DistanceMode.FROM_CURRENT_POINT 
-                            && permissionChecker.isLocationPermissionGranted(),
+                    isMyLocationEnabled = mainUiState.distanceMode == DistanceMode.FROM_CURRENT_POINT
+                            && mainUiState.isLocationPermissionGranted,
+                    hint = hint.takeUnless { mainUiState.requestLocationPermission },
+                    onHintClose = { mainViewModel.onHintClosed(it) },
                     onSearchQuery = { query ->
                         mainViewModel.onAddressSearch(query)
                     },
@@ -249,13 +259,13 @@ class MainActivity : FragmentActivity() {
                                 InAppReviewHandler.rateApp(this@MainActivity)
                             }
                             SideNavigationItemId.SETTINGS -> {
-                                SettingsActivity.open(this@MainActivity)
+                                navigator.navigate(Route.Settings)
                             }
                             SideNavigationItemId.HELP_FEEDBACK -> {
-                                FaqActivity.open(this@MainActivity)
+                                navigator.navigate(Route.Faq)
                             }
                             SideNavigationItemId.ABOUT -> {
-                                AboutActivity.open(this@MainActivity)
+                                navigator.navigate(Route.About)
                             }
                             SideNavigationItemId.LOAD -> {
                                 mainViewModel.onLoadDistancesClick()
@@ -304,6 +314,11 @@ class MainActivity : FragmentActivity() {
         mainViewModel.onStart()
     }
 
+    override fun onResume() {
+        super.onResume()
+        mainViewModel.onLocationPermissionChanged()
+    }
+
     companion object {
 
         private const val TAG = "MainActivity"
@@ -312,4 +327,5 @@ class MainActivity : FragmentActivity() {
 }
 
 private fun LatLng.toCoordinates() = Coordinates(latitude, longitude)
-private fun AddressCoordinate.toCommonCoordinates() = Coordinates(latitude, longitude)
+
+private fun AddressUiModel.toCoordinates() = Coordinates(latitude, longitude)

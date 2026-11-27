@@ -16,17 +16,17 @@
 
 package gc.david.dfm.main.presentation.model
 
-sealed interface DistanceSelectionUiModel {
+sealed class DistanceSelectionUiModel {
 
     data class Distance(
         val id: Long,
         val name: String,
         val distance: String,
         val date: String
-    ) : DistanceSelectionUiModel
+    ) : DistanceSelectionUiModel()
 
     data class RateApp(
         val title: String,
         val ctaText: String
-    ) : DistanceSelectionUiModel
+    ) : DistanceSelectionUiModel()
 }

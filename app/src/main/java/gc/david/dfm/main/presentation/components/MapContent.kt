@@ -21,8 +21,11 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,12 +39,17 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import gc.david.dfm.common.Coordinates
 import gc.david.dfm.main.presentation.model.CameraUpdate
+import gc.david.dfm.main.presentation.model.CoordinatesUiModel
 import gc.david.dfm.main.presentation.model.MapUiState
 import gc.david.dfm.main.presentation.model.MarkerData
 import gc.david.dfm.main.presentation.model.PolylineData
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 
 /**
  * Google Map content with declarative rendering of markers and polylines.
@@ -55,16 +63,27 @@ fun MapContent(
     onMarkerClick: (MarkerData) -> Unit,
     onCameraUpdateHandled: () -> Unit,
     onMapClearHandled: () -> Unit,
-    modifier: Modifier = Modifier,
     properties: MapProperties,
     uiSettings: MapUiSettings,
+    modifier: Modifier = Modifier,
 ) {
     val cameraPositionState = rememberCameraPositionState()
 
+    // A camera animation started before the map has loaded has no effect, so hold updates until then
+    var isMapLoaded by remember { mutableStateOf(false) }
+
     // Handle camera updates
-    LaunchedEffect(mapState.cameraUpdate) {
+    LaunchedEffect(mapState.cameraUpdate, isMapLoaded) {
+        if (!isMapLoaded) return@LaunchedEffect
         mapState.cameraUpdate?.let { cameraUpdate ->
-            cameraPositionState.animate(cameraUpdate.toCameraUpdate())
+            try {
+                cameraPositionState.animate(cameraUpdate.toCameraUpdate())
+            } catch (_: CancellationException) {
+                // A gesture stopped the animation, which is this update's end too. Left unhandled, the next update to
+                // the same place would be equal to it and do nothing. When a newer update replaced this one, the
+                // effect itself is cancelled, and the newer update must not be marked as handled.
+                currentCoroutineContext().ensureActive()
+            }
             onCameraUpdateHandled()
         }
     }
@@ -90,6 +109,11 @@ fun MapContent(
         }
     }
 
+    // Known leak in maps-compose 6.x: GoogleMap waits for its map with maps-ktx's awaitMap(), which
+    // can't be cancelled. If MainActivity is destroyed before the map loads (a size, density or
+    // dark-mode change within about a second of launch), that wait never ends, so the window
+    // recomposer and the destroyed Activity stay in memory until the process dies. maps-compose 9
+    // waits with a cancellable awaitMap; upgrading needs compileSdk 37 and AGP 9.1 first.
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
@@ -98,6 +122,7 @@ fun MapContent(
         contentPadding = WindowInsets.navigationBars.asPaddingValues(),
         onMapClick = onMapClick,
         onMapLongClick = onMapLongClick,
+        onMapLoaded = { isMapLoaded = true },
     ) {
         // Render polylines
         Polylines(mapState.polylines)
@@ -112,7 +137,7 @@ fun MapContent(
 }
 
 @Composable
-private fun Polylines(list: List<PolylineData>) {
+private fun Polylines(list: ImmutableList<PolylineData>) {
     list.forEach { polylineData ->
         Polyline(
             points = listOf(
@@ -127,7 +152,7 @@ private fun Polylines(list: List<PolylineData>) {
 
 @Composable
 private fun Markers(
-    markers: List<MarkerData>,
+    markers: ImmutableList<MarkerData>,
     markerToShowInfoWindow: MarkerData?,
     onMarkerClick: (MarkerData) -> Unit
 ) {
@@ -140,9 +165,8 @@ private fun Markers(
                 position = markerData.position.toLatLng()
             )
 
-            // Extract title from InfoWindow
-            val title = when (val infoWindow = markerData.infoWindow) {
-                is MarkerData.InfoWindow.Visible -> infoWindow.title
+            val infoWindow = when (val infoWindow = markerData.infoWindow) {
+                is MarkerData.InfoWindow.Visible -> infoWindow
                 MarkerData.InfoWindow.None -> null
             }
             
@@ -160,7 +184,8 @@ private fun Markers(
             
             Marker(
                 state = markerState,
-                title = title,
+                title = infoWindow?.title,
+                snippet = infoWindow?.snippet,
                 onInfoWindowClick = { onMarkerClick(markerData) }
             )
         }
@@ -168,9 +193,9 @@ private fun Markers(
 }
 
 /**
- * Extension function to convert Coordinates to LatLng
+ * Extension function to convert CoordinatesUiModel to LatLng
  */
-private fun Coordinates.toLatLng() = LatLng(latitude, longitude)
+private fun CoordinatesUiModel.toLatLng() = LatLng(latitude, longitude)
 
 /**
  * Extension function to convert CameraUpdate to Google Maps CameraUpdate
@@ -213,17 +238,17 @@ private fun PolylineData.LineColor.toComposeColor(): Color {
 @Composable
 private fun MapContentPreview() {
     // Note: Run the preview on the emulator/device to see the actual preview
-    val position = Coordinates(40.7128, -74.0060)
+    val position = CoordinatesUiModel(40.7128, -74.0060)
 
     MapContent(
         mapState = MapUiState(
-            markers = listOf(
+            markers = persistentListOf(
                 MarkerData(
                     position = position,
                     infoWindow = MarkerData.InfoWindow.Visible(title = "New York City")
                 )
             ),
-            polylines = emptyList(),
+            polylines = persistentListOf(),
             clearMap = false,
             cameraUpdate = CameraUpdate.ZoomTo(position = position)
         ),
@@ -232,9 +257,8 @@ private fun MapContentPreview() {
         onMarkerClick = {},
         onCameraUpdateHandled = {},
         onMapClearHandled = {},
-        modifier = Modifier,
         properties = MapProperties(),
-        uiSettings = MapUiSettings(zoomControlsEnabled = false)
+        uiSettings = MapUiSettings(zoomControlsEnabled = false),
     )
 }
 

@@ -17,10 +17,10 @@
 package gc.david.dfm.main.presentation.mapper
 
 import gc.david.dfm.R
-import gc.david.dfm.common.presentation.ResourceProvider
 import gc.david.dfm.core.distances.domain.model.Distance
-import gc.david.dfm.main.domain.StoredDistances
+import gc.david.dfm.main.domain.model.StoredDistances
 import gc.david.dfm.main.presentation.model.DistanceSelectionUiModel
+import gc.david.dfm.support.android.presentation.ResourceProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

@@ -16,23 +16,32 @@
 
 package gc.david.dfm.di
 
+import android.app.Activity
+import com.google.android.gms.location.LocationServices
+import gc.david.dfm.AppNavigator
+import gc.david.dfm.BuildConfigProvider
 import gc.david.dfm.DefaultBuildConfigProvider
-import gc.david.dfm.common.BuildConfigProvider
-import gc.david.dfm.distance.data.BaseCoordinatesRepository
-import gc.david.dfm.distance.data.CoordinatesMemoryDataSource
-import gc.david.dfm.distance.data.CurrentLocationProvider
-import gc.david.dfm.distance.data.DistanceModeProvider
-import gc.david.dfm.distance.domain.CoordinatesRepository
+import gc.david.dfm.distance.data.BaseDistanceModeRepository
+import gc.david.dfm.distance.domain.DistanceModeRepository
 import gc.david.dfm.initializers.DefaultUnitInitializer
 import gc.david.dfm.initializers.FirebaseInitializer
 import gc.david.dfm.initializers.Initializers
 import gc.david.dfm.initializers.LoggingInitializer
 import gc.david.dfm.initializers.MapInitializer
-import gc.david.dfm.location.GeofencingLocationManager
+import gc.david.dfm.location.data.BaseLocationRepository
+import gc.david.dfm.location.data.DefaultPermissionChecker
+import gc.david.dfm.location.domain.LocationRepository
+import gc.david.dfm.location.domain.PermissionChecker
 import gc.david.dfm.main.domain.GetStoredDistancesUseCase
 import gc.david.dfm.main.presentation.MainViewModel
 import gc.david.dfm.main.presentation.mapper.LoadDistancesMapper
 import gc.david.dfm.main.presentation.mapper.MapStateMapper
+import gc.david.dfm.onboarding.data.BaseHintRepository
+import gc.david.dfm.onboarding.data.HintDiskDataSource
+import gc.david.dfm.onboarding.domain.HintRepository
+import gc.david.dfm.onboarding.domain.MapHintProcessor
+import gc.david.dfm.support.navigation.Navigator
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -40,14 +49,19 @@ val appModule = module {
 
     single { arrayOf(DefaultUnitInitializer(get()), FirebaseInitializer(), LoggingInitializer(get()), MapInitializer()) }
     single { Initializers(get()) }
-    single { DistanceModeProvider() }
-    single { CurrentLocationProvider() }
-    single { CoordinatesMemoryDataSource() }
-    single<CoordinatesRepository> { BaseCoordinatesRepository(get()) }
-    factory { GeofencingLocationManager(get(), get()) }
+    single<DistanceModeRepository> { BaseDistanceModeRepository() }
+    single { LocationServices.getFusedLocationProviderClient(androidContext()) }
+    single<LocationRepository> { BaseLocationRepository(get()) }
+    single<PermissionChecker> { DefaultPermissionChecker(get()) }
     single<BuildConfigProvider> { DefaultBuildConfigProvider() }
+    // One per Activity: the navigator holds the Activity it launches from
+    factory<Navigator> { (activity: Activity) -> AppNavigator(activity) }
     single { MapStateMapper(get()) }
     single { LoadDistancesMapper(get()) }
+    single { HintDiskDataSource(get()) }
+    single<HintRepository> { BaseHintRepository(get()) }
+    // One per map screen, so anything it comes to remember starts again with the screen
+    factory { MapHintProcessor(get()) }
     single { GetStoredDistancesUseCase(get()) }
-    viewModel { MainViewModel(get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(),get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 }

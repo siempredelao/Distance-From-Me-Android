@@ -17,20 +17,31 @@
 package gc.david.dfm.initializers
 
 import android.app.Application
-import gc.david.dfm.common.domain.model.UnitSystem
-import gc.david.dfm.settings.domain.SettingsRepository
+import gc.david.dfm.core.settings.domain.SettingsRepository
+import gc.david.dfm.core.units.domain.model.UnitSystem
 import java.util.Locale
 
 class DefaultUnitInitializer(
     private val settingsRepository: SettingsRepository
 ) : Initializer {
 
-    private val isImperialLocale: Boolean
-        get() = Locale.getDefault() == Locale.US
+    private val isImperialCountry: Boolean
+        get() = Locale.getDefault().country in IMPERIAL_COUNTRIES
 
     override fun init(application: Application) {
+        if (settingsRepository.hasUnitSystemPreference()) {
+            return
+        }
+
         settingsRepository.setUnitSystemPreference(
-            if (isImperialLocale) UnitSystem.IMPERIAL else UnitSystem.METRIC
+            if (isImperialCountry) UnitSystem.IMPERIAL else UnitSystem.METRIC
         )
+    }
+
+    private companion object {
+
+        // The countries that Unicode CLDR 46 doesn't count as metric. Android's LocaleData.getMeasurementSystem gives
+        // the same ones, but needs API 28
+        val IMPERIAL_COUNTRIES = setOf("US", "GB", "LR", "MM")
     }
 }

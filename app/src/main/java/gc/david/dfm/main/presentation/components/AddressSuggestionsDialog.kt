@@ -20,7 +20,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,17 +28,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import gc.david.dfm.R
-import gc.david.dfm.address.domain.model.Address
-import gc.david.dfm.address.domain.model.Coordinates
+import gc.david.dfm.address.presentation.model.AddressUiModel
 import gc.david.dfm.designsystem.Spacing
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Dialog showing address suggestions to select from.
  */
 @Composable
 fun AddressSuggestionsDialog(
-    addresses: List<Address>,
-    onAddressSelected: (Address) -> Unit,
+    addresses: ImmutableList<AddressUiModel>,
+    onAddressSelected: (AddressUiModel) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -47,7 +48,7 @@ fun AddressSuggestionsDialog(
         title = { Text(stringResource(R.string.dialog_select_address_title)) },
         text = {
             LazyColumn {
-                itemsIndexed(addresses) { _, address ->
+                items(addresses) { address ->
                     Text(
                         text = address.formattedAddress,
                         modifier = Modifier
@@ -70,18 +71,21 @@ fun AddressSuggestionsDialog(
 @Composable
 private fun AddressSuggestionsDialogPreview() {
     AddressSuggestionsDialog(
-        addresses = listOf(
-            Address(
+        addresses = persistentListOf(
+            AddressUiModel(
                 formattedAddress = "123 Main Street, New York, NY 10001",
-                coordinates = Coordinates(40.7128, -74.0060)
+                latitude = 40.7128,
+                longitude = -74.0060
             ),
-            Address(
+            AddressUiModel(
                 formattedAddress = "456 Park Avenue, New York, NY 10022",
-                coordinates = Coordinates(40.7614, -73.9776)
+                latitude = 40.7614,
+                longitude = -73.9776
             ),
-            Address(
+            AddressUiModel(
                 formattedAddress = "789 Broadway, New York, NY 10003",
-                coordinates = Coordinates(40.7308, -73.9973)
+                latitude = 40.7308,
+                longitude = -73.9973
             )
         ),
         onAddressSelected = {},

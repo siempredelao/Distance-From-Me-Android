@@ -1,0 +1,18 @@
+O Distance From Me mede a distância em linha reta entre locais num mapa de satélite. Comece na sua posição atual ou em qualquer outro local e mantenha premido o ponto onde quer terminar.
+
+Funcionalidades:
+- Meça a partir da sua posição atual ou de qualquer local no mapa
+- Adicione todos os pontos de que precisar para medir um percurso feito de linhas retas
+- Pesquise um local pelo nome ou endereço
+- Consulte o perfil de elevação da distância
+- Veja os endereços e as coordenadas do primeiro e do último ponto
+- Guarde as suas distâncias com um nome e volte a carregá-las mais tarde
+- Partilhe uma distância com os seus amigos
+- Escolha entre quilómetros e metros, ou milhas, jardas e pés
+- Disponível em português, inglês, espanhol, francês, alemão, italiano e catalão
+
+A sua localização só é utilizada se o permitir. Sem ela, pode continuar a medir entre quaisquer pontos do mapa.
+
+A aplicação é de código aberto e não tem anúncios nem contas de utilizador.
+
+Necessita dos Serviços do Google Play e de uma ligação à Internet.

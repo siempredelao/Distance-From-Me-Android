@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-	alias(libs.plugins.android.application)
-	alias(libs.plugins.jetbrains.kotlin.android)
-	id("kotlin-parcelize")
+	alias(libs.plugins.dfm.android.application)
+	alias(libs.plugins.dfm.android.compose)
+	alias(libs.plugins.dfm.unit.test)
 	alias(libs.plugins.google.services)
 	alias(libs.plugins.crashlytics)
-	alias(libs.plugins.kotlin.compose.compiler)
 }
 
 android {
 
 	namespace = "gc.david.dfm"
-	compileSdk = libs.versions.compileSdk.get().toInt()
 
 	// Load signing properties from keystore.properties (keep this file out of VCS)
 	val keystoreProperties = Properties()
@@ -50,8 +47,6 @@ android {
 
 	defaultConfig {
 		applicationId = "gc.david.dfm"
-		minSdk = libs.versions.minSdk.get().toInt()
-		targetSdk = libs.versions.targetSdk.get().toInt()
 		versionName = libs.versions.appVersionName.get()
 		versionCode = libs.versions.appVersionCode.get().toInt()
 		androidResources.localeFilters.addAll(listOf("en", "ca", "de", "es", "fr", "it", "pt"))
@@ -60,20 +55,6 @@ android {
 	buildTypes {
 		debug {
 			versionNameSuffix = "-dev"
-
-			// Uncomment this to test ProGuard before release
-//			isMinifyEnabled = true
-//			isShrinkResources = true
-//			proguardFiles getDefaultProguardFile('proguard-android.txt')
-//			val proguards = fileTree("proguard") {
-//				include("*.pro")
-//			}
-//			proguardFiles(*proguards.toList().toTypedArray())
-
-//			if (isCi()) {
-//				buildConfigField("String", "maps_api_key", "guess_it")
-//				buildConfigField("String", "maps_geocode_api_key", "guess_it")
-//			}
 
 			configure<CrashlyticsExtension> {
 				mappingFileUploadEnabled = false
@@ -91,34 +72,24 @@ android {
 			proguardFiles(*proguards.toList().toTypedArray())
 		}
 
-		create("beta") {
+		// The release app with canned addresses and elevation, for the Play Store pictures. Never uploaded
+		create("screenshots") {
 			initWith(getByName("release"))
+			matchingFallbacks += "release"
 
-			versionNameSuffix = "-beta"
+			configure<CrashlyticsExtension> {
+				mappingFileUploadEnabled = false
+			}
 		}
 	}
 
+	sourceSets {
+		// The release Maps key
+		getByName("screenshots").res.srcDir("src/release/res")
+	}
+
 	buildFeatures {
-		compose = true
 		buildConfig = true
-	}
-
-	compileOptions {
-		sourceCompatibility = JavaVersion.VERSION_11
-		targetCompatibility = JavaVersion.VERSION_11
-	}
-
-    testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
-        }
-    }
-
-}
-
-kotlin {
-	compilerOptions {
-		jvmTarget.set(JvmTarget.JVM_11)
 	}
 }
 
@@ -126,55 +97,42 @@ dependencies {
 
 	implementation(libs.androidx.activity.compose)
 	implementation(libs.androidx.activity.ktx)
-	implementation(libs.androidx.cardview)
-	implementation(libs.androidx.collection.ktx)
-	implementation(libs.androidx.constraintlayout)
 	implementation(libs.androidx.core.ktx)
 	implementation(libs.androidx.preference)
 	implementation(libs.splashscreen)
 	implementation(libs.coroutines)
 	implementation(libs.crashlytics)
-	implementation(libs.gson)
 	implementation(libs.koin)
 	implementation(libs.koin.android)
-	debugImplementation(libs.compose.ui.tooling)
+	implementation(libs.kotlinx.collections.immutable)
 	debugImplementation(libs.leakcanary)
 	implementation(libs.lifecycle.runtime)
 	implementation(libs.lifecycle.viewmodel)
-	implementation(libs.lottie)
 	implementation(libs.lottie.compose)
 	implementation(libs.maps.compose)
-	implementation(libs.material.components)
-	implementation(libs.okhttp)
-	implementation(libs.okhttp.coroutines)
 	implementation(libs.playservices.location)
 	implementation(libs.playservices.maps)
 	implementation(libs.timber)
-	implementation(platform(libs.compose.bom))
 	implementation(libs.compose.material.icons)
 	implementation(libs.compose.material3)
+	implementation(libs.compose.material3.adaptive)
 	implementation(libs.compose.ui)
-	implementation(libs.compose.ui.tooling.preview)
-    implementation(project(":about"))
-    implementation(project(":address"))
-    implementation(project(":common"))
-    implementation(project(":connectivity"))
-    implementation(project(":core-distances"))
-    implementation(project(":design-system"))
-    implementation(project(":elevation"))
-    implementation(project(":faq"))
-    implementation(project(":feedback"))
-    implementation(project(":opensource"))
-    implementation(project(":settings"))
-    implementation(project(":show-info"))
-
-	testImplementation(libs.androidx.arch.core.testing)
-	testImplementation(libs.coroutines.test)
-	testImplementation(libs.junit.jupiter.api)
-    testImplementation(libs.junit.jupiter.params)
-	testImplementation(libs.mockito)
-	testImplementation(libs.mockito.kotlin)
-	testImplementation(project(":test-support"))
-    
-    testRuntimeOnly(libs.junit.jupiter.engine)
+    implementation(project(":core:address"))
+    implementation(project(":core:coordinates"))
+    implementation(project(":core:design-system"))
+    implementation(project(":core:distances"))
+    implementation(project(":core:geocoding"))
+    implementation(project(":core:settings"))
+    implementation(project(":core:units"))
+    implementation(project(":features:about"))
+    implementation(project(":features:address"))
+    implementation(project(":features:elevation"))
+    implementation(project(":features:faq"))
+    implementation(project(":features:feedback"))
+    implementation(project(":features:opensource"))
+    implementation(project(":features:settings"))
+    implementation(project(":features:show-info"))
+    implementation(project(":support:android"))
+    implementation(project(":support:coroutines"))
+    implementation(project(":support:navigation"))
 }

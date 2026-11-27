@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2026 David Aguiar Gonzalez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package gc.david.dfm.core.address.presentation.mapper
+
+import gc.david.dfm.core.address.R
+import gc.david.dfm.core.address.domain.model.GeocodingError
+import gc.david.dfm.support.android.presentation.ResourceProvider
+
+class GeocodingErrorMessageMapper(private val resourceProvider: ResourceProvider) {
+
+    fun map(error: GeocodingError): String =
+        when (error) {
+            GeocodingError.INVALID_REQUEST -> resourceProvider.get(R.string.geocoding_error_invalid_request)
+            GeocodingError.OVER_DAILY_LIMIT -> resourceProvider.get(R.string.geocoding_error_quota)
+            GeocodingError.OVER_QUERY_LIMIT -> resourceProvider.get(R.string.geocoding_error_rate_limited)
+            GeocodingError.REQUEST_DENIED -> resourceProvider.get(R.string.geocoding_error_request_denied)
+            GeocodingError.UNKNOWN_ERROR -> resourceProvider.get(R.string.geocoding_error_unknown)
+        }
+
+    /** Message for when no answer was received at all, such as a network or parsing failure. */
+    fun unexpectedFailureMessage(): String = resourceProvider.get(R.string.geocoding_error_generic)
+}

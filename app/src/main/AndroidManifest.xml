@@ -16,11 +16,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="preferExternal">
 
-    <permission
-        android:name="gc.david.dfm.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="gc.david.dfm.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -39,33 +34,36 @@
         android:label="@string/app_name"
         android:theme="@style/CustomActionBarTheme">
 
+        <!-- Maps 20 no longer declares it, and the legacy renderer crashes without it on Play Services before 25.50.34 -->
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
         <activity
+            android:name=".launcher.presentation.LauncherActivity"
+            android:exported="false"
+            android:theme="@style/SplashScreenTheme" />
+
+        <!-- The name LauncherActivity had up to version 4.0.3. Icons and shortcuts store it, so it must not change -->
+        <activity-alias
             android:name=".onboarding.presentation.OnboardActivity"
             android:exported="true"
-            android:theme="@style/SplashScreenTheme">
+            android:targetActivity=".launcher.presentation.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
 
         <activity
             android:name=".main.presentation.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize">
         </activity>
-
-        <service
-            android:name=".service.GeofencingService"
-            android:enabled="true"
-            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.gms.version"
